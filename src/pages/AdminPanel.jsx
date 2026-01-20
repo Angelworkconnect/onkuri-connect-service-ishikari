@@ -722,7 +722,7 @@ export default function AdminPanel() {
               <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">スタッフ</SelectItem>
+                  <SelectItem value="staff">スタッフ</SelectItem>
                   <SelectItem value="admin">管理者</SelectItem>
                 </SelectContent>
               </Select>
