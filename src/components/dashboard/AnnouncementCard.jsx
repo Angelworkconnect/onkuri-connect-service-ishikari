@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pin, AlertCircle, Calendar, Briefcase, Gift, Megaphone } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 
 const categoryConfig = {
   general: { label: '一般', color: 'bg-slate-100 text-slate-700', icon: Megaphone },
@@ -33,7 +32,7 @@ export default function AnnouncementCard({ announcement }) {
                 {config.label}
               </Badge>
               <span className="text-xs text-slate-400">
-                {format(new Date(announcement.created_date), 'M月d日', { locale: ja })}
+                {format(new Date(announcement.created_date), 'M月d日')}
               </span>
             </div>
             <h3 className="font-medium text-slate-800 mb-1 truncate">{announcement.title}</h3>

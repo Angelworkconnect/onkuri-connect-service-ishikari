@@ -9,7 +9,6 @@ import {
   Calendar, MapPin, MessageSquare
 } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import { motion } from "framer-motion";
 
 const statusConfig = {
@@ -64,7 +63,7 @@ export default function MyApplications() {
                 {status.label}
               </Badge>
               <span className="text-xs text-slate-400">
-                応募日: {format(new Date(application.created_date), 'M月d日', { locale: ja })}
+                応募日: {format(new Date(application.created_date), 'M月d日')}
               </span>
             </div>
 
@@ -74,7 +73,7 @@ export default function MyApplications() {
                 <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-[#E8A4B8]" />
-                    {format(new Date(shift.date), 'M月d日(E)', { locale: ja })}
+                    {format(new Date(shift.date), 'M月d日')}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-[#E8A4B8]" />

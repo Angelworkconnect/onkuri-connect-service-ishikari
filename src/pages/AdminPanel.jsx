@@ -35,7 +35,6 @@ import {
   CheckCircle, XCircle, Trash2, Edit, Clock
 } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
@@ -284,7 +283,7 @@ export default function AdminPanel() {
                     <TableRow key={shift.id}>
                       <TableCell className="font-medium">{shift.title}</TableCell>
                       <TableCell>
-                        {format(new Date(shift.date), 'M/d', { locale: ja })} {shift.start_time}〜{shift.end_time}
+                        {format(new Date(shift.date), 'M/d')} {shift.start_time}〜{shift.end_time}
                       </TableCell>
                       <TableCell>{shift.location}</TableCell>
                       <TableCell>
@@ -336,7 +335,7 @@ export default function AdminPanel() {
                     <TableRow key={app.id}>
                       <TableCell className="font-medium">{app.applicant_name || app.applicant_email}</TableCell>
                       <TableCell>{getShiftTitle(app.shift_id)}</TableCell>
-                      <TableCell>{format(new Date(app.created_date), 'M/d HH:mm', { locale: ja })}</TableCell>
+                      <TableCell>{format(new Date(app.created_date), 'M/d HH:mm')}</TableCell>
                       <TableCell className="max-w-xs truncate">{app.message || '-'}</TableCell>
                       <TableCell>
                         <Badge className={
@@ -395,7 +394,7 @@ export default function AdminPanel() {
                   {attendanceRecords.slice(0, 50).map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">{record.user_name || record.user_email}</TableCell>
-                      <TableCell>{format(new Date(record.date), 'M/d(E)', { locale: ja })}</TableCell>
+                      <TableCell>{format(new Date(record.date), 'M/d')}</TableCell>
                       <TableCell>{record.clock_in}</TableCell>
                       <TableCell>{record.clock_out || '-'}</TableCell>
                       <TableCell>
@@ -442,7 +441,7 @@ export default function AdminPanel() {
                           {categoryTypes.find(c => c.value === announcement.category)?.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{format(new Date(announcement.created_date), 'M/d HH:mm', { locale: ja })}</TableCell>
+                      <TableCell>{format(new Date(announcement.created_date), 'M/d HH:mm')}</TableCell>
                       <TableCell>
                         <Button variant="ghost" size="icon" onClick={() => deleteAnnouncementMutation.mutate(announcement.id)}>
                           <Trash2 className="w-4 h-4 text-red-500" />

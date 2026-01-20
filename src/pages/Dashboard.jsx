@@ -11,7 +11,6 @@ import {
   ChevronRight, Bell, CheckCircle2
 } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import { motion } from "framer-motion";
 import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
@@ -130,7 +129,7 @@ export default function Dashboard() {
       <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <p className="text-white/70 mb-1">
-            {format(new Date(), 'yyyy年M月d日(E)', { locale: ja })}
+            {format(new Date(), 'yyyy年M月d日')}
           </p>
           <h1 className="text-2xl font-light">
             おかえりなさい、<span className="text-[#E8A4B8]">{user.full_name}</span>さん

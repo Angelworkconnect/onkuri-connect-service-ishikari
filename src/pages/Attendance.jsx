@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from "date-fns";
-import { ja } from "date-fns/locale";
 
 const statusConfig = {
   working: { label: '勤務中', color: 'bg-[#7CB342]/10 text-[#7CB342]' },
@@ -162,7 +161,7 @@ export default function Attendance() {
                 <ChevronLeft className="w-5 h-5" />
               </Button>
               <h2 className="text-xl font-medium text-slate-800 min-w-32 text-center">
-                {format(currentMonth, 'yyyy年M月', { locale: ja })}
+                {format(currentMonth, 'yyyy年M月')}
               </h2>
               <Button
                 variant="ghost"
@@ -263,7 +262,7 @@ export default function Attendance() {
                   .map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">
-                        {format(new Date(record.date), 'M月d日(E)', { locale: ja })}
+                        {format(new Date(record.date), 'M月d日')}
                       </TableCell>
                       <TableCell>{record.clock_in}</TableCell>
                       <TableCell>{record.clock_out || '-'}</TableCell>

@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, CircleDollarSign, Users, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 
 const serviceTypeConfig = {
   day_service: { label: '通所介護', color: 'bg-[#2D4A6F] text-white' },
@@ -39,7 +38,7 @@ export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
             </Badge>
           </div>
           <span className="text-sm font-medium text-[#2D4A6F]">
-            {format(new Date(shift.date), 'M月d日(E)', { locale: ja })}
+            {format(new Date(shift.date), 'M月d日')}
           </span>
         </div>
 

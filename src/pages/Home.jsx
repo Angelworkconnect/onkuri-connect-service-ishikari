@@ -11,7 +11,6 @@ import {
   Megaphone, ArrowRight, Sparkles
 } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import { motion } from "framer-motion";
 import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";

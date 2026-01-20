@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Coffee, Clock } from "lucide-react";
 import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 
 export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, isLoading }) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -21,7 +20,7 @@ export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, i
         <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-sm text-white/70 mb-1">
-              {format(currentTime, 'yyyy年M月d日(E)', { locale: ja })}
+              {format(currentTime, 'yyyy年M月d日')}
             </p>
             <p className="text-4xl font-light tracking-wider">
               {format(currentTime, 'HH:mm:ss')}
