@@ -82,8 +82,14 @@ export default function AdminPanel() {
   });
 
   const [staffDialogOpen, setStaffDialogOpen] = useState(false);
+  const [editingStaff, setEditingStaff] = useState(null);
   const [staffForm, setStaffForm] = useState({
+    full_name: '',
     email: '',
+    phone: '',
+    address: '',
+    date_of_birth: '',
+    gender: 'other',
     role: 'user',
   });
 
@@ -123,13 +129,27 @@ export default function AdminPanel() {
     queryFn: () => base44.entities.User.list(),
   });
 
-  const inviteStaffMutation = useMutation({
-    mutationFn: ({ email }) => base44.users.inviteUser(email, 'user'),
+  const createStaffMutation = useMutation({
+    mutationFn: (data) => base44.entities.User.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-users']);
       setStaffDialogOpen(false);
-      setStaffForm({ email: '', role: 'user' });
+      resetStaffForm();
     },
+  });
+
+  const updateStaffMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.User.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-users']);
+      setStaffDialogOpen(false);
+      resetStaffForm();
+    },
+  });
+
+  const deleteStaffMutation = useMutation({
+    mutationFn: (id) => base44.entities.User.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-users']),
   });
 
   const createShiftMutation = useMutation({
@@ -186,6 +206,41 @@ export default function AdminPanel() {
   const resetAnnouncementForm = () => {
     setAnnouncementForm({ title: '', content: '', category: 'general', is_pinned: false });
     setEditingAnnouncement(null);
+  };
+
+  const resetStaffForm = () => {
+    setStaffForm({
+      full_name: '',
+      email: '',
+      phone: '',
+      address: '',
+      date_of_birth: '',
+      gender: 'other',
+      role: 'user',
+    });
+    setEditingStaff(null);
+  };
+
+  const handleEditStaff = (staff) => {
+    setEditingStaff(staff);
+    setStaffForm({
+      full_name: staff.full_name || '',
+      email: staff.email,
+      phone: staff.phone || '',
+      address: staff.address || '',
+      date_of_birth: staff.date_of_birth || '',
+      gender: staff.gender || 'other',
+      role: staff.role,
+    });
+    setStaffDialogOpen(true);
+  };
+
+  const handleSubmitStaff = () => {
+    if (editingStaff) {
+      updateStaffMutation.mutate({ id: editingStaff.id, data: staffForm });
+    } else {
+      createStaffMutation.mutate(staffForm);
+    }
   };
 
   const handleEditShift = (shift) => {
@@ -442,9 +497,9 @@ export default function AdminPanel() {
             <Card className="border-0 shadow-lg">
               <div className="p-6 border-b flex justify-between items-center">
                 <h2 className="text-lg font-medium">スタッフ一覧</h2>
-                <Button onClick={() => setStaffDialogOpen(true)} className="bg-[#2D4A6F]">
+                <Button onClick={() => { resetStaffForm(); setStaffDialogOpen(true); }} className="bg-[#2D4A6F]">
                   <UserPlus className="w-4 h-4 mr-2" />
-                  スタッフを招待
+                  新規スタッフ登録
                 </Button>
               </div>
               <Table>
@@ -452,8 +507,10 @@ export default function AdminPanel() {
                   <TableRow>
                     <TableHead>名前</TableHead>
                     <TableHead>メールアドレス</TableHead>
+                    <TableHead>電話番号</TableHead>
                     <TableHead>権限</TableHead>
                     <TableHead>登録日</TableHead>
+                    <TableHead>操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -461,12 +518,23 @@ export default function AdminPanel() {
                     <TableRow key={u.id}>
                       <TableCell className="font-medium">{u.full_name || '-'}</TableCell>
                       <TableCell>{u.email}</TableCell>
+                      <TableCell>{u.phone || '-'}</TableCell>
                       <TableCell>
                         <Badge className={u.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'bg-slate-100 text-slate-600'}>
                           {u.role === 'admin' ? '管理者' : 'スタッフ'}
                         </Badge>
                       </TableCell>
                       <TableCell>{format(new Date(u.created_date), 'yyyy/M/d')}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditStaff(u)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteStaffMutation.mutate(u.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -587,35 +655,87 @@ export default function AdminPanel() {
         </DialogContent>
       </Dialog>
 
-      {/* Staff Invite Dialog */}
+      {/* Staff Dialog */}
       <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>スタッフを招待</DialogTitle>
+            <DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+            <div>
+              <Label>名前 *</Label>
+              <Input 
+                value={staffForm.full_name} 
+                onChange={(e) => setStaffForm({...staffForm, full_name: e.target.value})} 
+                placeholder="山田 太郎"
+              />
+            </div>
             <div>
               <Label>メールアドレス *</Label>
               <Input 
                 type="email" 
-                placeholder="staff@example.com"
                 value={staffForm.email} 
                 onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} 
+                placeholder="yamada@example.com"
               />
             </div>
-            <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
-              <p>招待メールが送信されます。スタッフは受信したメールから登録を完了できます。</p>
-              <p className="mt-2 text-[#E8A4B8]">※管理者権限の付与は、登録完了後にスタッフ一覧から行えます。</p>
+            <div>
+              <Label>電話番号</Label>
+              <Input 
+                type="tel"
+                value={staffForm.phone} 
+                onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} 
+                placeholder="090-1234-5678"
+              />
+            </div>
+            <div>
+              <Label>住所</Label>
+              <Input 
+                value={staffForm.address} 
+                onChange={(e) => setStaffForm({...staffForm, address: e.target.value})} 
+                placeholder="東京都渋谷区..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>生年月日</Label>
+                <Input 
+                  type="date"
+                  value={staffForm.date_of_birth} 
+                  onChange={(e) => setStaffForm({...staffForm, date_of_birth: e.target.value})} 
+                />
+              </div>
+              <div>
+                <Label>性別</Label>
+                <Select value={staffForm.gender} onValueChange={(v) => setStaffForm({...staffForm, gender: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">男性</SelectItem>
+                    <SelectItem value="female">女性</SelectItem>
+                    <SelectItem value="other">その他</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>権限 *</Label>
+              <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">スタッフ</SelectItem>
+                  <SelectItem value="admin">管理者</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
             <Button 
-              onClick={() => inviteStaffMutation.mutate({ email: staffForm.email })} 
+              onClick={handleSubmitStaff} 
               className="bg-[#2D4A6F]"
-              disabled={!staffForm.email || inviteStaffMutation.isPending}
+              disabled={!staffForm.full_name || !staffForm.email}
             >
-              招待メールを送信
+              {editingStaff ? '更新' : '登録'}
             </Button>
           </DialogFooter>
         </DialogContent>
