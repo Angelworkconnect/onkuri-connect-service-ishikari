@@ -101,6 +101,9 @@ export default function Home() {
               地域で支える、<br />
               <span className="text-[#E8A4B8]">人生に寄り添う。</span>
             </h1>
+            <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4">
+              タイミー的単発・短時間から参加できるお仕事
+            </p>
             <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
               おんくりの輪は、介護から葬祭まで<br className="hidden md:block" />
               人生のすべての節目に寄り添う<br className="hidden md:block" />
@@ -168,7 +171,7 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-medium text-slate-800 mb-2">募集中のシフト</h2>
+              <h2 className="text-2xl font-medium text-slate-800 mb-2">単発・短時間から参加OK</h2>
               <p className="text-slate-500">今すぐ応募できるお仕事</p>
             </div>
             <Link to={createPageUrl('Shifts')}>
