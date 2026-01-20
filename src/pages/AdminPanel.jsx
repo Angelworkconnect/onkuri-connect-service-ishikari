@@ -159,6 +159,13 @@ export default function AdminPanel() {
     },
   });
 
+  const inviteStaffMutation = useMutation({
+    mutationFn: ({ email, role }) => base44.users.inviteUser(email, role === 'admin' ? 'admin' : 'user'),
+    onSuccess: () => {
+      alert('招待メールを送信しました');
+    },
+  });
+
   const createShiftMutation = useMutation({
     mutationFn: (data) => base44.entities.Shift.create(data),
     onSuccess: () => {
