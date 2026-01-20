@@ -534,6 +534,9 @@ export default function AdminPanel() {
                       <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
                           <Button 
                             variant="ghost" 
                             size="icon" 
@@ -541,9 +544,6 @@ export default function AdminPanel() {
                             title="招待メールを送信"
                           >
                             <Mail className="w-4 h-4 text-blue-500" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
-                            <Edit className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="icon" onClick={() => deleteStaffMutation.mutate(s.id)}>
                             <Trash2 className="w-4 h-4 text-red-500" />
