@@ -124,27 +124,32 @@ export default function AdminPanel() {
     queryFn: () => base44.entities.Attendance.list('-date'),
   });
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['admin-users'],
-    queryFn: () => base44.entities.User.list(),
+  const { data: allStaff = [] } = useQuery({
+    queryKey: ['admin-staff'],
+    queryFn: () => base44.entities.Staff.list('-created_date'),
   });
 
-  const inviteStaffMutation = useMutation({
-    mutationFn: ({ email }) => base44.users.inviteUser(email, 'user'),
+  const createStaffMutation = useMutation({
+    mutationFn: (data) => base44.entities.Staff.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-users']);
+      queryClient.invalidateQueries(['admin-staff']);
       setStaffDialogOpen(false);
       resetStaffForm();
     },
   });
 
   const updateStaffMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.User.update(id, data),
+    mutationFn: ({ id, data }) => base44.entities.Staff.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-users']);
+      queryClient.invalidateQueries(['admin-staff']);
       setStaffDialogOpen(false);
       resetStaffForm();
     },
+  });
+
+  const deleteStaffMutation = useMutation({
+    mutationFn: (id) => base44.entities.Staff.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-staff']),
   });
 
   const createShiftMutation = useMutation({
@@ -234,7 +239,7 @@ export default function AdminPanel() {
     if (editingStaff) {
       updateStaffMutation.mutate({ id: editingStaff.id, data: staffForm });
     } else {
-      inviteStaffMutation.mutate({ email: staffForm.email });
+      createStaffMutation.mutate(staffForm);
     }
   };
 
@@ -509,21 +514,26 @@ export default function AdminPanel() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {allUsers.map((u) => (
-                    <TableRow key={u.id}>
-                      <TableCell className="font-medium">{u.full_name || '-'}</TableCell>
-                      <TableCell>{u.email}</TableCell>
-                      <TableCell>{u.phone || '-'}</TableCell>
+                  {allStaff.map((s) => (
+                    <TableRow key={s.id}>
+                      <TableCell className="font-medium">{s.full_name}</TableCell>
+                      <TableCell>{s.email}</TableCell>
+                      <TableCell>{s.phone || '-'}</TableCell>
                       <TableCell>
-                        <Badge className={u.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'bg-slate-100 text-slate-600'}>
-                          {u.role === 'admin' ? '管理者' : 'スタッフ'}
+                        <Badge className={s.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'bg-slate-100 text-slate-600'}>
+                          {s.role === 'admin' ? '管理者' : 'スタッフ'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{format(new Date(u.created_date), 'yyyy/M/d')}</TableCell>
+                      <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => handleEditStaff(u)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteStaffMutation.mutate(s.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -649,102 +659,83 @@ export default function AdminPanel() {
       <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editingStaff ? 'スタッフ情報編集' : 'スタッフ招待'}</DialogTitle>
+            <DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-            {!editingStaff && (
-              <>
-                <div>
-                  <Label>メールアドレス *</Label>
-                  <Input 
-                    type="email" 
-                    value={staffForm.email} 
-                    onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} 
-                    placeholder="yamada@example.com"
-                  />
-                </div>
-                <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
-                  <p>招待メールが送信されます。登録後、下記の情報は編集から設定できます。</p>
-                </div>
-              </>
-            )}
-            {editingStaff && (
-              <>
-                <div>
-                  <Label>名前</Label>
-                  <Input 
-                    value={staffForm.full_name} 
-                    onChange={(e) => setStaffForm({...staffForm, full_name: e.target.value})} 
-                    placeholder="山田 太郎"
-                  />
-                </div>
-                <div>
-                  <Label>メールアドレス</Label>
-                  <Input 
-                    type="email" 
-                    value={staffForm.email} 
-                    disabled
-                  />
-                </div>
-                <div>
-                  <Label>電話番号</Label>
-                  <Input 
-                    type="tel"
-                    value={staffForm.phone} 
-                    onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} 
-                    placeholder="090-1234-5678"
-                  />
-                </div>
-                <div>
-                  <Label>住所</Label>
-                  <Input 
-                    value={staffForm.address} 
-                    onChange={(e) => setStaffForm({...staffForm, address: e.target.value})} 
-                    placeholder="札幌市中央区..."
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>生年月日</Label>
-                    <Input 
-                      type="date"
-                      value={staffForm.date_of_birth} 
-                      onChange={(e) => setStaffForm({...staffForm, date_of_birth: e.target.value})} 
-                    />
-                  </div>
-                  <div>
-                    <Label>性別</Label>
-                    <Select value={staffForm.gender} onValueChange={(v) => setStaffForm({...staffForm, gender: v})}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">男性</SelectItem>
-                        <SelectItem value="female">女性</SelectItem>
-                        <SelectItem value="other">その他</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label>権限</Label>
-                  <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">スタッフ</SelectItem>
-                      <SelectItem value="admin">管理者</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
-            )}
+            <div>
+              <Label>名前 *</Label>
+              <Input 
+                value={staffForm.full_name} 
+                onChange={(e) => setStaffForm({...staffForm, full_name: e.target.value})} 
+                placeholder="山田 太郎"
+              />
+            </div>
+            <div>
+              <Label>メールアドレス *</Label>
+              <Input 
+                type="email" 
+                value={staffForm.email} 
+                onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} 
+                placeholder="yamada@example.com"
+              />
+            </div>
+            <div>
+              <Label>電話番号</Label>
+              <Input 
+                type="tel"
+                value={staffForm.phone} 
+                onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} 
+                placeholder="090-1234-5678"
+              />
+            </div>
+            <div>
+              <Label>住所</Label>
+              <Input 
+                value={staffForm.address} 
+                onChange={(e) => setStaffForm({...staffForm, address: e.target.value})} 
+                placeholder="札幌市中央区..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>生年月日</Label>
+                <Input 
+                  type="date"
+                  value={staffForm.date_of_birth} 
+                  onChange={(e) => setStaffForm({...staffForm, date_of_birth: e.target.value})} 
+                />
+              </div>
+              <div>
+                <Label>性別</Label>
+                <Select value={staffForm.gender} onValueChange={(v) => setStaffForm({...staffForm, gender: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">男性</SelectItem>
+                    <SelectItem value="female">女性</SelectItem>
+                    <SelectItem value="other">その他</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>権限 *</Label>
+              <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">スタッフ</SelectItem>
+                  <SelectItem value="admin">管理者</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
             <Button 
               onClick={handleSubmitStaff} 
               className="bg-[#2D4A6F]"
-              disabled={!staffForm.email}
+              disabled={!staffForm.full_name || !staffForm.email}
             >
-              {editingStaff ? '更新' : '招待'}
+              {editingStaff ? '更新' : '登録'}
             </Button>
           </DialogFooter>
         </DialogContent>
