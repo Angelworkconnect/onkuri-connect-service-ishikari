@@ -124,7 +124,7 @@ export default function AdminPanel() {
   });
 
   const inviteStaffMutation = useMutation({
-    mutationFn: ({ email, role }) => base44.users.inviteUser(email, role),
+    mutationFn: ({ email }) => base44.users.inviteUser(email, 'user'),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-users']);
       setStaffDialogOpen(false);
@@ -603,24 +603,15 @@ export default function AdminPanel() {
                 onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} 
               />
             </div>
-            <div>
-              <Label>権限</Label>
-              <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">スタッフ</SelectItem>
-                  <SelectItem value="admin">管理者</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
             <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
               <p>招待メールが送信されます。スタッフは受信したメールから登録を完了できます。</p>
+              <p className="mt-2 text-[#E8A4B8]">※管理者権限の付与は、登録完了後にスタッフ一覧から行えます。</p>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
             <Button 
-              onClick={() => inviteStaffMutation.mutate(staffForm)} 
+              onClick={() => inviteStaffMutation.mutate({ email: staffForm.email })} 
               className="bg-[#2D4A6F]"
               disabled={!staffForm.email || inviteStaffMutation.isPending}
             >
