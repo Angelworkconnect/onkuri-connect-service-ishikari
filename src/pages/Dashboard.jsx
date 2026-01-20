@@ -1,0 +1,263 @@
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Calendar, Clock, Users, FileText, 
+  ChevronRight, Bell, CheckCircle2
+} from "lucide-react";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
+import { motion } from "framer-motion";
+import StatsCard from "@/components/dashboard/StatsCard";
+import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
+import ShiftCard from "@/components/shifts/ShiftCard";
+import ClockInOut from "@/components/attendance/ClockInOut";
+
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {
+      base44.auth.redirectToLogin();
+    });
+  }, []);
+
+  const { data: announcements = [] } = useQuery({
+    queryKey: ['announcements'],
+    queryFn: () => base44.entities.Announcement.list('-created_date', 5),
+  });
+
+  const { data: openShifts = [] } = useQuery({
+    queryKey: ['shifts-open'],
+    queryFn: () => base44.entities.Shift.filter({ status: 'open' }, 'date', 10),
+  });
+
+  const { data: myApplications = [] } = useQuery({
+    queryKey: ['my-applications', user?.email],
+    queryFn: () => user ? base44.entities.ShiftApplication.filter({ applicant_email: user.email }) : [],
+    enabled: !!user,
+  });
+
+  const { data: todayAttendance } = useQuery({
+    queryKey: ['today-attendance', user?.email, today],
+    queryFn: async () => {
+      if (!user) return null;
+      const records = await base44.entities.Attendance.filter({ 
+        user_email: user.email, 
+        date: today 
+      });
+      return records[0] || null;
+    },
+    enabled: !!user,
+  });
+
+  const { data: monthlyAttendance = [] } = useQuery({
+    queryKey: ['monthly-attendance', user?.email],
+    queryFn: async () => {
+      if (!user) return [];
+      const startOfMonth = format(new Date(), 'yyyy-MM-01');
+      return base44.entities.Attendance.filter({
+        user_email: user.email,
+      });
+    },
+    enabled: !!user,
+  });
+
+  const clockInMutation = useMutation({
+    mutationFn: async () => {
+      const now = format(new Date(), 'HH:mm');
+      return base44.entities.Attendance.create({
+        user_email: user.email,
+        user_name: user.full_name,
+        date: today,
+        clock_in: now,
+        status: 'working',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['today-attendance']);
+      queryClient.invalidateQueries(['monthly-attendance']);
+    },
+  });
+
+  const clockOutMutation = useMutation({
+    mutationFn: async () => {
+      const now = format(new Date(), 'HH:mm');
+      return base44.entities.Attendance.update(todayAttendance.id, {
+        clock_out: now,
+        status: 'completed',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['today-attendance']);
+      queryClient.invalidateQueries(['monthly-attendance']);
+    },
+  });
+
+  const calculateMonthlyHours = () => {
+    let totalMinutes = 0;
+    monthlyAttendance.forEach(record => {
+      if (record.clock_in && record.clock_out) {
+        const [inH, inM] = record.clock_in.split(':').map(Number);
+        const [outH, outM] = record.clock_out.split(':').map(Number);
+        const minutes = (outH * 60 + outM) - (inH * 60 + inM) - (record.break_minutes || 0);
+        totalMinutes += minutes;
+      }
+    });
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return `${hours}時間${mins > 0 ? mins + '分' : ''}`;
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">読み込み中...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <p className="text-white/70 mb-1">
+            {format(new Date(), 'yyyy年M月d日(E)', { locale: ja })}
+          </p>
+          <h1 className="text-2xl font-light">
+            おかえりなさい、<span className="text-[#E8A4B8]">{user.full_name}</span>さん
+          </h1>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 -mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Clock In/Out */}
+            <ClockInOut
+              currentAttendance={todayAttendance}
+              onClockIn={() => clockInMutation.mutate()}
+              onClockOut={() => clockOutMutation.mutate()}
+              isLoading={clockInMutation.isPending || clockOutMutation.isPending}
+            />
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <StatsCard
+                title="今月の勤務"
+                value={calculateMonthlyHours() || '0時間'}
+                icon={Clock}
+              />
+              <StatsCard
+                title="応募中"
+                value={myApplications.filter(a => a.status === 'pending').length}
+                icon={FileText}
+              />
+              <StatsCard
+                title="承認済み"
+                value={myApplications.filter(a => a.status === 'approved').length}
+                icon={CheckCircle2}
+              />
+            </div>
+
+            {/* Available Shifts */}
+            <Card className="border-0 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium text-slate-800">募集中のシフト</h2>
+                  <Link to={createPageUrl('Shifts')}>
+                    <Button variant="ghost" size="sm" className="text-[#2D4A6F]">
+                      すべて見る
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="p-6">
+                {openShifts.length > 0 ? (
+                  <div className="grid gap-4">
+                    {openShifts.slice(0, 3).map((shift) => (
+                      <ShiftCard key={shift.id} shift={shift} showApplyButton={false} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>現在募集中のシフトはありません</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Quick Links */}
+            <Card className="border-0 shadow-sm p-6">
+              <h3 className="font-medium text-slate-800 mb-4">クイックアクセス</h3>
+              <div className="space-y-2">
+                <Link to={createPageUrl('Shifts')}>
+                  <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
+                    <Calendar className="w-4 h-4 mr-3" />
+                    シフト一覧
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('Attendance')}>
+                  <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
+                    <Clock className="w-4 h-4 mr-3" />
+                    勤怠履歴
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('MyApplications')}>
+                  <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
+                    <FileText className="w-4 h-4 mr-3" />
+                    応募履歴
+                  </Button>
+                </Link>
+                {user.role === 'admin' && (
+                  <Link to={createPageUrl('AdminPanel')}>
+                    <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
+                      <Users className="w-4 h-4 mr-3" />
+                      管理画面
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </Card>
+
+            {/* Announcements */}
+            <Card className="border-0 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-[#E8A4B8]" />
+                  <h3 className="font-medium text-slate-800">お知らせ</h3>
+                </div>
+              </div>
+              <div className="p-4 space-y-3">
+                {announcements.length > 0 ? (
+                  announcements.slice(0, 3).map((announcement) => (
+                    <AnnouncementCard key={announcement.id} announcement={announcement} />
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-slate-400">
+                    <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">お知らせはありません</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
