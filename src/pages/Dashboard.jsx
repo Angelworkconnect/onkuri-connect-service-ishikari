@@ -16,6 +16,8 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ClockInOut from "@/components/attendance/ClockInOut";
+import InfoSection from "@/components/dashboard/InfoSection";
+import TipBenefitSection from "@/components/dashboard/TipBenefitSection";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -200,6 +202,12 @@ export default function Dashboard() {
 
           {/* Right Column */}
           <div className="space-y-6">
+            {/* Info Section */}
+            <InfoSection />
+
+            {/* Tip & Benefits */}
+            <TipBenefitSection user={user} />
+
             {/* Quick Links */}
             <Card className="border-0 shadow-sm p-6">
               <h3 className="font-medium text-slate-800 mb-4">クイックアクセス</h3>
