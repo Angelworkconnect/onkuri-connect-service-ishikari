@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 import { 
   Plus, Calendar, Users, FileText, Megaphone,
-  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus
+  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -150,6 +150,13 @@ export default function AdminPanel() {
   const deleteStaffMutation = useMutation({
     mutationFn: (id) => base44.entities.Staff.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['admin-staff']),
+  });
+
+  const inviteStaffMutation = useMutation({
+    mutationFn: ({ email, role }) => base44.users.inviteUser(email, role === 'admin' ? 'admin' : 'user'),
+    onSuccess: () => {
+      alert('招待メールを送信しました');
+    },
   });
 
   const createShiftMutation = useMutation({
@@ -527,6 +534,14 @@ export default function AdminPanel() {
                       <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => inviteStaffMutation.mutate({ email: s.email, role: s.role })}
+                            title="招待メールを送信"
+                          >
+                            <Mail className="w-4 h-4 text-blue-500" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
                             <Edit className="w-4 h-4" />
                           </Button>

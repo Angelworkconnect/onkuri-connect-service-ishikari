@@ -1,19 +1,19 @@
-import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import Shifts from './pages/Shifts';
-import Attendance from './pages/Attendance';
-import MyApplications from './pages/MyApplications';
 import AdminPanel from './pages/AdminPanel';
+import Attendance from './pages/Attendance';
+import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+import MyApplications from './pages/MyApplications';
+import Shifts from './pages/Shifts';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Dashboard": Dashboard,
-    "Shifts": Shifts,
-    "Attendance": Attendance,
-    "MyApplications": MyApplications,
     "AdminPanel": AdminPanel,
+    "Attendance": Attendance,
+    "Dashboard": Dashboard,
+    "Home": Home,
+    "MyApplications": MyApplications,
+    "Shifts": Shifts,
 }
 
 export const pagesConfig = {
