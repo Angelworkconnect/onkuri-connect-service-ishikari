@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 import { 
   Plus, Calendar, Users, FileText, Megaphone,
-  CheckCircle, XCircle, Trash2, Edit, Clock
+  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -81,6 +81,12 @@ export default function AdminPanel() {
     is_pinned: false,
   });
 
+  const [staffDialogOpen, setStaffDialogOpen] = useState(false);
+  const [staffForm, setStaffForm] = useState({
+    email: '',
+    role: 'user',
+  });
+
   useEffect(() => {
     base44.auth.me().then(u => {
       if (u.role !== 'admin') {
@@ -110,6 +116,20 @@ export default function AdminPanel() {
   const { data: attendanceRecords = [] } = useQuery({
     queryKey: ['admin-attendance'],
     queryFn: () => base44.entities.Attendance.list('-date'),
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: () => base44.entities.User.list(),
+  });
+
+  const inviteStaffMutation = useMutation({
+    mutationFn: ({ email, role }) => base44.users.inviteUser(email, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-users']);
+      setStaffDialogOpen(false);
+      setStaffForm({ email: '', role: 'user' });
+    },
   });
 
   const createShiftMutation = useMutation({
@@ -254,6 +274,10 @@ export default function AdminPanel() {
             <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <Megaphone className="w-4 h-4 mr-2" />
               お知らせ
+            </TabsTrigger>
+            <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+              <Users className="w-4 h-4 mr-2" />
+              スタッフ管理
             </TabsTrigger>
           </TabsList>
 
@@ -413,6 +437,43 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Staff Tab */}
+          <TabsContent value="staff">
+            <Card className="border-0 shadow-lg">
+              <div className="p-6 border-b flex justify-between items-center">
+                <h2 className="text-lg font-medium">スタッフ一覧</h2>
+                <Button onClick={() => setStaffDialogOpen(true)} className="bg-[#2D4A6F]">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  スタッフを招待
+                </Button>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>名前</TableHead>
+                    <TableHead>メールアドレス</TableHead>
+                    <TableHead>権限</TableHead>
+                    <TableHead>登録日</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allUsers.map((u) => (
+                    <TableRow key={u.id}>
+                      <TableCell className="font-medium">{u.full_name || '-'}</TableCell>
+                      <TableCell>{u.email}</TableCell>
+                      <TableCell>
+                        <Badge className={u.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'bg-slate-100 text-slate-600'}>
+                          {u.role === 'admin' ? '管理者' : 'スタッフ'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{format(new Date(u.created_date), 'yyyy/M/d')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
+
           {/* Announcements Tab */}
           <TabsContent value="announcements">
             <Card className="border-0 shadow-lg">
@@ -521,6 +582,49 @@ export default function AdminPanel() {
             <Button variant="outline" onClick={() => setShiftDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitShift} className="bg-[#2D4A6F]">
               {editingShift ? '更新' : '作成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Staff Invite Dialog */}
+      <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>スタッフを招待</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>メールアドレス *</Label>
+              <Input 
+                type="email" 
+                placeholder="staff@example.com"
+                value={staffForm.email} 
+                onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} 
+              />
+            </div>
+            <div>
+              <Label>権限</Label>
+              <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">スタッフ</SelectItem>
+                  <SelectItem value="admin">管理者</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-600">
+              <p>招待メールが送信されます。スタッフは受信したメールから登録を完了できます。</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={() => inviteStaffMutation.mutate(staffForm)} 
+              className="bg-[#2D4A6F]"
+              disabled={!staffForm.email || inviteStaffMutation.isPending}
+            >
+              招待メールを送信
             </Button>
           </DialogFooter>
         </DialogContent>
