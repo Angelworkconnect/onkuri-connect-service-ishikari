@@ -505,6 +505,7 @@ export default function AdminPanel() {
                     <TableHead>場所</TableHead>
                     <TableHead>種別</TableHead>
                     <TableHead>状態</TableHead>
+                    <TableHead>表示</TableHead>
                     <TableHead>操作</TableHead>
                   </TableRow>
                 </TableHeader>
