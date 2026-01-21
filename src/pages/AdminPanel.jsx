@@ -380,10 +380,6 @@ export default function AdminPanel() {
       <div className="max-w-6xl mx-auto px-6 -mt-6">
         <Tabs defaultValue="qrcode">
           <TabsList className="bg-white shadow-lg p-1 mb-6">
-            <TabsTrigger value="homepage" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Edit className="w-4 h-4 mr-2" />
-              ホーム画面
-            </TabsTrigger>
             <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <QrCode className="w-4 h-4 mr-2" />
               QRコード
@@ -409,54 +405,6 @@ export default function AdminPanel() {
               スタッフ管理
             </TabsTrigger>
           </TabsList>
-
-          {/* HomePage Tab */}
-          <TabsContent value="homepage">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-lg font-medium">ホーム画面編集</h2>
-                <Button onClick={() => { resetHomeForm(); setHomeDialogOpen(true); }} className="bg-[#2D4A6F]">
-                  <Plus className="w-4 h-4 mr-2" />
-                  新規コンテンツ
-                </Button>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>セクション</TableHead>
-                    <TableHead>タイトル</TableHead>
-                    <TableHead>説明</TableHead>
-                    <TableHead>表示順</TableHead>
-                    <TableHead>操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {homeContents.map((content) => (
-                    <TableRow key={content.id}>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {content.section === 'hero' ? 'ヒーロー' : 'サービス'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-medium">{content.title}</TableCell>
-                      <TableCell className="max-w-xs truncate">{content.description || '-'}</TableCell>
-                      <TableCell>{content.order}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEditHomeContent(content)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => deleteHomeContentMutation.mutate(content.id)}>
-                            <Trash2 className="w-4 h-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
 
           {/* QR Code Tab */}
           <TabsContent value="qrcode">
