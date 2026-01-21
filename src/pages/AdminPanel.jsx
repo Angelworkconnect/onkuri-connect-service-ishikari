@@ -153,13 +153,17 @@ export default function AdminPanel() {
   });
 
   const inviteStaffMutation = useMutation({
-    mutationFn: ({ email }) => base44.users.inviteUser(email, 'user'),
+    mutationFn: ({ email, role }) => {
+      // StaffエンティティのroleとBase44のroleは異なる
+      // Staffのroleが'admin'でもBase44では'user'として招待し、後で権限を管理する
+      return base44.users.inviteUser(email, 'user');
+    },
     onSuccess: () => {
-      alert('招待メールを送信しました。登録後、必要に応じて権限を変更してください。');
+      alert('招待メールを送信しました。スタッフがログイン後、管理画面でスタッフ情報を編集してください。');
     },
     onError: (error) => {
       console.error('招待エラー:', error);
-      alert(`招待メール送信に失敗しました: ${error.message}`);
+      alert(`招待メールの送信に失敗しました: ${error.message}`);
     },
   });
 
