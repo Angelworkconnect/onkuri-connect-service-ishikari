@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   const { data: openShifts = [] } = useQuery({
     queryKey: ['shifts-open'],
-    queryFn: () => base44.entities.Shift.filter({ status: 'open' }, 'date', 10),
+    queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, 'date', 10),
   });
 
   const { data: myApplications = [] } = useQuery({
