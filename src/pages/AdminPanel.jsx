@@ -293,6 +293,27 @@ export default function AdminPanel() {
     return staff?.full_name || userEmail;
   };
 
+  const calculateTotalHours = (email) => {
+    const staffRecords = attendanceRecords.filter(r => r.user_email === email && r.clock_in && r.clock_out);
+    let totalMinutes = 0;
+    
+    staffRecords.forEach(record => {
+      const [inHour, inMin] = record.clock_in.split(':').map(Number);
+      const [outHour, outMin] = record.clock_out.split(':').map(Number);
+      const inTotalMin = inHour * 60 + inMin;
+      const outTotalMin = outHour * 60 + outMin;
+      totalMinutes += Math.max(0, outTotalMin - inTotalMin);
+    });
+    
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}h${minutes}m`;
+  };
+
+  const getUniqueStaffEmails = () => {
+    return [...new Set(attendanceRecords.map(r => r.user_email))];
+  };
+
   const handleEditStaff = (staff) => {
     setEditingStaff(staff);
     setStaffForm({
