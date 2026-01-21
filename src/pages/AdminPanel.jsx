@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { 
-  Plus, Calendar, Users, FileText, Megaphone,
+  Plus, Calendar, Users, FileText, Bell,
   CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode
 } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
@@ -343,7 +343,7 @@ export default function AdminPanel() {
               勤怠管理
             </TabsTrigger>
             <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Megaphone className="w-4 h-4 mr-2" />
+              <Bell className="w-4 h-4 mr-2" />
               お知らせ
             </TabsTrigger>
             <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
