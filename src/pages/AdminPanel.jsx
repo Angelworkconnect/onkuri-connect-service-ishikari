@@ -903,7 +903,7 @@ export default function AdminPanel() {
 
       {/* Staff Dialog */}
       <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle>
           </DialogHeader>
