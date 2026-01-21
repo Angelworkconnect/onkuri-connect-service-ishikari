@@ -153,11 +153,12 @@ export default function AdminPanel() {
   });
 
   const inviteStaffMutation = useMutation({
-    mutationFn: ({ email, role }) => base44.users.inviteUser(email, role === 'admin' ? 'admin' : 'user'),
+    mutationFn: ({ email }) => base44.users.inviteUser(email, 'user'),
     onSuccess: () => {
-      alert('招待メールを送信しました');
+      alert('招待メールを送信しました。登録後、必要に応じて権限を変更してください。');
     },
     onError: (error) => {
+      console.error('招待エラー:', error);
       alert(`招待メール送信に失敗しました: ${error.message}`);
     },
   });
