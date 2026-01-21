@@ -106,6 +106,14 @@ export default function AdminPanel() {
     status: 'working',
   });
 
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [reportForm, setReportForm] = useState({
+    reportType: 'monthly',
+    startDate: '',
+    endDate: '',
+  });
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
   useEffect(() => {
     base44.auth.me().then(async u => {
       // Check if user is in Staff entity with admin role
