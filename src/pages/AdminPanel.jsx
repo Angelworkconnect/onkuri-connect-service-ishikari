@@ -157,6 +157,9 @@ export default function AdminPanel() {
     onSuccess: () => {
       alert('招待メールを送信しました');
     },
+    onError: (error) => {
+      alert(`招待メール送信に失敗しました: ${error.message}`);
+    },
   });
 
   const createShiftMutation = useMutation({
