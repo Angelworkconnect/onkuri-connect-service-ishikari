@@ -30,9 +30,21 @@ const navigation = [
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(async (u) => {
+      setUser(u);
+      if (u) {
+        // Check Staff entity role
+        const staffList = await base44.entities.Staff.filter({ email: u.email });
+        if (staffList.length > 0 && staffList[0].role === 'admin') {
+          setIsAdmin(true);
+        } else if (u.role === 'admin') {
+          setIsAdmin(true);
+        }
+      }
+    }).catch(() => {});
   }, []);
 
   const isHome = currentPageName === 'Home';
