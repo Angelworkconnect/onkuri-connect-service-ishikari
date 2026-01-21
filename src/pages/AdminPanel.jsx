@@ -552,6 +552,7 @@ export default function AdminPanel() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>スタッフ</TableHead>
+                    <TableHead>カテゴリー</TableHead>
                     <TableHead>日付</TableHead>
                     <TableHead>出勤</TableHead>
                     <TableHead>退勤</TableHead>
