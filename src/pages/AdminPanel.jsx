@@ -600,6 +600,16 @@ export default function AdminPanel() {
           {/* Attendance Tab */}
           <TabsContent value="attendance">
             <div className="space-y-6">
+              <Card className="border-0 shadow-lg p-6 bg-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium">レポート生成</h2>
+                  <Button onClick={() => setReportDialogOpen(true)} className="bg-[#2D4A6F]">
+                    <Download className="w-4 h-4 mr-2" />
+                    レポート生成
+                  </Button>
+                </div>
+              </Card>
+
               <Card className="border-0 shadow-lg p-6">
                 <AttendanceCalendar 
                   attendanceRecords={attendanceRecords} 
