@@ -120,33 +120,40 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const startCamera = async () => {
     try {
       setError('');
-      setIsCameraMode(true);
-      setIsScanning(true);
+      setSuccess('');
+      
+      // カメラ権限をチェック
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCodeRef.current = html5QrCode;
 
-      const html5QrCode = new Html5Qrcode("qr-reader");
-      html5QrCodeRef.current = html5QrCode;
+        setIsCameraMode(true);
+        setIsScanning(true);
 
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 }
-        },
-        (decodedText) => {
-          // QRコードが読み取れたら自動的に処理
-          stopCamera();
-          if (isWorking) {
-            clockOutMutation.mutate(decodedText);
-          } else {
-            clockInMutation.mutate(decodedText);
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            // QRコードが読み取れたら自動的に処理
+            stopCamera();
+            if (isWorking) {
+              clockOutMutation.mutate(decodedText);
+            } else {
+              clockInMutation.mutate(decodedText);
+            }
+          },
+          (errorMessage) => {
+            // スキャン中のエラーは無視（読み取り失敗など）
           }
-        },
-        (errorMessage) => {
-          // スキャン中のエラーは無視（読み取り失敗など）
-        }
-      );
+        );
+      } else {
+        setError('お使いのブラウザはカメラに対応していません。手動入力をご利用ください。');
+      }
     } catch (err) {
-      setError('カメラの起動に失敗しました: ' + err.message);
+      console.error('カメラエラー:', err);
+      setError('カメラの起動に失敗しました。カメラへのアクセスを許可してください。');
       setIsCameraMode(false);
       setIsScanning(false);
     }
