@@ -823,12 +823,13 @@ export default function AdminPanel() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </TabsContent>
+                  </Tabs>
+                  </div>
 
       {/* Shift Dialog */}
       <Dialog open={shiftDialogOpen} onOpenChange={setShiftDialogOpen}>
