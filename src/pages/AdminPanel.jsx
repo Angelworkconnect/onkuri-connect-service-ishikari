@@ -787,16 +787,17 @@ export default function AdminPanel() {
                   </TabsContent>
 
                   {/* Announcements Tab */}
-          <TabsContent value="announcements">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-lg font-medium">お知らせ一覧</h2>
-                <Button onClick={() => { resetAnnouncementForm(); setAnnouncementDialogOpen(true); }} className="bg-[#2D4A6F]">
-                  <Plus className="w-4 h-4 mr-2" />
-                  新規お知らせ
-                </Button>
-              </div>
-              <Table>
+                  <TabsContent value="announcements">
+                   <Card className="border-0 shadow-lg">
+                     <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                       <h2 className="text-lg font-medium">お知らせ一覧</h2>
+                       <Button onClick={() => { resetAnnouncementForm(); setAnnouncementDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                         <Plus className="w-4 h-4 mr-2" />
+                         新規お知らせ
+                       </Button>
+                     </div>
+                     <div className="overflow-x-auto">
+                     <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>タイトル</TableHead>
