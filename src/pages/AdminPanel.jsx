@@ -833,7 +833,7 @@ export default function AdminPanel() {
 
       {/* Shift Dialog */}
       <Dialog open={shiftDialogOpen} onOpenChange={setShiftDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingShift ? 'シフト編集' : '新規シフト作成'}</DialogTitle>
           </DialogHeader>
