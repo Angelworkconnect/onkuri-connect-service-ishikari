@@ -322,6 +322,40 @@ export default function AdminPanel() {
     return [...new Set(attendanceRecords.map(r => r.user_email))];
   };
 
+  const handleGenerateReport = async () => {
+    if (!reportForm.startDate || !reportForm.endDate) {
+      alert('開始日と終了日を指定してください');
+      return;
+    }
+    
+    setIsGeneratingReport(true);
+    try {
+      const response = await base44.functions.invoke('generateAttendanceReport', {
+        reportType: reportForm.reportType,
+        startDate: reportForm.startDate,
+        endDate: reportForm.endDate,
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `attendance-report-${reportForm.startDate}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+
+      setReportDialogOpen(false);
+      setReportForm({ reportType: 'monthly', startDate: '', endDate: '' });
+    } catch (error) {
+      console.error('レポート生成エラー:', error);
+      alert('レポート生成に失敗しました');
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
   const handleEditStaff = (staff) => {
     setEditingStaff(staff);
     setStaffForm({
