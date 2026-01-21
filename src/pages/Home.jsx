@@ -163,7 +163,7 @@ export default function Home() {
             />
             <StatsCard
               title="登録スタッフ"
-              value="--"
+              value={stats.totalStaff}
               icon={Users}
               description="おんくりの輪の仲間"
             />
