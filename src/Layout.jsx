@@ -87,7 +87,7 @@ export default function Layout({ children, currentPageName }) {
                   </Link>
                 );
               })}
-              {user?.role === 'admin' && (
+              {isAdmin && (
                 <Link to={createPageUrl('AdminPanel')}>
                   <Button
                     variant="ghost"
