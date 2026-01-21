@@ -719,15 +719,16 @@ export default function AdminPanel() {
 
           {/* Staff Tab */}
           <TabsContent value="staff">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-lg font-medium">スタッフ一覧</h2>
-                <Button onClick={() => { resetStaffForm(); setStaffDialogOpen(true); }} className="bg-[#2D4A6F]">
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  新規スタッフ登録
-                </Button>
-              </div>
-              <Table>
+           <Card className="border-0 shadow-lg">
+             <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+               <h2 className="text-lg font-medium">スタッフ一覧</h2>
+               <Button onClick={() => { resetStaffForm(); setStaffDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                 <UserPlus className="w-4 h-4 mr-2" />
+                 新規スタッフ登録
+               </Button>
+             </div>
+             <div className="overflow-x-auto">
+             <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>名前</TableHead>
