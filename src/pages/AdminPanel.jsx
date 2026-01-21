@@ -91,7 +91,7 @@ export default function AdminPanel() {
     address: '',
     date_of_birth: '',
     gender: 'other',
-    role: 'staff',
+    role: 'temporary',
   });
 
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
@@ -248,7 +248,7 @@ export default function AdminPanel() {
       address: '',
       date_of_birth: '',
       gender: 'other',
-      role: 'staff',
+      role: 'temporary',
     });
     setEditingStaff(null);
   };
@@ -589,7 +589,7 @@ export default function AdminPanel() {
                     <TableHead>名前</TableHead>
                     <TableHead>メールアドレス</TableHead>
                     <TableHead>電話番号</TableHead>
-                    <TableHead>権限</TableHead>
+                    <TableHead>カテゴリー</TableHead>
                     <TableHead>登録日</TableHead>
                     <TableHead>操作</TableHead>
                   </TableRow>
@@ -601,8 +601,16 @@ export default function AdminPanel() {
                       <TableCell>{s.email}</TableCell>
                       <TableCell>{s.phone || '-'}</TableCell>
                       <TableCell>
-                        <Badge className={s.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'bg-slate-100 text-slate-600'}>
-                          {s.role === 'admin' ? '管理者' : 'スタッフ'}
+                        <Badge className={
+                          s.role === 'admin' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' :
+                          s.role === 'full_time' ? 'bg-[#7CB342]/10 text-[#7CB342]' :
+                          s.role === 'part_time' ? 'bg-amber-100 text-amber-700' :
+                          'bg-slate-100 text-slate-600'
+                        }>
+                          {s.role === 'admin' ? '管理者' : 
+                           s.role === 'full_time' ? '正社員' : 
+                           s.role === 'part_time' ? 'パート' : 
+                           '単発'}
                         </Badge>
                       </TableCell>
                       <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
@@ -808,12 +816,14 @@ export default function AdminPanel() {
               </div>
             </div>
             <div>
-              <Label>権限 *</Label>
+              <Label>カテゴリー *</Label>
               <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="staff">スタッフ</SelectItem>
                   <SelectItem value="admin">管理者</SelectItem>
+                  <SelectItem value="full_time">正社員</SelectItem>
+                  <SelectItem value="part_time">パート</SelectItem>
+                  <SelectItem value="temporary">単発</SelectItem>
                 </SelectContent>
               </Select>
             </div>
