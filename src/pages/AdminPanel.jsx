@@ -460,7 +460,7 @@ export default function AdminPanel() {
           <TabsList className="bg-white shadow-lg p-1 mb-6">
             <TabsTrigger value="homepage" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <Edit className="w-4 h-4 mr-2" />
-              TOPページ
+              ホーム画面
             </TabsTrigger>
             <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <QrCode className="w-4 h-4 mr-2" />
@@ -492,7 +492,7 @@ export default function AdminPanel() {
           <TabsContent value="homepage">
             <Card className="border-0 shadow-lg">
               <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-lg font-medium">TOPページ編集</h2>
+                <h2 className="text-lg font-medium">ホーム画面編集</h2>
                 <Button onClick={() => { resetHomeForm(); setHomeDialogOpen(true); }} className="bg-[#2D4A6F]">
                   <Plus className="w-4 h-4 mr-2" />
                   新規コンテンツ
