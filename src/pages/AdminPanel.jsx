@@ -105,6 +105,19 @@ export default function AdminPanel() {
     status: 'working',
   });
 
+  const [homeDialogOpen, setHomeDialogOpen] = useState(false);
+  const [editingHomeContent, setEditingHomeContent] = useState(null);
+  const [homeForm, setHomeForm] = useState({
+    section: 'hero',
+    title: '',
+    subtitle: '',
+    description: '',
+    content: '',
+    icon: '',
+    color: '',
+    order: 0,
+  });
+
   useEffect(() => {
     base44.auth.me().then(u => {
       if (u.role !== 'admin') {
@@ -139,6 +152,11 @@ export default function AdminPanel() {
   const { data: allStaff = [] } = useQuery({
     queryKey: ['admin-staff'],
     queryFn: () => base44.entities.Staff.list('-created_date'),
+  });
+
+  const { data: homeContents = [] } = useQuery({
+    queryKey: ['home-contents'],
+    queryFn: () => base44.entities.HomePageContent.list('order'),
   });
 
   const createStaffMutation = useMutation({
@@ -226,6 +244,29 @@ export default function AdminPanel() {
     },
   });
 
+  const createHomeContentMutation = useMutation({
+    mutationFn: (data) => base44.entities.HomePageContent.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['home-contents']);
+      setHomeDialogOpen(false);
+      resetHomeForm();
+    },
+  });
+
+  const updateHomeContentMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.HomePageContent.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['home-contents']);
+      setHomeDialogOpen(false);
+      resetHomeForm();
+    },
+  });
+
+  const deleteHomeContentMutation = useMutation({
+    mutationFn: (id) => base44.entities.HomePageContent.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['home-contents']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -285,6 +326,43 @@ export default function AdminPanel() {
   const getStaffName = (userEmail) => {
     const staff = allStaff.find(s => s.email === userEmail);
     return staff?.full_name || userEmail;
+  };
+
+  const resetHomeForm = () => {
+    setHomeForm({
+      section: 'hero',
+      title: '',
+      subtitle: '',
+      description: '',
+      content: '',
+      icon: '',
+      color: '',
+      order: 0,
+    });
+    setEditingHomeContent(null);
+  };
+
+  const handleEditHomeContent = (content) => {
+    setEditingHomeContent(content);
+    setHomeForm({
+      section: content.section,
+      title: content.title || '',
+      subtitle: content.subtitle || '',
+      description: content.description || '',
+      content: content.content || '',
+      icon: content.icon || '',
+      color: content.color || '',
+      order: content.order || 0,
+    });
+    setHomeDialogOpen(true);
+  };
+
+  const handleSubmitHomeContent = () => {
+    if (editingHomeContent) {
+      updateHomeContentMutation.mutate({ id: editingHomeContent.id, data: homeForm });
+    } else {
+      createHomeContentMutation.mutate(homeForm);
+    }
   };
 
   const handleEditStaff = (staff) => {
@@ -378,8 +456,12 @@ export default function AdminPanel() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 -mt-6">
-        <Tabs defaultValue="qrcode">
+        <Tabs defaultValue="homepage">
           <TabsList className="bg-white shadow-lg p-1 mb-6">
+            <TabsTrigger value="homepage" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+              <Edit className="w-4 h-4 mr-2" />
+              TOPページ
+            </TabsTrigger>
             <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <QrCode className="w-4 h-4 mr-2" />
               QRコード
@@ -405,6 +487,54 @@ export default function AdminPanel() {
               スタッフ管理
             </TabsTrigger>
           </TabsList>
+
+          {/* HomePage Tab */}
+          <TabsContent value="homepage">
+            <Card className="border-0 shadow-lg">
+              <div className="p-6 border-b flex justify-between items-center">
+                <h2 className="text-lg font-medium">TOPページ編集</h2>
+                <Button onClick={() => { resetHomeForm(); setHomeDialogOpen(true); }} className="bg-[#2D4A6F]">
+                  <Plus className="w-4 h-4 mr-2" />
+                  新規コンテンツ
+                </Button>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>セクション</TableHead>
+                    <TableHead>タイトル</TableHead>
+                    <TableHead>説明</TableHead>
+                    <TableHead>表示順</TableHead>
+                    <TableHead>操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {homeContents.map((content) => (
+                    <TableRow key={content.id}>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {content.section === 'hero' ? 'ヒーロー' : 'サービス'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">{content.title}</TableCell>
+                      <TableCell className="max-w-xs truncate">{content.description || '-'}</TableCell>
+                      <TableCell>{content.order}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditHomeContent(content)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteHomeContentMutation.mutate(content.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
 
           {/* QR Code Tab */}
           <TabsContent value="qrcode">
@@ -874,6 +1004,67 @@ export default function AdminPanel() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setAnnouncementDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitAnnouncement} className="bg-[#2D4A6F]">投稿</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* HomePage Content Dialog */}
+      <Dialog open={homeDialogOpen} onOpenChange={setHomeDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{editingHomeContent ? 'コンテンツ編集' : '新規コンテンツ'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>セクション *</Label>
+                <Select value={homeForm.section} onValueChange={(v) => setHomeForm({...homeForm, section: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hero">ヒーローセクション</SelectItem>
+                    <SelectItem value="services">サービス</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>表示順</Label>
+                <Input type="number" value={homeForm.order} onChange={(e) => setHomeForm({...homeForm, order: Number(e.target.value)})} />
+              </div>
+            </div>
+            <div>
+              <Label>タイトル *</Label>
+              <Input value={homeForm.title} onChange={(e) => setHomeForm({...homeForm, title: e.target.value})} />
+            </div>
+            <div>
+              <Label>サブタイトル</Label>
+              <Input value={homeForm.subtitle} onChange={(e) => setHomeForm({...homeForm, subtitle: e.target.value})} />
+            </div>
+            <div>
+              <Label>説明文</Label>
+              <Textarea value={homeForm.description} onChange={(e) => setHomeForm({...homeForm, description: e.target.value})} className="h-24" />
+            </div>
+            <div>
+              <Label>メインコンテンツ</Label>
+              <Textarea value={homeForm.content} onChange={(e) => setHomeForm({...homeForm, content: e.target.value})} className="h-32" />
+            </div>
+            {homeForm.section === 'services' && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>アイコン名</Label>
+                  <Input value={homeForm.icon} onChange={(e) => setHomeForm({...homeForm, icon: e.target.value})} placeholder="Heart" />
+                </div>
+                <div>
+                  <Label>カラー</Label>
+                  <Input value={homeForm.color} onChange={(e) => setHomeForm({...homeForm, color: e.target.value})} placeholder="bg-[#2D4A6F]" />
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHomeDialogOpen(false)}>キャンセル</Button>
+            <Button onClick={handleSubmitHomeContent} className="bg-[#2D4A6F]">
+              {editingHomeContent ? '更新' : '作成'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
