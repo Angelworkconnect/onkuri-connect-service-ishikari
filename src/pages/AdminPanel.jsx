@@ -495,15 +495,16 @@ export default function AdminPanel() {
 
           {/* Shifts Tab */}
           <TabsContent value="shifts">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-lg font-medium">シフト一覧</h2>
-                <Button onClick={() => { resetShiftForm(); setShiftDialogOpen(true); }} className="bg-[#2D4A6F]">
-                  <Plus className="w-4 h-4 mr-2" />
-                  新規シフト
-                </Button>
-              </div>
-              <Table>
+           <Card className="border-0 shadow-lg">
+             <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+               <h2 className="text-lg font-medium">シフト一覧</h2>
+               <Button onClick={() => { resetShiftForm(); setShiftDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                 <Plus className="w-4 h-4 mr-2" />
+                 新規シフト
+               </Button>
+             </div>
+             <div className="overflow-x-auto">
+             <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>タイトル</TableHead>
