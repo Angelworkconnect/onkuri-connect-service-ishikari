@@ -780,12 +780,13 @@ export default function AdminPanel() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </TabsContent>
 
-          {/* Announcements Tab */}
+                  {/* Announcements Tab */}
           <TabsContent value="announcements">
             <Card className="border-0 shadow-lg">
               <div className="p-6 border-b flex justify-between items-center">
