@@ -556,10 +556,11 @@ export default function AdminPanel() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </TabsContent>
 
           {/* Applications Tab */}
           <TabsContent value="applications">
