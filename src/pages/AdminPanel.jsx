@@ -94,6 +94,17 @@ export default function AdminPanel() {
     role: 'staff',
   });
 
+  const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
+  const [editingAttendance, setEditingAttendance] = useState(null);
+  const [attendanceForm, setAttendanceForm] = useState({
+    user_email: '',
+    user_name: '',
+    date: '',
+    clock_in: '',
+    clock_out: '',
+    status: 'working',
+  });
+
   useEffect(() => {
     base44.auth.me().then(u => {
       if (u.role !== 'admin') {
@@ -206,6 +217,15 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-announcements']),
   });
 
+  const updateAttendanceMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Attendance.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-attendance']);
+      setAttendanceDialogOpen(false);
+      resetAttendanceForm();
+    },
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -231,6 +251,40 @@ export default function AdminPanel() {
       role: 'staff',
     });
     setEditingStaff(null);
+  };
+
+  const resetAttendanceForm = () => {
+    setAttendanceForm({
+      user_email: '',
+      user_name: '',
+      date: '',
+      clock_in: '',
+      clock_out: '',
+      status: 'working',
+    });
+    setEditingAttendance(null);
+  };
+
+  const handleEditAttendance = (attendance) => {
+    setEditingAttendance(attendance);
+    setAttendanceForm({
+      user_email: attendance.user_email,
+      user_name: attendance.user_name || '',
+      date: attendance.date,
+      clock_in: attendance.clock_in || '',
+      clock_out: attendance.clock_out || '',
+      status: attendance.status,
+    });
+    setAttendanceDialogOpen(true);
+  };
+
+  const handleSubmitAttendance = () => {
+    updateAttendanceMutation.mutate({ id: editingAttendance.id, data: attendanceForm });
+  };
+
+  const getStaffName = (userEmail) => {
+    const staff = allStaff.find(s => s.email === userEmail);
+    return staff?.full_name || userEmail;
   };
 
   const handleEditStaff = (staff) => {
@@ -488,12 +542,13 @@ export default function AdminPanel() {
                     <TableHead>出勤</TableHead>
                     <TableHead>退勤</TableHead>
                     <TableHead>状態</TableHead>
+                    <TableHead>操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {attendanceRecords.slice(0, 50).map((record) => (
                     <TableRow key={record.id}>
-                      <TableCell className="font-medium">{record.user_name || record.user_email}</TableCell>
+                      <TableCell className="font-medium">{getStaffName(record.user_email)}</TableCell>
                       <TableCell>{format(new Date(record.date), 'M/d')}</TableCell>
                       <TableCell>{record.clock_in}</TableCell>
                       <TableCell>{record.clock_out || '-'}</TableCell>
@@ -505,6 +560,11 @@ export default function AdminPanel() {
                         }>
                           {record.status === 'working' ? '勤務中' : record.status === 'approved' ? '承認済' : '完了'}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -814,6 +874,60 @@ export default function AdminPanel() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setAnnouncementDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitAnnouncement} className="bg-[#2D4A6F]">投稿</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Attendance Dialog */}
+      <Dialog open={attendanceDialogOpen} onOpenChange={setAttendanceDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>勤怠編集</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>スタッフ *</Label>
+              <Select value={attendanceForm.user_email} onValueChange={(v) => {
+                const staff = allStaff.find(s => s.email === v);
+                setAttendanceForm({...attendanceForm, user_email: v, user_name: staff?.full_name || ''});
+              }}>
+                <SelectTrigger><SelectValue placeholder="スタッフを選択" /></SelectTrigger>
+                <SelectContent>
+                  {allStaff.map(s => (
+                    <SelectItem key={s.email} value={s.email}>{s.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>日付 *</Label>
+              <Input type="date" value={attendanceForm.date} onChange={(e) => setAttendanceForm({...attendanceForm, date: e.target.value})} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>出勤時刻</Label>
+                <Input type="time" value={attendanceForm.clock_in} onChange={(e) => setAttendanceForm({...attendanceForm, clock_in: e.target.value})} />
+              </div>
+              <div>
+                <Label>退勤時刻</Label>
+                <Input type="time" value={attendanceForm.clock_out} onChange={(e) => setAttendanceForm({...attendanceForm, clock_out: e.target.value})} />
+              </div>
+            </div>
+            <div>
+              <Label>状態 *</Label>
+              <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="working">勤務中</SelectItem>
+                  <SelectItem value="completed">完了</SelectItem>
+                  <SelectItem value="approved">承認済</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAttendanceDialogOpen(false)}>キャンセル</Button>
+            <Button onClick={handleSubmitAttendance} className="bg-[#2D4A6F]">更新</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
