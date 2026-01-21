@@ -35,6 +35,7 @@ import {
   CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode
 } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
+import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import { format } from "date-fns";
 
 const serviceTypes = [
@@ -535,11 +536,19 @@ export default function AdminPanel() {
 
           {/* Attendance Tab */}
           <TabsContent value="attendance">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-medium">勤怠一覧</h2>
-              </div>
-              <Table>
+            <div className="space-y-6">
+              <Card className="border-0 shadow-lg p-6">
+                <AttendanceCalendar 
+                  attendanceRecords={attendanceRecords} 
+                  staff={allStaff}
+                />
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <div className="p-6 border-b">
+                  <h2 className="text-lg font-medium">勤怠一覧（テーブル表示）</h2>
+                </div>
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>スタッフ</TableHead>
