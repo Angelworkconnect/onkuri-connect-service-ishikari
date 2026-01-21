@@ -1003,6 +1003,53 @@ export default function AdminPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* Report Dialog */}
+      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>勤怠レポート生成</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>レポートタイプ *</Label>
+              <Select value={reportForm.reportType} onValueChange={(v) => setReportForm({...reportForm, reportType: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">月次</SelectItem>
+                  <SelectItem value="weekly">週次</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>開始日 *</Label>
+              <Input 
+                type="date" 
+                value={reportForm.startDate} 
+                onChange={(e) => setReportForm({...reportForm, startDate: e.target.value})} 
+              />
+            </div>
+            <div>
+              <Label>終了日 *</Label>
+              <Input 
+                type="date" 
+                value={reportForm.endDate} 
+                onChange={(e) => setReportForm({...reportForm, endDate: e.target.value})} 
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReportDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={handleGenerateReport} 
+              className="bg-[#2D4A6F]"
+              disabled={isGeneratingReport}
+            >
+              {isGeneratingReport ? '生成中...' : 'PDFダウンロード'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Attendance Dialog */}
       <Dialog open={attendanceDialogOpen} onOpenChange={setAttendanceDialogOpen}>
         <DialogContent className="max-w-lg">
