@@ -584,7 +584,7 @@ export default function AdminPanel() {
                   ))}
                 </TableBody>
               </Table>
-              </Card>
+            </Card>
             </div>
           </TabsContent>
 
