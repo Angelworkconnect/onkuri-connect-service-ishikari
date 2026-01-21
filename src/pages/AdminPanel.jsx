@@ -744,15 +744,28 @@ export default function AdminPanel() {
               </Select>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
-            <Button 
-              onClick={handleSubmitStaff} 
-              className="bg-[#2D4A6F]"
-              disabled={!staffForm.full_name || !staffForm.email}
-            >
-              {editingStaff ? '更新' : '登録'}
-            </Button>
+          <DialogFooter className="flex justify-between items-center">
+            {editingStaff && (
+              <Button 
+                variant="outline"
+                onClick={() => inviteStaffMutation.mutate({ email: staffForm.email, role: staffForm.role })}
+                className="gap-2"
+              >
+                <Mail className="w-4 h-4" />
+                招待メールを送信
+              </Button>
+            )}
+            {!editingStaff && <div />}
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
+              <Button 
+                onClick={handleSubmitStaff} 
+                className="bg-[#2D4A6F]"
+                disabled={!staffForm.full_name || !staffForm.email}
+              >
+                {editingStaff ? '更新' : '登録'}
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
