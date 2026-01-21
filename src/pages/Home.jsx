@@ -72,9 +72,14 @@ export default function Home() {
     queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
   });
 
+  const { data: allStaff = [] } = useQuery({
+    queryKey: ['staff-all'],
+    queryFn: () => base44.entities.Staff.list(),
+  });
+
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
-    totalStaff: 0,
+    totalStaff: allStaff.length,
   };
 
   return (
