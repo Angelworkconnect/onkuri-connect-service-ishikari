@@ -158,8 +158,7 @@ export default function AdminPanel() {
       alert('招待メールを送信しました');
     },
     onError: (error) => {
-      console.error('招待エラー:', error);
-      alert('招待メールの送信に失敗しました: ' + (error.message || '不明なエラー'));
+      alert(`招待メール送信に失敗しました: ${error.message}`);
     },
   });
 
@@ -754,9 +753,10 @@ export default function AdminPanel() {
                 variant="outline"
                 onClick={() => inviteStaffMutation.mutate({ email: staffForm.email, role: staffForm.role })}
                 className="w-full sm:w-auto gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                disabled={inviteStaffMutation.isPending}
               >
                 <Mail className="w-4 h-4" />
-                招待メールを送信
+                {inviteStaffMutation.isPending ? '送信中...' : '招待メールを送信'}
               </Button>
             )}
             <div className="flex gap-2 ml-auto w-full sm:w-auto">
