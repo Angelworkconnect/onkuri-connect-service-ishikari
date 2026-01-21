@@ -538,12 +538,13 @@ export default function AdminPanel() {
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button 
-                            variant="ghost" 
-                            size="icon" 
+                            variant="outline" 
+                            size="sm" 
                             onClick={() => inviteStaffMutation.mutate({ email: s.email, role: s.role })}
-                            title="招待メールを送信"
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
                           >
-                            <Mail className="w-4 h-4 text-blue-500" />
+                            <Mail className="w-4 h-4 mr-1" />
+                            招待送信
                           </Button>
                           <Button variant="ghost" size="icon" onClick={() => deleteStaffMutation.mutate(s.id)}>
                             <Trash2 className="w-4 h-4 text-red-500" />
@@ -744,30 +745,14 @@ export default function AdminPanel() {
             </div>
           </div>
           <DialogFooter>
-            <div className="flex justify-between items-center w-full">
-              <div>
-                {editingStaff && (
-                  <Button 
-                    variant="outline"
-                    onClick={() => inviteStaffMutation.mutate({ email: staffForm.email, role: staffForm.role })}
-                    className="gap-2"
-                  >
-                    <Mail className="w-4 h-4" />
-                    招待メールを送信
-                  </Button>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
-                <Button 
-                  onClick={handleSubmitStaff} 
-                  className="bg-[#2D4A6F]"
-                  disabled={!staffForm.full_name || !staffForm.email}
-                >
-                  {editingStaff ? '更新' : '登録'}
-                </Button>
-              </div>
-            </div>
+            <Button variant="outline" onClick={() => setStaffDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={handleSubmitStaff} 
+              className="bg-[#2D4A6F]"
+              disabled={!staffForm.full_name || !staffForm.email}
+            >
+              {editingStaff ? '更新' : '登録'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
