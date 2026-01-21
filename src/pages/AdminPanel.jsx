@@ -752,7 +752,7 @@ export default function AdminPanel() {
             {editingStaff && (
               <Button 
                 variant="outline"
-                onClick={() => inviteStaffMutation.mutate({ email: staffForm.email, role: staffForm.role })}
+                onClick={() => inviteStaffMutation.mutate({ email: staffForm.email })}
                 className="w-full sm:w-auto gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
                 disabled={inviteStaffMutation.isPending}
               >
