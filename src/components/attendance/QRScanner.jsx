@@ -6,17 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { QrCode, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const [scannedToken, setScannedToken] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isCameraMode, setIsCameraMode] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
   const queryClient = useQueryClient();
-  const html5QrCodeRef = useRef(null);
-  const scannerContainerRef = useRef(null);
+  const scannerRef = useRef(null);
 
   const clockInMutation = useMutation({
     mutationFn: async (token) => {
@@ -117,68 +115,57 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
 
   const isWorking = todayAttendance?.clock_in && !todayAttendance.clock_out;
 
-  const startCamera = async () => {
-    try {
-      setError('');
-      setSuccess('');
-      
-      // カメラ権限をチェック
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const html5QrCode = new Html5Qrcode("qr-reader");
-        html5QrCodeRef.current = html5QrCode;
-
-        setIsCameraMode(true);
-        setIsScanning(true);
-
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          (decodedText) => {
-            // QRコードが読み取れたら自動的に処理
-            stopCamera();
-            if (isWorking) {
-              clockOutMutation.mutate(decodedText);
-            } else {
-              clockInMutation.mutate(decodedText);
-            }
-          },
-          (errorMessage) => {
-            // スキャン中のエラーは無視（読み取り失敗など）
-          }
-        );
-      } else {
-        setError('お使いのブラウザはカメラに対応していません。手動入力をご利用ください。');
-      }
-    } catch (err) {
-      console.error('カメラエラー:', err);
-      setError('カメラの起動に失敗しました。カメラへのアクセスを許可してください。');
-      setIsCameraMode(false);
-      setIsScanning(false);
-    }
+  const startCamera = () => {
+    setError('');
+    setSuccess('');
+    setIsCameraMode(true);
   };
 
   const stopCamera = () => {
-    if (html5QrCodeRef.current) {
-      html5QrCodeRef.current.stop().then(() => {
-        setIsCameraMode(false);
-        setIsScanning(false);
-      }).catch((err) => {
-        console.error('カメラ停止エラー:', err);
-        setIsCameraMode(false);
-        setIsScanning(false);
-      });
+    if (scannerRef.current) {
+      scannerRef.current.clear();
+      scannerRef.current = null;
     }
+    setIsCameraMode(false);
   };
 
   useEffect(() => {
+    if (isCameraMode && !scannerRef.current) {
+      const scanner = new Html5QrcodeScanner(
+        "qr-reader",
+        { 
+          fps: 10, 
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0
+        },
+        false
+      );
+
+      scanner.render(
+        (decodedText) => {
+          // QRコード読み取り成功
+          stopCamera();
+          if (isWorking) {
+            clockOutMutation.mutate(decodedText);
+          } else {
+            clockInMutation.mutate(decodedText);
+          }
+        },
+        (error) => {
+          // スキャンエラーは無視
+        }
+      );
+
+      scannerRef.current = scanner;
+    }
+
     return () => {
-      if (html5QrCodeRef.current && isScanning) {
-        html5QrCodeRef.current.stop().catch(console.error);
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(console.error);
+        scannerRef.current = null;
       }
     };
-  }, [isScanning]);
+  }, [isCameraMode]);
 
   return (
     <Card className="p-6">
@@ -200,8 +187,7 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
           <div className="space-y-3">
             <div 
               id="qr-reader" 
-              ref={scannerContainerRef}
-              className="rounded-lg overflow-hidden"
+              className="w-full"
             />
             <Button
               onClick={stopCamera}
