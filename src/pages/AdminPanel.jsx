@@ -90,7 +90,7 @@ export default function AdminPanel() {
     address: '',
     date_of_birth: '',
     gender: 'other',
-    role: 'user',
+    role: 'staff',
   });
 
   useEffect(() => {
