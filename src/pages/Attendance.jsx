@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,8 @@ export default function Attendance() {
   const [user, setUser] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [viewMode, setViewMode] = useState('calendar');
+  const queryClient = useQueryClient();
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {
@@ -43,6 +45,21 @@ export default function Attendance() {
     queryKey: ['attendance', user?.email],
     queryFn: () => user ? base44.entities.Attendance.filter({ user_email: user.email }, '-date') : [],
     enabled: !!user,
+  });
+
+  const todayAttendance = attendanceRecords.find(record => record.date === today);
+
+  const clockOutMutation = useMutation({
+    mutationFn: async () => {
+      const now = format(new Date(), 'HH:mm');
+      return base44.entities.Attendance.update(todayAttendance.id, {
+        clock_out: now,
+        status: 'completed',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['attendance']);
+    },
   });
 
   const monthStart = startOfMonth(currentMonth);
@@ -108,6 +125,33 @@ export default function Attendance() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 -mt-6">
+        {/* Manual Clock Out */}
+        {todayAttendance && !todayAttendance.clock_out && (
+          <Card className="bg-white border-0 shadow-lg mb-6">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-3 h-3 rounded-full bg-[#7CB342] animate-pulse" />
+                    <h3 className="text-lg font-medium text-slate-800">現在勤務中</h3>
+                  </div>
+                  <p className="text-slate-600">
+                    出勤時刻: {todayAttendance.clock_in}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => clockOutMutation.mutate()}
+                  disabled={clockOutMutation.isPending}
+                  className="bg-[#E8A4B8] hover:bg-[#D88FA3] h-12 px-8"
+                >
+                  <Clock className="w-5 h-5 mr-2" />
+                  {clockOutMutation.isPending ? '処理中...' : '退勤する'}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="bg-white border-0 shadow-lg p-6">

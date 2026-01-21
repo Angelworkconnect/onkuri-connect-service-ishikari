@@ -45,10 +45,10 @@ export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, i
             <Button
               onClick={onClockOut}
               disabled={isLoading}
-              className="w-full h-14 bg-[#E8A4B8] hover:bg-[#D88FA3] text-white text-lg font-medium"
+              className="w-full h-14 bg-[#E8A4B8] hover:bg-[#D88FA3] text-white text-lg font-medium disabled:opacity-50"
             >
               <LogOut className="w-5 h-5 mr-2" />
-              退勤する
+              {isLoading ? '処理中...' : '退勤する'}
             </Button>
           </div>
         ) : (
