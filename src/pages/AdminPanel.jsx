@@ -1085,7 +1085,7 @@ export default function AdminPanel() {
 
       {/* Attendance Dialog */}
       <Dialog open={attendanceDialogOpen} onOpenChange={setAttendanceDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>勤怠編集</DialogTitle>
           </DialogHeader>
