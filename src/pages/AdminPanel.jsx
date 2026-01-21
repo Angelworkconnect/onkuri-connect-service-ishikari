@@ -564,6 +564,19 @@ export default function AdminPanel() {
                   {attendanceRecords.slice(0, 50).map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">{getStaffName(record.user_email)}</TableCell>
+                      <TableCell>
+                        <Badge className={
+                          allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' :
+                          allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                          allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                          'bg-cyan-100 text-cyan-700 border-cyan-200'
+                        } variant="outline">
+                          {allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? '管理者' : 
+                           allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? '正社員' : 
+                           allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'パート' : 
+                           '単発'}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{format(new Date(record.date), 'M/d')}</TableCell>
                       <TableCell>{record.clock_in}</TableCell>
                       <TableCell>{record.clock_out || '-'}</TableCell>
