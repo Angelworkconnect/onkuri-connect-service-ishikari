@@ -618,13 +618,14 @@ export default function AdminPanel() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </TabsContent>
 
-          {/* Attendance Tab */}
-          <TabsContent value="attendance">
+                  {/* Attendance Tab */}
+                  <TabsContent value="attendance">
             <div className="space-y-6">
               <Card className="border-0 shadow-lg p-6 bg-white">
                 <div className="flex justify-between items-center mb-4">
