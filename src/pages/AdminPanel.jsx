@@ -106,10 +106,15 @@ export default function AdminPanel() {
   });
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      if (u.role !== 'admin') {
+    base44.auth.me().then(async u => {
+      // Check if user is in Staff entity with admin role
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length === 0 || staffList[0].role !== 'admin') {
+        alert('管理者権限がありません。この画面へのアクセスは管理者カテゴリのスタッフのみに制限されています。');
         window.location.href = '/';
+        return;
       }
+      
       setUser(u);
     }).catch(() => {
       base44.auth.redirectToLogin();
