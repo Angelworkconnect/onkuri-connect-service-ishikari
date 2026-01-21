@@ -569,6 +569,19 @@ export default function AdminPanel() {
                 <div className="p-6 border-b">
                   <h2 className="text-lg font-medium">勤怠一覧（テーブル表示）</h2>
                 </div>
+                {getUniqueStaffEmails().length > 0 && (
+                  <div className="p-6 border-b bg-slate-50">
+                    <h3 className="text-sm font-medium mb-4 text-slate-700">人別合計時間</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {getUniqueStaffEmails().map(email => (
+                        <div key={email} className="bg-white p-3 rounded-lg border border-slate-200">
+                          <p className="text-sm font-medium text-slate-900">{getStaffName(email)}</p>
+                          <p className="text-lg font-semibold text-[#2D4A6F]">{calculateTotalHours(email)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <Table>
                 <TableHeader>
                   <TableRow>
