@@ -158,7 +158,8 @@ export default function AdminPanel() {
       alert('招待メールを送信しました');
     },
     onError: (error) => {
-      alert(`招待メール送信に失敗しました: ${error.message}`);
+      console.error('招待エラー:', error);
+      alert('招待メールの送信に失敗しました: ' + (error.message || '不明なエラー'));
     },
   });
 
