@@ -53,7 +53,7 @@ export default function Shifts() {
 
   const { data: shifts = [], isLoading } = useQuery({
     queryKey: ['shifts'],
-    queryFn: () => base44.entities.Shift.list('-date'),
+    queryFn: () => base44.entities.Shift.filter({ is_visible: true }, '-date'),
   });
 
   const { data: myApplications = [] } = useQuery({
