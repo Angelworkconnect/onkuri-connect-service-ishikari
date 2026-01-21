@@ -214,6 +214,11 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-shifts']),
   });
 
+  const toggleShiftVisibilityMutation = useMutation({
+    mutationFn: ({ id, isVisible }) => base44.entities.Shift.update(id, { is_visible: isVisible }),
+    onSuccess: () => queryClient.invalidateQueries(['admin-shifts']),
+  });
+
   const createAnnouncementMutation = useMutation({
     mutationFn: (data) => base44.entities.Announcement.create(data),
     onSuccess: () => {
