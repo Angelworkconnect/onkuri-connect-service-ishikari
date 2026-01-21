@@ -72,14 +72,6 @@ export default function Home() {
     queryFn: () => base44.entities.Shift.list(),
   });
 
-  const { data: homeContents = [] } = useQuery({
-    queryKey: ['home-contents'],
-    queryFn: () => base44.entities.HomePageContent.list('order'),
-  });
-
-  const heroContent = homeContents.find(c => c.section === 'hero');
-  const serviceContents = homeContents.filter(c => c.section === 'services');
-
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: 0,
@@ -106,15 +98,16 @@ export default function Home() {
               <span className="text-sm tracking-wider text-white/70">石狩市を拠点とした地域密着型</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 leading-tight">
-              {heroContent?.title || '地域で支える、'}
-              <br />
-              <span className="text-[#E8A4B8]">{heroContent?.subtitle || '人生に寄り添う。'}</span>
+              地域で支える、<br />
+              <span className="text-[#E8A4B8]">人生に寄り添う。</span>
             </h1>
             <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4">
-              {heroContent?.description || 'タイミー的単発・短時間から参加できるお仕事'}
+              タイミー的単発・短時間から参加できるお仕事
             </p>
             <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
-              {heroContent?.content || 'おんくりの輪は、介護から葬祭まで人生のすべての節目に寄り添う地域密着型のワーク＆サポートプラットフォームです。'}
+              おんくりの輪は、介護から葬祭まで<br className="hidden md:block" />
+              人生のすべての節目に寄り添う<br className="hidden md:block" />
+              地域密着型のワーク＆サポートプラットフォームです。
             </p>
             
             <div className="flex flex-wrap gap-4">
@@ -211,20 +204,15 @@ export default function Home() {
             <p className="text-slate-500">人生の節目すべてに寄り添います</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(serviceContents.length > 0 ? serviceContents : services).map((service, index) => (
+            {services.map((service, index) => (
               <motion.div
-                key={service.id || service.title}
+                key={service.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <ServiceCard 
-                  title={service.title}
-                  description={service.description}
-                  icon={service.icon ? eval(service.icon) : service.icon}
-                  color={service.color || 'bg-[#2D4A6F]'}
-                />
+                <ServiceCard {...service} />
               </motion.div>
             ))}
           </div>
