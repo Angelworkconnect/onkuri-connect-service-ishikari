@@ -661,6 +661,7 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 )}
+                <div className="overflow-x-auto">
                 <Table>
                 <TableHeader>
                   <TableRow>
