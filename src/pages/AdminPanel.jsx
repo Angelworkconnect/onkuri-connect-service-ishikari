@@ -32,8 +32,9 @@ import {
 } from "@/components/ui/table";
 import { 
   Plus, Calendar, Users, FileText, Megaphone,
-  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail
+  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode
 } from "lucide-react";
+import QRCodeManager from '../components/admin/QRCodeManager';
 import { format } from "date-fns";
 
 const serviceTypes = [
@@ -323,8 +324,12 @@ export default function AdminPanel() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 -mt-6">
-        <Tabs defaultValue="shifts">
+        <Tabs defaultValue="qrcode">
           <TabsList className="bg-white shadow-lg p-1 mb-6">
+            <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+              <QrCode className="w-4 h-4 mr-2" />
+              QRコード
+            </TabsTrigger>
             <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <Calendar className="w-4 h-4 mr-2" />
               シフト管理
@@ -346,6 +351,11 @@ export default function AdminPanel() {
               スタッフ管理
             </TabsTrigger>
           </TabsList>
+
+          {/* QR Code Tab */}
+          <TabsContent value="qrcode">
+            <QRCodeManager />
+          </TabsContent>
 
           {/* Shifts Tab */}
           <TabsContent value="shifts">
