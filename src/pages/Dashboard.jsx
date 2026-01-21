@@ -16,6 +16,7 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ClockInOut from "@/components/attendance/ClockInOut";
+import QRScanner from "@/components/attendance/QRScanner";
 import InfoSection from "@/components/dashboard/InfoSection";
 import TipBenefitSection from "@/components/dashboard/TipBenefitSection";
 
@@ -143,7 +144,13 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Clock In/Out */}
+            {/* QR Scanner */}
+            <QRScanner
+              user={user}
+              todayAttendance={todayAttendance}
+            />
+
+            {/* Clock In/Out (従来の方法も残す) */}
             <ClockInOut
               currentAttendance={todayAttendance}
               onClockIn={() => clockInMutation.mutate()}
