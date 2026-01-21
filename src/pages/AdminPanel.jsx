@@ -528,6 +528,16 @@ export default function AdminPanel() {
                         </Badge>
                       </TableCell>
                       <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => toggleShiftVisibilityMutation.mutate({ id: shift.id, isVisible: !shift.is_visible })}
+                          className={shift.is_visible ? 'text-[#2D4A6F]' : 'text-slate-400'}
+                        >
+                          {shift.is_visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        </Button>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex gap-2">
                           <Button variant="ghost" size="icon" onClick={() => handleEditShift(shift)}>
                             <Edit className="w-4 h-4" />
