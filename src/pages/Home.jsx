@@ -64,12 +64,12 @@ export default function Home() {
 
   const { data: shifts = [] } = useQuery({
     queryKey: ['shifts-open'],
-    queryFn: () => base44.entities.Shift.filter({ status: 'open' }, '-date', 3),
+    queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, '-date', 3),
   });
 
   const { data: allShifts = [] } = useQuery({
     queryKey: ['shifts-all'],
-    queryFn: () => base44.entities.Shift.list(),
+    queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
   });
 
   const stats = {
