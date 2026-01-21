@@ -563,11 +563,12 @@ export default function AdminPanel() {
 
           {/* Applications Tab */}
           <TabsContent value="applications">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-medium">応募一覧</h2>
-              </div>
-              <Table>
+           <Card className="border-0 shadow-lg">
+             <div className="p-4 sm:p-6 border-b">
+               <h2 className="text-lg font-medium">応募一覧</h2>
+             </div>
+             <div className="overflow-x-auto">
+             <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>応募者</TableHead>
