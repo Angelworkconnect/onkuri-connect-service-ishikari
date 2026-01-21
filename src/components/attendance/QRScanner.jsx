@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { QrCode, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 
 export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const [scannedToken, setScannedToken] = useState('');
@@ -14,7 +14,8 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const [success, setSuccess] = useState('');
   const [isCameraMode, setIsCameraMode] = useState(false);
   const queryClient = useQueryClient();
-  const scannerRef = useRef(null);
+  const html5QrCodeRef = useRef(null);
+  const isScanning = useRef(false);
 
   const clockInMutation = useMutation({
     mutationFn: async (token) => {
@@ -115,57 +116,70 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
 
   const isWorking = todayAttendance?.clock_in && !todayAttendance.clock_out;
 
-  const startCamera = () => {
+  const startCamera = async () => {
     setError('');
     setSuccess('');
     setIsCameraMode(true);
+
+    setTimeout(async () => {
+      try {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCodeRef.current = html5QrCode;
+        isScanning.current = true;
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          (decodedText) => {
+            // QRコード読み取り成功
+            html5QrCode.stop().then(() => {
+              isScanning.current = false;
+              setIsCameraMode(false);
+              if (isWorking) {
+                clockOutMutation.mutate(decodedText);
+              } else {
+                clockInMutation.mutate(decodedText);
+              }
+            });
+          },
+          (errorMessage) => {
+            // スキャン中のエラーは無視
+          }
+        );
+      } catch (err) {
+        console.error('カメラエラー:', err);
+        setError('カメラの起動に失敗しました。ブラウザの設定でカメラへのアクセスを許可してください。');
+        setIsCameraMode(false);
+        isScanning.current = false;
+      }
+    }, 100);
   };
 
   const stopCamera = () => {
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-      scannerRef.current = null;
+    if (html5QrCodeRef.current && isScanning.current) {
+      html5QrCodeRef.current.stop().then(() => {
+        isScanning.current = false;
+        setIsCameraMode(false);
+      }).catch((err) => {
+        console.error('カメラ停止エラー:', err);
+        isScanning.current = false;
+        setIsCameraMode(false);
+      });
+    } else {
+      setIsCameraMode(false);
     }
-    setIsCameraMode(false);
   };
 
   useEffect(() => {
-    if (isCameraMode && !scannerRef.current) {
-      const scanner = new Html5QrcodeScanner(
-        "qr-reader",
-        { 
-          fps: 10, 
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 1.0
-        },
-        false
-      );
-
-      scanner.render(
-        (decodedText) => {
-          // QRコード読み取り成功
-          stopCamera();
-          if (isWorking) {
-            clockOutMutation.mutate(decodedText);
-          } else {
-            clockInMutation.mutate(decodedText);
-          }
-        },
-        (error) => {
-          // スキャンエラーは無視
-        }
-      );
-
-      scannerRef.current = scanner;
-    }
-
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error);
-        scannerRef.current = null;
+      if (html5QrCodeRef.current && isScanning.current) {
+        html5QrCodeRef.current.stop().catch(console.error);
       }
     };
-  }, [isCameraMode]);
+  }, []);
 
   return (
     <Card className="p-6">
