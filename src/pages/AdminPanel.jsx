@@ -453,32 +453,38 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 -mt-6">
-        <Tabs defaultValue="qrcode">
-          <TabsList className="bg-white shadow-lg p-1 mb-6">
-            <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <QrCode className="w-4 h-4 mr-2" />
-              QRコード
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
+        <Tabs defaultValue="qrcode" className="w-full">
+          <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
+            <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <QrCode className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">QRコード</span>
+              <span className="sm:hidden">QR</span>
             </TabsTrigger>
-            <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Calendar className="w-4 h-4 mr-2" />
-              シフト管理
+            <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Calendar className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">シフト管理</span>
+              <span className="sm:hidden">シフト</span>
             </TabsTrigger>
-            <TabsTrigger value="applications" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <FileText className="w-4 h-4 mr-2" />
-              応募管理
+            <TabsTrigger value="applications" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <FileText className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">応募管理</span>
+              <span className="sm:hidden">応募</span>
             </TabsTrigger>
-            <TabsTrigger value="attendance" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Clock className="w-4 h-4 mr-2" />
-              勤怠管理
+            <TabsTrigger value="attendance" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Clock className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">勤怠管理</span>
+              <span className="sm:hidden">勤怠</span>
             </TabsTrigger>
-            <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Bell className="w-4 h-4 mr-2" />
-              お知らせ
+            <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Bell className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">お知らせ</span>
+              <span className="sm:hidden">知</span>
             </TabsTrigger>
-            <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Users className="w-4 h-4 mr-2" />
-              スタッフ管理
+            <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Users className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">スタッフ管理</span>
+              <span className="sm:hidden">スタッフ</span>
             </TabsTrigger>
           </TabsList>
 
