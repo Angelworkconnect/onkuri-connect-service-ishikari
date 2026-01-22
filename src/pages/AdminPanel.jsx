@@ -435,7 +435,7 @@ export default function AdminPanel() {
     return shift?.title || 'シフト不明';
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-slate-400">読み込み中...</div>
