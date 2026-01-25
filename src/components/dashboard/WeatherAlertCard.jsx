@@ -11,12 +11,24 @@ export default function WeatherAlertCard() {
   const lat = 43.1746;
   const lon = 141.3540;
 
+  // Weather code to description mapping (WMO codes)
+  const getWeatherDescription = (code) => {
+    if (code === 0) return { text: '晴れ', icon: '☀️' };
+    if (code >= 1 && code <= 3) return { text: code === 1 ? '快晴' : code === 2 ? '晴れ時々曇り' : '曇り', icon: code === 1 ? '🌤️' : code === 2 ? '⛅' : '☁️' };
+    if (code >= 45 && code <= 48) return { text: '霧', icon: '🌫️' };
+    if (code >= 51 && code <= 55) return { text: '霧雨', icon: '🌦️' };
+    if (code >= 61 && code <= 65) return { text: '雨', icon: '🌧️' };
+    if (code >= 71 && code <= 75) return { text: '雪', icon: '🌨️' };
+    if (code >= 95 && code <= 99) return { text: '雷雨', icon: '⛈️' };
+    return { text: '不明', icon: '🌡️' };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Open-Meteo API で天気情報を取得
+        // Open-Meteo API で天気情報を取得（weather_codeを追加）
         const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,snowfall&timezone=Asia/Tokyo`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,snowfall,weather_code&timezone=Asia/Tokyo`
         );
         const weatherData = await weatherRes.json();
         setWeather(weatherData.current);
@@ -59,6 +71,8 @@ export default function WeatherAlertCard() {
   const alertColor = hasAlerts ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200';
   const alertTextColor = hasAlerts ? 'text-red-700' : 'text-green-700';
   const alertIconColor = hasAlerts ? 'text-red-500' : 'text-green-500';
+  
+  const weatherDesc = weather?.weather_code !== undefined ? getWeatherDescription(weather.weather_code) : null;
 
   return (
     <Card className={`p-4 border-2 ${alertColor} transition-all`}>
@@ -85,23 +99,30 @@ export default function WeatherAlertCard() {
             </div>
           )}
 
-          <div className="flex items-center gap-4 text-sm text-slate-600">
+          <div className="flex items-center gap-4 text-sm text-slate-600 flex-wrap">
+            {weatherDesc && (
+              <div className="flex items-center gap-2 font-medium text-base">
+                <span>{weatherDesc.icon}</span>
+                <span>{weatherDesc.text}</span>
+              </div>
+            )}
+            
             <div className="flex items-center gap-1">
               <Sun className="w-4 h-4" />
               <span>{weather?.temperature_2m}°C</span>
             </div>
 
-            {isWinter && weather?.snowfall !== undefined && (
+            {isWinter && (
               <div className="flex items-center gap-1">
                 <CloudSnow className="w-4 h-4 text-blue-500" />
-                <span>降雪: {weather.snowfall}mm</span>
+                <span>降雪: {weather?.snowfall > 0 ? `${weather.snowfall}mm` : 'なし'}</span>
               </div>
             )}
 
-            {isSummer && weather?.precipitation !== undefined && (
+            {isSummer && (
               <div className="flex items-center gap-1">
                 <CloudRain className="w-4 h-4 text-blue-500" />
-                <span>降水: {weather.precipitation}mm</span>
+                <span>降水: {weather?.precipitation > 0 ? `${weather.precipitation}mm` : 'なし'}</span>
               </div>
             )}
           </div>
