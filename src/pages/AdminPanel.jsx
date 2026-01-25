@@ -54,6 +54,7 @@ const categoryTypes = [
   { value: 'welfare', label: '福利厚生' },
   { value: 'event', label: 'イベント' },
   { value: 'urgent', label: '緊急' },
+  { value: 'thanks', label: 'サンクス' },
 ];
 
 const tipTypes = [
@@ -900,36 +901,38 @@ export default function AdminPanel() {
                   <div className="overflow-x-auto">
                   <Table>
                   <TableHeader>
-                   <TableRow>
-                     <TableHead>スタッフ</TableHead>
-                     <TableHead>種類</TableHead>
-                     <TableHead>金額</TableHead>
-                     <TableHead>理由</TableHead>
-                     <TableHead>付与日</TableHead>
-                     <TableHead>付与者</TableHead>
-                     <TableHead>操作</TableHead>
-                   </TableRow>
+                    <TableRow>
+                      <TableHead>スタッフ</TableHead>
+                      <TableHead>種類</TableHead>
+                      <TableHead>ポイント</TableHead>
+                      <TableHead>金額</TableHead>
+                      <TableHead>理由</TableHead>
+                      <TableHead>付与日</TableHead>
+                      <TableHead>付与者</TableHead>
+                      <TableHead>操作</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
-                   {allTips.map((tip) => (
-                     <TableRow key={tip.id}>
-                       <TableCell className="font-medium">{tip.user_name}</TableCell>
-                       <TableCell>
-                         <Badge variant="outline">
-                           {tipTypes.find(t => t.value === tip.tip_type)?.label}
-                         </Badge>
-                       </TableCell>
-                       <TableCell className="font-semibold text-[#E8A4B8]">¥{tip.amount.toLocaleString()}</TableCell>
-                       <TableCell className="max-w-xs truncate">{tip.reason || '-'}</TableCell>
-                       <TableCell>{format(new Date(tip.date), 'M/d')}</TableCell>
-                       <TableCell>{tip.given_by || '-'}</TableCell>
-                       <TableCell>
-                         <Button variant="ghost" size="icon" onClick={() => deleteTipMutation.mutate(tip.id)}>
-                           <Trash2 className="w-4 h-4 text-red-500" />
-                         </Button>
-                       </TableCell>
-                     </TableRow>
-                   ))}
+                    {allTips.map((tip) => (
+                      <TableRow key={tip.id}>
+                        <TableCell className="font-medium">{tip.user_name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {tipTypes.find(t => t.value === tip.tip_type)?.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-semibold text-[#C17A8E]">{tip.amount.toLocaleString()}pt</TableCell>
+                        <TableCell className="font-semibold text-[#2D4A6F]">¥{tip.amount.toLocaleString()}</TableCell>
+                        <TableCell className="max-w-xs truncate">{tip.reason || '-'}</TableCell>
+                        <TableCell>{format(new Date(tip.date), 'M/d')}</TableCell>
+                        <TableCell>{tip.given_by || '-'}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" onClick={() => deleteTipMutation.mutate(tip.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                   </Table>
                   </div>
@@ -1220,13 +1223,14 @@ export default function AdminPanel() {
               </Select>
             </div>
             <div>
-              <Label>金額（円）*</Label>
+              <Label>ポイント / 金額（円）*</Label>
               <Input 
                 type="number" 
                 value={tipForm.amount} 
                 onChange={(e) => setTipForm({...tipForm, amount: e.target.value})}
                 placeholder="5000"
               />
+              <p className="text-xs text-slate-500 mt-1">※1ポイント = 1円として換算されます</p>
             </div>
             <div>
               <Label>理由 *</Label>

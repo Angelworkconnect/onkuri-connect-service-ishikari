@@ -88,7 +88,7 @@ export default function TipBenefitSection({ user }) {
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#E8A4B8] data-[state=active]:bg-transparent px-6 py-4"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              チップ履歴
+              サンクス履歴
             </TabsTrigger>
             <TabsTrigger 
               value="benefits"
@@ -103,8 +103,8 @@ export default function TipBenefitSection({ user }) {
         <TabsContent value="tips" className="p-6 mt-0">
           <div className="mb-6">
             <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-4">
-              <div className="text-sm text-slate-600 mb-1">累計チップ</div>
-              <div className="text-3xl font-medium text-[#C17A8E]">¥{totalTips.toLocaleString()}</div>
+              <div className="text-sm text-slate-600 mb-1">累計サンクスポイント</div>
+              <div className="text-3xl font-medium text-[#C17A8E]">{totalTips.toLocaleString()}pt</div>
             </div>
           </div>
 
@@ -116,7 +116,7 @@ export default function TipBenefitSection({ user }) {
                     <Badge className={`${tipTypeConfig[tip.tip_type]?.color} text-white`}>
                       {tipTypeConfig[tip.tip_type]?.label}
                     </Badge>
-                    <span className="text-lg font-medium text-[#C17A8E]">¥{tip.amount.toLocaleString()}</span>
+                    <span className="text-lg font-medium text-[#C17A8E]">{tip.amount.toLocaleString()}pt</span>
                   </div>
                   <p className="text-sm text-slate-600 mb-2">{tip.reason}</p>
                   <div className="flex items-center gap-4 text-xs text-slate-400">
@@ -128,7 +128,7 @@ export default function TipBenefitSection({ user }) {
             ) : (
               <div className="text-center py-12 text-slate-400">
                 <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>まだチップ履歴がありません</p>
+                <p>まだサンクス履歴がありません</p>
               </div>
             )}
           </div>
