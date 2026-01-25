@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Calendar, Clock, Users, FileText, 
-  ChevronRight, Bell, CheckCircle2
+  ChevronRight, Bell, CheckCircle2, Megaphone
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
