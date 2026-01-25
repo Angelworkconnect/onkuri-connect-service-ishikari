@@ -16,6 +16,7 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
+import WeatherAlertCard from "@/components/dashboard/WeatherAlertCard";
 
 const services = [
   { 
@@ -84,6 +85,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Weather Alert Section */}
+      <section className="max-w-6xl mx-auto px-6 pt-6">
+        <WeatherAlertCard />
+      </section>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D4A6F] via-[#3A5A7F] to-[#1E3A5F] text-white">
         <div className="absolute inset-0">
