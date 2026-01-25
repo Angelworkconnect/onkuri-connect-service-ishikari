@@ -19,6 +19,7 @@ import ClockInOut from "@/components/attendance/ClockInOut";
 import QRScanner from "@/components/attendance/QRScanner";
 import InfoSection from "@/components/dashboard/InfoSection";
 import TipBenefitSection from "@/components/dashboard/TipBenefitSection";
+import DiceGameCard from "@/components/dashboard/DiceGameCard";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -184,6 +185,9 @@ export default function Dashboard() {
                 icon={CheckCircle2}
               />
             </div>
+
+            {/* Dice Game */}
+            <DiceGameCard user={user} />
 
             {/* Available Shifts */}
             <Card className="border-0 shadow-sm overflow-hidden">
