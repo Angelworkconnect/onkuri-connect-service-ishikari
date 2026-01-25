@@ -36,16 +36,19 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     base44.auth.me().then(async (u) => {
-      setUser(u);
       if (u) {
-        // Check Staff entity role
+        // Check Staff entity role and get full name
         const staffList = await base44.entities.Staff.filter({ email: u.email });
-        if (staffList.length > 0 && staffList[0].role === 'admin') {
-          setIsAdmin(true);
+        if (staffList.length > 0) {
+          u.full_name = staffList[0].full_name;
+          if (staffList[0].role === 'admin') {
+            setIsAdmin(true);
+          }
         } else if (u.role === 'admin') {
           setIsAdmin(true);
         }
       }
+      setUser(u);
     }).catch(() => {});
   }, []);
 

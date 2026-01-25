@@ -26,7 +26,14 @@ export default function Dashboard() {
   const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch((error) => {
+    base44.auth.me().then(async (u) => {
+      // Staffエンティティから名前を取得
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length > 0) {
+        u.full_name = staffList[0].full_name;
+      }
+      setUser(u);
+    }).catch((error) => {
       console.error('Auth error:', error);
       base44.auth.redirectToLogin();
     });
