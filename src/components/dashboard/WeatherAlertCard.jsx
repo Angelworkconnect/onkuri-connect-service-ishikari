@@ -141,11 +141,11 @@ export default function WeatherAlertCard() {
               <>
                 <div className="flex items-center gap-1">
                   <CloudSnow className="w-4 h-4 text-blue-500" />
-                  <span>積雪深: {weather?.snow_depth > 0 ? `${Math.round(weather.snow_depth * 100)}cm` : 'なし'}</span>
+                  <span>積雪深: {weather?.snow_depth > 0 ? `${weather.snow_depth}cm` : 'なし'}</span>
                 </div>
                 {weather?.snowfall > 0 && (
                   <div className="flex items-center gap-1 text-xs text-slate-600">
-                    <span>24時間降雪量（水換算）: {Math.round(weather.snowfall * 10) / 10}mm</span>
+                    <span>1時間降雪量: {weather.snowfall}cm</span>
                   </div>
                 )}
               </>
