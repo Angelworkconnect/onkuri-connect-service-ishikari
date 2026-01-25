@@ -7,66 +7,58 @@ export default function WeatherAlertCard() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 石狩市役所の座標
-  const lat = 43.1746;
-  const lon = 141.3540;
-
-  // Weather code to description mapping (WMO codes)
-  const getWeatherDescription = (code) => {
-    if (code === 0) return { text: '晴れ', icon: '☀️' };
-    if (code >= 1 && code <= 3) return { text: code === 1 ? '快晴' : code === 2 ? '晴れ時々曇り' : '曇り', icon: code === 1 ? '🌤️' : code === 2 ? '⛅' : '☁️' };
-    if (code >= 45 && code <= 48) return { text: '霧', icon: '🌫️' };
-    if (code >= 51 && code <= 55) return { text: '霧雨', icon: '🌦️' };
-    if (code >= 61 && code <= 65) return { text: '雨', icon: '🌧️' };
-    if (code >= 71 && code <= 75) return { text: '雪', icon: '🌨️' };
-    if (code >= 95 && code <= 99) return { text: '雷雨', icon: '⛈️' };
-    return { text: '不明', icon: '🌡️' };
-  };
+  // 気象庁札幌観測所（石狩地方）
+  const jmaStationId = '47412';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Open-Meteo API で天気情報を取得（snow_depthで積雪深も取得）
-        const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,snow_depth&hourly=snowfall,precipitation,snow_depth&past_hours=24&timezone=Asia/Tokyo`
+        // 気象庁の最新観測時刻を取得
+        const timeRes = await fetch('https://www.jma.go.jp/bosai/amedas/data/latest_time.txt');
+        const latestTime = await timeRes.text();
+        
+        // 最新の観測データを取得
+        const obsRes = await fetch(
+          `https://www.jma.go.jp/bosai/amedas/data/map/${latestTime.trim()}.json`
         );
-        const weatherData = await weatherRes.json();
+        const obsData = await obsRes.json();
         
-        // 過去24時間の降雪量を合計
-        let total24hSnowfall = 0;
-        let total24hPrecipitation = 0;
+        // 札幌の観測データ
+        const sapporoObs = obsData[jmaStationId];
         
-        if (weatherData.hourly && weatherData.hourly.snowfall) {
-          // 全時間データを合計（水換算mmで返される）
-          total24hSnowfall = weatherData.hourly.snowfall.reduce((sum, val) => sum + (val || 0), 0);
-          total24hPrecipitation = weatherData.hourly.precipitation.reduce((sum, val) => sum + (val || 0), 0);
-        }
-        
-        // 現在の積雪深を取得（メートル単位）
-        const currentSnowDepth = weatherData.current.snow_depth || 0;
-        
-        console.log('API取得データ:');
-        console.log('- 24時間降雪量（水換算）:', total24hSnowfall, 'mm');
-        console.log('- 現在の積雪深:', currentSnowDepth, 'm');
-        console.log('- 24時間降水量:', total24hPrecipitation, 'mm');
+        console.log('気象庁観測データ（札幌）:', sapporoObs);
         
         setWeather({
-          temperature_2m: weatherData.current.temperature_2m,
-          weather_code: weatherData.current.weather_code,
-          snowfall: total24hSnowfall,
-          snow_depth: currentSnowDepth,
-          precipitation: total24hPrecipitation,
+          temperature_2m: sapporoObs?.temp?.[0] || null,
+          snowfall: sapporoObs?.snow1h?.[0] || 0,
+          snow_depth: sapporoObs?.snow?.[0] || 0,
+          precipitation: sapporoObs?.precipitation1h?.[0] || 0,
         });
 
-        // 気象庁の注意報情報を取得
+        // 気象庁の警報・注意報データを取得
         const alertRes = await fetch(
-          'https://www.jma.go.jp/bosai/warning/data/warning/016000.json'
+          'https://www.jma.go.jp/bosai/warning/data/warning.json'
         );
         const alertData = await alertRes.json();
         
-        // 石狩市（0123500）の情報を抽出
-        const ishikariAlerts = alertData?.['0123500']?.warning || [];
-        setAlerts(ishikariAlerts);
+        // 石狩地方（016000）の警報・注意報を抽出
+        const ishikariData = alertData['016000'];
+        const warningList = [];
+        
+        if (ishikariData?.areaTypes) {
+          ishikariData.areaTypes.forEach(areaType => {
+            areaType.areas?.forEach(area => {
+              area.warnings?.forEach(warning => {
+                if (warning.status && warning.status !== '解除') {
+                  warningList.push(warning.name || warning.code);
+                }
+              });
+            });
+          });
+        }
+        
+        console.log('気象注意報:', warningList);
+        setAlerts(warningList);
       } catch (error) {
         console.error('天気情報の取得に失敗しました', error);
       } finally {
@@ -125,17 +117,12 @@ export default function WeatherAlertCard() {
           )}
 
           <div className="flex items-center gap-4 text-sm text-slate-600 flex-wrap">
-            {weatherDesc && (
-              <div className="flex items-center gap-2 font-medium text-base">
-                <span>{weatherDesc.icon}</span>
-                <span>{weatherDesc.text}</span>
+            {weather?.temperature_2m && (
+              <div className="flex items-center gap-1">
+                <Sun className="w-4 h-4" />
+                <span>{weather.temperature_2m}°C</span>
               </div>
             )}
-            
-            <div className="flex items-center gap-1">
-              <Sun className="w-4 h-4" />
-              <span>{weather?.temperature_2m}°C</span>
-            </div>
 
             {isWinter && (
               <>
