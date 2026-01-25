@@ -33,7 +33,7 @@ import {
 import { 
   Plus, Calendar, Users, FileText, Bell,
   CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-  Eye, EyeOff
+  Eye, EyeOff, Sparkles
 } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
@@ -54,6 +54,13 @@ const categoryTypes = [
   { value: 'welfare', label: '福利厚生' },
   { value: 'event', label: 'イベント' },
   { value: 'urgent', label: '緊急' },
+];
+
+const tipTypes = [
+  { value: 'special_thanks', label: '現場貢献スペシャルサンクス' },
+  { value: 'gratitude_gift', label: '感謝還元サンクスギフト' },
+  { value: 'support_thanks', label: '人財穴埋めサンクス' },
+  { value: 'snow_removal_thanks', label: '除雪サンクス（冬季限定）' },
 ];
 
 export default function AdminPanel() {
@@ -115,6 +122,15 @@ export default function AdminPanel() {
   });
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
+  const [tipDialogOpen, setTipDialogOpen] = useState(false);
+  const [tipForm, setTipForm] = useState({
+    user_email: '',
+    tip_type: 'special_thanks',
+    amount: '',
+    reason: '',
+    date: new Date().toISOString().split('T')[0],
+  });
+
   useEffect(() => {
     base44.auth.me().then(async u => {
       // Check if user is in Staff entity with admin role
@@ -155,6 +171,11 @@ export default function AdminPanel() {
     queryKey: ['admin-staff'],
     queryFn: () => base44.entities.Staff.list('-created_date'),
     refetchInterval: 1000,
+  });
+
+  const { data: allTips = [] } = useQuery({
+    queryKey: ['admin-tips'],
+    queryFn: () => base44.entities.TipRecord.list('-date'),
   });
 
   const createStaffMutation = useMutation({
@@ -247,6 +268,27 @@ export default function AdminPanel() {
     },
   });
 
+  const createTipMutation = useMutation({
+    mutationFn: (data) => {
+      const staff = allStaff.find(s => s.email === data.user_email);
+      return base44.entities.TipRecord.create({
+        ...data,
+        user_name: staff?.full_name || data.user_email,
+        given_by: user.full_name,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-tips']);
+      setTipDialogOpen(false);
+      resetTipForm();
+    },
+  });
+
+  const deleteTipMutation = useMutation({
+    mutationFn: (id) => base44.entities.TipRecord.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -284,6 +326,16 @@ export default function AdminPanel() {
       status: 'working',
     });
     setEditingAttendance(null);
+  };
+
+  const resetTipForm = () => {
+    setTipForm({
+      user_email: '',
+      tip_type: 'special_thanks',
+      amount: '',
+      reason: '',
+      date: new Date().toISOString().split('T')[0],
+    });
   };
 
   const handleEditAttendance = (attendance) => {
@@ -485,6 +537,11 @@ export default function AdminPanel() {
               <Users className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">スタッフ管理</span>
               <span className="sm:hidden">スタッフ</span>
+            </TabsTrigger>
+            <TabsTrigger value="tips" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Sparkles className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">サンクス管理</span>
+              <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
           </TabsList>
 
@@ -829,6 +886,55 @@ export default function AdminPanel() {
                   </div>
                   </Card>
                   </TabsContent>
+
+                  {/* Tips Tab */}
+                  <TabsContent value="tips">
+                  <Card className="border-0 shadow-lg">
+                  <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                  <h2 className="text-lg font-medium">サンクス管理</h2>
+                  <Button onClick={() => { resetTipForm(); setTipDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  サンクス付与
+                  </Button>
+                  </div>
+                  <div className="overflow-x-auto">
+                  <Table>
+                  <TableHeader>
+                   <TableRow>
+                     <TableHead>スタッフ</TableHead>
+                     <TableHead>種類</TableHead>
+                     <TableHead>金額</TableHead>
+                     <TableHead>理由</TableHead>
+                     <TableHead>付与日</TableHead>
+                     <TableHead>付与者</TableHead>
+                     <TableHead>操作</TableHead>
+                   </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                   {allTips.map((tip) => (
+                     <TableRow key={tip.id}>
+                       <TableCell className="font-medium">{tip.user_name}</TableCell>
+                       <TableCell>
+                         <Badge variant="outline">
+                           {tipTypes.find(t => t.value === tip.tip_type)?.label}
+                         </Badge>
+                       </TableCell>
+                       <TableCell className="font-semibold text-[#E8A4B8]">¥{tip.amount.toLocaleString()}</TableCell>
+                       <TableCell className="max-w-xs truncate">{tip.reason || '-'}</TableCell>
+                       <TableCell>{format(new Date(tip.date), 'M/d')}</TableCell>
+                       <TableCell>{tip.given_by || '-'}</TableCell>
+                       <TableCell>
+                         <Button variant="ghost" size="icon" onClick={() => deleteTipMutation.mutate(tip.id)}>
+                           <Trash2 className="w-4 h-4 text-red-500" />
+                         </Button>
+                       </TableCell>
+                     </TableRow>
+                   ))}
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </TabsContent>
                   </Tabs>
                   </div>
 
@@ -1079,6 +1185,78 @@ export default function AdminPanel() {
               disabled={isGeneratingReport}
             >
               {isGeneratingReport ? '生成中...' : 'PDFダウンロード'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tip Dialog */}
+      <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>サンクス付与</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>スタッフ *</Label>
+              <Select value={tipForm.user_email} onValueChange={(v) => setTipForm({...tipForm, user_email: v})}>
+                <SelectTrigger><SelectValue placeholder="スタッフを選択" /></SelectTrigger>
+                <SelectContent>
+                  {allStaff.map(s => (
+                    <SelectItem key={s.email} value={s.email}>{s.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>サンクス種類 *</Label>
+              <Select value={tipForm.tip_type} onValueChange={(v) => setTipForm({...tipForm, tip_type: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {tipTypes.map(t => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>金額（円）*</Label>
+              <Input 
+                type="number" 
+                value={tipForm.amount} 
+                onChange={(e) => setTipForm({...tipForm, amount: e.target.value})}
+                placeholder="5000"
+              />
+            </div>
+            <div>
+              <Label>理由 *</Label>
+              <Textarea 
+                value={tipForm.reason} 
+                onChange={(e) => setTipForm({...tipForm, reason: e.target.value})}
+                placeholder="業務への貢献内容を記入してください"
+                className="h-24"
+              />
+            </div>
+            <div>
+              <Label>付与日 *</Label>
+              <Input 
+                type="date" 
+                value={tipForm.date} 
+                onChange={(e) => setTipForm({...tipForm, date: e.target.value})}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTipDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={() => createTipMutation.mutate({
+                ...tipForm,
+                amount: Number(tipForm.amount),
+              })} 
+              className="bg-[#2D4A6F]"
+              disabled={!tipForm.user_email || !tipForm.amount || !tipForm.reason || createTipMutation.isPending}
+            >
+              付与
             </Button>
           </DialogFooter>
         </DialogContent>
