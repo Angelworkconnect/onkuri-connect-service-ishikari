@@ -16,7 +16,6 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
-import WeatherAlertCard from "@/components/dashboard/WeatherAlertCard";
 
 const services = [
   { 
@@ -201,11 +200,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      {/* Weather Alert Section */}
-      <section className="max-w-6xl mx-auto px-6 py-8">
-        <WeatherAlertCard />
-      </section>
 
       {/* Services Section */}
       <section className="bg-slate-50/50 py-16">
