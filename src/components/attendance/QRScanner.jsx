@@ -39,19 +39,31 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
       const today = format(now, 'yyyy-MM-dd');
       const clockIn = format(now, 'HH:mm');
 
-      return base44.entities.Attendance.create({
+      await base44.entities.Attendance.create({
         user_email: user.email,
         user_name: user.full_name || user.email,
         date: today,
         clock_in: clockIn,
         status: 'working',
       });
+
+      // QRコード出退勤サンクスを自動付与
+      await base44.entities.TipRecord.create({
+        user_email: user.email,
+        user_name: user.full_name || user.email,
+        tip_type: 'qr_attendance_thanks',
+        amount: 50,
+        reason: 'QRコードで正確に出勤記録',
+        given_by: 'システム自動付与',
+        date: today,
+      });
     },
     onSuccess: () => {
-      setSuccess('出勤を記録しました！');
+      setSuccess('出勤を記録しました！（+50pt サンクス付与）');
       setError('');
       setScannedToken('');
       queryClient.invalidateQueries(['attendance']);
+      queryClient.invalidateQueries(['tips']);
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
@@ -79,17 +91,30 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
       }
 
       // 退勤打刻
+      const today = format(now, 'yyyy-MM-dd');
       const clockOut = format(now, 'HH:mm');
-      return base44.entities.Attendance.update(todayAttendance.id, {
+      await base44.entities.Attendance.update(todayAttendance.id, {
         clock_out: clockOut,
         status: 'completed',
       });
+
+      // QRコード出退勤サンクスを自動付与
+      await base44.entities.TipRecord.create({
+        user_email: user.email,
+        user_name: user.full_name || user.email,
+        tip_type: 'qr_attendance_thanks',
+        amount: 50,
+        reason: 'QRコードで正確に退勤記録',
+        given_by: 'システム自動付与',
+        date: today,
+      });
     },
     onSuccess: () => {
-      setSuccess('退勤を記録しました！');
+      setSuccess('退勤を記録しました！（+50pt サンクス付与）');
       setError('');
       setScannedToken('');
       queryClient.invalidateQueries(['attendance']);
+      queryClient.invalidateQueries(['tips']);
       if (onSuccess) onSuccess();
     },
     onError: (err) => {
