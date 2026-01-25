@@ -25,6 +25,7 @@ const tipTypeConfig = {
   gratitude_gift: { label: '感謝還元サンクスギフト', color: 'bg-[#E8A4B8]' },
   support_thanks: { label: '人財穴埋めサンクス', color: 'bg-[#2D4A6F]' },
   snow_removal_thanks: { label: '除雪サンクス（冬季限定）', color: 'bg-cyan-500' },
+  qr_attendance_thanks: { label: 'QRコード出退勤サンクス', color: 'bg-purple-500' },
 };
 
 const benefitTypeConfig = {
