@@ -26,29 +26,35 @@ export default function WeatherAlertCard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Open-Meteo API で天気情報を取得（past_hours=24で直近24時間のデータを取得）
+        // Open-Meteo API で天気情報を取得（snow_depthで積雪深も取得）
         const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=snowfall,precipitation&past_hours=24&timezone=Asia/Tokyo`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,snow_depth&hourly=snowfall,precipitation,snow_depth&past_hours=24&timezone=Asia/Tokyo`
         );
         const weatherData = await weatherRes.json();
         
-        // 過去24時間の降雪量と降水量を合計
+        // 過去24時間の降雪量を合計
         let total24hSnowfall = 0;
         let total24hPrecipitation = 0;
         
         if (weatherData.hourly && weatherData.hourly.snowfall) {
-          // 全時間データを合計（mmで返される）
+          // 全時間データを合計（水換算mmで返される）
           total24hSnowfall = weatherData.hourly.snowfall.reduce((sum, val) => sum + (val || 0), 0);
           total24hPrecipitation = weatherData.hourly.precipitation.reduce((sum, val) => sum + (val || 0), 0);
         }
         
-        console.log('24時間降雪量:', total24hSnowfall, 'mm');
-        console.log('24時間降水量:', total24hPrecipitation, 'mm');
+        // 現在の積雪深を取得（メートル単位）
+        const currentSnowDepth = weatherData.current.snow_depth || 0;
+        
+        console.log('API取得データ:');
+        console.log('- 24時間降雪量（水換算）:', total24hSnowfall, 'mm');
+        console.log('- 現在の積雪深:', currentSnowDepth, 'm');
+        console.log('- 24時間降水量:', total24hPrecipitation, 'mm');
         
         setWeather({
           temperature_2m: weatherData.current.temperature_2m,
           weather_code: weatherData.current.weather_code,
           snowfall: total24hSnowfall,
+          snow_depth: currentSnowDepth,
           precipitation: total24hPrecipitation,
         });
 
@@ -132,10 +138,17 @@ export default function WeatherAlertCard() {
             </div>
 
             {isWinter && (
-              <div className="flex items-center gap-1">
-                <CloudSnow className="w-4 h-4 text-blue-500" />
-                <span>24時間降雪量: {weather?.snowfall > 0 ? `${Math.round(weather.snowfall / 10) / 10}cm` : 'なし'}</span>
-              </div>
+              <>
+                <div className="flex items-center gap-1">
+                  <CloudSnow className="w-4 h-4 text-blue-500" />
+                  <span>積雪深: {weather?.snow_depth > 0 ? `${Math.round(weather.snow_depth * 100)}cm` : 'なし'}</span>
+                </div>
+                {weather?.snowfall > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-slate-600">
+                    <span>24時間降雪量（水換算）: {Math.round(weather.snowfall * 10) / 10}mm</span>
+                  </div>
+                )}
+              </>
             )}
 
             {isSummer && (
