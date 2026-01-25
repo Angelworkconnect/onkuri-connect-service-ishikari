@@ -52,14 +52,14 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
         user_email: user.email,
         user_name: user.full_name || user.email,
         tip_type: 'qr_attendance_thanks',
-        amount: 50,
+        amount: 25,
         reason: 'QRコードで正確に出勤記録',
         given_by: 'システム自動付与',
         date: today,
       });
     },
     onSuccess: () => {
-      setSuccess('出勤を記録しました！（+50pt サンクス付与）');
+      setSuccess('出勤を記録しました！（+25pt サンクス付与）');
       setError('');
       setScannedToken('');
       queryClient.invalidateQueries(['attendance']);
@@ -103,14 +103,14 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
         user_email: user.email,
         user_name: user.full_name || user.email,
         tip_type: 'qr_attendance_thanks',
-        amount: 50,
+        amount: 25,
         reason: 'QRコードで正確に退勤記録',
         given_by: 'システム自動付与',
         date: today,
       });
     },
     onSuccess: () => {
-      setSuccess('退勤を記録しました！（+50pt サンクス付与）');
+      setSuccess('退勤を記録しました！（+25pt サンクス付与）');
       setError('');
       setScannedToken('');
       queryClient.invalidateQueries(['attendance']);
