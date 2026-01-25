@@ -6,6 +6,7 @@ import MyApplications from './pages/MyApplications';
 import Shifts from './pages/Shifts';
 import TipsHistory from './pages/TipsHistory';
 import Benefits from './pages/Benefits';
+import DiceGame from './pages/DiceGame';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Shifts": Shifts,
     "TipsHistory": TipsHistory,
     "Benefits": Benefits,
+    "DiceGame": DiceGame,
 }
 
 export const pagesConfig = {
