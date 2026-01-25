@@ -62,6 +62,7 @@ const tipTypes = [
   { value: 'gratitude_gift', label: '感謝還元サンクスギフト' },
   { value: 'support_thanks', label: '人財穴埋めサンクス' },
   { value: 'snow_removal_thanks', label: '除雪サンクス（冬季限定）' },
+  { value: 'qr_attendance_thanks', label: 'QRコード出退勤サンクス' },
 ];
 
 export default function AdminPanel() {
