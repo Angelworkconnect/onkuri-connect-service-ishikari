@@ -25,6 +25,8 @@ const navigation = [
   { name: 'シフト', href: 'Shifts', icon: Calendar },
   { name: '勤怠', href: 'Attendance', icon: Clock },
   { name: '応募履歴', href: 'MyApplications', icon: FileText },
+  { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
+  { name: '福利厚生', href: 'Benefits', icon: Gift },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -129,18 +131,6 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuItem className="cursor-pointer">
                         <User className="w-4 h-4 mr-2" />
                         ダッシュボード
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to={createPageUrl('TipsHistory')}>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        サンクス履歴
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to={createPageUrl('Benefits')}>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Gift className="w-4 h-4 mr-2" />
-                        福利厚生
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />
