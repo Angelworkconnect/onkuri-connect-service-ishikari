@@ -24,6 +24,7 @@ const tipTypeConfig = {
   special_thanks: { label: '現場貢献スペシャルサンクス', color: 'bg-[#7CB342]' },
   gratitude_gift: { label: '感謝還元サンクスギフト', color: 'bg-[#E8A4B8]' },
   support_thanks: { label: '人財穴埋めサンクス', color: 'bg-[#2D4A6F]' },
+  snow_removal_thanks: { label: '除雪サンクス（冬季限定）', color: 'bg-cyan-500' },
 };
 
 const benefitTypeConfig = {
