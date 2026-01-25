@@ -85,11 +85,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Weather Alert Section */}
-      <section className="max-w-6xl mx-auto px-6 pt-6">
-        <WeatherAlertCard />
-      </section>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D4A6F] via-[#3A5A7F] to-[#1E3A5F] text-white">
         <div className="absolute inset-0">
@@ -206,6 +201,11 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Weather Alert Section */}
+      <section className="max-w-6xl mx-auto px-6 py-8">
+        <WeatherAlertCard />
+      </section>
 
       {/* Services Section */}
       <section className="bg-slate-50/50 py-16">
