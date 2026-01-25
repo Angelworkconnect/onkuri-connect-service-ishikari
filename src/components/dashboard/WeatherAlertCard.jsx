@@ -26,28 +26,24 @@ export default function WeatherAlertCard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Open-Meteo API で天気情報を取得（hourly snowfallで24時間降雪量を取得）
+        // Open-Meteo API で天気情報を取得（past_hours=24で直近24時間のデータを取得）
         const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=snowfall,precipitation&past_days=1&forecast_days=1&timezone=Asia/Tokyo`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=snowfall,precipitation&past_hours=24&timezone=Asia/Tokyo`
         );
         const weatherData = await weatherRes.json();
         
         // 過去24時間の降雪量と降水量を合計
-        const now = new Date();
-        const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        
         let total24hSnowfall = 0;
         let total24hPrecipitation = 0;
         
-        if (weatherData.hourly && weatherData.hourly.time) {
-          weatherData.hourly.time.forEach((time, index) => {
-            const timeDate = new Date(time);
-            if (timeDate >= twentyFourHoursAgo && timeDate <= now) {
-              total24hSnowfall += weatherData.hourly.snowfall[index] || 0;
-              total24hPrecipitation += weatherData.hourly.precipitation[index] || 0;
-            }
-          });
+        if (weatherData.hourly && weatherData.hourly.snowfall) {
+          // 全時間データを合計（mmで返される）
+          total24hSnowfall = weatherData.hourly.snowfall.reduce((sum, val) => sum + (val || 0), 0);
+          total24hPrecipitation = weatherData.hourly.precipitation.reduce((sum, val) => sum + (val || 0), 0);
         }
+        
+        console.log('24時間降雪量:', total24hSnowfall, 'mm');
+        console.log('24時間降水量:', total24hPrecipitation, 'mm');
         
         setWeather({
           temperature_2m: weatherData.current.temperature_2m,
@@ -138,7 +134,7 @@ export default function WeatherAlertCard() {
             {isWinter && (
               <div className="flex items-center gap-1">
                 <CloudSnow className="w-4 h-4 text-blue-500" />
-                <span>24時間降雪量: {weather?.snowfall > 0 ? `${Math.round(weather.snowfall * 10) / 10}cm` : 'なし'}</span>
+                <span>24時間降雪量: {weather?.snowfall > 0 ? `${Math.round(weather.snowfall / 10) / 10}cm` : 'なし'}</span>
               </div>
             )}
 
