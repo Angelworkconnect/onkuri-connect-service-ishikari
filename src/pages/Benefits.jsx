@@ -1,0 +1,212 @@
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Gift, Plus, Calendar } from "lucide-react";
+import { format } from 'date-fns';
+
+const benefitTypeConfig = {
+  spa_relaxation: { label: 'エステ／リラクゼーション', icon: '💆' },
+  car_share: { label: 'カーシェアサービス', icon: '🚗' },
+  garage_use: { label: 'ガレージ使用権', icon: '🏠' },
+  taxi_discount: { label: '介護タクシー職員割引', icon: '🚕' },
+  funeral_discount: { label: '葬祭・遺品整理割引', icon: '🌸' },
+};
+
+const statusConfig = {
+  pending: { label: '申請中', color: 'bg-yellow-100 text-yellow-700' },
+  approved: { label: '承認済み', color: 'bg-green-100 text-green-700' },
+  rejected: { label: '却下', color: 'bg-red-100 text-red-700' },
+  used: { label: '利用済み', color: 'bg-slate-100 text-slate-500' },
+};
+
+export default function Benefits() {
+  const [user, setUser] = useState(null);
+  const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
+  const [newBenefit, setNewBenefit] = useState({
+    benefit_type: '',
+    request_date: '',
+    notes: '',
+  });
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {
+      base44.auth.redirectToLogin();
+    });
+  }, []);
+
+  const { data: benefits = [] } = useQuery({
+    queryKey: ['benefits', user?.email],
+    queryFn: () => user ? base44.entities.BenefitApplication.filter({ user_email: user.email }, '-created_date') : [],
+    enabled: !!user,
+  });
+
+  const createBenefitMutation = useMutation({
+    mutationFn: (data) => base44.entities.BenefitApplication.create({
+      ...data,
+      user_email: user.email,
+      user_name: user.full_name,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['benefits']);
+      setBenefitDialogOpen(false);
+      setNewBenefit({ benefit_type: '', request_date: '', notes: '' });
+    },
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-slate-400">読み込み中...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+      <div className="bg-gradient-to-br from-[#7CB342] to-[#6BA02D] text-white">
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <h1 className="text-3xl font-light mb-2">福利厚生サービス</h1>
+          <p className="text-white/70">充実した働きやすさをサポート</p>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 -mt-8">
+        <Card className="border-0 shadow-lg mb-6 p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-medium mb-2">利用可能なサービス</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {Object.entries(benefitTypeConfig).map(([key, config]) => (
+                <div key={key} className="border border-slate-200 rounded-lg p-3 flex items-center gap-3">
+                  <span className="text-2xl">{config.icon}</span>
+                  <span className="text-sm text-slate-700">{config.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4">
+                <Plus className="w-4 h-4 mr-2" />
+                福利厚生を申請する
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>福利厚生サービス申請</DialogTitle>
+                <DialogDescription>
+                  利用したい福利厚生サービスを選択してください
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label>サービス種類</Label>
+                  <Select
+                    value={newBenefit.benefit_type}
+                    onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="選択してください" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(benefitTypeConfig).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>
+                          {config.icon} {config.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>利用希望日</Label>
+                  <Input
+                    type="date"
+                    value={newBenefit.request_date}
+                    onChange={(e) => setNewBenefit({ ...newBenefit, request_date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>備考</Label>
+                  <Textarea
+                    value={newBenefit.notes}
+                    onChange={(e) => setNewBenefit({ ...newBenefit, notes: e.target.value })}
+                    placeholder="その他ご要望などがあればご記入ください"
+                  />
+                </div>
+                <Button 
+                  className="w-full bg-[#7CB342] hover:bg-[#6BA02D]"
+                  onClick={() => createBenefitMutation.mutate(newBenefit)}
+                  disabled={!newBenefit.benefit_type || !newBenefit.request_date || createBenefitMutation.isPending}
+                >
+                  申請する
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </Card>
+
+        <div className="mb-4">
+          <h2 className="text-lg font-medium">申請履歴</h2>
+        </div>
+
+        <div className="space-y-4">
+          {benefits.length > 0 ? (
+            benefits.map((benefit) => (
+              <Card key={benefit.id} className="border-0 shadow-sm p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="text-lg font-medium text-slate-800 mb-2">
+                      {benefitTypeConfig[benefit.benefit_type]?.icon} {benefitTypeConfig[benefit.benefit_type]?.label}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <Calendar className="w-4 h-4" />
+                      利用希望日: {format(new Date(benefit.request_date), 'yyyy年M月d日')}
+                    </div>
+                  </div>
+                  <Badge className={statusConfig[benefit.status]?.color}>
+                    {statusConfig[benefit.status]?.label}
+                  </Badge>
+                </div>
+                {benefit.notes && (
+                  <p className="text-sm text-slate-600 mt-3 p-3 bg-slate-50 rounded">{benefit.notes}</p>
+                )}
+                {benefit.admin_notes && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded text-sm text-slate-700">
+                    <span className="font-medium">管理者メモ:</span> {benefit.admin_notes}
+                  </div>
+                )}
+                <div className="text-xs text-slate-400 mt-3">
+                  申請日: {format(new Date(benefit.created_date), 'yyyy年M月d日 HH:mm')}
+                </div>
+              </Card>
+            ))
+          ) : (
+            <Card className="border-0 shadow-sm p-12">
+              <div className="text-center text-slate-400">
+                <Gift className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p className="text-lg">まだ福利厚生の申請履歴がありません</p>
+                <p className="text-sm mt-2">上記のボタンから福利厚生サービスを申請できます</p>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

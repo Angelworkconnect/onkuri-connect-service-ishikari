@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
 import MyApplications from './pages/MyApplications';
 import Shifts from './pages/Shifts';
+import TipsHistory from './pages/TipsHistory';
+import Benefits from './pages/Benefits';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +16,8 @@ export const PAGES = {
     "Home": Home,
     "MyApplications": MyApplications,
     "Shifts": Shifts,
+    "TipsHistory": TipsHistory,
+    "Benefits": Benefits,
 }
 
 export const pagesConfig = {

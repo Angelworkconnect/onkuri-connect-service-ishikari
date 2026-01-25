@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { 
   Home, Calendar, Clock, FileText, Users, 
-  Menu, X, LogOut, User, Settings, ChevronDown
+  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift
 } from "lucide-react";
 
 const navigation = [
@@ -129,6 +129,18 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuItem className="cursor-pointer">
                         <User className="w-4 h-4 mr-2" />
                         ダッシュボード
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={createPageUrl('TipsHistory')}>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        サンクス履歴
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={createPageUrl('Benefits')}>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Gift className="w-4 h-4 mr-2" />
+                        福利厚生
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />
