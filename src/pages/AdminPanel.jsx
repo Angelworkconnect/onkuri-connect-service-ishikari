@@ -319,7 +319,7 @@ export default function AdminPanel() {
 
     const updateSettingsMutation = useMutation({
       mutationFn: (data) => {
-        if (siteSettings.id) {
+        if (siteSettings && siteSettings.id) {
           return base44.entities.SiteSettings.update(siteSettings.id, data);
         } else {
           return base44.entities.SiteSettings.create(data);
