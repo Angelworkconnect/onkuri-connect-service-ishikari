@@ -158,7 +158,7 @@ export default function Home() {
       )}
 
       {/* Available Shifts */}
-      {shifts.length > 0 && (
+      {openShifts.length > 0 && (
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -173,14 +173,14 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {shifts.map((shift) => (
+            {openShifts.map((shift) => (
               <motion.div
                 key={shift.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <ShiftCard shift={shift} showApplyButton={false} />
+                <ShiftCard shift={shift} showApplyButton={true} />
               </motion.div>
             ))}
           </div>
