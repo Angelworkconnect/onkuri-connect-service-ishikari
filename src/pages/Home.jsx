@@ -77,6 +77,14 @@ export default function Home() {
     queryFn: () => base44.entities.Staff.list(),
   });
 
+  const { data: siteSettings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const settings = await base44.entities.SiteSettings.list();
+      return settings.length > 0 ? settings[0] : {};
+    },
+  });
+
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
@@ -103,11 +111,10 @@ export default function Home() {
               <span className="text-sm tracking-wider text-white/70">石狩市を拠点とした地域密着型</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 leading-tight">
-              地域で支える、<br />
-              <span className="text-[#E8A4B8]">人生に寄り添う。</span>
+              {siteSettings.hero_title || '地域で支える、人生に寄り添う。'}
             </h1>
             <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4">
-              タイミー的単発・短時間から参加できるお仕事
+              {siteSettings.hero_subtitle || 'タイミー的単発・短時間から参加できるお仕事'}
             </p>
             <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
               おんくりの輪は、介護から葬祭まで<br className="hidden md:block" />
@@ -252,8 +259,7 @@ export default function Home() {
       <section className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-light mb-6">
-            おんくりの輪で<br className="md:hidden" />
-            一緒に働きませんか？
+            {siteSettings.cta_text || 'おんくりの輪で一緒に働きませんか？'}
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
             単発から始められる柔軟な働き方。<br />
@@ -278,7 +284,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h3 className="text-xl font-medium text-white mb-2">おんくりの輪</h3>
-              <p className="text-sm">石狩市を拠点とした地域密着型介護・生活支援事業体</p>
+              <p className="text-sm">{siteSettings.footer_text || '石狩市を拠点とした地域密着型介護・生活支援事業体'}</p>
             </div>
             <div className="text-sm">
               © {new Date().getFullYear()} おんくりの輪. All rights reserved.
