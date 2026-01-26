@@ -17,38 +17,9 @@ import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
 
-const services = [
-  { 
-    title: '通所介護', 
-    description: '日帰りで利用できる介護サービス。リハビリや入浴、食事のサポートを提供します。', 
-    icon: Heart, 
-    color: 'bg-[#2D4A6F]' 
-  },
-  { 
-    title: '介護タクシー', 
-    description: '通院や外出をサポート。車椅子対応の車両で安心してご利用いただけます。', 
-    icon: Truck, 
-    color: 'bg-[#7CB342]' 
-  },
-  { 
-    title: '葬祭・寄り添いディレクター', 
-    description: '人生の最期まで寄り添います。心を込めたお見送りをサポートします。', 
-    icon: Flower2, 
-    color: 'bg-[#6B5B73]' 
-  },
-  { 
-    title: '遺品整理', 
-    description: '故人の思い出を大切にしながら、丁寧に整理いたします。', 
-    icon: Package, 
-    color: 'bg-[#8B7355]' 
-  },
-  { 
-    title: '福利厚生サービス', 
-    description: 'スタッフの働きやすさを追求。充実した福利厚生で安心して働けます。', 
-    icon: Gift, 
-    color: 'bg-[#E8A4B8]' 
-  },
-];
+const iconMap = {
+  Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles
+};
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -83,6 +54,11 @@ export default function Home() {
       const settings = await base44.entities.SiteSettings.list();
       return settings.length > 0 ? settings[0] : {};
     },
+  });
+
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: () => base44.entities.Service.list('order'),
   });
 
   const stats = {
@@ -214,17 +190,22 @@ export default function Home() {
             <p className="text-slate-500">人生の節目すべてに寄り添います</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <ServiceCard {...service} />
-              </motion.div>
-            ))}
+           {services.map((service, index) => (
+             <motion.div
+               key={service.id}
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1 }}
+             >
+               <ServiceCard 
+                 title={service.title}
+                 description={service.description}
+                 icon={iconMap[service.icon] || Heart}
+                 color={service.color}
+               />
+             </motion.div>
+           ))}
           </div>
         </div>
       </section>

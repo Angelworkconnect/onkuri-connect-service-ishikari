@@ -1498,6 +1498,43 @@ export default function AdminPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* Service Dialog */}
+      <Dialog open={serviceDialogOpen} onOpenChange={setServiceDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{editingService ? 'サービス編集' : '新規サービス作成'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>サービス名 *</Label>
+              <Input value={serviceForm.title} onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})} />
+            </div>
+            <div>
+              <Label>説明 *</Label>
+              <Textarea value={serviceForm.description} onChange={(e) => setServiceForm({...serviceForm, description: e.target.value})} className="h-24" />
+            </div>
+            <div>
+              <Label>アイコン名（Lucide React）*</Label>
+              <Input value={serviceForm.icon} onChange={(e) => setServiceForm({...serviceForm, icon: e.target.value})} placeholder="Heart, Truck, Flower2など" />
+            </div>
+            <div>
+              <Label>背景カラークラス *</Label>
+              <Input value={serviceForm.color} onChange={(e) => setServiceForm({...serviceForm, color: e.target.value})} placeholder="bg-[#2D4A6F]" />
+            </div>
+            <div>
+              <Label>表示順序</Label>
+              <Input type="number" value={serviceForm.order} onChange={(e) => setServiceForm({...serviceForm, order: Number(e.target.value)})} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setServiceDialogOpen(false)}>キャンセル</Button>
+            <Button onClick={handleSubmitService} className="bg-[#2D4A6F]">
+              {editingService ? '更新' : '作成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Attendance Dialog */}
       <Dialog open={attendanceDialogOpen} onOpenChange={setAttendanceDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
