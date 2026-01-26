@@ -637,7 +637,7 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
+          <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
               <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
                 <Settings className="w-4 h-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">サイト設定</span>
@@ -683,10 +683,10 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">サンクス管理</span>
               <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
-          </TabsList>
+            </TabsList>
 
-          {/* Site Settings Tab */}
-          <TabsContent value="settings">
+            {/* Site Settings Tab */}
+            <TabsContent value="settings">
             <Card className="border-0 shadow-lg">
               <div className="p-6 border-b">
                 <h2 className="text-lg font-medium">TOPページカスタマイズ</h2>
