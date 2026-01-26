@@ -31,10 +31,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { 
-  Plus, Calendar, Users, FileText, Bell,
-  CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-  Eye, EyeOff, Sparkles
-} from "lucide-react";
+        Plus, Calendar, Users, FileText, Bell,
+        CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
+        Eye, EyeOff, Sparkles, Settings
+      } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import { format } from "date-fns";
@@ -126,12 +126,30 @@ export default function AdminPanel() {
 
   const [tipDialogOpen, setTipDialogOpen] = useState(false);
   const [tipForm, setTipForm] = useState({
-    user_email: '',
-    tip_type: 'special_thanks',
-    amount: '',
-    reason: '',
-    date: new Date().toISOString().split('T')[0],
-  });
+        user_email: '',
+        tip_type: 'special_thanks',
+        amount: '',
+        reason: '',
+        date: new Date().toISOString().split('T')[0],
+      });
+
+      const [settingsForm, setSettingsForm] = useState({
+        hero_title: '',
+        hero_subtitle: '',
+        cta_text: '',
+        footer_text: '',
+      });
+
+      useEffect(() => {
+        if (siteSettings.id) {
+          setSettingsForm({
+            hero_title: siteSettings.hero_title || '',
+            hero_subtitle: siteSettings.hero_subtitle || '',
+            cta_text: siteSettings.cta_text || '',
+            footer_text: siteSettings.footer_text || '',
+          });
+        }
+      }, [siteSettings]);
 
   useEffect(() => {
     base44.auth.me().then(async u => {
@@ -176,9 +194,17 @@ export default function AdminPanel() {
   });
 
   const { data: allTips = [] } = useQuery({
-    queryKey: ['admin-tips'],
-    queryFn: () => base44.entities.TipRecord.list('-date'),
-  });
+        queryKey: ['admin-tips'],
+        queryFn: () => base44.entities.TipRecord.list('-date'),
+      });
+
+      const { data: siteSettings = {} } = useQuery({
+        queryKey: ['admin-site-settings'],
+        queryFn: async () => {
+          const settings = await base44.entities.SiteSettings.list();
+          return settings.length > 0 ? settings[0] : {};
+        },
+      });
 
   const createStaffMutation = useMutation({
     mutationFn: (data) => base44.entities.Staff.create(data),
@@ -287,9 +313,23 @@ export default function AdminPanel() {
   });
 
   const deleteTipMutation = useMutation({
-    mutationFn: (id) => base44.entities.TipRecord.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
-  });
+      mutationFn: (id) => base44.entities.TipRecord.delete(id),
+      onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
+    });
+
+    const updateSettingsMutation = useMutation({
+      mutationFn: (data) => {
+        if (siteSettings.id) {
+          return base44.entities.SiteSettings.update(siteSettings.id, data);
+        } else {
+          return base44.entities.SiteSettings.create(data);
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(['admin-site-settings']);
+        alert('サイト設定を保存しました');
+      },
+    });
 
   const resetShiftForm = () => {
     setShiftForm({
@@ -508,14 +548,19 @@ export default function AdminPanel() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
-        <Tabs defaultValue="qrcode" className="w-full">
-          <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
-            <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <QrCode className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">QRコード</span>
-              <span className="sm:hidden">QR</span>
-            </TabsTrigger>
-            <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+        <Tabs defaultValue="settings" className="w-full">
+            <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
+              <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+                <Settings className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">サイト設定</span>
+                <span className="sm:hidden">設定</span>
+              </TabsTrigger>
+              <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+                <QrCode className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">QRコード</span>
+                <span className="sm:hidden">QR</span>
+              </TabsTrigger>
+              <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <Calendar className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">シフト管理</span>
               <span className="sm:hidden">シフト</span>
@@ -546,6 +591,57 @@ export default function AdminPanel() {
               <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
+            <Card className="border-0 shadow-lg">
+              <div className="p-6 border-b">
+                <h2 className="text-lg font-medium">TOPページカスタマイズ</h2>
+              </div>
+              <div className="p-6 space-y-6 max-w-2xl">
+                <div>
+                  <Label>ヒーロータイトル</Label>
+                  <Textarea 
+                    value={settingsForm.hero_title}
+                    onChange={(e) => setSettingsForm({...settingsForm, hero_title: e.target.value})}
+                    placeholder="地域で支える、人生に寄り添う。"
+                    className="h-20"
+                  />
+                </div>
+                <div>
+                  <Label>ヒーロー説明文</Label>
+                  <Input
+                    value={settingsForm.hero_subtitle}
+                    onChange={(e) => setSettingsForm({...settingsForm, hero_subtitle: e.target.value})}
+                    placeholder="タイミー的単発・短時間から参加できるお仕事"
+                  />
+                </div>
+                <div>
+                  <Label>CTA（行動喚起）テキスト</Label>
+                  <Input
+                    value={settingsForm.cta_text}
+                    onChange={(e) => setSettingsForm({...settingsForm, cta_text: e.target.value})}
+                    placeholder="おんくりの輪で一緒に働きませんか？"
+                  />
+                </div>
+                <div>
+                  <Label>フッターテキスト</Label>
+                  <Input
+                    value={settingsForm.footer_text}
+                    onChange={(e) => setSettingsForm({...settingsForm, footer_text: e.target.value})}
+                    placeholder="石狩市を拠点とした地域密着型介護・生活支援事業体"
+                  />
+                </div>
+                <Button 
+                  onClick={() => updateSettingsMutation.mutate(settingsForm)}
+                  className="bg-[#2D4A6F]"
+                  disabled={updateSettingsMutation.isPending}
+                >
+                  {updateSettingsMutation.isPending ? '保存中...' : '設定を保存'}
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
 
           {/* QR Code Tab */}
           <TabsContent value="qrcode">
