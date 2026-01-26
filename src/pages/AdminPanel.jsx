@@ -136,6 +136,7 @@ export default function AdminPanel() {
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
     hero_subtitle: '',
+    hero_description: '',
     cta_text: '',
     footer_text: '',
   });
@@ -200,6 +201,7 @@ export default function AdminPanel() {
       setSettingsForm({
         hero_title: siteSettings.hero_title || '',
         hero_subtitle: siteSettings.hero_subtitle || '',
+        hero_description: siteSettings.hero_description || '',
         cta_text: siteSettings.cta_text || '',
         footer_text: siteSettings.footer_text || '',
       });
