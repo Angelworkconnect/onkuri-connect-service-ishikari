@@ -313,23 +313,23 @@ export default function AdminPanel() {
   });
 
   const deleteTipMutation = useMutation({
-      mutationFn: (id) => base44.entities.TipRecord.delete(id),
-      onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
-    });
+    mutationFn: (id) => base44.entities.TipRecord.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
+  });
 
-    const updateSettingsMutation = useMutation({
-      mutationFn: (data) => {
-        if (siteSettings && siteSettings.id) {
-          return base44.entities.SiteSettings.update(siteSettings.id, data);
-        } else {
-          return base44.entities.SiteSettings.create(data);
-        }
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(['admin-site-settings']);
-        alert('サイト設定を保存しました');
-      },
-    });
+  const updateSettingsMutation = useMutation({
+    mutationFn: (data) => {
+      if (siteSettings && siteSettings.id) {
+        return base44.entities.SiteSettings.update(siteSettings.id, data);
+      } else {
+        return base44.entities.SiteSettings.create(data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-site-settings']);
+      alert('サイト設定を保存しました');
+    },
+  });
 
   const resetShiftForm = () => {
     setShiftForm({
