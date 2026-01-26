@@ -617,6 +617,15 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div>
+                  <Label>ヒーロー詳細説明</Label>
+                  <Textarea 
+                    value={settingsForm.hero_description || ''}
+                    onChange={(e) => setSettingsForm({...settingsForm, hero_description: e.target.value})}
+                    placeholder="おんくりの輪は、介護から葬祭まで人生のすべての節目に寄り添う地域密着型のワーク＆サポートプラットフォームです。"
+                    className="h-20"
+                  />
+                </div>
+                <div>
                   <Label>CTA（行動喚起）テキスト</Label>
                   <Input
                     value={settingsForm.cta_text}
