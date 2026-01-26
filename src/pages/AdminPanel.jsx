@@ -141,7 +141,22 @@ export default function AdminPanel() {
     icon: 'Heart',
     color: 'bg-[#2D4A6F]',
     order: 0,
+    detail_url: '',
   });
+
+  const iconOptions = [
+    { value: 'Heart', label: 'ハート' },
+    { value: 'Truck', label: '車' },
+    { value: 'Flower2', label: '車椅子' },
+    { value: 'Package', label: '荷物' },
+    { value: 'Sparkles', label: 'スパ・エステ' },
+    { value: 'Gift', label: 'ギフト' },
+    { value: 'Clock', label: 'クロック' },
+    { value: 'Users', label: 'ユーザー' },
+    { value: 'Home', label: 'ホーム' },
+    { value: 'Shield', label: 'シールド' },
+    { value: 'Zap', label: 'ザップ' },
+  ];
 
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
@@ -427,6 +442,7 @@ export default function AdminPanel() {
       icon: 'Heart',
       color: 'bg-[#2D4A6F]',
       order: 0,
+      detail_url: '',
     });
     setEditingService(null);
   };
@@ -439,6 +455,7 @@ export default function AdminPanel() {
       icon: service.icon,
       color: service.color,
       order: service.order || 0,
+      detail_url: service.detail_url || '',
     });
     setServiceDialogOpen(true);
   };
@@ -1504,7 +1521,7 @@ export default function AdminPanel() {
           <DialogHeader>
             <DialogTitle>{editingService ? 'サービス編集' : '新規サービス作成'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
             <div>
               <Label>サービス名 *</Label>
               <Input value={serviceForm.title} onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})} />
@@ -1514,12 +1531,23 @@ export default function AdminPanel() {
               <Textarea value={serviceForm.description} onChange={(e) => setServiceForm({...serviceForm, description: e.target.value})} className="h-24" />
             </div>
             <div>
-              <Label>アイコン名（Lucide React）*</Label>
-              <Input value={serviceForm.icon} onChange={(e) => setServiceForm({...serviceForm, icon: e.target.value})} placeholder="Heart, Truck, Flower2など" />
+              <Label>アイコン *</Label>
+              <Select value={serviceForm.icon} onValueChange={(v) => setServiceForm({...serviceForm, icon: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {iconOptions.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>背景カラークラス *</Label>
               <Input value={serviceForm.color} onChange={(e) => setServiceForm({...serviceForm, color: e.target.value})} placeholder="bg-[#2D4A6F]" />
+            </div>
+            <div>
+              <Label>詳細ページURL（オプション）</Label>
+              <Input value={serviceForm.detail_url} onChange={(e) => setServiceForm({...serviceForm, detail_url: e.target.value})} placeholder="https://example.com" />
             </div>
             <div>
               <Label>表示順序</Label>
