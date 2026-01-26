@@ -196,21 +196,24 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
            {services.map((service, index) => (
-             <motion.div
-               key={service.id}
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: index * 0.1 }}
-             >
-               <ServiceCard 
-                 title={service.title}
-                 description={service.description}
-                 icon={iconMap[service.icon] || Heart}
-                 color={service.color}
-               />
-             </motion.div>
-           ))}
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div onClick={service.detail_url ? () => window.open(service.detail_url, '_blank') : undefined}>
+                  <ServiceCard 
+                    title={service.title}
+                    description={service.description}
+                    icon={iconMap[service.icon] || Heart}
+                    color={service.color}
+                    detail_url={service.detail_url}
+                  />
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
