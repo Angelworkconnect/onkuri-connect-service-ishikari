@@ -61,6 +61,11 @@ export default function Home() {
     queryFn: () => base44.entities.Service.list('order'),
   });
 
+  const { data: openShifts = [] } = useQuery({
+    queryKey: ['home-shifts'],
+    queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, '-date', 6),
+  });
+
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
