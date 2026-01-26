@@ -126,30 +126,19 @@ export default function AdminPanel() {
 
   const [tipDialogOpen, setTipDialogOpen] = useState(false);
   const [tipForm, setTipForm] = useState({
-        user_email: '',
-        tip_type: 'special_thanks',
-        amount: '',
-        reason: '',
-        date: new Date().toISOString().split('T')[0],
-      });
+    user_email: '',
+    tip_type: 'special_thanks',
+    amount: '',
+    reason: '',
+    date: new Date().toISOString().split('T')[0],
+  });
 
-      const [settingsForm, setSettingsForm] = useState({
-        hero_title: '',
-        hero_subtitle: '',
-        cta_text: '',
-        footer_text: '',
-      });
-
-      useEffect(() => {
-        if (siteSettings && siteSettings.id) {
-          setSettingsForm({
-            hero_title: siteSettings.hero_title || '',
-            hero_subtitle: siteSettings.hero_subtitle || '',
-            cta_text: siteSettings.cta_text || '',
-            footer_text: siteSettings.footer_text || '',
-          });
-        }
-      }, [siteSettings?.id]);
+  const [settingsForm, setSettingsForm] = useState({
+    hero_title: '',
+    hero_subtitle: '',
+    cta_text: '',
+    footer_text: '',
+  });
 
   useEffect(() => {
     base44.auth.me().then(async u => {
@@ -194,17 +183,28 @@ export default function AdminPanel() {
   });
 
   const { data: allTips = [] } = useQuery({
-        queryKey: ['admin-tips'],
-        queryFn: () => base44.entities.TipRecord.list('-date'),
-      });
+    queryKey: ['admin-tips'],
+    queryFn: () => base44.entities.TipRecord.list('-date'),
+  });
 
-      const { data: siteSettings = {} } = useQuery({
-        queryKey: ['admin-site-settings'],
-        queryFn: async () => {
-          const settings = await base44.entities.SiteSettings.list();
-          return settings.length > 0 ? settings[0] : {};
-        },
+  const { data: siteSettings = {} } = useQuery({
+    queryKey: ['admin-site-settings'],
+    queryFn: async () => {
+      const settings = await base44.entities.SiteSettings.list();
+      return settings.length > 0 ? settings[0] : {};
+    },
+  });
+
+  useEffect(() => {
+    if (siteSettings && siteSettings.id) {
+      setSettingsForm({
+        hero_title: siteSettings.hero_title || '',
+        hero_subtitle: siteSettings.hero_subtitle || '',
+        cta_text: siteSettings.cta_text || '',
+        footer_text: siteSettings.footer_text || '',
       });
+    }
+  }, [siteSettings?.id]);
 
   const createStaffMutation = useMutation({
     mutationFn: (data) => base44.entities.Staff.create(data),
