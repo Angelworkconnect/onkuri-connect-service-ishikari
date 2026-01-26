@@ -626,6 +626,11 @@ export default function AdminPanel() {
                 <span className="hidden sm:inline">サイト設定</span>
                 <span className="sm:hidden">設定</span>
               </TabsTrigger>
+              <TabsTrigger value="services" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+                <Gift className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">サービス管理</span>
+                <span className="sm:hidden">サービス</span>
+              </TabsTrigger>
               <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
                 <QrCode className="w-4 h-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">QRコード</span>
@@ -719,6 +724,56 @@ export default function AdminPanel() {
                 >
                   {updateSettingsMutation.isPending ? '保存中...' : '設定を保存'}
                 </Button>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Services Tab */}
+          <TabsContent value="services">
+            <Card className="border-0 shadow-lg">
+              <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                <h2 className="text-lg font-medium">サービス一覧</h2>
+                <Button onClick={() => { resetServiceForm(); setServiceDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  新規サービス
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>サービス名</TableHead>
+                    <TableHead>説明</TableHead>
+                    <TableHead>アイコン</TableHead>
+                    <TableHead>カラー</TableHead>
+                    <TableHead>順序</TableHead>
+                    <TableHead>操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allServices.map((service) => (
+                    <TableRow key={service.id}>
+                      <TableCell className="font-medium">{service.title}</TableCell>
+                      <TableCell className="max-w-xs truncate">{service.description}</TableCell>
+                      <TableCell>{service.icon}</TableCell>
+                      <TableCell>
+                        <div className={`w-6 h-6 rounded ${service.color}`} />
+                      </TableCell>
+                      <TableCell>{service.order || 0}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditService(service)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteServiceMutation.mutate(service.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               </div>
             </Card>
           </TabsContent>
