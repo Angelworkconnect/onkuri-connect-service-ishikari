@@ -141,7 +141,7 @@ export default function AdminPanel() {
       });
 
       useEffect(() => {
-        if (siteSettings.id) {
+        if (siteSettings && siteSettings.id) {
           setSettingsForm({
             hero_title: siteSettings.hero_title || '',
             hero_subtitle: siteSettings.hero_subtitle || '',
@@ -149,7 +149,7 @@ export default function AdminPanel() {
             footer_text: siteSettings.footer_text || '',
           });
         }
-      }, [siteSettings]);
+      }, [siteSettings?.id]);
 
   useEffect(() => {
     base44.auth.me().then(async u => {
