@@ -103,13 +103,13 @@ export default function Home() {
             
             <div className="flex flex-wrap gap-4">
               {user ? (
-                <Link to={createPageUrl('Dashboard')}>
+                <a href="/Dashboard" onClick={(e) => { e.preventDefault(); window.location.href = createPageUrl('Dashboard'); }}>
                   <Button size="lg" className="bg-white text-[#2D4A6F] hover:bg-white/90 h-14 px-8">
                     ダッシュボードへ
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                </Link>
-              ) : (
+                </a>
+                ) : (
                 <>
                   <Button 
                     size="lg" 
@@ -119,13 +119,13 @@ export default function Home() {
                     スタッフログイン
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                  <Link to={createPageUrl('Shifts')}>
+                  <a href="/Shifts" onClick={(e) => { e.preventDefault(); window.location.href = createPageUrl('Shifts'); }}>
                     <Button size="lg" variant="outline" className="h-14 px-8 border-white/30 text-white hover:bg-white/10">
                       シフトを見る
                     </Button>
-                  </Link>
+                  </a>
                 </>
-              )}
+                )}
             </div>
           </motion.div>
         </div>
