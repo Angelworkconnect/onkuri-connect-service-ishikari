@@ -133,6 +133,16 @@ export default function AdminPanel() {
     date: new Date().toISOString().split('T')[0],
   });
 
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const [serviceForm, setServiceForm] = useState({
+    title: '',
+    description: '',
+    icon: 'Heart',
+    color: 'bg-[#2D4A6F]',
+    order: 0,
+  });
+
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
     hero_subtitle: '',
@@ -186,6 +196,11 @@ export default function AdminPanel() {
   const { data: allTips = [] } = useQuery({
     queryKey: ['admin-tips'],
     queryFn: () => base44.entities.TipRecord.list('-date'),
+  });
+
+  const { data: allServices = [] } = useQuery({
+    queryKey: ['admin-services'],
+    queryFn: () => base44.entities.Service.list('order'),
   });
 
   const { data: siteSettings = {} } = useQuery({
@@ -333,6 +348,29 @@ export default function AdminPanel() {
     },
   });
 
+  const createServiceMutation = useMutation({
+    mutationFn: (data) => base44.entities.Service.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-services']);
+      setServiceDialogOpen(false);
+      resetServiceForm();
+    },
+  });
+
+  const updateServiceMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Service.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-services']);
+      setServiceDialogOpen(false);
+      resetServiceForm();
+    },
+  });
+
+  const deleteServiceMutation = useMutation({
+    mutationFn: (id) => base44.entities.Service.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-services']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -380,6 +418,37 @@ export default function AdminPanel() {
       reason: '',
       date: new Date().toISOString().split('T')[0],
     });
+  };
+
+  const resetServiceForm = () => {
+    setServiceForm({
+      title: '',
+      description: '',
+      icon: 'Heart',
+      color: 'bg-[#2D4A6F]',
+      order: 0,
+    });
+    setEditingService(null);
+  };
+
+  const handleEditService = (service) => {
+    setEditingService(service);
+    setServiceForm({
+      title: service.title,
+      description: service.description,
+      icon: service.icon,
+      color: service.color,
+      order: service.order || 0,
+    });
+    setServiceDialogOpen(true);
+  };
+
+  const handleSubmitService = () => {
+    if (editingService) {
+      updateServiceMutation.mutate({ id: editingService.id, data: serviceForm });
+    } else {
+      createServiceMutation.mutate(serviceForm);
+    }
   };
 
   const handleEditAttendance = (attendance) => {
