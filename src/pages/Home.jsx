@@ -117,9 +117,7 @@ export default function Home() {
               {siteSettings.hero_subtitle || 'タイミー的単発・短時間から参加できるお仕事'}
             </p>
             <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
-              おんくりの輪は、介護から葬祭まで<br className="hidden md:block" />
-              人生のすべての節目に寄り添う<br className="hidden md:block" />
-              地域密着型のワーク＆サポートプラットフォームです。
+              {siteSettings.hero_description || 'おんくりの輪は、介護から葬祭まで\n人生のすべての節目に寄り添う\n地域密着型のワーク＆サポートプラットフォームです。'}
             </p>
             
             <div className="flex flex-wrap gap-4">
