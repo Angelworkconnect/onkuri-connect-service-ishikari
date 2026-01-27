@@ -23,6 +23,7 @@ const iconMap = {
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -68,6 +69,38 @@ export default function Home() {
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
+  };
+
+  const applyMutation = useMutation({
+    mutationFn: async (shiftId) => {
+      if (!user) {
+        base44.auth.redirectToLogin();
+        return;
+      }
+      const staffList = await base44.entities.Staff.filter({ email: user.email });
+      return base44.entities.ShiftApplication.create({
+        shift_id: shiftId,
+        applicant_email: user.email,
+        applicant_name: staffList.length > 0 ? staffList[0].full_name : user.email,
+        message: '',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['shifts']);
+      alert('応募が完了しました！');
+    },
+  });
+
+  const handleApply = (shiftId) => {
+    if (!user) {
+      if (confirm('応募するにはログインが必要です。ログインページに移動しますか？')) {
+        base44.auth.redirectToLogin();
+      }
+      return;
+    }
+    if (confirm('このシフトに応募しますか？')) {
+      applyMutation.mutate(shiftId);
+    }
   };
 
   return (
@@ -179,7 +212,11 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <ShiftCard shift={shift} showApplyButton={false} />
+                <ShiftCard 
+                  shift={shift} 
+                  showApplyButton={true}
+                  onApply={() => handleApply(shift.id)}
+                />
               </motion.div>
             ))}
           </div>
