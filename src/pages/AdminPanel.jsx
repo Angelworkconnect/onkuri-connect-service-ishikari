@@ -242,6 +242,14 @@ export default function AdminPanel() {
     },
   });
 
+  const approveStaffMutation = useMutation({
+    mutationFn: (id) => base44.entities.Staff.update(id, { status: 'active' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-staff']);
+      alert('スタッフを承認しました');
+    },
+  });
+
   const deleteStaffMutation = useMutation({
     mutationFn: (id) => base44.entities.Staff.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['admin-staff']),
@@ -1038,6 +1046,7 @@ export default function AdminPanel() {
                     <TableHead>メールアドレス</TableHead>
                     <TableHead>電話番号</TableHead>
                     <TableHead>カテゴリー</TableHead>
+                    <TableHead>ステータス</TableHead>
                     <TableHead>登録日</TableHead>
                     <TableHead>操作</TableHead>
                   </TableRow>
@@ -1061,9 +1070,27 @@ export default function AdminPanel() {
                            '単発'}
                         </Badge>
                       </TableCell>
+                      <TableCell>
+                        <Badge className={
+                          s.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                        }>
+                          {s.status === 'active' ? '承認済み' : '承認待ち'}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          {s.status === 'inactive' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => approveStaffMutation.mutate(s.id)}
+                              className="text-green-600 border-green-200 hover:bg-green-50"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              承認
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
                             <Edit className="w-4 h-4" />
                           </Button>
