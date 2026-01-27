@@ -820,9 +820,19 @@ export default function AdminPanel() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge className={shift.status === 'open' ? 'bg-[#7CB342]/10 text-[#7CB342]' : 'bg-slate-100 text-slate-500'}>
-                          {shift.status === 'open' ? '募集中' : shift.status}
-                        </Badge>
+                        <Select 
+                          value={shift.status} 
+                          onValueChange={(newStatus) => updateShiftMutation.mutate({ id: shift.id, data: { status: newStatus } })}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="open">募集中</SelectItem>
+                            <SelectItem value="filled">募集終了</SelectItem>
+                            <SelectItem value="cancelled">募集停止</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell>
                         <Button 

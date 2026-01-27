@@ -17,8 +17,8 @@ const serviceTypeConfig = {
 const statusConfig = {
   open: { label: '募集中', color: 'bg-[#7CB342]/10 text-[#7CB342] border-[#7CB342]/20' },
   filled: { label: '募集終了', color: 'bg-slate-100 text-slate-500 border-slate-200' },
+  cancelled: { label: '募集停止', color: 'bg-red-50 text-red-500 border-red-200' },
   completed: { label: '完了', color: 'bg-[#2D4A6F]/10 text-[#2D4A6F] border-[#2D4A6F]/20' },
-  cancelled: { label: 'キャンセル', color: 'bg-red-50 text-red-500 border-red-200' },
 };
 
 export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
