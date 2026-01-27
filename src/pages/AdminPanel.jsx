@@ -84,6 +84,7 @@ export default function AdminPanel() {
     description: '',
     required_skills: '',
     max_applicants: 1,
+    status: 'open',
   });
 
   const [announcementForm, setAnnouncementForm] = useState({
@@ -375,7 +376,7 @@ export default function AdminPanel() {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
       service_type: 'day_service', hourly_rate: '', description: '',
-      required_skills: '', max_applicants: 1,
+      required_skills: '', max_applicants: 1, status: 'open',
     });
     setEditingShift(null);
   };
@@ -563,6 +564,7 @@ export default function AdminPanel() {
       description: shift.description || '',
       required_skills: shift.required_skills?.join(', ') || '',
       max_applicants: shift.max_applicants || 1,
+      status: shift.status || 'open',
     });
     setShiftDialogOpen(true);
   };
@@ -573,7 +575,7 @@ export default function AdminPanel() {
       hourly_rate: shiftForm.hourly_rate ? Number(shiftForm.hourly_rate) : null,
       max_applicants: Number(shiftForm.max_applicants),
       required_skills: shiftForm.required_skills ? shiftForm.required_skills.split(',').map(s => s.trim()).filter(Boolean) : [],
-      status: 'open',
+      status: shiftForm.status,
     };
 
     if (editingShift) {
@@ -1210,6 +1212,17 @@ export default function AdminPanel() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div>
+              <Label>募集状態 *</Label>
+              <Select value={shiftForm.status} onValueChange={(v) => setShiftForm({...shiftForm, status: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="open">募集中</SelectItem>
+                  <SelectItem value="filled">募集終了</SelectItem>
+                  <SelectItem value="cancelled">募集停止</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
