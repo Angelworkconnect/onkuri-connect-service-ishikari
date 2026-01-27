@@ -24,6 +24,7 @@ import {
   Search, Filter, Calendar, SlidersHorizontal,
   CheckCircle, Send
 } from "lucide-react";
+import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from "framer-motion";
 import ShiftCard from "@/components/shifts/ShiftCard";
 
@@ -100,11 +101,31 @@ export default function Shifts() {
     return myApplications.some(app => app.shift_id === shiftId);
   };
 
-  const handleApply = (shift) => {
+  const handleApply = async (shift) => {
     if (!user) {
       base44.auth.redirectToLogin();
       return;
     }
+
+    // Check staff registration
+    const staffList = await base44.entities.Staff.filter({ email: user.email });
+    
+    if (staffList.length === 0) {
+      // Not registered
+      if (confirm('スタッフ登録が必要です。登録ページに移動しますか？')) {
+        window.location.href = createPageUrl('StaffRegistration');
+      }
+      return;
+    }
+
+    const staff = staffList[0];
+    if (staff.status === 'inactive') {
+      // Waiting for approval
+      alert('現在、管理者の承認待ちです。承認後に応募できるようになります。');
+      return;
+    }
+
+    // Approved - show application dialog
     setSelectedShift(shift);
     setApplyDialogOpen(true);
   };
