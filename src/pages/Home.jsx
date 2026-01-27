@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { 
   Calendar, Clock, Users, Heart, Truck, 
   Flower2, Package, Gift, ChevronRight, 
@@ -26,9 +23,6 @@ const iconMap = {
 
 export default function Home() {
   const [user, setUser] = useState(null);
-  const [applyDialogOpen, setApplyDialogOpen] = useState(false);
-  const [selectedShift, setSelectedShift] = useState(null);
-  const [applicationMessage, setApplicationMessage] = useState('');
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -67,46 +61,6 @@ export default function Home() {
     queryFn: () => base44.entities.Service.list('order'),
   });
 
-  const { data: openShifts = [] } = useQuery({
-    queryKey: ['home-shifts'],
-    queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
-  });
-
-  const queryClient = useQueryClient();
-
-  const applyMutation = useMutation({
-    mutationFn: async (data) => {
-      const staffList = await base44.entities.Staff.filter({ email: user.email });
-      return base44.entities.ShiftApplication.create({
-        ...data,
-        applicant_name: staffList[0]?.full_name || user.full_name || user.email,
-      });
-    },
-    onSuccess: () => {
-      setApplyDialogOpen(false);
-      setApplicationMessage('');
-      alert('応募が完了しました！');
-    },
-  });
-
-  const handleApply = (shift) => {
-    if (!user) {
-      base44.auth.redirectToLogin();
-      return;
-    }
-    setSelectedShift(shift);
-    setApplyDialogOpen(true);
-  };
-
-  const handleSubmitApplication = () => {
-    if (!selectedShift) return;
-    applyMutation.mutate({
-      shift_id: selectedShift.id,
-      applicant_email: user.email,
-      message: applicationMessage,
-    });
-  };
-
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
@@ -144,13 +98,13 @@ export default function Home() {
             
             <div className="flex flex-wrap gap-4">
               {user ? (
-                <a href="/Dashboard" onClick={(e) => { e.preventDefault(); window.location.href = createPageUrl('Dashboard'); }}>
+                <Link to={createPageUrl('Dashboard')}>
                   <Button size="lg" className="bg-white text-[#2D4A6F] hover:bg-white/90 h-14 px-8">
                     ダッシュボードへ
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                </a>
-                ) : (
+                </Link>
+              ) : (
                 <>
                   <Button 
                     size="lg" 
@@ -160,13 +114,13 @@ export default function Home() {
                     スタッフログイン
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                  <a href="/Shifts" onClick={(e) => { e.preventDefault(); window.location.href = createPageUrl('Shifts'); }}>
+                  <Link to={createPageUrl('Shifts')}>
                     <Button size="lg" variant="outline" className="h-14 px-8 border-white/30 text-white hover:bg-white/10">
                       シフトを見る
                     </Button>
-                  </a>
+                  </Link>
                 </>
-                )}
+              )}
             </div>
           </motion.div>
         </div>
@@ -199,7 +153,7 @@ export default function Home() {
       )}
 
       {/* Available Shifts */}
-      {openShifts.length > 0 && (
+      {shifts.length > 0 && (
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -214,18 +168,14 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {openShifts.map((shift) => (
+            {shifts.map((shift) => (
               <motion.div
                 key={shift.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <ShiftCard 
-                  shift={shift} 
-                  showApplyButton={true}
-                  onApply={() => handleApply(shift)}
-                />
+                <ShiftCard shift={shift} showApplyButton={false} />
               </motion.div>
             ))}
           </div>
@@ -241,24 +191,21 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
            {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div onClick={service.detail_url ? () => window.open(service.detail_url, '_blank') : undefined}>
-                  <ServiceCard 
-                    title={service.title}
-                    description={service.description}
-                    icon={iconMap[service.icon] || Heart}
-                    color={service.color}
-                    detail_url={service.detail_url}
-                  />
-                </div>
-              </motion.div>
-            ))}
+             <motion.div
+               key={service.id}
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1 }}
+             >
+               <ServiceCard 
+                 title={service.title}
+                 description={service.description}
+                 icon={iconMap[service.icon] || Heart}
+                 color={service.color}
+               />
+             </motion.div>
+           ))}
           </div>
         </div>
       </section>
@@ -324,38 +271,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Application Dialog */}
-      <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>シフトに応募</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label>メッセージ（任意）</Label>
-              <Textarea
-                value={applicationMessage}
-                onChange={(e) => setApplicationMessage(e.target.value)}
-                placeholder="意気込みや経験などを記入してください"
-                className="h-32"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setApplyDialogOpen(false)}>
-              キャンセル
-            </Button>
-            <Button 
-              onClick={handleSubmitApplication}
-              className="bg-[#2D4A6F]"
-              disabled={applyMutation.isPending}
-            >
-              {applyMutation.isPending ? '応募中...' : '応募する'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

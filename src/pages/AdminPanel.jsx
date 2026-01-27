@@ -33,7 +33,7 @@ import {
 import { 
         Plus, Calendar, Users, FileText, Bell,
         CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-        Eye, EyeOff, Sparkles, Settings, Gift
+        Eye, EyeOff, Sparkles, Settings
       } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
@@ -141,22 +141,7 @@ export default function AdminPanel() {
     icon: 'Heart',
     color: 'bg-[#2D4A6F]',
     order: 0,
-    detail_url: '',
   });
-
-  const iconOptions = [
-    { value: 'Heart', label: 'ハート' },
-    { value: 'Truck', label: '車' },
-    { value: 'Flower2', label: '車椅子' },
-    { value: 'Package', label: '荷物' },
-    { value: 'Sparkles', label: 'スパ・エステ' },
-    { value: 'Gift', label: 'ギフト' },
-    { value: 'Clock', label: 'クロック' },
-    { value: 'Users', label: 'ユーザー' },
-    { value: 'Home', label: 'ホーム' },
-    { value: 'Shield', label: 'シールド' },
-    { value: 'Zap', label: 'ザップ' },
-  ];
 
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
@@ -310,18 +295,8 @@ export default function AdminPanel() {
   });
 
   const updateApplicationMutation = useMutation({
-    mutationFn: async ({ id, status, shiftId }) => {
-      await base44.entities.ShiftApplication.update(id, { status });
-      if (status === 'approved' && shiftId) {
-        await base44.entities.Shift.update(shiftId, { status: 'filled' });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-applications']);
-      queryClient.invalidateQueries(['admin-shifts']);
-      queryClient.invalidateQueries(['home-shifts']);
-      queryClient.invalidateQueries(['shifts-open']);
-    },
+    mutationFn: ({ id, status }) => base44.entities.ShiftApplication.update(id, { status }),
+    onSuccess: () => queryClient.invalidateQueries(['admin-applications']),
   });
 
   const deleteAnnouncementMutation = useMutation({
@@ -452,7 +427,6 @@ export default function AdminPanel() {
       icon: 'Heart',
       color: 'bg-[#2D4A6F]',
       order: 0,
-      detail_url: '',
     });
     setEditingService(null);
   };
@@ -465,7 +439,6 @@ export default function AdminPanel() {
       icon: service.icon,
       color: service.color,
       order: service.order || 0,
-      detail_url: service.detail_url || '',
     });
     setServiceDialogOpen(true);
   };
@@ -647,7 +620,7 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-          <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
+            <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
               <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
                 <Settings className="w-4 h-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">サイト設定</span>
@@ -693,10 +666,10 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">サンクス管理</span>
               <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
-            </TabsList>
+          </TabsList>
 
-            {/* Site Settings Tab */}
-            <TabsContent value="settings">
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
             <Card className="border-0 shadow-lg">
               <div className="p-6 border-b">
                 <h2 className="text-lg font-medium">TOPページカスタマイズ</h2>
@@ -919,7 +892,7 @@ export default function AdminPanel() {
                             <Button
                               size="sm"
                               className="bg-[#7CB342] hover:bg-[#6BA232]"
-                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'approved', shiftId: app.shift_id })}
+                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'approved' })}
                             >
                               <CheckCircle className="w-4 h-4" />
                             </Button>
@@ -927,7 +900,7 @@ export default function AdminPanel() {
                               size="sm"
                               variant="outline"
                               className="text-red-500 border-red-200 hover:bg-red-50"
-                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'rejected', shiftId: app.shift_id })}
+                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'rejected' })}
                             >
                               <XCircle className="w-4 h-4" />
                             </Button>
@@ -1531,7 +1504,7 @@ export default function AdminPanel() {
           <DialogHeader>
             <DialogTitle>{editingService ? 'サービス編集' : '新規サービス作成'}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-4 py-4">
             <div>
               <Label>サービス名 *</Label>
               <Input value={serviceForm.title} onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})} />
@@ -1541,23 +1514,12 @@ export default function AdminPanel() {
               <Textarea value={serviceForm.description} onChange={(e) => setServiceForm({...serviceForm, description: e.target.value})} className="h-24" />
             </div>
             <div>
-              <Label>アイコン *</Label>
-              <Select value={serviceForm.icon} onValueChange={(v) => setServiceForm({...serviceForm, icon: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {iconOptions.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>アイコン名（Lucide React）*</Label>
+              <Input value={serviceForm.icon} onChange={(e) => setServiceForm({...serviceForm, icon: e.target.value})} placeholder="Heart, Truck, Flower2など" />
             </div>
             <div>
               <Label>背景カラークラス *</Label>
               <Input value={serviceForm.color} onChange={(e) => setServiceForm({...serviceForm, color: e.target.value})} placeholder="bg-[#2D4A6F]" />
-            </div>
-            <div>
-              <Label>詳細ページURL（オプション）</Label>
-              <Input value={serviceForm.detail_url} onChange={(e) => setServiceForm({...serviceForm, detail_url: e.target.value})} placeholder="https://example.com" />
             </div>
             <div>
               <Label>表示順序</Label>

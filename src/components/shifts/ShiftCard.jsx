@@ -24,10 +24,9 @@ const statusConfig = {
 export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
   const serviceConfig = serviceTypeConfig[shift.service_type] || serviceTypeConfig.other;
   const status = statusConfig[shift.status] || statusConfig.open;
-  const isFilledOrClosed = shift.status === 'filled' || shift.status === 'completed' || shift.status === 'cancelled';
 
   return (
-    <Card className={`group relative overflow-hidden bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300 ${isFilledOrClosed ? 'opacity-60' : ''}`}>
+    <Card className="group relative overflow-hidden bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -37,11 +36,6 @@ export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
             <Badge variant="outline" className={`${status.color} font-normal border`}>
               {status.label}
             </Badge>
-            {isFilledOrClosed && (
-              <Badge className="bg-red-100 text-red-600 border-red-200 font-normal" variant="outline">
-                募集終了
-              </Badge>
-            )}
           </div>
           <span className="text-sm font-medium text-[#2D4A6F]">
             {format(new Date(shift.date), 'M月d日')}
@@ -89,23 +83,14 @@ export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
           </div>
         )}
 
-        {showApplyButton && (
-          shift.status === 'open' ? (
-            <Button
-              onClick={() => onApply?.(shift)}
-              className="w-full bg-[#2D4A6F] hover:bg-[#1E3A5F] text-white group/btn"
-            >
-              <span>応募する</span>
-              <ChevronRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
-            </Button>
-          ) : isFilledOrClosed ? (
-            <Button 
-              className="w-full bg-slate-300 text-slate-500 cursor-not-allowed"
-              disabled
-            >
-              募集終了
-            </Button>
-          ) : null
+        {showApplyButton && shift.status === 'open' && (
+          <Button
+            onClick={() => onApply?.(shift)}
+            className="w-full bg-[#2D4A6F] hover:bg-[#1E3A5F] text-white group/btn"
+          >
+            <span>応募する</span>
+            <ChevronRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-0.5 transition-transform" />
+          </Button>
         )}
       </div>
       <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#E8A4B8]/5 to-transparent rounded-full -translate-y-12 translate-x-12" />
