@@ -54,6 +54,8 @@ export default function Shifts() {
   const { data: shifts = [], isLoading } = useQuery({
     queryKey: ['shifts'],
     queryFn: () => base44.entities.Shift.filter({ is_visible: true }, '-date'),
+    refetchInterval: 3000,
+    staleTime: 0,
   });
 
   const { data: myApplications = [] } = useQuery({
