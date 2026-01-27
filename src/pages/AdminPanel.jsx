@@ -310,8 +310,16 @@ export default function AdminPanel() {
   });
 
   const updateApplicationMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.ShiftApplication.update(id, { status }),
-    onSuccess: () => queryClient.invalidateQueries(['admin-applications']),
+    mutationFn: async ({ id, status, shiftId }) => {
+      await base44.entities.ShiftApplication.update(id, { status });
+      if (status === 'approved' && shiftId) {
+        await base44.entities.Shift.update(shiftId, { status: 'filled' });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-applications']);
+      queryClient.invalidateQueries(['admin-shifts']);
+    },
   });
 
   const deleteAnnouncementMutation = useMutation({
@@ -909,7 +917,7 @@ export default function AdminPanel() {
                             <Button
                               size="sm"
                               className="bg-[#7CB342] hover:bg-[#6BA232]"
-                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'approved' })}
+                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'approved', shiftId: app.shift_id })}
                             >
                               <CheckCircle className="w-4 h-4" />
                             </Button>
@@ -917,7 +925,7 @@ export default function AdminPanel() {
                               size="sm"
                               variant="outline"
                               className="text-red-500 border-red-200 hover:bg-red-50"
-                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'rejected' })}
+                              onClick={() => updateApplicationMutation.mutate({ id: app.id, status: 'rejected', shiftId: app.shift_id })}
                             >
                               <XCircle className="w-4 h-4" />
                             </Button>
