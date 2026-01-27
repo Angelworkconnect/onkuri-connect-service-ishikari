@@ -73,15 +73,11 @@ export default function Home() {
 
   const applyMutation = useMutation({
     mutationFn: async (shiftId) => {
-      if (!user) {
-        base44.auth.redirectToLogin();
-        return;
-      }
       const staffList = await base44.entities.Staff.filter({ email: user.email });
       return base44.entities.ShiftApplication.create({
         shift_id: shiftId,
         applicant_email: user.email,
-        applicant_name: staffList.length > 0 ? staffList[0].full_name : user.email,
+        applicant_name: staffList[0].full_name,
         message: '',
       });
     },
@@ -91,13 +87,33 @@ export default function Home() {
     },
   });
 
-  const handleApply = (shiftId) => {
+  const handleApply = async (shiftId) => {
     if (!user) {
       if (confirm('応募するにはログインが必要です。ログインページに移動しますか？')) {
         base44.auth.redirectToLogin();
       }
       return;
     }
+
+    // Check staff registration
+    const staffList = await base44.entities.Staff.filter({ email: user.email });
+    
+    if (staffList.length === 0) {
+      // Not registered
+      if (confirm('スタッフ登録が必要です。登録ページに移動しますか？')) {
+        window.location.href = createPageUrl('StaffRegistration');
+      }
+      return;
+    }
+
+    const staff = staffList[0];
+    if (staff.status === 'inactive') {
+      // Waiting for approval
+      alert('現在、管理者の承認待ちです。承認後に応募できるようになります。');
+      return;
+    }
+
+    // Approved - allow application
     if (confirm('このシフトに応募しますか？')) {
       applyMutation.mutate(shiftId);
     }
