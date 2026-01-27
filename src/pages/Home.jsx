@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { 
   Calendar, Clock, Users, Heart, Truck, 
   Flower2, Package, Gift, ChevronRight, 
-  ArrowRight, Sparkles
+  ArrowRight, Sparkles, UserPlus
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -23,10 +23,17 @@ const iconMap = {
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [isStaffRegistered, setIsStaffRegistered] = useState(true);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(async (u) => {
+      setUser(u);
+      if (u) {
+        const staffList = await base44.entities.Staff.filter({ email: u.email });
+        setIsStaffRegistered(staffList.length > 0);
+      }
+    }).catch(() => {});
   }, []);
 
   const { data: announcements = [] } = useQuery({
@@ -178,6 +185,42 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Staff Registration Banner */}
+      {user && !isStaffRegistered && (
+        <section className="max-w-6xl mx-auto px-6 -mt-12 relative z-10 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-[#E8A4B8]/20 via-white to-[#C17A8E]/20 rounded-2xl shadow-xl p-8 border border-[#E8A4B8]/30"
+          >
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="flex-shrink-0">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] flex items-center justify-center shadow-lg">
+                  <UserPlus className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-medium text-slate-800 mb-2">
+                  スタッフ登録がまだ完了していません
+                </h3>
+                <p className="text-slate-600 mb-4">
+                  シフトに応募するには、まずスタッフ情報の登録が必要です。<br />
+                  簡単な登録フォームで、すぐに始められます。
+                </p>
+                <Button
+                  onClick={() => window.location.href = createPageUrl('StaffRegistration')}
+                  className="bg-gradient-to-r from-[#2D4A6F] to-[#1E3A5F] hover:opacity-90 text-white shadow-lg"
+                  size="lg"
+                >
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  今すぐ登録する
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* Stats Section */}
       {user && (
