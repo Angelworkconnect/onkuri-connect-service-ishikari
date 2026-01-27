@@ -69,7 +69,7 @@ export default function Home() {
 
   const { data: openShifts = [] } = useQuery({
     queryKey: ['home-shifts'],
-    queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }),
+    queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
   });
 
   const queryClient = useQueryClient();
