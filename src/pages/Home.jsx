@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { 
   Calendar, Clock, Users, Heart, Truck, 
   Flower2, Package, Gift, ChevronRight, 
@@ -23,6 +26,9 @@ const iconMap = {
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [applyDialogOpen, setApplyDialogOpen] = useState(false);
+  const [selectedShift, setSelectedShift] = useState(null);
+  const [applicationMessage, setApplicationMessage] = useState('');
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -65,6 +71,8 @@ export default function Home() {
     queryKey: ['home-shifts'],
     queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }),
   });
+
+  const queryClient = useQueryClient();
 
   const applyMutation = useMutation({
     mutationFn: async (data) => {
@@ -213,7 +221,11 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <ShiftCard shift={shift} showApplyButton={true} />
+                <ShiftCard 
+                  shift={shift} 
+                  showApplyButton={true}
+                  onApply={() => handleApply(shift)}
+                />
               </motion.div>
             ))}
           </div>
@@ -312,6 +324,38 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Application Dialog */}
+      <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>シフトに応募</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>メッセージ（任意）</Label>
+              <Textarea
+                value={applicationMessage}
+                onChange={(e) => setApplicationMessage(e.target.value)}
+                placeholder="意気込みや経験などを記入してください"
+                className="h-32"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApplyDialogOpen(false)}>
+              キャンセル
+            </Button>
+            <Button 
+              onClick={handleSubmitApplication}
+              className="bg-[#2D4A6F]"
+              disabled={applyMutation.isPending}
+            >
+              {applyMutation.isPending ? '応募中...' : '応募する'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
