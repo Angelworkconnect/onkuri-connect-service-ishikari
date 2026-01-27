@@ -1216,23 +1216,15 @@ export default function AdminPanel() {
             <div>
               <Label>募集状態 *</Label>
               <Select value={shiftForm.status} onValueChange={(v) => setShiftForm({...shiftForm, status: v})}>
-                <SelectTrigger>
-                  <SelectValue>
-                    {shiftForm.status === 'open' && <Badge className="bg-[#7CB342]/10 text-[#7CB342]">募集中</Badge>}
-                    {shiftForm.status === 'filled' && <Badge className="bg-slate-100 text-slate-500">募集終了</Badge>}
-                    {shiftForm.status === 'cancelled' && <Badge className="bg-red-50 text-red-500">募集停止</Badge>}
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="状態を選択">
+                    {shiftForm.status === 'open' ? '募集中' : shiftForm.status === 'filled' ? '募集終了' : shiftForm.status === 'cancelled' ? '募集停止' : '状態を選択'}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="open">
-                    <Badge className="bg-[#7CB342]/10 text-[#7CB342]">募集中</Badge>
-                  </SelectItem>
-                  <SelectItem value="filled">
-                    <Badge className="bg-slate-100 text-slate-500">募集終了</Badge>
-                  </SelectItem>
-                  <SelectItem value="cancelled">
-                    <Badge className="bg-red-50 text-red-500">募集停止</Badge>
-                  </SelectItem>
+                  <SelectItem value="open">募集中</SelectItem>
+                  <SelectItem value="filled">募集終了</SelectItem>
+                  <SelectItem value="cancelled">募集停止</SelectItem>
                 </SelectContent>
               </Select>
             </div>
