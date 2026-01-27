@@ -66,6 +66,39 @@ export default function Home() {
     queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }),
   });
 
+  const applyMutation = useMutation({
+    mutationFn: async (data) => {
+      const staffList = await base44.entities.Staff.filter({ email: user.email });
+      return base44.entities.ShiftApplication.create({
+        ...data,
+        applicant_name: staffList[0]?.full_name || user.full_name || user.email,
+      });
+    },
+    onSuccess: () => {
+      setApplyDialogOpen(false);
+      setApplicationMessage('');
+      alert('応募が完了しました！');
+    },
+  });
+
+  const handleApply = (shift) => {
+    if (!user) {
+      base44.auth.redirectToLogin();
+      return;
+    }
+    setSelectedShift(shift);
+    setApplyDialogOpen(true);
+  };
+
+  const handleSubmitApplication = () => {
+    if (!selectedShift) return;
+    applyMutation.mutate({
+      shift_id: selectedShift.id,
+      applicant_email: user.email,
+      message: applicationMessage,
+    });
+  };
+
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
