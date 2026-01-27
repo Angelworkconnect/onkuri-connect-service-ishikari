@@ -33,7 +33,7 @@ import {
 import { 
         Plus, Calendar, Users, FileText, Bell,
         CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-        Eye, EyeOff, Sparkles, Settings
+        Eye, EyeOff, Sparkles, Settings, Gift
       } from "lucide-react";
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
