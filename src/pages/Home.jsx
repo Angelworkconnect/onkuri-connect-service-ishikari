@@ -36,11 +36,15 @@ export default function Home() {
   const { data: shifts = [] } = useQuery({
     queryKey: ['shifts-open'],
     queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, '-date', 3),
+    refetchInterval: 3000,
+    staleTime: 0,
   });
 
   const { data: allShifts = [] } = useQuery({
     queryKey: ['shifts-all'],
     queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
+    refetchInterval: 3000,
+    staleTime: 0,
   });
 
   const { data: allStaff = [] } = useQuery({
