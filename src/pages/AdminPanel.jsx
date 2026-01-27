@@ -319,6 +319,8 @@ export default function AdminPanel() {
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-applications']);
       queryClient.invalidateQueries(['admin-shifts']);
+      queryClient.invalidateQueries(['home-shifts']);
+      queryClient.invalidateQueries(['shifts-open']);
     },
   });
 
