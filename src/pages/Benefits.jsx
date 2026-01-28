@@ -84,11 +84,7 @@ export default function Benefits() {
   });
 
   const createBenefitMutation = useMutation({
-    mutationFn: (data) => base44.entities.BenefitApplication.create({
-      ...data,
-      user_email: user.email,
-      user_name: user.full_name,
-    }),
+    mutationFn: (data) => base44.functions.invoke('createBenefitApplication', data),
     onSuccess: () => {
       queryClient.invalidateQueries(['benefits']);
       setBenefitDialogOpen(false);
