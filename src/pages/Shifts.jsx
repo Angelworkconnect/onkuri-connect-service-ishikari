@@ -49,7 +49,14 @@ export default function Shifts() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(async (u) => {
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length > 0) {
+        u.full_name = staffList[0].full_name;
+        u.approval_status = staffList[0].approval_status || 'pending';
+      }
+      setUser(u);
+    }).catch(() => {});
   }, []);
 
   const { data: shifts = [], isLoading } = useQuery({
@@ -137,6 +144,28 @@ export default function Shifts() {
       message: applyMessage,
     });
   };
+
+  if (user && user.approval_status !== 'approved') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-amber-600" />
+          </div>
+          <h2 className="text-2xl font-medium text-slate-800 mb-2">承認が必要です</h2>
+          <p className="text-slate-600 mb-6">
+            この機能を利用するには、管理者による承認が必要です。
+          </p>
+          <Button 
+            className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
+            onClick={() => window.location.href = createPageUrl('Home')}
+          >
+            ホームへ戻る
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">

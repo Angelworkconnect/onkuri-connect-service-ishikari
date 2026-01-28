@@ -21,7 +21,14 @@ export default function MyApplications() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {
+    base44.auth.me().then(async (u) => {
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length > 0) {
+        u.full_name = staffList[0].full_name;
+        u.approval_status = staffList[0].approval_status || 'pending';
+      }
+      setUser(u);
+    }).catch(() => {
       base44.auth.redirectToLogin();
     });
   }, []);
@@ -107,6 +114,28 @@ export default function MyApplications() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-slate-400">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (user.approval_status !== 'approved') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+            <Clock className="w-8 h-8 text-amber-600" />
+          </div>
+          <h2 className="text-2xl font-medium text-slate-800 mb-2">承認が必要です</h2>
+          <p className="text-slate-600 mb-6">
+            この機能を利用するには、管理者による承認が必要です。
+          </p>
+          <Button 
+            className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
+            onClick={() => window.location.href = createPageUrl('Home')}
+          >
+            ホームへ戻る
+          </Button>
+        </Card>
       </div>
     );
   }
