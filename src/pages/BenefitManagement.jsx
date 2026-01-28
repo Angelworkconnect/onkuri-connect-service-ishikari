@@ -132,6 +132,7 @@ export default function BenefitManagement() {
       color: 'bg-[#E8A4B8]',
       frequency_type: 'monthly',
       frequency_limit: 1,
+      eligible_roles: [],
       status: 'available',
       order: 0,
     });
