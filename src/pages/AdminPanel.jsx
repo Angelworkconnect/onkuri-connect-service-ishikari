@@ -696,6 +696,11 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">サンクス管理</span>
               <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
+            <TabsTrigger value="business" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Settings className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">業務機能</span>
+              <span className="sm:hidden">業務</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Site Settings Tab */}
@@ -1229,6 +1234,108 @@ export default function AdminPanel() {
                   </div>
                   </Card>
                   </TabsContent>
+
+          {/* Business Functions Tab */}
+          <TabsContent value="business">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/AttendanceApproval'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#7CB342]/10 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-6 h-6 text-[#7CB342]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">勤怠承認</h3>
+                    <p className="text-sm text-slate-600">職員の勤怠を確認・承認します</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/AttendanceClose'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#2D4A6F]/10 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-[#2D4A6F]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">勤怠月次締め</h3>
+                    <p className="text-sm text-slate-600">月ごとの勤怠を締めます</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/PayrollExport'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">給与連携（MF）</h3>
+                    <p className="text-sm text-slate-600">マネーフォワード給与用CSV出力</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/DocumentManagement'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">書類管理</h3>
+                    <p className="text-sm text-slate-600">職員・利用者・事業所書類の一元管理</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareClientManagement'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">利用者管理</h3>
+                    <p className="text-sm text-slate-600">介護サービス利用者情報の管理</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareUsageEntry'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-cyan-100 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-6 h-6 text-cyan-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">利用実績入力</h3>
+                    <p className="text-sm text-slate-600">日々の介護サービス利用実績を記録</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareMonthlyClose'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-6 h-6 text-rose-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">介護実績締め</h3>
+                    <p className="text-sm text-slate-600">月次実績を締めてカイポケ連携</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/KaipokeExport'}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-violet-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">カイポケ連携</h3>
+                    <p className="text-sm text-slate-600">請求用CSV・エラーチェック</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </TabsContent>
+
                   </Tabs>
                   </div>
 
