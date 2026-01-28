@@ -494,6 +494,35 @@ export default function BenefitManagement() {
               <Label>表示順序</Label>
               <Input type="number" value={benefitForm.order} onChange={(e) => setBenefitForm({...benefitForm, order: Number(e.target.value)})} />
             </div>
+            <div>
+              <Label>申請可能な職種</Label>
+              <div className="space-y-2">
+                {['admin', 'full_time', 'part_time', 'temporary'].map((role) => (
+                  <div key={role} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={`role-${role}`}
+                      checked={benefitForm.eligible_roles?.includes(role) || false}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setBenefitForm({
+                            ...benefitForm,
+                            eligible_roles: [...(benefitForm.eligible_roles || []), role]
+                          });
+                        } else {
+                          setBenefitForm({
+                            ...benefitForm,
+                            eligible_roles: (benefitForm.eligible_roles || []).filter(r => r !== role)
+                          });
+                        }
+                      }}
+                    />
+                    <label htmlFor={`role-${role}`} className="text-sm cursor-pointer">
+                      {role === 'admin' ? '管理者' : role === 'full_time' ? '正職員' : role === 'part_time' ? 'パート' : '単発'}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setBenefitDialogOpen(false)}>キャンセル</Button>
