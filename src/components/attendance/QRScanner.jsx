@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { QrCode, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode } from '@/../../node_modules/html5-qrcode/esm/index';
 
 export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const [scannedToken, setScannedToken] = useState('');
