@@ -44,13 +44,24 @@ const statusConfig = {
 };
 
 export default function TipBenefitSection({ user }) {
-  const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
-  const [newBenefit, setNewBenefit] = useState({
-    benefit_id: '',
-    request_date: '',
-    notes: '',
-  });
-  const queryClient = useQueryClient();
+   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
+   const [newBenefit, setNewBenefit] = useState({
+     benefit_id: '',
+     request_date: '',
+     notes: '',
+   });
+   const [staffRole, setStaffRole] = useState(null);
+   const queryClient = useQueryClient();
+
+   React.useEffect(() => {
+     if (user?.email) {
+       base44.entities.Staff.filter({ email: user.email }).then((staffList) => {
+         if (staffList.length > 0) {
+           setStaffRole(staffList[0].role);
+         }
+       });
+     }
+   }, [user?.email]);
 
   const { data: tips = [] } = useQuery({
     queryKey: ['tips', user?.email],
