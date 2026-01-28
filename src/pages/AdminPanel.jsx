@@ -105,6 +105,7 @@ export default function AdminPanel() {
     date_of_birth: '',
     gender: 'other',
     role: 'temporary',
+    approval_status: 'pending',
   });
 
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
@@ -433,6 +434,7 @@ export default function AdminPanel() {
       date_of_birth: '',
       gender: 'other',
       role: 'temporary',
+      approval_status: 'pending',
     });
     setEditingStaff(null);
   };
@@ -577,6 +579,7 @@ export default function AdminPanel() {
       date_of_birth: staff.date_of_birth || '',
       gender: staff.gender || 'other',
       role: staff.role,
+      approval_status: staff.approval_status || 'pending',
     });
     setStaffDialogOpen(true);
   };
@@ -1107,25 +1110,18 @@ export default function AdminPanel() {
                       </TableCell>
                       <TableCell>
                         <Badge className={
-                          s.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                          s.approval_status === 'approved' ? 'bg-green-100 text-green-700' : 
+                          s.approval_status === 'rejected' ? 'bg-red-100 text-red-700' : 
+                          'bg-amber-100 text-amber-700'
                         }>
-                          {s.status === 'active' ? '承認済み' : '承認待ち'}
+                          {s.approval_status === 'approved' ? '承認済み' : 
+                           s.approval_status === 'rejected' ? '却下' : 
+                           '承認待ち'}
                         </Badge>
                       </TableCell>
                       <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 flex-wrap">
-                          {s.status === 'inactive' && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => approveStaffMutation.mutate(s.id)}
-                              className="text-green-600 border-green-200 hover:bg-green-50"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              承認
-                            </Button>
-                          )}
                           <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -1517,6 +1513,17 @@ export default function AdminPanel() {
                   <SelectItem value="full_time">正社員</SelectItem>
                   <SelectItem value="part_time">パート</SelectItem>
                   <SelectItem value="temporary">単発</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>承認ステータス *</Label>
+              <Select value={staffForm.approval_status} onValueChange={(v) => setStaffForm({...staffForm, approval_status: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">承認待ち</SelectItem>
+                  <SelectItem value="approved">承認済み</SelectItem>
+                  <SelectItem value="rejected">却下</SelectItem>
                 </SelectContent>
               </Select>
             </div>
