@@ -146,26 +146,26 @@ export default function Dashboard() {
   if (user.approval_status !== 'approved') {
     // 承認待ちの場合
     if (user.approval_status === 'pending') {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
-          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
-            <Clock className="w-8 h-8 text-amber-600" />
-          </div>
-          <h2 className="text-2xl font-medium text-slate-800 mb-2">承認待ち</h2>
-          <p className="text-slate-600 mb-6">
-            スタッフ登録の承認待ちです。<br />
-            管理者の承認後にダッシュボードをご利用いただけます。
-          </p>
-          <Button 
-            className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
-            onClick={() => window.location.href = createPageUrl('Home')}
-          >
-            ホームへ戻る
-          </Button>
-        </Card>
-      </div>
-    );
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
+            <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-8 h-8 text-amber-600" />
+            </div>
+            <h2 className="text-2xl font-medium text-slate-800 mb-2">承認待ち</h2>
+            <p className="text-slate-600 mb-6">
+              スタッフ登録の承認待ちです。<br />
+              管理者の承認後にダッシュボードをご利用いただけます。
+            </p>
+            <Button 
+              className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
+              onClick={() => window.location.href = createPageUrl('Home')}
+            >
+              ホームへ戻る
+            </Button>
+          </Card>
+        </div>
+      );
     }
 
     // 却下された場合
@@ -189,7 +189,6 @@ export default function Dashboard() {
         </Card>
       </div>
     );
-  }
   }
 
   return (
