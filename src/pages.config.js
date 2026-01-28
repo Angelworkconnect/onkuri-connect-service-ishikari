@@ -57,6 +57,8 @@ import MyApplications from './pages/MyApplications';
 import Shifts from './pages/Shifts';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
+import AttendanceApproval from './pages/AttendanceApproval';
+import AttendanceClose from './pages/AttendanceClose';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +73,8 @@ export const PAGES = {
     "Shifts": Shifts,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
+    "AttendanceApproval": AttendanceApproval,
+    "AttendanceClose": AttendanceClose,
 }
 
 export const pagesConfig = {
