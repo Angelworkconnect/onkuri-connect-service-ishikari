@@ -158,7 +158,9 @@ export default function AdminPanel() {
       // Check if user is admin - either in User entity or Staff entity
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       const isUserAdmin = u.role === 'admin';
-      const isStaffAdmin = staffList.length > 0 && staffList[0].role === 'admin';
+      const staff = staffList.length > 0 ? staffList[0] : null;
+      const isStaffAdmin = staff && staff.role === 'admin';
+      const isApproved = staff && staff.approval_status === 'approved';
       
       if (!isUserAdmin && !isStaffAdmin) {
         // If no staff record exists, create one as admin (for initial setup)
@@ -168,7 +170,7 @@ export default function AdminPanel() {
               full_name: u.full_name || u.email,
               email: u.email,
               role: 'admin',
-              status: 'active',
+              approval_status: 'approved',
             });
             alert('管理者として登録されました。画面を再読み込みします。');
             window.location.reload();
@@ -179,6 +181,13 @@ export default function AdminPanel() {
         }
         
         alert('管理者権限がありません。この画面へのアクセスは管理者カテゴリのスタッフのみに制限されています。');
+        window.location.href = '/';
+        return;
+      }
+      
+      // Check if staff is approved
+      if (isStaffAdmin && !isApproved) {
+        alert('スタッフ登録の承認待ちです。管理者による承認後にアクセスできます。');
         window.location.href = '/';
         return;
       }
