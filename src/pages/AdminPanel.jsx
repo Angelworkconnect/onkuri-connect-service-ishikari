@@ -273,7 +273,7 @@ export default function AdminPanel() {
   });
 
   const approveStaffMutation = useMutation({
-    mutationFn: (id) => base44.entities.Staff.update(id, { status: 'active' }),
+    mutationFn: (id) => base44.entities.Staff.update(id, { status: 'active', approval_status: 'approved' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-staff']);
       alert('スタッフを承認しました');
