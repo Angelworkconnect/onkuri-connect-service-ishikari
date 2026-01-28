@@ -145,7 +145,11 @@ export default function Benefits() {
             </div>
           </div>
 
-{staff?.role === 'temporary' ? (
+{!staff ? (
+            <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
+              <p className="text-sm text-slate-600">読み込み中...</p>
+            </div>
+          ) : staff.role === 'temporary' ? (
             <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
               <p className="text-sm text-amber-800 font-medium">
                 こちらのサービスはご利用できません
