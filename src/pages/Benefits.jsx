@@ -146,11 +146,7 @@ export default function Benefits() {
             </div>
             </div>
 
-            <div className="text-xs text-slate-400 mb-4">
-             Debug: staff role = {staff?.role || 'no staff'}
-            </div>
-
-            {staff !== null && staff.role !== 'temporary' && (
+            {staff && staff.role && staff.role !== 'temporary' && (
             <>
               <Button 
                 className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
