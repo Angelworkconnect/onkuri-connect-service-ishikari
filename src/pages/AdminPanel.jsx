@@ -1479,6 +1479,18 @@ export default function AdminPanel() {
                   </div>
                 </div>
               </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('BenefitManagement')}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#7CB342]/10 flex items-center justify-center flex-shrink-0">
+                    <Gift className="w-6 h-6 text-[#7CB342]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">福利厚生管理</h3>
+                    <p className="text-sm text-slate-600">福利厚生項目と申請の管理</p>
+                  </div>
+                </div>
+              </Card>
             </div>
           </TabsContent>
 
