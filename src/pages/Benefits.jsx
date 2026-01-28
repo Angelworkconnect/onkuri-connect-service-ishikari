@@ -36,6 +36,7 @@ const statusConfig = {
 
 export default function Benefits() {
   const [user, setUser] = useState(null);
+  const [staff, setStaff] = useState(null);
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
   const [newBenefit, setNewBenefit] = useState({
     benefit_type: '',
@@ -45,7 +46,14 @@ export default function Benefits() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {
+    base44.auth.me().then(async (u) => {
+      setUser(u);
+      // Fetch staff info to check role
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length > 0) {
+        setStaff(staffList[0]);
+      }
+    }).catch(() => {
       base44.auth.redirectToLogin();
     });
   }, []);
@@ -102,7 +110,10 @@ export default function Benefits() {
 
           <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4">
+              <Button 
+                className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
+                disabled={staff?.role === 'temporary'}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 福利厚生を申請する
               </Button>
@@ -159,6 +170,14 @@ export default function Benefits() {
               </div>
             </DialogContent>
           </Dialog>
+
+          {staff?.role === 'temporary' && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                ※ 単発スタッフは福利厚生サービスの申請ができません
+              </p>
+            </div>
+          )}
         </Card>
 
         <div className="mb-4">
