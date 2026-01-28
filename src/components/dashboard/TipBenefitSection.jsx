@@ -206,13 +206,13 @@ export default function TipBenefitSection({ user }) {
           <div className="space-y-3">
             {benefits.length > 0 ? (
               benefits.map((benefit) => {
-                const benefitItem = allBenefits.find(b => b.id === benefit.benefit_id);
+                const benefitItem = allBenefits?.find(b => b.id === benefit.benefit_id);
                 return (
                   <div key={benefit.id} className="border border-slate-100 rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <div className="text-sm font-medium text-slate-800 mb-1">
-                          {benefitItem?.title || '不明な福利厚生'}
+                          {benefitItem?.title || benefit.benefit_type || '不明な福利厚生'}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-slate-500">
                           <Calendar className="w-3 h-3" />
