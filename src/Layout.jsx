@@ -36,6 +36,7 @@ const adminNavigation = [
   { name: '書類管理', href: 'Documents', icon: FileText },
   { name: '利用者管理', href: 'CareClients', icon: Users },
   { name: '利用実績', href: 'CareUsage', icon: Calendar },
+  { name: '福利厚生管理', href: 'BenefitManagement', icon: Gift },
 ];
 
 export default function Layout({ children, currentPageName }) {
