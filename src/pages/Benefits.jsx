@@ -175,12 +175,15 @@ export default function Benefits() {
                           <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
-                          {allBenefits.filter(b => b.status === 'available').map((benefit) => (
-                            <SelectItem key={benefit.id} value={benefit.id}>
-                              {benefit.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
+                           {allBenefits.filter(b => 
+                             b.status === 'available' && 
+                             (b.eligible_roles?.length === 0 || b.eligible_roles?.includes(staff.role))
+                           ).map((benefit) => (
+                             <SelectItem key={benefit.id} value={benefit.id}>
+                               {benefit.title}
+                             </SelectItem>
+                           ))}
+                         </SelectContent>
                       </Select>
                     </div>
                     <div>
