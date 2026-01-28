@@ -78,7 +78,7 @@ export default function Benefits() {
 
   const { data: allBenefits = [] } = useQuery({
     queryKey: ['all-benefits'],
-    queryFn: () => base44.entities.Benefit.filter({ status: 'available' }, 'order'),
+    queryFn: () => base44.entities.Benefit.list('order'),
   });
 
   const createBenefitMutation = useMutation({
@@ -118,12 +118,18 @@ export default function Benefits() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {allBenefits.map((benefit) => {
                 const IconComponent = benefit.icon && benefit.icon !== 'none' ? iconMap[benefit.icon] : null;
+                const isComingSoon = benefit.status === 'coming_soon';
                 return (
-                  <div key={benefit.id} className={`${benefit.color} rounded-lg p-4 text-white`}>
+                  <div key={benefit.id} className={`${benefit.color} rounded-lg p-4 text-white ${isComingSoon ? 'opacity-75' : ''}`}>
                     <div className="flex items-start gap-3">
                       {IconComponent && <IconComponent className="w-6 h-6 flex-shrink-0 mt-0.5" />}
                       <div className="flex-1">
-                        <h3 className="font-medium text-lg mb-1">{benefit.title}</h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium text-lg">{benefit.title}</h3>
+                          {isComingSoon && (
+                            <span className="text-xs bg-white/20 px-2 py-0.5 rounded">準備中</span>
+                          )}
+                        </div>
                         <p className="text-sm opacity-90">{benefit.description}</p>
                         <div className="mt-2 text-xs opacity-75">
                           {benefit.frequency_type === 'unlimited' ? '利用制限なし' :
@@ -171,7 +177,7 @@ export default function Benefits() {
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>
                     <SelectContent>
-                      {allBenefits.map((benefit) => (
+                      {allBenefits.filter(b => b.status === 'available').map((benefit) => (
                         <SelectItem key={benefit.id} value={benefit.id}>
                           {benefit.title}
                         </SelectItem>
