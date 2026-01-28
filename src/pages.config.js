@@ -60,6 +60,7 @@ import TipsHistory from './pages/TipsHistory';
 import AttendanceApproval from './pages/AttendanceApproval';
 import AttendanceClose from './pages/AttendanceClose';
 import PayrollExport from './pages/PayrollExport';
+import Documents from './pages/Documents';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "AttendanceApproval": AttendanceApproval,
     "AttendanceClose": AttendanceClose,
     "PayrollExport": PayrollExport,
+    "Documents": Documents,
 }
 
 export const pagesConfig = {

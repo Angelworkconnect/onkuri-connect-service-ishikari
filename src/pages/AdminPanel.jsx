@@ -1274,7 +1274,7 @@ export default function AdminPanel() {
                 </div>
               </Card>
 
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/DocumentManagement'}>
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('Documents')}>
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
                     <FileText className="w-6 h-6 text-amber-600" />
