@@ -119,16 +119,20 @@ export default function Benefits() {
             </div>
           </div>
 
+          <Button 
+            className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
+            disabled={staff?.role === 'temporary'}
+            onClick={() => {
+              if (staff?.role !== 'temporary') {
+                setBenefitDialogOpen(true);
+              }
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            福利厚生を申請する
+          </Button>
+
           <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
-                disabled={staff?.role === 'temporary'}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                福利厚生を申請する
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>福利厚生サービス申請</DialogTitle>
