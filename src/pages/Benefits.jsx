@@ -16,8 +16,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Gift, Plus, Calendar } from "lucide-react";
+import { 
+  Gift, Plus, Calendar, Car, Sparkles, Heart, Home, Bike, Plane, Coffee, 
+  ShoppingBag, Utensils, Film, Music, Book, Dumbbell, Palmtree, Umbrella,
+  Sun, Moon, Star, Wallet, CreditCard, Ticket, Gamepad, Camera, Laptop,
+  Smartphone, Watch, Baby, Dog, Flower2
+} from "lucide-react";
 import { format } from 'date-fns';
+
+const iconMap = {
+  Gift, Car, Sparkles, Heart, Home, Bike, Plane, Coffee, 
+  ShoppingBag, Utensils, Film, Music, Book, Dumbbell, Palmtree, Umbrella,
+  Sun, Moon, Star, Wallet, CreditCard, Ticket, Gamepad, Camera, Laptop,
+  Smartphone, Watch, Baby, Dog, Flower2
+};
 
 const benefitTypeConfig = {
   spa_relaxation: { label: 'エステ／リラクゼーション', icon: '💆' },
@@ -104,18 +116,26 @@ export default function Benefits() {
           <div className="mb-4">
             <h2 className="text-lg font-medium mb-2">利用可能なサービス</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {allBenefits.map((benefit) => (
-                <div key={benefit.id} className={`${benefit.color} rounded-lg p-4 text-white`}>
-                  <h3 className="font-medium text-lg mb-1">{benefit.title}</h3>
-                  <p className="text-sm opacity-90">{benefit.description}</p>
-                  <div className="mt-2 text-xs opacity-75">
-                    {benefit.frequency_type === 'unlimited' ? '利用制限なし' :
-                     benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回まで` :
-                     benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回まで` :
-                     '1回のみ'}
+              {allBenefits.map((benefit) => {
+                const IconComponent = benefit.icon && benefit.icon !== 'none' ? iconMap[benefit.icon] : null;
+                return (
+                  <div key={benefit.id} className={`${benefit.color} rounded-lg p-4 text-white`}>
+                    <div className="flex items-start gap-3">
+                      {IconComponent && <IconComponent className="w-6 h-6 flex-shrink-0 mt-0.5" />}
+                      <div className="flex-1">
+                        <h3 className="font-medium text-lg mb-1">{benefit.title}</h3>
+                        <p className="text-sm opacity-90">{benefit.description}</p>
+                        <div className="mt-2 text-xs opacity-75">
+                          {benefit.frequency_type === 'unlimited' ? '利用制限なし' :
+                           benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回まで` :
+                           benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回まで` :
+                           '1回のみ'}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
