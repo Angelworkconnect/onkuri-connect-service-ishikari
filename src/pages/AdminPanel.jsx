@@ -146,6 +146,19 @@ export default function AdminPanel() {
     order: 0,
   });
 
+  const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
+  const [editingBenefit, setEditingBenefit] = useState(null);
+  const [benefitForm, setBenefitForm] = useState({
+    title: '',
+    description: '',
+    icon: 'Gift',
+    color: 'bg-[#E8A4B8]',
+    frequency_type: 'monthly',
+    frequency_limit: 1,
+    status: 'available',
+    order: 0,
+  });
+
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
     hero_subtitle: '',
@@ -233,6 +246,11 @@ export default function AdminPanel() {
   const { data: allServices = [] } = useQuery({
     queryKey: ['admin-services'],
     queryFn: () => base44.entities.Service.list('order'),
+  });
+
+  const { data: allBenefits = [] } = useQuery({
+    queryKey: ['admin-benefits'],
+    queryFn: () => base44.entities.Benefit.list('order'),
   });
 
   const { data: siteSettings = {} } = useQuery({
@@ -411,6 +429,29 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-services']),
   });
 
+  const createBenefitMutation = useMutation({
+    mutationFn: (data) => base44.entities.Benefit.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-benefits']);
+      setBenefitDialogOpen(false);
+      resetBenefitForm();
+    },
+  });
+
+  const updateBenefitMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Benefit.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-benefits']);
+      setBenefitDialogOpen(false);
+      resetBenefitForm();
+    },
+  });
+
+  const deleteBenefitMutation = useMutation({
+    mutationFn: (id) => base44.entities.Benefit.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-benefits']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -472,6 +513,20 @@ export default function AdminPanel() {
     setEditingService(null);
   };
 
+  const resetBenefitForm = () => {
+    setBenefitForm({
+      title: '',
+      description: '',
+      icon: 'Gift',
+      color: 'bg-[#E8A4B8]',
+      frequency_type: 'monthly',
+      frequency_limit: 1,
+      status: 'available',
+      order: 0,
+    });
+    setEditingBenefit(null);
+  };
+
   const handleEditService = (service) => {
     setEditingService(service);
     setServiceForm({
@@ -489,6 +544,29 @@ export default function AdminPanel() {
       updateServiceMutation.mutate({ id: editingService.id, data: serviceForm });
     } else {
       createServiceMutation.mutate(serviceForm);
+    }
+  };
+
+  const handleEditBenefit = (benefit) => {
+    setEditingBenefit(benefit);
+    setBenefitForm({
+      title: benefit.title,
+      description: benefit.description,
+      icon: benefit.icon,
+      color: benefit.color,
+      frequency_type: benefit.frequency_type || 'monthly',
+      frequency_limit: benefit.frequency_limit || 1,
+      status: benefit.status || 'available',
+      order: benefit.order || 0,
+    });
+    setBenefitDialogOpen(true);
+  };
+
+  const handleSubmitBenefit = () => {
+    if (editingBenefit) {
+      updateBenefitMutation.mutate({ id: editingBenefit.id, data: benefitForm });
+    } else {
+      createBenefitMutation.mutate(benefitForm);
     }
   };
 
@@ -708,6 +786,11 @@ export default function AdminPanel() {
               <Sparkles className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">サンクス管理</span>
               <span className="sm:hidden">サンクス</span>
+            </TabsTrigger>
+            <TabsTrigger value="benefits" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Gift className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">福利厚生</span>
+              <span className="sm:hidden">福利</span>
             </TabsTrigger>
             <TabsTrigger value="business" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <Settings className="w-4 h-4 mr-1 sm:mr-2" />
@@ -1241,6 +1324,69 @@ export default function AdminPanel() {
                   </Card>
                   </TabsContent>
 
+          {/* Benefits Tab */}
+          <TabsContent value="benefits">
+            <Card className="border-0 shadow-lg">
+              <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                <h2 className="text-lg font-medium">福利厚生項目一覧</h2>
+                <Button onClick={() => { resetBenefitForm(); setBenefitDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  新規福利厚生項目
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>項目名</TableHead>
+                      <TableHead>説明</TableHead>
+                      <TableHead>利用頻度</TableHead>
+                      <TableHead>ステータス</TableHead>
+                      <TableHead>アイコン</TableHead>
+                      <TableHead>順序</TableHead>
+                      <TableHead>操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {allBenefits.map((benefit) => (
+                      <TableRow key={benefit.id}>
+                        <TableCell className="font-medium">{benefit.title}</TableCell>
+                        <TableCell className="max-w-xs truncate">{benefit.description}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {benefit.frequency_type === 'unlimited' ? '無制限' :
+                             benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回` :
+                             benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回` :
+                             '1回のみ'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={
+                            benefit.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                          }>
+                            {benefit.status === 'available' ? '利用可能' : '準備中'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{benefit.icon}</TableCell>
+                        <TableCell>{benefit.order || 0}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditBenefit(benefit)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => deleteBenefitMutation.mutate(benefit.id)}>
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Business Functions Tab */}
           <TabsContent value="business">
             <div className="grid gap-6 md:grid-cols-2">
@@ -1740,6 +1886,76 @@ export default function AdminPanel() {
             <Button variant="outline" onClick={() => setServiceDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitService} className="bg-[#2D4A6F]">
               {editingService ? '更新' : '作成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Benefit Dialog */}
+      <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingBenefit ? '福利厚生項目編集' : '新規福利厚生項目作成'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+            <div>
+              <Label>項目名 *</Label>
+              <Input value={benefitForm.title} onChange={(e) => setBenefitForm({...benefitForm, title: e.target.value})} />
+            </div>
+            <div>
+              <Label>説明 *</Label>
+              <Textarea value={benefitForm.description} onChange={(e) => setBenefitForm({...benefitForm, description: e.target.value})} className="h-24" />
+            </div>
+            <div>
+              <Label>アイコン名（Lucide React）*</Label>
+              <Input value={benefitForm.icon} onChange={(e) => setBenefitForm({...benefitForm, icon: e.target.value})} placeholder="Gift, Car, Umbrella など" />
+            </div>
+            <div>
+              <Label>背景カラークラス *</Label>
+              <Input value={benefitForm.color} onChange={(e) => setBenefitForm({...benefitForm, color: e.target.value})} placeholder="bg-[#E8A4B8]" />
+            </div>
+            <div>
+              <Label>利用頻度制限 *</Label>
+              <Select value={benefitForm.frequency_type} onValueChange={(v) => setBenefitForm({...benefitForm, frequency_type: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unlimited">無制限</SelectItem>
+                  <SelectItem value="monthly">月単位</SelectItem>
+                  <SelectItem value="yearly">年単位</SelectItem>
+                  <SelectItem value="once">1回のみ</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(benefitForm.frequency_type === 'monthly' || benefitForm.frequency_type === 'yearly') && (
+              <div>
+                <Label>期間内の利用回数上限</Label>
+                <Input 
+                  type="number" 
+                  value={benefitForm.frequency_limit} 
+                  onChange={(e) => setBenefitForm({...benefitForm, frequency_limit: Number(e.target.value)})} 
+                  min="1"
+                />
+              </div>
+            )}
+            <div>
+              <Label>ステータス *</Label>
+              <Select value={benefitForm.status} onValueChange={(v) => setBenefitForm({...benefitForm, status: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">利用可能（申請可）</SelectItem>
+                  <SelectItem value="coming_soon">準備中（表示のみ）</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>表示順序</Label>
+              <Input type="number" value={benefitForm.order} onChange={(e) => setBenefitForm({...benefitForm, order: Number(e.target.value)})} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBenefitDialogOpen(false)}>キャンセル</Button>
+            <Button onClick={handleSubmitBenefit} className="bg-[#2D4A6F]">
+              {editingBenefit ? '更新' : '作成'}
             </Button>
           </DialogFooter>
         </DialogContent>
