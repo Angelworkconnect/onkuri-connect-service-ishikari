@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Edit, Trash2, CheckCircle, XCircle, Gift } from "lucide-react";
 import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function BenefitManagement() {
   const [user, setUser] = useState(null);
