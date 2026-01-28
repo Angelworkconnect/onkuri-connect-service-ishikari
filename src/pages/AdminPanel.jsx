@@ -2077,8 +2077,47 @@ export default function AdminPanel() {
               </Select>
             </div>
             <div>
-              <Label>背景カラークラス *</Label>
-              <Input value={benefitForm.color} onChange={(e) => setBenefitForm({...benefitForm, color: e.target.value})} placeholder="bg-[#E8A4B8]" />
+              <Label>背景カラー *</Label>
+              <div className="space-y-2">
+                <Select 
+                  value={benefitForm.color.startsWith('bg-[') ? 'custom' : benefitForm.color} 
+                  onValueChange={(v) => {
+                    if (v !== 'custom') {
+                      setBenefitForm({...benefitForm, color: v});
+                    }
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="プリセットから選択" /></SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="bg-[#E8A4B8]">🌸 ピンク</SelectItem>
+                    <SelectItem value="bg-[#7CB342]">🌿 グリーン</SelectItem>
+                    <SelectItem value="bg-[#2D4A6F]">🌊 ブルー</SelectItem>
+                    <SelectItem value="bg-indigo-500">💜 インディゴ</SelectItem>
+                    <SelectItem value="bg-purple-500">🔮 パープル</SelectItem>
+                    <SelectItem value="bg-rose-500">🌹 ローズ</SelectItem>
+                    <SelectItem value="bg-orange-500">🍊 オレンジ</SelectItem>
+                    <SelectItem value="bg-amber-500">⚡ アンバー</SelectItem>
+                    <SelectItem value="bg-yellow-500">☀️ イエロー</SelectItem>
+                    <SelectItem value="bg-lime-500">🍋 ライム</SelectItem>
+                    <SelectItem value="bg-emerald-500">💚 エメラルド</SelectItem>
+                    <SelectItem value="bg-teal-500">🐬 ティール</SelectItem>
+                    <SelectItem value="bg-cyan-500">🧊 シアン</SelectItem>
+                    <SelectItem value="bg-sky-500">☁️ スカイ</SelectItem>
+                    <SelectItem value="bg-slate-500">🪨 スレート</SelectItem>
+                    <SelectItem value="custom">🎨 カスタム</SelectItem>
+                  </SelectContent>
+                </Select>
+                {(benefitForm.color.startsWith('bg-[') || benefitForm.color === 'custom') && (
+                  <div>
+                    <Label className="text-xs text-slate-500">カスタムカラー（例: bg-[#FF5733] または bg-red-500）</Label>
+                    <Input 
+                      value={benefitForm.color} 
+                      onChange={(e) => setBenefitForm({...benefitForm, color: e.target.value})} 
+                      placeholder="bg-[#E8A4B8]"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <Label>利用頻度制限 *</Label>
