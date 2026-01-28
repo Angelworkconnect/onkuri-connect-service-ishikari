@@ -178,12 +178,14 @@ export default function TipBenefitSection({ user }) {
                         <SelectValue placeholder="選択してください" />
                       </SelectTrigger>
                       <SelectContent>
-                        {allBenefits.map((benefit) => (
-                          <SelectItem key={benefit.id} value={benefit.id}>
-                            {benefit.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
+                         {allBenefits.filter((benefit) => 
+                           benefit.eligible_roles?.length === 0 || benefit.eligible_roles?.includes(staffRole)
+                         ).map((benefit) => (
+                           <SelectItem key={benefit.id} value={benefit.id}>
+                             {benefit.title}
+                           </SelectItem>
+                         ))}
+                       </SelectContent>
                     </Select>
                   </div>
                   <div>
