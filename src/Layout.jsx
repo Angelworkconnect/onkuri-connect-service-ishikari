@@ -37,6 +37,11 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(async (u) => {
       if (u) {
+        // Check if user is admin in User entity
+        if (u.role === 'admin') {
+          setIsAdmin(true);
+        }
+        
         // Check Staff entity role and get full name
         const staffList = await base44.entities.Staff.filter({ email: u.email });
         if (staffList.length > 0) {
@@ -44,8 +49,6 @@ export default function Layout({ children, currentPageName }) {
           if (staffList[0].role === 'admin') {
             setIsAdmin(true);
           }
-        } else if (u.role === 'admin') {
-          setIsAdmin(true);
         }
       }
       setUser(u);
