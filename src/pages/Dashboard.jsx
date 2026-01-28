@@ -28,10 +28,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     base44.auth.me().then(async (u) => {
-      // Staffエンティティから名前を取得
+      // Staffエンティティから名前と承認状態を取得
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) {
         u.full_name = staffList[0].full_name;
+        u.approval_status = staffList[0].approval_status;
       }
       setUser(u);
     }).catch((error) => {
@@ -133,6 +134,54 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-slate-400">読み込み中...</div>
+      </div>
+    );
+  }
+
+  // 承認待ちの場合
+  if (user.approval_status === 'pending') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+            <Clock className="w-8 h-8 text-amber-600" />
+          </div>
+          <h2 className="text-2xl font-medium text-slate-800 mb-2">承認待ち</h2>
+          <p className="text-slate-600 mb-6">
+            スタッフ登録の承認待ちです。<br />
+            管理者の承認後にダッシュボードをご利用いただけます。
+          </p>
+          <Button 
+            className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
+            onClick={() => window.location.href = createPageUrl('Home')}
+          >
+            ホームへ戻る
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // 却下された場合
+  if (user.approval_status === 'rejected') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <Clock className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-medium text-slate-800 mb-2">承認されませんでした</h2>
+          <p className="text-slate-600 mb-6">
+            スタッフ登録申請が承認されませんでした。<br />
+            詳細については管理者にお問い合わせください。
+          </p>
+          <Button 
+            className="bg-[#2D4A6F] hover:bg-[#1E3A5F]"
+            onClick={() => window.location.href = createPageUrl('Home')}
+          >
+            ホームへ戻る
+          </Button>
+        </Card>
       </div>
     );
   }

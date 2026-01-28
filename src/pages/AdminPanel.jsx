@@ -35,6 +35,7 @@ import {
         CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
         Eye, EyeOff, Sparkles, Settings, Gift
       } from "lucide-react";
+import { createPageUrl } from '@/utils';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import { format } from "date-fns";
@@ -1282,6 +1283,18 @@ export default function AdminPanel() {
                   <div>
                     <h3 className="text-lg font-medium mb-2">書類管理</h3>
                     <p className="text-sm text-slate-600">職員・利用者・事業所書類の一元管理</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('StaffApproval')}>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">スタッフ承認</h3>
+                    <p className="text-sm text-slate-600">新規スタッフ登録を承認・却下</p>
                   </div>
                 </div>
               </Card>

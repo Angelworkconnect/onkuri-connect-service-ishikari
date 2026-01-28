@@ -56,7 +56,8 @@ export default function StaffRegistration() {
         date_of_birth: form.date_of_birth,
         gender: form.gender,
         role: 'temporary',
-        status: 'inactive', // 管理者承認待ち
+        status: 'active',
+        approval_status: 'pending', // 管理者承認待ち
       });
 
       alert('スタッフ登録が完了しました。管理者の承認をお待ちください。');
