@@ -2039,8 +2039,42 @@ export default function AdminPanel() {
               <Textarea value={benefitForm.description} onChange={(e) => setBenefitForm({...benefitForm, description: e.target.value})} className="h-24" />
             </div>
             <div>
-              <Label>アイコン名（Lucide React）*</Label>
-              <Input value={benefitForm.icon} onChange={(e) => setBenefitForm({...benefitForm, icon: e.target.value})} placeholder="Gift, Car, Umbrella など" />
+              <Label>アイコン名 *</Label>
+              <Select value={benefitForm.icon} onValueChange={(v) => setBenefitForm({...benefitForm, icon: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent className="max-h-60">
+                  <SelectItem value="Gift">🎁 ギフト（Gift）</SelectItem>
+                  <SelectItem value="Car">🚗 車（Car）</SelectItem>
+                  <SelectItem value="Sparkles">✨ エステ・リラクゼーション（Sparkles）</SelectItem>
+                  <SelectItem value="Heart">❤️ ハート（Heart）</SelectItem>
+                  <SelectItem value="Home">🏠 ホーム（Home）</SelectItem>
+                  <SelectItem value="Bike">🚴 バイク（Bike）</SelectItem>
+                  <SelectItem value="Plane">✈️ 飛行機（Plane）</SelectItem>
+                  <SelectItem value="Coffee">☕ カフェ（Coffee）</SelectItem>
+                  <SelectItem value="ShoppingBag">🛍️ ショッピング（ShoppingBag）</SelectItem>
+                  <SelectItem value="Utensils">🍴 レストラン（Utensils）</SelectItem>
+                  <SelectItem value="Film">🎬 映画（Film）</SelectItem>
+                  <SelectItem value="Music">🎵 音楽（Music）</SelectItem>
+                  <SelectItem value="Book">📚 読書（Book）</SelectItem>
+                  <SelectItem value="Dumbbell">💪 フィットネス（Dumbbell）</SelectItem>
+                  <SelectItem value="Palmtree">🌴 リゾート（Palmtree）</SelectItem>
+                  <SelectItem value="Umbrella">☂️ 傘（Umbrella）</SelectItem>
+                  <SelectItem value="Sun">☀️ 太陽（Sun）</SelectItem>
+                  <SelectItem value="Moon">🌙 月（Moon）</SelectItem>
+                  <SelectItem value="Star">⭐ スター（Star）</SelectItem>
+                  <SelectItem value="Wallet">💰 ウォレット（Wallet）</SelectItem>
+                  <SelectItem value="CreditCard">💳 クレジットカード（CreditCard）</SelectItem>
+                  <SelectItem value="Ticket">🎟️ チケット（Ticket）</SelectItem>
+                  <SelectItem value="Gamepad">🎮 ゲーム（Gamepad）</SelectItem>
+                  <SelectItem value="Camera">📷 カメラ（Camera）</SelectItem>
+                  <SelectItem value="Laptop">💻 PC（Laptop）</SelectItem>
+                  <SelectItem value="Smartphone">📱 スマホ（Smartphone）</SelectItem>
+                  <SelectItem value="Watch">⌚ 時計（Watch）</SelectItem>
+                  <SelectItem value="Baby">👶 ベビー（Baby）</SelectItem>
+                  <SelectItem value="Dog">🐕 ペット（Dog）</SelectItem>
+                  <SelectItem value="Flower2">🌸 花（Flower2）</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>背景カラークラス *</Label>
