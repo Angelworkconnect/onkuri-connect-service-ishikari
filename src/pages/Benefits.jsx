@@ -39,7 +39,7 @@ export default function Benefits() {
   const [staff, setStaff] = useState(null);
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
   const [newBenefit, setNewBenefit] = useState({
-    benefit_type: '',
+    benefit_id: '',
     request_date: '',
     notes: '',
   });
@@ -64,6 +64,11 @@ export default function Benefits() {
     enabled: !!user,
   });
 
+  const { data: allBenefits = [] } = useQuery({
+    queryKey: ['all-benefits'],
+    queryFn: () => base44.entities.Benefit.filter({ status: 'available' }, 'order'),
+  });
+
   const createBenefitMutation = useMutation({
     mutationFn: (data) => base44.entities.BenefitApplication.create({
       ...data,
@@ -73,7 +78,7 @@ export default function Benefits() {
     onSuccess: () => {
       queryClient.invalidateQueries(['benefits']);
       setBenefitDialogOpen(false);
-      setNewBenefit({ benefit_type: '', request_date: '', notes: '' });
+      setNewBenefit({ benefit_id: '', request_date: '', notes: '' });
     },
   });
 
@@ -99,10 +104,16 @@ export default function Benefits() {
           <div className="mb-4">
             <h2 className="text-lg font-medium mb-2">利用可能なサービス</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Object.entries(benefitTypeConfig).map(([key, config]) => (
-                <div key={key} className="border border-slate-200 rounded-lg p-3 flex items-center gap-3">
-                  <span className="text-2xl">{config.icon}</span>
-                  <span className="text-sm text-slate-700">{config.label}</span>
+              {allBenefits.map((benefit) => (
+                <div key={benefit.id} className={`${benefit.color} rounded-lg p-4 text-white`}>
+                  <h3 className="font-medium text-lg mb-1">{benefit.title}</h3>
+                  <p className="text-sm opacity-90">{benefit.description}</p>
+                  <div className="mt-2 text-xs opacity-75">
+                    {benefit.frequency_type === 'unlimited' ? '利用制限なし' :
+                     benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回まで` :
+                     benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回まで` :
+                     '1回のみ'}
+                  </div>
                 </div>
               ))}
             </div>
@@ -129,16 +140,16 @@ export default function Benefits() {
                 <div>
                   <Label>サービス種類</Label>
                   <Select
-                    value={newBenefit.benefit_type}
-                    onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_type: value })}
+                    value={newBenefit.benefit_id}
+                    onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_id: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="選択してください" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(benefitTypeConfig).map(([key, config]) => (
-                        <SelectItem key={key} value={key}>
-                          {config.icon} {config.label}
+                      {allBenefits.map((benefit) => (
+                        <SelectItem key={benefit.id} value={benefit.id}>
+                          {benefit.title}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -163,7 +174,7 @@ export default function Benefits() {
                 <Button 
                   className="w-full bg-[#7CB342] hover:bg-[#6BA02D]"
                   onClick={() => createBenefitMutation.mutate(newBenefit)}
-                  disabled={!newBenefit.benefit_type || !newBenefit.request_date || createBenefitMutation.isPending}
+                  disabled={!newBenefit.benefit_id || !newBenefit.request_date || createBenefitMutation.isPending}
                 >
                   申請する
                 </Button>
@@ -191,7 +202,7 @@ export default function Benefits() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="text-lg font-medium text-slate-800 mb-2">
-                      {benefitTypeConfig[benefit.benefit_type]?.icon} {benefitTypeConfig[benefit.benefit_type]?.label}
+                      {allBenefits.find(b => b.id === benefit.benefit_id)?.title || '不明な福利厚生'}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                       <Calendar className="w-4 h-4" />

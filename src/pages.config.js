@@ -49,38 +49,38 @@
  */
 import AdminPanel from './pages/AdminPanel';
 import Attendance from './pages/Attendance';
+import AttendanceApproval from './pages/AttendanceApproval';
+import AttendanceClose from './pages/AttendanceClose';
 import Benefits from './pages/Benefits';
 import Dashboard from './pages/Dashboard';
 import DiceGame from './pages/DiceGame';
+import Documents from './pages/Documents';
 import Home from './pages/Home';
 import MyApplications from './pages/MyApplications';
+import PayrollExport from './pages/PayrollExport';
 import Shifts from './pages/Shifts';
+import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
-import AttendanceApproval from './pages/AttendanceApproval';
-import AttendanceClose from './pages/AttendanceClose';
-import PayrollExport from './pages/PayrollExport';
-import Documents from './pages/Documents';
-import StaffApproval from './pages/StaffApproval';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminPanel": AdminPanel,
     "Attendance": Attendance,
+    "AttendanceApproval": AttendanceApproval,
+    "AttendanceClose": AttendanceClose,
     "Benefits": Benefits,
     "Dashboard": Dashboard,
     "DiceGame": DiceGame,
+    "Documents": Documents,
     "Home": Home,
     "MyApplications": MyApplications,
+    "PayrollExport": PayrollExport,
     "Shifts": Shifts,
+    "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
-    "AttendanceApproval": AttendanceApproval,
-    "AttendanceClose": AttendanceClose,
-    "PayrollExport": PayrollExport,
-    "Documents": Documents,
-    "StaffApproval": StaffApproval,
 }
 
 export const pagesConfig = {

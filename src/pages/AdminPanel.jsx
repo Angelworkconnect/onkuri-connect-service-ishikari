@@ -159,6 +159,13 @@ export default function AdminPanel() {
     order: 0,
   });
 
+  const [benefitAppDialogOpen, setBenefitAppDialogOpen] = useState(false);
+  const [editingBenefitApp, setEditingBenefitApp] = useState(null);
+  const [benefitAppForm, setBenefitAppForm] = useState({
+    status: 'pending',
+    admin_notes: '',
+  });
+
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
     hero_subtitle: '',
@@ -251,6 +258,11 @@ export default function AdminPanel() {
   const { data: allBenefits = [] } = useQuery({
     queryKey: ['admin-benefits'],
     queryFn: () => base44.entities.Benefit.list('order'),
+  });
+
+  const { data: allBenefitApps = [] } = useQuery({
+    queryKey: ['admin-benefit-apps'],
+    queryFn: () => base44.entities.BenefitApplication.list('-created_date'),
   });
 
   const { data: siteSettings = {} } = useQuery({
@@ -452,6 +464,20 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-benefits']),
   });
 
+  const updateBenefitAppMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.BenefitApplication.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-benefit-apps']);
+      setBenefitAppDialogOpen(false);
+      resetBenefitAppForm();
+    },
+  });
+
+  const deleteBenefitAppMutation = useMutation({
+    mutationFn: (id) => base44.entities.BenefitApplication.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-benefit-apps']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -527,6 +553,14 @@ export default function AdminPanel() {
     setEditingBenefit(null);
   };
 
+  const resetBenefitAppForm = () => {
+    setBenefitAppForm({
+      status: 'pending',
+      admin_notes: '',
+    });
+    setEditingBenefitApp(null);
+  };
+
   const handleEditService = (service) => {
     setEditingService(service);
     setServiceForm({
@@ -568,6 +602,19 @@ export default function AdminPanel() {
     } else {
       createBenefitMutation.mutate(benefitForm);
     }
+  };
+
+  const handleEditBenefitApp = (app) => {
+    setEditingBenefitApp(app);
+    setBenefitAppForm({
+      status: app.status,
+      admin_notes: app.admin_notes || '',
+    });
+    setBenefitAppDialogOpen(true);
+  };
+
+  const handleSubmitBenefitApp = () => {
+    updateBenefitAppMutation.mutate({ id: editingBenefitApp.id, data: benefitAppForm });
   };
 
   const handleEditAttendance = (attendance) => {
@@ -789,8 +836,13 @@ export default function AdminPanel() {
             </TabsTrigger>
             <TabsTrigger value="benefits" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <Gift className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">福利厚生</span>
+              <span className="hidden sm:inline">福利厚生項目</span>
               <span className="sm:hidden">福利</span>
+            </TabsTrigger>
+            <TabsTrigger value="benefit-apps" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <CheckCircle className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">福利申請管理</span>
+              <span className="sm:hidden">申請</span>
             </TabsTrigger>
             <TabsTrigger value="business" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <Settings className="w-4 h-4 mr-1 sm:mr-2" />
@@ -1387,6 +1439,86 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Benefit Applications Tab */}
+          <TabsContent value="benefit-apps">
+            <Card className="border-0 shadow-lg">
+              <div className="p-4 sm:p-6 border-b">
+                <h2 className="text-lg font-medium">福利厚生申請一覧</h2>
+                <p className="text-sm text-slate-500 mt-1">スタッフからの福利厚生サービス申請を管理</p>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>申請者</TableHead>
+                      <TableHead>福利厚生項目</TableHead>
+                      <TableHead>利用希望日</TableHead>
+                      <TableHead>申請日</TableHead>
+                      <TableHead>ステータス</TableHead>
+                      <TableHead>備考</TableHead>
+                      <TableHead>操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {allBenefitApps.map((app) => (
+                      <TableRow key={app.id}>
+                        <TableCell className="font-medium">{app.user_name || app.user_email}</TableCell>
+                        <TableCell>
+                          {allBenefits.find(b => b.id === app.benefit_id)?.title || '不明'}
+                        </TableCell>
+                        <TableCell>{format(new Date(app.request_date), 'yyyy/M/d')}</TableCell>
+                        <TableCell>{format(new Date(app.created_date), 'M/d HH:mm')}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            app.status === 'approved' ? 'bg-green-100 text-green-700' :
+                            app.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                            app.status === 'used' ? 'bg-slate-100 text-slate-500' :
+                            'bg-amber-100 text-amber-700'
+                          }>
+                            {app.status === 'approved' ? '承認済み' :
+                             app.status === 'rejected' ? '却下' :
+                             app.status === 'used' ? '利用済み' :
+                             '申請中'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">{app.notes || '-'}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditBenefitApp(app)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            {app.status === 'pending' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="bg-[#7CB342] hover:bg-[#6BA232]"
+                                  onClick={() => updateBenefitAppMutation.mutate({ id: app.id, data: { status: 'approved' } })}
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-red-500 border-red-200 hover:bg-red-50"
+                                  onClick={() => updateBenefitAppMutation.mutate({ id: app.id, data: { status: 'rejected' } })}
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                            <Button variant="ghost" size="icon" onClick={() => deleteBenefitAppMutation.mutate(app.id)}>
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Business Functions Tab */}
           <TabsContent value="business">
             <div className="grid gap-6 md:grid-cols-2">
@@ -1956,6 +2088,66 @@ export default function AdminPanel() {
             <Button variant="outline" onClick={() => setBenefitDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitBenefit} className="bg-[#2D4A6F]">
               {editingBenefit ? '更新' : '作成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Benefit Application Dialog */}
+      <Dialog open={benefitAppDialogOpen} onOpenChange={setBenefitAppDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>福利厚生申請管理</DialogTitle>
+          </DialogHeader>
+          {editingBenefitApp && (
+            <div className="space-y-4 py-4">
+              <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">申請者:</span>
+                  <span className="font-medium">{editingBenefitApp.user_name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">福利厚生項目:</span>
+                  <span className="font-medium">{allBenefits.find(b => b.id === editingBenefitApp.benefit_id)?.title}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">利用希望日:</span>
+                  <span className="font-medium">{format(new Date(editingBenefitApp.request_date), 'yyyy年M月d日')}</span>
+                </div>
+                {editingBenefitApp.notes && (
+                  <div className="pt-2 border-t">
+                    <span className="text-sm text-slate-600">備考:</span>
+                    <p className="text-sm mt-1">{editingBenefitApp.notes}</p>
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label>ステータス *</Label>
+                <Select value={benefitAppForm.status} onValueChange={(v) => setBenefitAppForm({...benefitAppForm, status: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">申請中</SelectItem>
+                    <SelectItem value="approved">承認済み</SelectItem>
+                    <SelectItem value="rejected">却下</SelectItem>
+                    <SelectItem value="used">利用済み</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>管理者メモ</Label>
+                <Textarea 
+                  value={benefitAppForm.admin_notes} 
+                  onChange={(e) => setBenefitAppForm({...benefitAppForm, admin_notes: e.target.value})}
+                  placeholder="申請者へのメッセージ、却下理由など"
+                  className="h-24"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBenefitAppDialogOpen(false)}>キャンセル</Button>
+            <Button onClick={handleSubmitBenefitApp} className="bg-[#2D4A6F]">
+              更新
             </Button>
           </DialogFooter>
         </DialogContent>
