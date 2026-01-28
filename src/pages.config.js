@@ -51,6 +51,7 @@ import AdminPanel from './pages/AdminPanel';
 import Attendance from './pages/Attendance';
 import AttendanceApproval from './pages/AttendanceApproval';
 import AttendanceClose from './pages/AttendanceClose';
+import BenefitManagement from './pages/BenefitManagement';
 import Benefits from './pages/Benefits';
 import Dashboard from './pages/Dashboard';
 import DiceGame from './pages/DiceGame';
@@ -62,7 +63,6 @@ import Shifts from './pages/Shifts';
 import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
-import BenefitManagement from './pages/BenefitManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +71,7 @@ export const PAGES = {
     "Attendance": Attendance,
     "AttendanceApproval": AttendanceApproval,
     "AttendanceClose": AttendanceClose,
+    "BenefitManagement": BenefitManagement,
     "Benefits": Benefits,
     "Dashboard": Dashboard,
     "DiceGame": DiceGame,
@@ -82,7 +83,6 @@ export const PAGES = {
     "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
-    "BenefitManagement": BenefitManagement,
 }
 
 export const pagesConfig = {

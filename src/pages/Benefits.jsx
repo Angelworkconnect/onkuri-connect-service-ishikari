@@ -62,7 +62,9 @@ export default function Benefits() {
       setUser(u);
       // Fetch staff info to check role
       const staffList = await base44.entities.Staff.filter({ email: u.email });
+      console.log('Staff filter result:', staffList);
       if (staffList.length > 0) {
+        console.log('Staff role:', staffList[0].role);
         setStaff(staffList[0]);
       }
     }).catch(() => {
