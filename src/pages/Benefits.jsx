@@ -146,7 +146,7 @@ export default function Benefits() {
             </div>
             </div>
 
-            {staff && staff.role && (selectedBenefit.eligible_roles?.length === 0 || selectedBenefit.eligible_roles?.includes(staff.role)) && (
+            {staff && staff.role && (
             <>
               <Button 
                 className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
