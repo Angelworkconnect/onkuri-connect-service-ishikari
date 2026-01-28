@@ -154,9 +154,12 @@ export default function AdminPanel() {
 
   useEffect(() => {
     base44.auth.me().then(async u => {
-      // Check if user is in Staff entity with admin role
+      // Check if user is admin - either in User entity or Staff entity
       const staffList = await base44.entities.Staff.filter({ email: u.email });
-      if (staffList.length === 0 || staffList[0].role !== 'admin') {
+      const isUserAdmin = u.role === 'admin';
+      const isStaffAdmin = staffList.length > 0 && staffList[0].role === 'admin';
+      
+      if (!isUserAdmin && !isStaffAdmin) {
         alert('管理者権限がありません。この画面へのアクセスは管理者カテゴリのスタッフのみに制限されています。');
         window.location.href = '/';
         return;
