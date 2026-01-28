@@ -127,7 +127,7 @@ export default function Shifts() {
     }
 
     const staff = staffList[0];
-    if (staff.status === 'inactive') {
+    if (staff.approval_status !== 'approved') {
       // Waiting for approval
       alert('現在、管理者の承認待ちです。承認後に応募できるようになります。');
       return;
