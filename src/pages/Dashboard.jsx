@@ -32,7 +32,11 @@ export default function Dashboard() {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) {
         u.full_name = staffList[0].full_name;
-        u.approval_status = staffList[0].approval_status;
+        u.approval_status = staffList[0].approval_status || 'pending';
+      } else {
+        // スタッフ登録がない場合は登録ページへリダイレクト
+        window.location.href = createPageUrl('StaffRegistration');
+        return;
       }
       setUser(u);
     }).catch((error) => {
@@ -138,8 +142,10 @@ export default function Dashboard() {
     );
   }
 
-  // 承認待ちの場合
-  if (user.approval_status === 'pending') {
+  // 承認済みでない場合はアクセス不可
+  if (user.approval_status !== 'approved') {
+    // 承認待ちの場合
+    if (user.approval_status === 'pending') {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
@@ -160,10 +166,9 @@ export default function Dashboard() {
         </Card>
       </div>
     );
-  }
+    }
 
-  // 却下された場合
-  if (user.approval_status === 'rejected') {
+    // 却下された場合
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <Card className="max-w-md w-full p-8 text-center border-0 shadow-lg">
@@ -184,6 +189,7 @@ export default function Dashboard() {
         </Card>
       </div>
     );
+  }
   }
 
   return (
