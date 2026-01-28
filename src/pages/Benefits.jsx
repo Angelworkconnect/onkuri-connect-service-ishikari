@@ -145,79 +145,79 @@ export default function Benefits() {
             </div>
           </div>
 
-          <Button 
-            className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
-            disabled={staff?.role === 'temporary'}
-            onClick={() => {
-              if (staff?.role !== 'temporary') {
-                setBenefitDialogOpen(true);
-              }
-            }}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            福利厚生を申請する
-          </Button>
-
-          <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>福利厚生サービス申請</DialogTitle>
-                <DialogDescription>
-                  利用したい福利厚生サービスを選択してください
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label>サービス種類</Label>
-                  <Select
-                    value={newBenefit.benefit_id}
-                    onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_id: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="選択してください" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {allBenefits.filter(b => b.status === 'available').map((benefit) => (
-                        <SelectItem key={benefit.id} value={benefit.id}>
-                          {benefit.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>利用希望日</Label>
-                  <Input
-                    type="date"
-                    value={newBenefit.request_date}
-                    onChange={(e) => setNewBenefit({ ...newBenefit, request_date: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label>備考</Label>
-                  <Textarea
-                    value={newBenefit.notes}
-                    onChange={(e) => setNewBenefit({ ...newBenefit, notes: e.target.value })}
-                    placeholder="その他ご要望などがあればご記入ください"
-                  />
-                </div>
-                <Button 
-                  className="w-full bg-[#7CB342] hover:bg-[#6BA02D]"
-                  onClick={() => createBenefitMutation.mutate(newBenefit)}
-                  disabled={!newBenefit.benefit_id || !newBenefit.request_date || createBenefitMutation.isPending}
-                >
-                  申請する
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {staff?.role === 'temporary' && (
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
-                ※ 単発スタッフは福利厚生サービスの申請ができません
+{staff?.role === 'temporary' ? (
+            <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
+              <p className="text-sm text-amber-800 font-medium">
+                こちらのサービスはご利用できません
+              </p>
+              <p className="text-xs text-amber-700 mt-1">
+                単発スタッフは福利厚生サービスの申請ができません
               </p>
             </div>
+          ) : (
+            <>
+              <Button 
+                className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
+                onClick={() => setBenefitDialogOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                福利厚生を申請する
+              </Button>
+
+              <Dialog open={benefitDialogOpen} onOpenChange={setBenefitDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>福利厚生サービス申請</DialogTitle>
+                    <DialogDescription>
+                      利用したい福利厚生サービスを選択してください
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div>
+                      <Label>サービス種類</Label>
+                      <Select
+                        value={newBenefit.benefit_id}
+                        onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_id: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="選択してください" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allBenefits.filter(b => b.status === 'available').map((benefit) => (
+                            <SelectItem key={benefit.id} value={benefit.id}>
+                              {benefit.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>利用希望日</Label>
+                      <Input
+                        type="date"
+                        value={newBenefit.request_date}
+                        onChange={(e) => setNewBenefit({ ...newBenefit, request_date: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>備考</Label>
+                      <Textarea
+                        value={newBenefit.notes}
+                        onChange={(e) => setNewBenefit({ ...newBenefit, notes: e.target.value })}
+                        placeholder="その他ご要望などがあればご記入ください"
+                      />
+                    </div>
+                    <Button 
+                      className="w-full bg-[#7CB342] hover:bg-[#6BA02D]"
+                      onClick={() => createBenefitMutation.mutate(newBenefit)}
+                      disabled={!newBenefit.benefit_id || !newBenefit.request_date || createBenefitMutation.isPending}
+                    >
+                      申請する
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </>
           )}
         </Card>
 
