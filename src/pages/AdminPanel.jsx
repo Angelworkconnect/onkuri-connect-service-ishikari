@@ -160,6 +160,23 @@ export default function AdminPanel() {
       const isStaffAdmin = staffList.length > 0 && staffList[0].role === 'admin';
       
       if (!isUserAdmin && !isStaffAdmin) {
+        // If no staff record exists, create one as admin (for initial setup)
+        if (staffList.length === 0) {
+          try {
+            await base44.entities.Staff.create({
+              full_name: u.full_name || u.email,
+              email: u.email,
+              role: 'admin',
+              status: 'active',
+            });
+            alert('管理者として登録されました。画面を再読み込みします。');
+            window.location.reload();
+            return;
+          } catch (error) {
+            console.error('スタッフ登録エラー:', error);
+          }
+        }
+        
         alert('管理者権限がありません。この画面へのアクセスは管理者カテゴリのスタッフのみに制限されています。');
         window.location.href = '/';
         return;
