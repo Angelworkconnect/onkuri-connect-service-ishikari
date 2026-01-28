@@ -806,8 +806,8 @@ export default function AdminPanel() {
               </TabsTrigger>
               <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <Calendar className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">シフト管理</span>
-              <span className="sm:hidden">シフト</span>
+              <span className="hidden sm:inline">単発管理</span>
+              <span className="sm:hidden">単発</span>
             </TabsTrigger>
             <TabsTrigger value="applications" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
               <FileText className="w-4 h-4 mr-1 sm:mr-2" />
@@ -961,10 +961,10 @@ export default function AdminPanel() {
           <TabsContent value="shifts">
            <Card className="border-0 shadow-lg">
              <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
-               <h2 className="text-lg font-medium">シフト一覧</h2>
+               <h2 className="text-lg font-medium">単発募集一覧</h2>
                <Button onClick={() => { resetShiftForm(); setShiftDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
                  <Plus className="w-4 h-4 mr-2" />
-                 新規シフト
+                 新規単発募集
                </Button>
              </div>
              <div className="overflow-x-auto">
