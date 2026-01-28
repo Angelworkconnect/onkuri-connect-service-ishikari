@@ -46,7 +46,7 @@ const statusConfig = {
 export default function TipBenefitSection({ user }) {
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
   const [newBenefit, setNewBenefit] = useState({
-    benefit_type: '',
+    benefit_id: '',
     request_date: '',
     notes: '',
   });
@@ -56,6 +56,11 @@ export default function TipBenefitSection({ user }) {
     queryKey: ['tips', user?.email],
     queryFn: () => user ? base44.entities.TipRecord.filter({ user_email: user.email }, '-date') : [],
     enabled: !!user,
+  });
+
+  const { data: allBenefits = [] } = useQuery({
+    queryKey: ['all-benefits'],
+    queryFn: () => base44.entities.Benefit.filter({ status: 'available' }, 'order'),
   });
 
   const { data: benefits = [] } = useQuery({
@@ -73,7 +78,7 @@ export default function TipBenefitSection({ user }) {
     onSuccess: () => {
       queryClient.invalidateQueries(['benefits']);
       setBenefitDialogOpen(false);
-      setNewBenefit({ benefit_type: '', request_date: '', notes: '' });
+      setNewBenefit({ benefit_id: '', request_date: '', notes: '' });
     },
   });
 
@@ -155,16 +160,16 @@ export default function TipBenefitSection({ user }) {
                   <div>
                     <Label>サービス種類</Label>
                     <Select
-                      value={newBenefit.benefit_type}
-                      onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_type: value })}
+                      value={newBenefit.benefit_id}
+                      onValueChange={(value) => setNewBenefit({ ...newBenefit, benefit_id: value })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="選択してください" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(benefitTypeConfig).map(([key, config]) => (
-                          <SelectItem key={key} value={key}>
-                            {config.icon} {config.label}
+                        {allBenefits.map((benefit) => (
+                          <SelectItem key={benefit.id} value={benefit.id}>
+                            {benefit.title}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -189,7 +194,7 @@ export default function TipBenefitSection({ user }) {
                   <Button 
                     className="w-full bg-[#7CB342] hover:bg-[#6BA02D]"
                     onClick={() => createBenefitMutation.mutate(newBenefit)}
-                    disabled={!newBenefit.benefit_type || !newBenefit.request_date || createBenefitMutation.isPending}
+                    disabled={!newBenefit.benefit_id || !newBenefit.request_date || createBenefitMutation.isPending}
                   >
                     申請する
                   </Button>
@@ -200,32 +205,35 @@ export default function TipBenefitSection({ user }) {
 
           <div className="space-y-3">
             {benefits.length > 0 ? (
-              benefits.map((benefit) => (
-                <div key={benefit.id} className="border border-slate-100 rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="text-sm font-medium text-slate-800 mb-1">
-                        {benefitTypeConfig[benefit.benefit_type]?.icon} {benefitTypeConfig[benefit.benefit_type]?.label}
+              benefits.map((benefit) => {
+                const benefitItem = allBenefits.find(b => b.id === benefit.benefit_id);
+                return (
+                  <div key={benefit.id} className="border border-slate-100 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="text-sm font-medium text-slate-800 mb-1">
+                          {benefitItem?.title || '不明な福利厚生'}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <Calendar className="w-3 h-3" />
+                          {format(new Date(benefit.request_date), 'yyyy年M月d日')}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <Calendar className="w-3 h-3" />
-                        {format(new Date(benefit.request_date), 'yyyy年M月d日')}
-                      </div>
+                      <Badge className={statusConfig[benefit.status]?.color}>
+                        {statusConfig[benefit.status]?.label}
+                      </Badge>
                     </div>
-                    <Badge className={statusConfig[benefit.status]?.color}>
-                      {statusConfig[benefit.status]?.label}
-                    </Badge>
+                    {benefit.notes && (
+                      <p className="text-sm text-slate-600 mt-2">{benefit.notes}</p>
+                    )}
+                    {benefit.admin_notes && (
+                      <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
+                        <span className="font-medium">管理者メモ:</span> {benefit.admin_notes}
+                      </div>
+                    )}
                   </div>
-                  {benefit.notes && (
-                    <p className="text-sm text-slate-600 mt-2">{benefit.notes}</p>
-                  )}
-                  {benefit.admin_notes && (
-                    <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
-                      <span className="font-medium">管理者メモ:</span> {benefit.admin_notes}
-                    </div>
-                  )}
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center py-12 text-slate-400">
                 <Gift className="w-12 h-12 mx-auto mb-3 opacity-50" />
