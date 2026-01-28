@@ -143,20 +143,7 @@ export default function Benefits() {
             </div>
           </div>
 
-{!staff ? (
-            <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
-              <p className="text-sm text-slate-600">読み込み中...</p>
-            </div>
-          ) : staff.role === 'temporary' ? (
-            <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
-              <p className="text-sm text-amber-800 font-medium">
-                こちらのサービスはご利用できません
-              </p>
-              <p className="text-xs text-amber-700 mt-1">
-                単発スタッフは福利厚生サービスの申請ができません
-              </p>
-            </div>
-          ) : (
+{staff && staff.role !== 'temporary' && (
             <>
               <Button 
                 className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
