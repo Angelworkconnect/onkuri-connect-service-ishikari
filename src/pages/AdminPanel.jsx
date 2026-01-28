@@ -2039,10 +2039,11 @@ export default function AdminPanel() {
               <Textarea value={benefitForm.description} onChange={(e) => setBenefitForm({...benefitForm, description: e.target.value})} className="h-24" />
             </div>
             <div>
-              <Label>アイコン名 *</Label>
+              <Label>アイコン名</Label>
               <Select value={benefitForm.icon} onValueChange={(v) => setBenefitForm({...benefitForm, icon: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="max-h-60">
+                  <SelectItem value="none">🚫 アイコンなし</SelectItem>
                   <SelectItem value="Gift">🎁 ギフト（Gift）</SelectItem>
                   <SelectItem value="Car">🚗 車（Car）</SelectItem>
                   <SelectItem value="Sparkles">✨ エステ・リラクゼーション（Sparkles）</SelectItem>
