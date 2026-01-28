@@ -141,7 +141,7 @@ export default function Benefits() {
             </div>
           </div>
 
-{staff && staff.role !== 'temporary' && (
+{staff !== null && staff.role !== 'temporary' && (
             <>
               <Button 
                 className="w-full bg-[#7CB342] hover:bg-[#6BA02D] mt-4"
