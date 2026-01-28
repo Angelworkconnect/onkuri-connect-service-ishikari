@@ -156,6 +156,7 @@ export default function BenefitManagement() {
       color: benefit.color,
       frequency_type: benefit.frequency_type || 'monthly',
       frequency_limit: benefit.frequency_limit || 1,
+      eligible_roles: benefit.eligible_roles || [],
       status: benefit.status || 'available',
       order: benefit.order || 0,
     });
