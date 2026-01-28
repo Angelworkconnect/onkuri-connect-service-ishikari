@@ -73,11 +73,6 @@ export default function Home() {
     queryFn: () => base44.entities.Service.list('order'),
   });
 
-  const { data: benefits = [] } = useQuery({
-    queryKey: ['benefits'],
-    queryFn: () => base44.entities.Benefit.list('order'),
-  });
-
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
@@ -314,58 +309,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Benefits Section */}
-      {benefits.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl font-medium text-slate-800 mb-3">福利厚生サービス</h2>
-            <p className="text-slate-500">充実した働きやすさをサポート</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => (
-              <motion.div
-                key={benefit.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className={`${benefit.color} text-white p-6 h-full hover:shadow-xl transition-shadow`}>
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      {React.createElement(iconMap[benefit.icon] || Gift, { className: "w-6 h-6" })}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-medium mb-2">{benefit.title}</h3>
-                      {benefit.status === 'coming_soon' && (
-                        <span className="inline-block px-2 py-1 text-xs bg-white/20 rounded-full">準備中</span>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-white/90 mb-4">{benefit.description}</p>
-                  <div className="text-sm text-white/75">
-                    {benefit.frequency_type === 'unlimited' ? '利用制限なし' :
-                     benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回まで` :
-                     benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回まで` :
-                     '1回のみ'}
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-          {user && (
-            <div className="text-center mt-8">
-              <Link to={createPageUrl('Benefits')}>
-                <Button size="lg" className="bg-[#7CB342] hover:bg-[#6BA02D]">
-                  福利厚生を申請する
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          )}
-        </section>
-      )}
 
       {/* Announcements */}
       {announcements.length > 0 && (
