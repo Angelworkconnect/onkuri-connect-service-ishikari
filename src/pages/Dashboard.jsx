@@ -153,6 +153,10 @@ export default function Dashboard() {
     return `${hours}時間${mins > 0 ? mins + '分' : ''}`;
   };
 
+  // 出勤可否の判定（単発スタッフ以外は常に可能、単発は本日の承認済みシフトが必要）
+  const isTemporaryStaff = user?.staff_role === 'temporary';
+  const canClockIn = !isTemporaryStaff || (todayApprovedShifts && todayApprovedShifts.length > 0);
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -232,7 +236,7 @@ export default function Dashboard() {
             <QRScanner
               user={user}
               todayAttendance={todayAttendance}
-              canClockIn={user.staff_role !== 'temporary' || (todayApprovedShifts && todayApprovedShifts.length > 0)}
+              canClockIn={canClockIn}
             />
 
             {/* Clock In/Out (従来の方法も残す) */}
@@ -241,7 +245,7 @@ export default function Dashboard() {
               onClockIn={() => clockInMutation.mutate()}
               onClockOut={() => clockOutMutation.mutate()}
               isLoading={clockInMutation.isPending || clockOutMutation.isPending}
-              canClockIn={user.staff_role !== 'temporary' || (todayApprovedShifts && todayApprovedShifts.length > 0)}
+              canClockIn={canClockIn}
             />
 
             {/* Stats */}
