@@ -8,7 +8,7 @@ import { QrCode, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { Html5Qrcode } from 'html5-qrcode';
 
-export default function QRScanner({ user, todayAttendance, onSuccess }) {
+export default function QRScanner({ user, todayAttendance, onSuccess, canClockIn = true }) {
   const [scannedToken, setScannedToken] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -129,6 +129,11 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
       return;
     }
 
+    if (!canClockIn && !(todayAttendance?.clock_in && !todayAttendance.clock_out)) {
+      setError('本日のシフトで承認されていません。単発スタッフはシフト承認が必要です。');
+      return;
+    }
+
     setError('');
     setSuccess('');
 
@@ -142,6 +147,11 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
   const isWorking = todayAttendance?.clock_in && !todayAttendance.clock_out;
 
   const startCamera = async () => {
+    if (!canClockIn && !(todayAttendance?.clock_in && !todayAttendance.clock_out)) {
+      setError('本日のシフトで承認されていません。単発スタッフはシフト承認が必要です。');
+      return;
+    }
+
     setError('');
     setSuccess('');
     setIsCameraMode(true);
@@ -241,11 +251,11 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
           <div className="space-y-3">
             <Button
               onClick={startCamera}
-              disabled={clockInMutation.isPending || clockOutMutation.isPending}
+              disabled={clockInMutation.isPending || clockOutMutation.isPending || (!canClockIn && !isWorking)}
               className={`w-full ${isWorking ? 'bg-orange-600 hover:bg-orange-700' : 'bg-[#7CB342] hover:bg-[#6BA232]'}`}
             >
               <Camera className="w-4 h-4 mr-2" />
-              {clockInMutation.isPending || clockOutMutation.isPending ? '処理中...' : isWorking ? 'カメラで退勤' : 'カメラで出勤'}
+              {clockInMutation.isPending || clockOutMutation.isPending ? '処理中...' : !canClockIn && !isWorking ? 'シフト承認が必要' : isWorking ? 'カメラで退勤' : 'カメラで出勤'}
             </Button>
 
             <div className="relative">
@@ -266,7 +276,7 @@ export default function QRScanner({ user, todayAttendance, onSuccess }) {
 
             <Button
               onClick={handleSubmit}
-              disabled={clockInMutation.isPending || clockOutMutation.isPending || !scannedToken.trim()}
+              disabled={clockInMutation.isPending || clockOutMutation.isPending || !scannedToken.trim() || (!canClockIn && !isWorking)}
               variant="outline"
               className="w-full"
             >

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Coffee, Clock } from "lucide-react";
 import { format } from "date-fns";
 
-export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, isLoading }) {
+export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, isLoading, canClockIn = true }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -66,11 +66,11 @@ export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, i
             )}
             <Button
               onClick={onClockIn}
-              disabled={isLoading || (currentAttendance && currentAttendance.clock_out)}
+              disabled={isLoading || (currentAttendance && currentAttendance.clock_out) || !canClockIn}
               className="w-full h-14 bg-[#7CB342] hover:bg-[#6BA232] text-white text-lg font-medium disabled:opacity-50"
             >
               <LogIn className="w-5 h-5 mr-2" />
-              出勤する
+              {!canClockIn ? '本日のシフト承認が必要です' : '出勤する'}
             </Button>
           </div>
         )}

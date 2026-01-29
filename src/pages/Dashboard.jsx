@@ -33,6 +33,7 @@ export default function Dashboard() {
       if (staffList.length > 0) {
         u.full_name = staffList[0].full_name;
         u.approval_status = staffList[0].approval_status || 'pending';
+        u.staff_role = staffList[0].role;
       } else {
         // スタッフ登録がない場合は登録ページへリダイレクト
         window.location.href = createPageUrl('StaffRegistration');
@@ -61,6 +62,24 @@ export default function Dashboard() {
     queryKey: ['my-applications', user?.email],
     queryFn: () => user ? base44.entities.ShiftApplication.filter({ applicant_email: user.email }) : [],
     enabled: !!user,
+  });
+
+  // 本日承認済みシフトがあるかチェック（単発スタッフ用）
+  const { data: todayApprovedShifts = [] } = useQuery({
+    queryKey: ['today-approved-shifts', user?.email, today],
+    queryFn: async () => {
+      if (!user || user.staff_role !== 'temporary') return [];
+      const allShifts = await base44.entities.Shift.filter({ date: today });
+      const shiftIds = allShifts.map(s => s.id);
+      if (shiftIds.length === 0) return [];
+      
+      const approvedApps = await base44.entities.ShiftApplication.filter({ 
+        applicant_email: user.email,
+        status: 'approved'
+      });
+      return approvedApps.filter(app => shiftIds.includes(app.shift_id));
+    },
+    enabled: !!user && user.staff_role === 'temporary',
   });
 
   const { data: todayAttendance } = useQuery({
@@ -213,6 +232,7 @@ export default function Dashboard() {
             <QRScanner
               user={user}
               todayAttendance={todayAttendance}
+              canClockIn={user.staff_role !== 'temporary' || (todayApprovedShifts && todayApprovedShifts.length > 0)}
             />
 
             {/* Clock In/Out (従来の方法も残す) */}
@@ -221,6 +241,7 @@ export default function Dashboard() {
               onClockIn={() => clockInMutation.mutate()}
               onClockOut={() => clockOutMutation.mutate()}
               isLoading={clockInMutation.isPending || clockOutMutation.isPending}
+              canClockIn={user.staff_role !== 'temporary' || (todayApprovedShifts && todayApprovedShifts.length > 0)}
             />
 
             {/* Stats */}
