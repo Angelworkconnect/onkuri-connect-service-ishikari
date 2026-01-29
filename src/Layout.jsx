@@ -29,14 +29,7 @@ const navigation = [
   { name: '福利厚生', href: 'Benefits', icon: Gift },
 ];
 
-const adminNavigation = [
-  { name: '勤怠承認', href: 'AttendanceApproval', icon: CheckCircle },
-  { name: '月次締め', href: 'AttendanceClose', icon: Lock },
-  { name: '給与連携', href: 'PayrollExport', icon: FileText },
-  { name: '書類管理', href: 'Documents', icon: FileText },
-  { name: '利用者管理', href: 'CareClients', icon: Users },
-  { name: '利用実績', href: 'CareUsage', icon: Calendar },
-];
+
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -105,39 +98,19 @@ export default function Layout({ children, currentPageName }) {
                 );
               })}
               {isAdmin && (
-                <>
-                  <Link to={createPageUrl('AdminPanel')}>
-                    <Button
-                      variant="ghost"
-                      className={`${
-                        currentPageName === 'AdminPanel'
-                          ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
-                          : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
-                      }`}
-                    >
-                      <Settings className="w-4 h-4 mr-2" />
-                      管理
-                    </Button>
-                  </Link>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50">
-                        業務管理
-                        <ChevronDown className="w-4 h-4 ml-1" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      {adminNavigation.map((item) => (
-                        <Link key={item.name} to={createPageUrl(item.href)}>
-                          <DropdownMenuItem className="cursor-pointer">
-                            <item.icon className="w-4 h-4 mr-2" />
-                            {item.name}
-                          </DropdownMenuItem>
-                        </Link>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
+                <Link to={createPageUrl('AdminPanel')}>
+                  <Button
+                    variant="ghost"
+                    className={`${
+                      currentPageName === 'AdminPanel'
+                        ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
+                        : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    管理
+                  </Button>
+                </Link>
               )}
             </nav>
 
@@ -220,45 +193,22 @@ export default function Layout({ children, currentPageName }) {
                         );
                       })}
                       {isAdmin && (
-                        <>
-                          <Link 
-                            to={createPageUrl('AdminPanel')}
-                            onClick={() => setMobileMenuOpen(false)}
+                        <Link 
+                          to={createPageUrl('AdminPanel')}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Button
+                            variant="ghost"
+                            className={`w-full justify-start ${
+                              currentPageName === 'AdminPanel'
+                                ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
+                                : 'text-slate-600'
+                            }`}
                           >
-                            <Button
-                              variant="ghost"
-                              className={`w-full justify-start ${
-                                currentPageName === 'AdminPanel'
-                                  ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
-                                  : 'text-slate-600'
-                              }`}
-                            >
-                              <Settings className="w-4 h-4 mr-3" />
-                              管理
-                            </Button>
-                          </Link>
-                          <div className="my-2 border-t border-slate-200" />
-                          <div className="px-3 py-2 text-xs font-medium text-slate-500">業務管理</div>
-                          {adminNavigation.map((item) => (
-                            <Link 
-                              key={item.name}
-                              to={createPageUrl(item.href)}
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <Button
-                                variant="ghost"
-                                className={`w-full justify-start ${
-                                  currentPageName === item.href
-                                    ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
-                                    : 'text-slate-600'
-                                }`}
-                              >
-                                <item.icon className="w-4 h-4 mr-3" />
-                                {item.name}
-                              </Button>
-                            </Link>
-                          ))}
-                        </>
+                            <Settings className="w-4 h-4 mr-3" />
+                            管理
+                          </Button>
+                        </Link>
                       )}
                     </nav>
                   </div>
