@@ -242,7 +242,6 @@ export default function AdminPanel() {
   const { data: allStaff = [] } = useQuery({
     queryKey: ['admin-staff'],
     queryFn: () => base44.entities.Staff.list('-created_date'),
-    refetchInterval: 1000,
   });
 
   const { data: allTips = [] } = useQuery({
