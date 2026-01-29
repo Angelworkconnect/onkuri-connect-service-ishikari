@@ -66,11 +66,11 @@ export default function ClockInOut({ currentAttendance, onClockIn, onClockOut, i
             )}
             <Button
               onClick={onClockIn}
-              disabled={isLoading || (currentAttendance && currentAttendance.clock_out) || !canClockIn}
+              disabled={isLoading || !canClockIn}
               className="w-full h-14 bg-[#7CB342] hover:bg-[#6BA232] text-white text-lg font-medium disabled:opacity-50"
             >
               <LogIn className="w-5 h-5 mr-2" />
-              {!canClockIn ? '本日のシフト承認が必要です' : '出勤する'}
+              {!canClockIn ? '本日のシフト承認が必要です' : (isLoading ? '処理中...' : '出勤する')}
             </Button>
           </div>
         )}

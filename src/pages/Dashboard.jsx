@@ -90,7 +90,11 @@ export default function Dashboard() {
         user_email: user.email, 
         date: today 
       });
-      return records[0] || null;
+      // 未退勤のレコードを優先、なければ最新のレコード
+      const workingRecord = records.find(r => !r.clock_out);
+      return workingRecord || records.sort((a, b) => 
+        new Date(b.created_date).getTime() - new Date(a.created_date).getTime()
+      )[0] || null;
     },
     enabled: !!user,
   });
