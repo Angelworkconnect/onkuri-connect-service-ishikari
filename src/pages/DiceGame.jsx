@@ -14,7 +14,7 @@ const prizes = {
   3: { name: 'お菓子', points: 30, emoji: '🍪', color: 'from-yellow-400 to-yellow-500' },
   4: { name: 'ゴミ袋', points: 40, emoji: '🗑️', color: 'from-blue-400 to-blue-500' },
   5: { name: '残念賞', points: 50, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  6: { name: 'PayPay 200円', points: 200, emoji: '💰', color: 'from-purple-400 to-purple-500' }
+  6: { name: 'スペシャル 200円', points: 200, emoji: '✨', color: 'from-yellow-400 via-pink-500 to-purple-600', isSpecial: true }
 };
 
 export default function DiceGame() {
@@ -95,7 +95,29 @@ export default function DiceGame() {
       setResult({ dice: diceResult, prize });
       
       // 紙吹雪エフェクト
-      if (diceResult >= 5) {
+      if (diceResult === 6) {
+        // スペシャル用の豪華な紙吹雪
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FFA500', '#FF69B4', '#9370DB']
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 100,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 200);
+      } else if (diceResult >= 5) {
         confetti({
           particleCount: 100,
           spread: 70,
@@ -239,11 +261,16 @@ export default function DiceGame() {
               {Object.entries(prizes).map(([num, prize]) => (
                 <div
                   key={num}
-                  className={`bg-gradient-to-r ${prize.color} text-white p-4 rounded-xl text-center shadow-md`}
+                  className={`bg-gradient-to-r ${prize.color} text-white p-4 rounded-xl text-center shadow-md ${
+                    prize.isSpecial ? 'ring-4 ring-yellow-300 animate-pulse' : ''
+                  }`}
                 >
                   <div className="text-4xl mb-2">{prize.emoji}</div>
                   <p className="font-bold">{num} - {prize.name}</p>
                   <p className="text-sm opacity-90">{prize.points}pt</p>
+                  {prize.isSpecial && (
+                    <p className="text-xs mt-1 font-semibold">🎉 大当たり！</p>
+                  )}
                 </div>
               ))}
             </div>
