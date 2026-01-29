@@ -154,8 +154,7 @@ export default function Dashboard() {
   };
 
   // 出勤可否の判定（単発スタッフ以外は常に可能、単発は本日の承認済みシフトが必要）
-  const isTemporaryStaff = user?.staff_role === 'temporary';
-  const canClockIn = !isTemporaryStaff || (todayApprovedShifts && todayApprovedShifts.length > 0);
+  const canClockIn = user?.staff_role !== 'temporary' || (todayApprovedShifts && todayApprovedShifts.length > 0);
 
   if (!user) {
     return (
