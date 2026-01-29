@@ -835,10 +835,10 @@ export default function AdminPanel() {
               <span className="sm:hidden">サンクス</span>
             </TabsTrigger>
 
-            <TabsTrigger value="business" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Settings className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">業務機能</span>
-              <span className="sm:hidden">業務</span>
+            <TabsTrigger value="benefits" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Gift className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">福利厚生管理</span>
+              <span className="sm:hidden">福利</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1369,126 +1369,113 @@ export default function AdminPanel() {
 
 
 
-          {/* Business Functions Tab */}
-          <TabsContent value="business">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/AttendanceApproval'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#7CB342]/10 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-6 h-6 text-[#7CB342]" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">勤怠承認</h3>
-                    <p className="text-sm text-slate-600">職員の勤怠を確認・承認します</p>
-                  </div>
+          {/* Benefits Tab */}
+          <TabsContent value="benefits">
+            <div className="space-y-6">
+              <Card className="border-0 shadow-lg">
+                <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                  <h2 className="text-lg font-medium">福利厚生項目</h2>
+                  <Button onClick={() => { resetBenefitForm(); setBenefitDialogOpen(true); }} className="bg-[#7CB342] w-full sm:w-auto">
+                    <Plus className="w-4 h-4 mr-2" />
+                    新規福利厚生項目
+                  </Button>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>項目名</TableHead>
+                        <TableHead>説明</TableHead>
+                        <TableHead>頻度制限</TableHead>
+                        <TableHead>ステータス</TableHead>
+                        <TableHead>順序</TableHead>
+                        <TableHead>操作</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allBenefits.map((benefit) => (
+                        <TableRow key={benefit.id}>
+                          <TableCell className="font-medium">{benefit.title}</TableCell>
+                          <TableCell className="max-w-xs truncate">{benefit.description}</TableCell>
+                          <TableCell>
+                            {benefit.frequency_type === 'unlimited' ? '無制限' :
+                             benefit.frequency_type === 'monthly' ? `月${benefit.frequency_limit || 1}回` :
+                             benefit.frequency_type === 'yearly' ? `年${benefit.frequency_limit || 1}回` :
+                             '1回のみ'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={benefit.status === 'available' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
+                              {benefit.status === 'available' ? '利用可能' : '準備中'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{benefit.order || 0}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleEditBenefit(benefit)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => deleteBenefitMutation.mutate(benefit.id)}>
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </Card>
 
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/AttendanceClose'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#2D4A6F]/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-[#2D4A6F]" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">勤怠月次締め</h3>
-                    <p className="text-sm text-slate-600">月ごとの勤怠を締めます</p>
-                  </div>
+              <Card className="border-0 shadow-lg">
+                <div className="p-4 sm:p-6 border-b">
+                  <h2 className="text-lg font-medium">福利厚生申請一覧</h2>
                 </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/PayrollExport'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">給与連携（MF）</h3>
-                    <p className="text-sm text-slate-600">マネーフォワード給与用CSV出力</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('Documents')}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">書類管理</h3>
-                    <p className="text-sm text-slate-600">職員・利用者・事業所書類の一元管理</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('StaffApproval')}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <Users className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">スタッフ承認</h3>
-                    <p className="text-sm text-slate-600">新規スタッフ登録を承認・却下</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareClientManagement'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <Users className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">利用者管理</h3>
-                    <p className="text-sm text-slate-600">介護サービス利用者情報の管理</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareUsageEntry'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-cyan-100 flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-6 h-6 text-cyan-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">利用実績入力</h3>
-                    <p className="text-sm text-slate-600">日々の介護サービス利用実績を記録</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/CareMonthlyClose'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-6 h-6 text-rose-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">介護実績締め</h3>
-                    <p className="text-sm text-slate-600">月次実績を締めてカイポケ連携</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = '/KaipokeExport'}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-violet-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">カイポケ連携</h3>
-                    <p className="text-sm text-slate-600">請求用CSV・エラーチェック</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="border-0 shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer" onClick={() => window.location.href = createPageUrl('BenefitManagement')}>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#7CB342]/10 flex items-center justify-center flex-shrink-0">
-                    <Gift className="w-6 h-6 text-[#7CB342]" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">福利厚生管理</h3>
-                    <p className="text-sm text-slate-600">福利厚生項目と申請の管理</p>
-                  </div>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>申請者</TableHead>
+                        <TableHead>福利厚生項目</TableHead>
+                        <TableHead>利用希望日</TableHead>
+                        <TableHead>申請日</TableHead>
+                        <TableHead>ステータス</TableHead>
+                        <TableHead>操作</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allBenefitApps.map((app) => (
+                        <TableRow key={app.id}>
+                          <TableCell className="font-medium">{app.user_name}</TableCell>
+                          <TableCell>{allBenefits.find(b => b.id === app.benefit_id)?.title || '不明'}</TableCell>
+                          <TableCell>{format(new Date(app.request_date), 'yyyy/M/d')}</TableCell>
+                          <TableCell>{format(new Date(app.created_date), 'M/d HH:mm')}</TableCell>
+                          <TableCell>
+                            <Badge className={
+                              app.status === 'approved' ? 'bg-green-100 text-green-700' :
+                              app.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                              app.status === 'used' ? 'bg-slate-100 text-slate-500' :
+                              'bg-amber-100 text-amber-700'
+                            }>
+                              {app.status === 'approved' ? '承認済み' :
+                               app.status === 'rejected' ? '却下' :
+                               app.status === 'used' ? '利用済み' :
+                               '申請中'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleEditBenefitApp(app)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => deleteBenefitAppMutation.mutate(app.id)}>
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </Card>
             </div>
