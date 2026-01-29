@@ -140,7 +140,16 @@ export default function DiceGame() {
       count++;
       if (count > 10) {
         clearInterval(interval);
-        const finalResult = Math.floor(Math.random() * 6) + 1;
+        // 6が出にくい確率調整（6は約5%、他は各19%）
+        const rand = Math.random() * 100;
+        let finalResult;
+        if (rand < 19) finalResult = 1;
+        else if (rand < 38) finalResult = 2;
+        else if (rand < 57) finalResult = 3;
+        else if (rand < 76) finalResult = 4;
+        else if (rand < 95) finalResult = 5;
+        else finalResult = 6;
+        
         setDiceNumber(finalResult);
         setTimeout(() => {
           rollDiceMutation.mutate(finalResult);
