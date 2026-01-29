@@ -14,7 +14,7 @@ const prizes = {
   3: { name: 'お菓子', points: 30, emoji: '🍪', color: 'from-yellow-400 to-yellow-500' },
   4: { name: 'ゴミ袋', points: 40, emoji: '🗑️', color: 'from-blue-400 to-blue-500' },
   5: { name: '残念賞', points: 50, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  6: { name: 'スペシャル 200円', points: 200, emoji: '✨', color: 'from-yellow-400 via-pink-500 to-purple-600', isSpecial: true }
+  6: { name: 'スペシャル', points: 200, emoji: '✨', color: 'from-yellow-400 via-pink-500 to-purple-600', isSpecial: true }
 };
 
 export default function DiceGame() {
