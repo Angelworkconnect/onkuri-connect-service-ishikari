@@ -5,44 +5,7 @@ import { Info, QrCode, MapPin, Gift, Heart, Sparkles } from "lucide-react";
 export default function InfoSection() {
   return (
     <Card className="border-0 shadow-sm overflow-hidden">
-      <div className="bg-gradient-to-r from-[#2D4A6F] to-[#3A5A7F] text-white p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Info className="w-5 h-5" />
-          <h3 className="font-medium">スタッフ専用ページへようこそ</h3>
-        </div>
-        <p className="text-sm text-white/80">
-          このページは現職員および登録スタッフ専用です
-        </p>
-      </div>
-
-      <div className="p-6 space-y-6">
-        {/* 主な機能 */}
-        <div>
-          <h4 className="text-sm font-medium text-slate-800 mb-3">利用できる機能</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li className="flex items-start gap-2">
-              <span className="text-[#E8A4B8] mt-1">•</span>
-              <span>勤務予定の確認</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#E8A4B8] mt-1">•</span>
-              <span>QRコードによる勤怠打刻</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#E8A4B8] mt-1">•</span>
-              <span>勤怠履歴の確認</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#E8A4B8] mt-1">•</span>
-              <span>評価・チップ履歴の確認</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#E8A4B8] mt-1">•</span>
-              <span>福利厚生サービスの利用申請</span>
-            </li>
-          </ul>
-        </div>
-
+      <div className="p-6 space-y-4">
         {/* QR勤怠打刻 */}
         <div className="bg-[#2D4A6F]/5 rounded-lg p-4">
           <div className="flex items-start gap-3">
