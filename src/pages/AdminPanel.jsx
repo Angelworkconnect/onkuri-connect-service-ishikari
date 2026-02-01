@@ -172,6 +172,14 @@ export default function AdminPanel() {
     hero_description: '',
     cta_text: '',
     footer_text: '',
+    info_qr_title: '',
+    info_qr_description: '',
+    info_thanks_title: '',
+    info_thanks_description: '',
+    info_thanks_items: [],
+    info_benefits_title: '',
+    info_benefits_description: '',
+    info_benefits_items: [],
   });
 
   useEffect(() => {
@@ -280,6 +288,14 @@ export default function AdminPanel() {
         hero_description: siteSettings.hero_description || '',
         cta_text: siteSettings.cta_text || '',
         footer_text: siteSettings.footer_text || '',
+        info_qr_title: siteSettings.info_qr_title || '',
+        info_qr_description: siteSettings.info_qr_description || '',
+        info_thanks_title: siteSettings.info_thanks_title || '',
+        info_thanks_description: siteSettings.info_thanks_description || '',
+        info_thanks_items: siteSettings.info_thanks_items || [],
+        info_benefits_title: siteSettings.info_benefits_title || '',
+        info_benefits_description: siteSettings.info_benefits_description || '',
+        info_benefits_items: siteSettings.info_benefits_items || [],
       });
     }
   }, [siteSettings?.id]);
@@ -843,62 +859,153 @@ export default function AdminPanel() {
 
           {/* Site Settings Tab */}
           <TabsContent value="settings">
-            <Card className="border-0 shadow-lg">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-medium">TOPページカスタマイズ</h2>
-              </div>
-              <div className="p-6 space-y-6 max-w-2xl">
-                <div>
-                  <Label>ヒーロータイトル</Label>
-                  <Textarea 
-                    value={settingsForm.hero_title}
-                    onChange={(e) => setSettingsForm({...settingsForm, hero_title: e.target.value})}
-                    placeholder="地域で支える、人生に寄り添う。"
-                    className="h-20"
-                  />
+            <div className="space-y-6">
+              <Card className="border-0 shadow-lg">
+                <div className="p-6 border-b">
+                  <h2 className="text-lg font-medium">TOPページカスタマイズ</h2>
                 </div>
-                <div>
-                  <Label>ヒーロー説明文</Label>
-                  <Input
-                    value={settingsForm.hero_subtitle}
-                    onChange={(e) => setSettingsForm({...settingsForm, hero_subtitle: e.target.value})}
-                    placeholder="タイミー的単発・短時間から参加できるお仕事"
-                  />
+                <div className="p-6 space-y-6 max-w-2xl">
+                  <div>
+                    <Label>ヒーロータイトル</Label>
+                    <Textarea 
+                      value={settingsForm.hero_title}
+                      onChange={(e) => setSettingsForm({...settingsForm, hero_title: e.target.value})}
+                      placeholder="地域で支える、人生に寄り添う。"
+                      className="h-20"
+                    />
+                  </div>
+                  <div>
+                    <Label>ヒーロー説明文</Label>
+                    <Input
+                      value={settingsForm.hero_subtitle}
+                      onChange={(e) => setSettingsForm({...settingsForm, hero_subtitle: e.target.value})}
+                      placeholder="タイミー的単発・短時間から参加できるお仕事"
+                    />
+                  </div>
+                  <div>
+                    <Label>ヒーロー詳細説明</Label>
+                    <Textarea 
+                      value={settingsForm.hero_description || ''}
+                      onChange={(e) => setSettingsForm({...settingsForm, hero_description: e.target.value})}
+                      placeholder="おんくりの輪は、介護から葬祭まで人生のすべての節目に寄り添う地域密着型のワーク＆サポートプラットフォームです。"
+                      className="h-20"
+                    />
+                  </div>
+                  <div>
+                    <Label>CTA（行動喚起）テキスト</Label>
+                    <Input
+                      value={settingsForm.cta_text}
+                      onChange={(e) => setSettingsForm({...settingsForm, cta_text: e.target.value})}
+                      placeholder="おんくりの輪で一緒に働きませんか？"
+                    />
+                  </div>
+                  <div>
+                    <Label>フッターテキスト</Label>
+                    <Input
+                      value={settingsForm.footer_text}
+                      onChange={(e) => setSettingsForm({...settingsForm, footer_text: e.target.value})}
+                      placeholder="石狩市を拠点とした地域密着型介護・生活支援事業体"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label>ヒーロー詳細説明</Label>
-                  <Textarea 
-                    value={settingsForm.hero_description || ''}
-                    onChange={(e) => setSettingsForm({...settingsForm, hero_description: e.target.value})}
-                    placeholder="おんくりの輪は、介護から葬祭まで人生のすべての節目に寄り添う地域密着型のワーク＆サポートプラットフォームです。"
-                    className="h-20"
-                  />
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <div className="p-6 border-b">
+                  <h2 className="text-lg font-medium">ダッシュボード右側情報セクション</h2>
                 </div>
-                <div>
-                  <Label>CTA（行動喚起）テキスト</Label>
-                  <Input
-                    value={settingsForm.cta_text}
-                    onChange={(e) => setSettingsForm({...settingsForm, cta_text: e.target.value})}
-                    placeholder="おんくりの輪で一緒に働きませんか？"
-                  />
+                <div className="p-6 space-y-6 max-w-2xl">
+                  <div className="space-y-4 p-4 bg-[#2D4A6F]/5 rounded-lg">
+                    <h3 className="font-medium text-sm text-slate-800">QR勤怠打刻セクション</h3>
+                    <div>
+                      <Label>タイトル</Label>
+                      <Input
+                        value={settingsForm.info_qr_title}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_qr_title: e.target.value})}
+                        placeholder="勤怠打刻方法"
+                      />
+                    </div>
+                    <div>
+                      <Label>説明文</Label>
+                      <Textarea 
+                        value={settingsForm.info_qr_description}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_qr_description: e.target.value})}
+                        placeholder="勤務開始時・終了時に、事業所内に設置されたQRコードを読み取ってください。位置情報を確認し、自動的に打刻されます。"
+                        className="h-24"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-[#E8A4B8]/5 rounded-lg">
+                    <h3 className="font-medium text-sm text-slate-800">サンクス制度セクション</h3>
+                    <div>
+                      <Label>タイトル</Label>
+                      <Input
+                        value={settingsForm.info_thanks_title}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_thanks_title: e.target.value})}
+                        placeholder="感謝が見える仕組み"
+                      />
+                    </div>
+                    <div>
+                      <Label>説明文</Label>
+                      <Textarea 
+                        value={settingsForm.info_thanks_description}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_thanks_description: e.target.value})}
+                        placeholder="チップは、利用者・ご家族・事業所からの評価に基づき、不定期で付与されます。"
+                        className="h-20"
+                      />
+                    </div>
+                    <div>
+                      <Label>項目リスト（1行1項目）</Label>
+                      <Textarea 
+                        value={settingsForm.info_thanks_items.join('\n')}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_thanks_items: e.target.value.split('\n').filter(Boolean)})}
+                        placeholder="現場貢献スペシャルサンクス&#10;感謝還元サンクスギフト&#10;人財穴埋めサンクス"
+                        className="h-24 font-mono text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 p-4 bg-[#7CB342]/5 rounded-lg">
+                    <h3 className="font-medium text-sm text-slate-800">福利厚生制度セクション</h3>
+                    <div>
+                      <Label>タイトル</Label>
+                      <Input
+                        value={settingsForm.info_benefits_title}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_benefits_title: e.target.value})}
+                        placeholder="福利厚生制度"
+                      />
+                    </div>
+                    <div>
+                      <Label>説明文</Label>
+                      <Textarea 
+                        value={settingsForm.info_benefits_description}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_benefits_description: e.target.value})}
+                        placeholder="働く人の人生の質を高める福利厚生制度を整えています。"
+                        className="h-20"
+                      />
+                    </div>
+                    <div>
+                      <Label>項目リスト（1行1項目）</Label>
+                      <Textarea 
+                        value={settingsForm.info_benefits_items.join('\n')}
+                        onChange={(e) => setSettingsForm({...settingsForm, info_benefits_items: e.target.value.split('\n').filter(Boolean)})}
+                        placeholder="エステ／リラクゼーション利用券&#10;カーシェアサービス利用権&#10;ガレージ使用権&#10;介護タクシー職員割引&#10;葬祭・遺品整理 割引制度"
+                        className="h-32 font-mono text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={() => updateSettingsMutation.mutate(settingsForm)}
+                    className="bg-[#2D4A6F]"
+                    disabled={updateSettingsMutation.isPending}
+                  >
+                    {updateSettingsMutation.isPending ? '保存中...' : '設定を保存'}
+                  </Button>
                 </div>
-                <div>
-                  <Label>フッターテキスト</Label>
-                  <Input
-                    value={settingsForm.footer_text}
-                    onChange={(e) => setSettingsForm({...settingsForm, footer_text: e.target.value})}
-                    placeholder="石狩市を拠点とした地域密着型介護・生活支援事業体"
-                  />
-                </div>
-                <Button 
-                  onClick={() => updateSettingsMutation.mutate(settingsForm)}
-                  className="bg-[#2D4A6F]"
-                  disabled={updateSettingsMutation.isPending}
-                >
-                  {updateSettingsMutation.isPending ? '保存中...' : '設定を保存'}
-                </Button>
-              </div>
-            </Card>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Services Tab */}
