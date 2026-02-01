@@ -8,8 +8,8 @@ import { Card } from "@/components/ui/card";
 import { 
   Calendar, Clock, Users, Heart, Truck, 
   Flower2, Package, Gift, ChevronRight, 
-  ArrowRight, Sparkles, UserPlus, Home,
-  Briefcase, Building2, Car, Coffee, Phone,
+  ArrowRight, Sparkles, UserPlus,
+  Home as HomeIcon, Briefcase, Building2, Car, Coffee, Phone,
   Mail, MapPin, Settings, Shield, Star,
   Sun, Moon, Zap, Activity, Award,
   Book, Camera, Music, Palette, Smile,
@@ -24,7 +24,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 
 const iconMap = {
   Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles,
-  Home, Briefcase, Building2, Car, Coffee, Phone, Mail, MapPin, Settings,
+  Home: HomeIcon, Briefcase, Building2, Car, Coffee, Phone, Mail, MapPin, Settings,
   Shield, Star, Sun, Moon, Zap, Activity, Award, Book, Camera, Music,
   Palette, Smile, Umbrella, Lightbulb, Target, Globe, Leaf
 };
