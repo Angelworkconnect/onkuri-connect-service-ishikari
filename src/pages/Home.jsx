@@ -303,6 +303,7 @@ export default function Home() {
                  description={service.description}
                  icon={iconMap[service.icon] || Heart}
                  color={service.color}
+                 showDetailsLink={service.show_details_link}
                />
              </motion.div>
            ))}
