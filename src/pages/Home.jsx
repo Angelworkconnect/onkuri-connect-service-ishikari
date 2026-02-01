@@ -8,7 +8,12 @@ import { Card } from "@/components/ui/card";
 import { 
   Calendar, Clock, Users, Heart, Truck, 
   Flower2, Package, Gift, ChevronRight, 
-  ArrowRight, Sparkles, UserPlus
+  ArrowRight, Sparkles, UserPlus, Home,
+  Briefcase, Building2, Car, Coffee, Phone,
+  Mail, MapPin, Settings, Shield, Star,
+  Sun, Moon, Zap, Activity, Award,
+  Book, Camera, Music, Palette, Smile,
+  Umbrella, Lightbulb, Target, Globe, Leaf
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -18,7 +23,10 @@ import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
 
 const iconMap = {
-  Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles
+  Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles,
+  Home, Briefcase, Building2, Car, Coffee, Phone, Mail, MapPin, Settings,
+  Shield, Star, Sun, Moon, Zap, Activity, Award, Book, Camera, Music,
+  Palette, Smile, Umbrella, Lightbulb, Target, Globe, Leaf
 };
 
 export default function Home() {
