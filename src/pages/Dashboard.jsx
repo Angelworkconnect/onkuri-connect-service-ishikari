@@ -143,8 +143,13 @@ export default function Dashboard() {
   });
 
   const calculateMonthlyHours = () => {
+    const currentMonth = format(new Date(), 'yyyy-MM');
+    const thisMonthRecords = monthlyAttendance.filter(record => 
+      record.date && record.date.startsWith(currentMonth)
+    );
+    
     let totalMinutes = 0;
-    monthlyAttendance.forEach(record => {
+    thisMonthRecords.forEach(record => {
       if (record.clock_in && record.clock_out) {
         const [inH, inM] = record.clock_in.split(':').map(Number);
         const [outH, outM] = record.clock_out.split(':').map(Number);
@@ -154,7 +159,7 @@ export default function Dashboard() {
     });
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
-    return `${hours}時間${mins > 0 ? mins + '分' : ''}`;
+    return totalMinutes > 0 ? `${hours}時間${mins > 0 ? mins + '分' : ''}` : '0時間';
   };
 
   // 出勤可否の判定（単発スタッフ以外は常に可能、単発は本日の承認済みシフトが必要）
