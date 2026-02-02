@@ -81,6 +81,35 @@ export default function Home() {
     queryFn: () => base44.entities.Service.list('order'),
   });
 
+  const { data: monthlyAttendance = [] } = useQuery({
+    queryKey: ['monthly-attendance', user?.email],
+    queryFn: async () => {
+      if (!user) return [];
+      return base44.entities.Attendance.filter({ user_email: user.email });
+    },
+    enabled: !!user,
+  });
+
+  const calculateMonthlyHours = () => {
+    const currentMonth = format(new Date(), 'yyyy-MM');
+    const thisMonthRecords = monthlyAttendance.filter(record => 
+      record.date && record.date.startsWith(currentMonth)
+    );
+    
+    let totalMinutes = 0;
+    thisMonthRecords.forEach(record => {
+      if (record.clock_in && record.clock_out) {
+        const [inH, inM] = record.clock_in.split(':').map(Number);
+        const [outH, outM] = record.clock_out.split(':').map(Number);
+        const minutes = (outH * 60 + outM) - (inH * 60 + inM) - (record.break_minutes || 0);
+        totalMinutes += minutes;
+      }
+    });
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    return totalMinutes > 0 ? `${hours}時間${mins > 0 ? mins + '分' : ''}` : '0時間';
+  };
+
   const stats = {
     openShifts: allShifts.filter(s => s.status === 'open').length,
     totalStaff: allStaff.length,
@@ -242,9 +271,9 @@ export default function Home() {
             />
             <StatsCard
               title="今月の勤務時間"
-              value="--"
+              value={calculateMonthlyHours()}
               icon={Clock}
-              description="集計中"
+              description="累計勤務時間"
             />
             <StatsCard
               title="登録スタッフ"
