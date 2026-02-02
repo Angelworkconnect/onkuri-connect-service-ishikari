@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Pin, AlertCircle, Calendar, Briefcase, Gift, Megaphone } from "lucide-react";
 import { format } from "date-fns";
 
@@ -13,11 +14,16 @@ const categoryConfig = {
 };
 
 export default function AnnouncementCard({ announcement }) {
+  const [open, setOpen] = useState(false);
   const config = categoryConfig[announcement.category] || categoryConfig.general;
   const CategoryIcon = config.icon;
 
   return (
-    <Card className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-300">
+    <>
+      <Card 
+        className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
       <div className="p-5">
         <div className="flex items-start gap-4">
           <div className={`p-2.5 rounded-xl ${config.color}`}>
@@ -42,5 +48,33 @@ export default function AnnouncementCard({ announcement }) {
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#2D4A6F]/20 via-[#E8A4B8]/20 to-[#7CB342]/20 opacity-0 group-hover:opacity-100 transition-opacity" />
     </Card>
+
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className={`p-2.5 rounded-xl ${config.color}`}>
+              <CategoryIcon className="w-5 h-5" />
+            </div>
+            <div className="flex items-center gap-2">
+              {announcement.is_pinned && (
+                <Pin className="w-4 h-4 text-[#E8A4B8]" />
+              )}
+              <Badge variant="secondary" className={`${config.color}`}>
+                {config.label}
+              </Badge>
+              <span className="text-sm text-slate-400">
+                {format(new Date(announcement.created_date), 'yyyy年M月d日 HH:mm')}
+              </span>
+            </div>
+          </div>
+          <DialogTitle className="text-xl">{announcement.title}</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{announcement.content}</p>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
