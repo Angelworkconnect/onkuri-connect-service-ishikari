@@ -27,7 +27,6 @@ const tipTypeConfig = {
   support_thanks: { label: '人財穴埋めサンクス', color: 'bg-[#2D4A6F]' },
   snow_removal_thanks: { label: '除雪サンクス（冬季限定）', color: 'bg-cyan-500' },
   qr_attendance_thanks: { label: 'QRコード出退勤サンクス', color: 'bg-[#7CB342]' },
-  sugoroku_thanks: { label: 'スゴロクサンクス', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
 };
 
 const benefitTypeConfig = {
