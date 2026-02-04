@@ -2221,7 +2221,7 @@ export default function AdminPanel() {
             </div>
             <div>
               <Label>状態 *</Label>
-              <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v})}>
+              <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v, clock_out: v === 'working' ? '' : attendanceForm.clock_out})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="working">勤務中</SelectItem>
