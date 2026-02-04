@@ -55,9 +55,9 @@ export default function DiceGameCard({ user }) {
       await base44.entities.TipRecord.create({
         user_email: user.email,
         user_name: user.full_name || user.email,
-        tip_type: 'special_thanks',
+        tip_type: 'everyday_thanks',
         amount: prize.points,
-        reason: `双六ゲーム - ${prize.name}が当たりました！`,
+        reason: `エブリデイサンクス - ${prize.name}が当たりました！`,
         given_by: 'システム自動付与',
         date: today,
       });

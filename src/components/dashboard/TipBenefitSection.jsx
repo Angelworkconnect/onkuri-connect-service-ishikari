@@ -21,11 +21,11 @@ import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 
 const tipTypeConfig = {
-  special_thanks: { label: '現場貢献スペシャルサンクス', color: 'bg-[#7CB342]' },
+  everyday_thanks: { label: 'エブリデイサンクス', color: 'bg-purple-500' },
   gratitude_gift: { label: '感謝還元サンクスギフト', color: 'bg-[#E8A4B8]' },
   support_thanks: { label: '人財穴埋めサンクス', color: 'bg-[#2D4A6F]' },
   snow_removal_thanks: { label: '除雪サンクス（冬季限定）', color: 'bg-cyan-500' },
-  qr_attendance_thanks: { label: 'QRコード出退勤サンクス', color: 'bg-purple-500' },
+  qr_attendance_thanks: { label: 'QRコード出退勤サンクス', color: 'bg-[#7CB342]' },
 };
 
 const benefitTypeConfig = {
