@@ -109,6 +109,16 @@ export default function TipBenefitSection({ user }) {
     return new Date(year, startMonth, 1);
   };
 
+  const getQuarterMonthRange = (quarter) => {
+    const ranges = {
+      1: '1月〜3月',
+      2: '4月〜6月',
+      3: '7月〜9月',
+      4: '10月〜12月'
+    };
+    return ranges[quarter];
+  };
+
   const currentQuarter = getCurrentQuarter();
   const quarterStartDate = getQuarterStartDate(currentQuarter.year, currentQuarter.quarter);
 
@@ -144,11 +154,11 @@ export default function TipBenefitSection({ user }) {
           <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-4">
               <div className="text-xs text-slate-500 mb-1">
-                今期のポイント（{currentQuarter.year}年 Q{currentQuarter.quarter}）
+                今期のポイント（{currentQuarter.year}年{getQuarterMonthRange(currentQuarter.quarter)}）
               </div>
               <div className="text-2xl font-medium text-[#C17A8E]">{currentQuarterTips.toLocaleString()}pt</div>
               <div className="text-xs text-slate-500 mt-1">
-                {format(quarterStartDate, 'M月d日')}〜 
+                3ヶ月毎にリセット
               </div>
             </div>
             <div className="bg-gradient-to-r from-[#7CB342]/10 to-[#7CB342]/5 rounded-lg p-4">

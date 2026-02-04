@@ -51,6 +51,16 @@ export default function TipsHistory() {
     return new Date(year, endMonth, 0, 23, 59, 59);
   };
 
+  const getQuarterMonthRange = (quarter) => {
+    const ranges = {
+      1: '1月〜3月',
+      2: '4月〜6月',
+      3: '7月〜9月',
+      4: '10月〜12月'
+    };
+    return ranges[quarter];
+  };
+
   const currentQuarter = getCurrentQuarter();
   const quarterStartDate = getQuarterStartDate(currentQuarter.year, currentQuarter.quarter);
 
@@ -105,11 +115,11 @@ export default function TipsHistory() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
             <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-4">
               <div className="text-xs text-slate-500 mb-1">
-                今期のポイント（{currentQuarter.year}年 Q{currentQuarter.quarter}）
+                今期のポイント（{currentQuarter.year}年{getQuarterMonthRange(currentQuarter.quarter)}）
               </div>
               <div className="text-3xl font-medium text-[#C17A8E]">{currentQuarterTotal.toLocaleString()}pt</div>
               <div className="text-xs text-slate-500 mt-1">
-                {format(quarterStartDate, 'M月d日')}〜 （3ヶ月毎にリセット）
+                3ヶ月毎にリセット
               </div>
             </div>
             <div className="bg-gradient-to-r from-[#7CB342]/10 to-[#7CB342]/5 rounded-lg p-4">
@@ -182,7 +192,7 @@ export default function TipsHistory() {
                     <div key={`${quarterData.year}-Q${quarterData.quarter}`} className="space-y-3">
                       <div className="flex items-center justify-between pb-2 border-b-2 border-slate-200">
                         <h3 className="text-lg font-medium text-slate-700">
-                          {quarterData.year}年 第{quarterData.quarter}四半期
+                          {quarterData.year}年{getQuarterMonthRange(quarterData.quarter)}
                         </h3>
                         <span className="text-xl font-medium text-[#7CB342]">
                           {quarterData.total.toLocaleString()}pt
