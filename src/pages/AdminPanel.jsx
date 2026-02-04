@@ -400,6 +400,15 @@ export default function AdminPanel() {
     },
   });
 
+  const deleteAttendanceMutation = useMutation({
+    mutationFn: (id) => base44.entities.Attendance.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-attendance']);
+      setAttendanceDialogOpen(false);
+      resetAttendanceForm();
+    },
+  });
+
   const createTipMutation = useMutation({
     mutationFn: (data) => {
       const staff = allStaff.find(s => s.email === data.user_email);
@@ -2232,6 +2241,18 @@ export default function AdminPanel() {
             </div>
           </div>
           <DialogFooter>
+            <Button 
+              variant="outline" 
+              className="text-red-600 hover:bg-red-50 mr-auto"
+              onClick={() => {
+                if (confirm('この勤怠記録を削除してもよろしいですか？')) {
+                  deleteAttendanceMutation.mutate(editingAttendance.id);
+                }
+              }}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              削除
+            </Button>
             <Button variant="outline" onClick={() => setAttendanceDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitAttendance} className="bg-[#2D4A6F]">更新</Button>
           </DialogFooter>
