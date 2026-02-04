@@ -59,11 +59,13 @@ const categoryTypes = [
 ];
 
 const tipTypes = [
+  { value: 'everyday_thanks', label: 'エブリデイサンクス' },
   { value: 'special_thanks', label: '現場貢献スペシャルサンクス' },
   { value: 'gratitude_gift', label: '感謝還元サンクスギフト' },
   { value: 'support_thanks', label: '人財穴埋めサンクス' },
   { value: 'snow_removal_thanks', label: '除雪サンクス（冬季限定）' },
   { value: 'qr_attendance_thanks', label: 'QRコード出退勤サンクス' },
+  { value: 'sugoroku_thanks', label: 'スゴロクサンクス' },
 ];
 
 export default function AdminPanel() {
