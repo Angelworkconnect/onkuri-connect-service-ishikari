@@ -94,6 +94,29 @@ export default function TipBenefitSection({ user }) {
   });
 
   const totalTips = tips.reduce((sum, tip) => sum + (tip.amount || 0), 0);
+  
+  // 現在の四半期を計算
+  const getCurrentQuarter = () => {
+    const now = new Date();
+    const month = now.getMonth(); // 0-11
+    const year = now.getFullYear();
+    const quarter = Math.floor(month / 3) + 1;
+    return { year, quarter };
+  };
+
+  const getQuarterStartDate = (year, quarter) => {
+    const startMonth = (quarter - 1) * 3;
+    return new Date(year, startMonth, 1);
+  };
+
+  const currentQuarter = getCurrentQuarter();
+  const quarterStartDate = getQuarterStartDate(currentQuarter.year, currentQuarter.quarter);
+
+  // 今期のサンクスポイント
+  const currentQuarterTips = tips.filter(tip => {
+    const tipDate = new Date(tip.date);
+    return tipDate >= quarterStartDate;
+  }).reduce((sum, tip) => sum + (tip.amount || 0), 0);
 
   return (
     <Card className="border-0 shadow-sm overflow-hidden">
@@ -118,10 +141,22 @@ export default function TipBenefitSection({ user }) {
         </div>
 
         <TabsContent value="tips" className="p-6 mt-0">
-          <div className="mb-6">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-4">
-              <div className="text-sm text-slate-600 mb-1">累計サンクスポイント</div>
-              <div className="text-3xl font-medium text-[#C17A8E]">{totalTips.toLocaleString()}pt</div>
+              <div className="text-xs text-slate-500 mb-1">
+                今期のポイント（{currentQuarter.year}年 Q{currentQuarter.quarter}）
+              </div>
+              <div className="text-2xl font-medium text-[#C17A8E]">{currentQuarterTips.toLocaleString()}pt</div>
+              <div className="text-xs text-slate-500 mt-1">
+                {format(quarterStartDate, 'M月d日')}〜 
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-[#7CB342]/10 to-[#7CB342]/5 rounded-lg p-4">
+              <div className="text-xs text-slate-500 mb-1">累計サンクスポイント</div>
+              <div className="text-2xl font-medium text-[#7CB342]">{totalTips.toLocaleString()}pt</div>
+              <div className="text-xs text-slate-500 mt-1">
+                全期間の合計
+              </div>
             </div>
           </div>
 

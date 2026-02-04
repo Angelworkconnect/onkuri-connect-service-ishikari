@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles, Calendar } from "lucide-react";
 import { format } from 'date-fns';
 
 const tipTypeConfig = {
@@ -31,6 +32,57 @@ export default function TipsHistory() {
 
   const totalTips = tips.reduce((sum, tip) => sum + (tip.amount || 0), 0);
 
+  // 現在の四半期を計算
+  const getCurrentQuarter = () => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const quarter = Math.floor(month / 3) + 1;
+    return { year, quarter };
+  };
+
+  const getQuarterStartDate = (year, quarter) => {
+    const startMonth = (quarter - 1) * 3;
+    return new Date(year, startMonth, 1);
+  };
+
+  const getQuarterEndDate = (year, quarter) => {
+    const endMonth = quarter * 3;
+    return new Date(year, endMonth, 0, 23, 59, 59);
+  };
+
+  const currentQuarter = getCurrentQuarter();
+  const quarterStartDate = getQuarterStartDate(currentQuarter.year, currentQuarter.quarter);
+
+  // 今期のサンクスポイント
+  const currentQuarterTips = tips.filter(tip => {
+    const tipDate = new Date(tip.date);
+    return tipDate >= quarterStartDate;
+  });
+  const currentQuarterTotal = currentQuarterTips.reduce((sum, tip) => sum + (tip.amount || 0), 0);
+
+  // 過去の四半期データをグループ化
+  const groupByQuarter = (tips) => {
+    const quarters = {};
+    tips.forEach(tip => {
+      const tipDate = new Date(tip.date);
+      const year = tipDate.getFullYear();
+      const quarter = Math.floor(tipDate.getMonth() / 3) + 1;
+      const key = `${year}-Q${quarter}`;
+      if (!quarters[key]) {
+        quarters[key] = { year, quarter, tips: [], total: 0 };
+      }
+      quarters[key].tips.push(tip);
+      quarters[key].total += tip.amount || 0;
+    });
+    return Object.values(quarters).sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.quarter - a.quarter;
+    });
+  };
+
+  const quarterlyData = groupByQuarter(tips);
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -50,39 +102,119 @@ export default function TipsHistory() {
 
       <div className="max-w-4xl mx-auto px-6 -mt-8">
         <Card className="border-0 shadow-lg mb-6">
-          <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-6">
-            <div className="text-sm text-slate-600 mb-1">累計サンクスポイント</div>
-            <div className="text-4xl font-medium text-[#C17A8E]">{totalTips.toLocaleString()}pt</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+            <div className="bg-gradient-to-r from-[#E8A4B8]/10 to-[#E8A4B8]/5 rounded-lg p-4">
+              <div className="text-xs text-slate-500 mb-1">
+                今期のポイント（{currentQuarter.year}年 Q{currentQuarter.quarter}）
+              </div>
+              <div className="text-3xl font-medium text-[#C17A8E]">{currentQuarterTotal.toLocaleString()}pt</div>
+              <div className="text-xs text-slate-500 mt-1">
+                {format(quarterStartDate, 'M月d日')}〜 （3ヶ月毎にリセット）
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-[#7CB342]/10 to-[#7CB342]/5 rounded-lg p-4">
+              <div className="text-xs text-slate-500 mb-1">累計サンクスポイント</div>
+              <div className="text-3xl font-medium text-[#7CB342]">{totalTips.toLocaleString()}pt</div>
+              <div className="text-xs text-slate-500 mt-1">
+                全期間の合計
+              </div>
+            </div>
           </div>
         </Card>
 
-        <div className="space-y-4">
-          {tips.length > 0 ? (
-            tips.map((tip) => (
-              <Card key={tip.id} className="border-0 shadow-sm p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <Badge className={`${tipTypeConfig[tip.tip_type]?.color} text-white`}>
-                    {tipTypeConfig[tip.tip_type]?.label}
-                  </Badge>
-                  <span className="text-2xl font-medium text-[#C17A8E]">{tip.amount.toLocaleString()}pt</span>
-                </div>
-                <p className="text-slate-700 mb-3">{tip.reason}</p>
-                <div className="flex items-center gap-4 text-sm text-slate-500">
-                  <span>{format(new Date(tip.date), 'yyyy年M月d日')}</span>
-                  {tip.given_by && <span>付与者: {tip.given_by}</span>}
-                </div>
-              </Card>
-            ))
-          ) : (
-            <Card className="border-0 shadow-sm p-12">
-              <div className="text-center text-slate-400">
-                <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">まだサンクス履歴がありません</p>
-                <p className="text-sm mt-2">業務への貢献が評価されるとサンクスが付与されます</p>
+        <Card className="border-0 shadow-sm">
+          <Tabs defaultValue="current" className="w-full">
+            <div className="border-b border-slate-100">
+              <TabsList className="w-full justify-start rounded-none bg-transparent p-0 h-auto">
+                <TabsTrigger 
+                  value="current" 
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#E8A4B8] data-[state=active]:bg-transparent px-6 py-4"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  今期の履歴
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="history"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#7CB342] data-[state=active]:bg-transparent px-6 py-4"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  過去の履歴
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="current" className="p-6 mt-0">
+              <div className="space-y-4">
+                {currentQuarterTips.length > 0 ? (
+                  currentQuarterTips.map((tip) => (
+                    <div key={tip.id} className="border border-slate-100 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <Badge className={`${tipTypeConfig[tip.tip_type]?.color} text-white`}>
+                          {tipTypeConfig[tip.tip_type]?.label}
+                        </Badge>
+                        <span className="text-xl font-medium text-[#C17A8E]">{tip.amount.toLocaleString()}pt</span>
+                      </div>
+                      <p className="text-slate-700 mb-3">{tip.reason}</p>
+                      <div className="flex items-center gap-4 text-sm text-slate-500">
+                        <span>{format(new Date(tip.date), 'yyyy年M月d日')}</span>
+                        {tip.given_by && <span>付与者: {tip.given_by}</span>}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">今期のサンクス履歴がまだありません</p>
+                    <p className="text-sm mt-2">業務への貢献が評価されるとサンクスが付与されます</p>
+                  </div>
+                )}
               </div>
-            </Card>
-          )}
-        </div>
+            </TabsContent>
+
+            <TabsContent value="history" className="p-6 mt-0">
+              <div className="space-y-6">
+                {quarterlyData.filter(q => 
+                  !(q.year === currentQuarter.year && q.quarter === currentQuarter.quarter)
+                ).length > 0 ? (
+                  quarterlyData.filter(q => 
+                    !(q.year === currentQuarter.year && q.quarter === currentQuarter.quarter)
+                  ).map((quarterData) => (
+                    <div key={`${quarterData.year}-Q${quarterData.quarter}`} className="space-y-3">
+                      <div className="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+                        <h3 className="text-lg font-medium text-slate-700">
+                          {quarterData.year}年 第{quarterData.quarter}四半期
+                        </h3>
+                        <span className="text-xl font-medium text-[#7CB342]">
+                          {quarterData.total.toLocaleString()}pt
+                        </span>
+                      </div>
+                      {quarterData.tips.map((tip) => (
+                        <div key={tip.id} className="border border-slate-100 rounded-lg p-4 ml-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <Badge className={`${tipTypeConfig[tip.tip_type]?.color} text-white text-xs`}>
+                              {tipTypeConfig[tip.tip_type]?.label}
+                            </Badge>
+                            <span className="text-lg font-medium text-[#C17A8E]">{tip.amount.toLocaleString()}pt</span>
+                          </div>
+                          <p className="text-sm text-slate-700 mb-2">{tip.reason}</p>
+                          <div className="flex items-center gap-4 text-xs text-slate-500">
+                            <span>{format(new Date(tip.date), 'yyyy年M月d日')}</span>
+                            {tip.given_by && <span>付与者: {tip.given_by}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 text-slate-400">
+                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">過去のサンクス履歴がありません</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </Card>
       </div>
     </div>
   );
