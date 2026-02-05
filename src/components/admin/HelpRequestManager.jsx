@@ -70,19 +70,23 @@ export default function HelpRequestManager({ user, allStaff }) {
       
       // クローズ時は関連する通知を削除
       if (data.status === 'closed' && request) {
-        const responses = helpResponses.filter(r => r.help_request_id === id);
-        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
-        
-        for (const response of responses) {
-          // この応答者に関連する通知を削除（category: general）
-          const relatedAnnouncements = allAnnouncements.filter(a => {
-            const titleMatch = a.title.includes(response.responder_name) && a.title.includes('ヘルプコール');
-            return titleMatch && a.category === 'general';
-          });
+        try {
+          const responses = helpResponses.filter(r => r.help_request_id === id);
+          const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
           
-          for (const announcement of relatedAnnouncements) {
-            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+          for (const response of responses) {
+            // この応答者に関連する通知を削除（category: general）
+            const relatedAnnouncements = allAnnouncements.filter(a => {
+              const titleMatch = a.title.includes(response.responder_name) && a.title.includes('ヘルプコール');
+              return titleMatch && a.category === 'general';
+            });
+            
+            for (const announcement of relatedAnnouncements) {
+              await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+            }
           }
+        } catch (error) {
+          console.error('お知らせ削除エラー:', error);
         }
       }
     },
