@@ -65,20 +65,21 @@ export default function HelpRequestManager({ user, allStaff }) {
 
   const updateRequestMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      const request = helpRequests.find(r => r.id === id);
       await base44.entities.HelpRequest.update(id, data);
       
       // クローズ時は関連する通知を削除
-      if (data.status === 'closed' && request) {
+      if (data.status === 'closed') {
         try {
-          const responses = helpResponses.filter(r => r.help_request_id === id);
+          // 最新のデータを取得
+          const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
           const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
           
           for (const response of responses) {
-            // この応答者に関連する通知を削除（category: general）
+            // この応答者に関連するヘルプコール通知を削除
             const relatedAnnouncements = allAnnouncements.filter(a => {
-              const titleMatch = a.title.includes(response.responder_name) && a.title.includes('ヘルプコール');
-              return titleMatch && a.category === 'general';
+              const matchPattern1 = a.title === `ヘルプコール承認通知 - ${response.responder_name}様`;
+              const matchPattern2 = a.title === `ヘルプコール - ${response.responder_name}様`;
+              return (matchPattern1 || matchPattern2) && a.category === 'general';
             });
             
             for (const announcement of relatedAnnouncements) {
@@ -92,6 +93,7 @@ export default function HelpRequestManager({ user, allStaff }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-help-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-help-responses'] });
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
       setEditDialogOpen(false);
       resetForm();
