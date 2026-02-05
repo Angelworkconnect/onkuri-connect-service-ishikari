@@ -39,6 +39,15 @@ export default function HelpRequestManager({ user, allStaff }) {
     admin_notes: '',
   });
 
+  const getDefaultMessage = (status) => {
+    if (status === 'approved') {
+      return '助け合いの精神に心より感謝申し上げます。ありがとうございます。業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。';
+    } else if (status === 'rejected') {
+      return 'ご協力の姿勢に心より感謝申し上げます。';
+    }
+    return '';
+  };
+
   const [responseForm, setResponseForm] = useState({
     status: 'pending',
     admin_message: '',
@@ -146,7 +155,7 @@ export default function HelpRequestManager({ user, allStaff }) {
     setSelectedResponse(response);
     setResponseForm({
       status: response.status,
-      admin_message: response.admin_message || '',
+      admin_message: response.admin_message || getDefaultMessage(response.status),
     });
     setResponseDialogOpen(true);
   };
@@ -417,31 +426,53 @@ export default function HelpRequestManager({ user, allStaff }) {
               </div>
               <div>
                 <label className="text-sm font-medium">ステータス *</label>
-                <Select value={responseForm.status} onValueChange={(v) => setResponseForm({ ...responseForm, status: v })}>
+                <Select 
+                  value={responseForm.status} 
+                  onValueChange={(v) => setResponseForm({ 
+                    ...responseForm, 
+                    status: v,
+                    admin_message: getDefaultMessage(v)
+                  })}
+                >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">承認待ち</SelectItem>
-                    <SelectItem value="approved">承認</SelectItem>
-                    <SelectItem value="rejected">不承認</SelectItem>
+                    <SelectItem value="pending">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                        審査中
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="approved">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        承認
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="rejected">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        不承認
+                      </span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <label className="text-sm font-medium">
-                  {responseForm.status === 'approved' ? 'ご挨拶メッセージ' : 
-                   responseForm.status === 'rejected' ? 'お気持ちメッセージ' : 
+                  {responseForm.status === 'approved' ? '承認メッセージ（編集可）' : 
+                   responseForm.status === 'rejected' ? '不承認メッセージ（編集可）' : 
                    '管理者メッセージ'}
                 </label>
                 <Textarea
                   value={responseForm.admin_message}
                   onChange={(e) => setResponseForm({ ...responseForm, admin_message: e.target.value })}
-                  placeholder={
-                    responseForm.status === 'approved' ? 'ご協力ありがとうございます。よろしくお願いいたします。' :
-                    responseForm.status === 'rejected' ? 'お気持ちありがとうございます。今回は他の方に依頼させていただきます。' :
-                    ''
-                  }
-                  className="h-24"
+                  placeholder="メッセージを入力してください"
+                  className="h-32"
                 />
+                <p className="text-xs text-slate-500 mt-1">
+                  {responseForm.status === 'approved' && '※デフォルト: 助け合いの精神に心より感謝申し上げます...'}
+                  {responseForm.status === 'rejected' && '※デフォルト: ご協力の姿勢に心より感謝申し上げます。'}
+                </p>
               </div>
             </div>
           )}

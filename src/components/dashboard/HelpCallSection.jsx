@@ -37,6 +37,7 @@ export default function HelpCallSection({ user }) {
   });
 
   const [responseMessage, setResponseMessage] = useState('');
+  const [myResponsesDialogOpen, setMyResponsesDialogOpen] = useState(false);
 
   const { data: helpRequests = [] } = useQuery({
     queryKey: ['help-requests'],
@@ -153,12 +154,22 @@ export default function HelpCallSection({ user }) {
                 <p className="text-sm text-slate-600">急なお願いにみんなで助け合い</p>
               </div>
             </div>
-            <Button
-              onClick={() => setRequestDialogOpen(true)}
-              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg"
-            >
-              ヘルプ依頼を作成
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setMyResponsesDialogOpen(true)}
+                variant="outline"
+                className="border-orange-300 text-orange-600 hover:bg-orange-50"
+              >
+                <HandIcon className="w-4 h-4 mr-2" />
+                私の挙手
+              </Button>
+              <Button
+                onClick={() => setRequestDialogOpen(true)}
+                className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg"
+              >
+                ヘルプ依頼を作成
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
@@ -349,6 +360,101 @@ export default function HelpCallSection({ user }) {
               依頼を作成
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* My Responses Dialog */}
+      <Dialog open={myResponsesDialogOpen} onOpenChange={setMyResponsesDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>私の挙手一覧</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {myResponses.length > 0 ? (
+              myResponses.map((response) => {
+                const request = helpRequests.find(r => r.id === response.help_request_id) || 
+                  { title: '削除された依頼', description: '', date: '', time: '' };
+                
+                return (
+                  <Card key={response.id} className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-lg mb-1">{request.title}</h4>
+                        <p className="text-sm text-slate-600 mb-2">
+                          {request.date} {request.time}
+                        </p>
+                      </div>
+                      <Badge className={
+                        response.status === 'approved' 
+                          ? 'bg-green-100 text-green-700 border-green-200' 
+                          : response.status === 'rejected' 
+                          ? 'bg-red-100 text-red-700 border-red-200' 
+                          : 'bg-amber-100 text-amber-700 border-amber-200'
+                      } variant="outline">
+                        {response.status === 'approved' ? '✅ 承認' : 
+                         response.status === 'rejected' ? '❌ 不承認' : 
+                         '⏳ 審査中'}
+                      </Badge>
+                    </div>
+                    
+                    {response.status === 'approved' && (
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-3">
+                        <p className="text-sm text-green-800 font-medium mb-2">
+                          ✨ 助け合いの精神に心より感謝申し上げます。ありがとうございます。
+                        </p>
+                        <p className="text-sm text-green-700">
+                          業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。
+                        </p>
+                        {response.admin_message && (
+                          <div className="mt-3 pt-3 border-t border-green-200">
+                            <p className="text-xs text-green-600 font-medium">管理者コメント:</p>
+                            <p className="text-sm text-green-800 mt-1">{response.admin_message}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {response.status === 'rejected' && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-3">
+                        <p className="text-sm text-red-800 font-medium">
+                          ご協力の姿勢に心より感謝申し上げます。
+                        </p>
+                        {response.admin_message && (
+                          <div className="mt-3 pt-3 border-t border-red-200">
+                            <p className="text-xs text-red-600 font-medium">管理者コメント:</p>
+                            <p className="text-sm text-red-800 mt-1">{response.admin_message}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {response.status === 'pending' && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-3">
+                        <p className="text-sm text-amber-800">
+                          管理者による審査をお待ちください...
+                        </p>
+                      </div>
+                    )}
+                    
+                    {response.message && (
+                      <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
+                        <span className="font-medium">あなたのメッセージ:</span> {response.message}
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-slate-400 mt-3">
+                      挙手日時: {format(new Date(response.created_date), 'yyyy/MM/dd HH:mm')}
+                    </p>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="text-center py-12 text-slate-400">
+                <HandIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>まだ挙手していません</p>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
