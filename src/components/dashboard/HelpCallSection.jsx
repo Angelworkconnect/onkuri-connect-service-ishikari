@@ -399,32 +399,17 @@ export default function HelpCallSection({ user }) {
                     
                     {response.status === 'approved' && (
                       <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-3">
-                        <p className="text-sm text-green-800 font-medium mb-2">
-                          ✨ 助け合いの精神に心より感謝申し上げます。ありがとうございます。
+                        <p className="text-sm text-green-800 font-medium whitespace-pre-wrap">
+                          {response.admin_message || '助け合いの精神に心より感謝申し上げます。ありがとうございます。\n業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。'}
                         </p>
-                        <p className="text-sm text-green-700">
-                          業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。
-                        </p>
-                        {response.admin_message && (
-                          <div className="mt-3 pt-3 border-t border-green-200">
-                            <p className="text-xs text-green-600 font-medium">管理者コメント:</p>
-                            <p className="text-sm text-green-800 mt-1">{response.admin_message}</p>
-                          </div>
-                        )}
                       </div>
                     )}
                     
                     {response.status === 'rejected' && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-3">
-                        <p className="text-sm text-red-800 font-medium">
-                          ご協力の姿勢に心より感謝申し上げます。
+                        <p className="text-sm text-red-800 font-medium whitespace-pre-wrap">
+                          {response.admin_message || 'ご協力の姿勢に心より感謝申し上げます。'}
                         </p>
-                        {response.admin_message && (
-                          <div className="mt-3 pt-3 border-t border-red-200">
-                            <p className="text-xs text-red-600 font-medium">管理者コメント:</p>
-                            <p className="text-sm text-red-800 mt-1">{response.admin_message}</p>
-                          </div>
-                        )}
                       </div>
                     )}
                     

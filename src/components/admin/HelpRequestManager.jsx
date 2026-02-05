@@ -41,7 +41,7 @@ export default function HelpRequestManager({ user, allStaff }) {
 
   const getDefaultMessage = (status) => {
     if (status === 'approved') {
-      return '助け合いの精神に心より感謝申し上げます。ありがとうございます。業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。';
+      return '助け合いの精神に心より感謝申し上げます。ありがとうございます。\n業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。';
     } else if (status === 'rejected') {
       return 'ご協力の姿勢に心より感謝申し上げます。';
     }
@@ -467,12 +467,18 @@ export default function HelpRequestManager({ user, allStaff }) {
                   value={responseForm.admin_message}
                   onChange={(e) => setResponseForm({ ...responseForm, admin_message: e.target.value })}
                   placeholder="メッセージを入力してください"
-                  className="h-32"
+                  className="h-36"
                 />
-                <p className="text-xs text-slate-500 mt-1">
-                  {responseForm.status === 'approved' && '※デフォルト: 助け合いの精神に心より感謝申し上げます...'}
-                  {responseForm.status === 'rejected' && '※デフォルト: ご協力の姿勢に心より感謝申し上げます。'}
-                </p>
+                {responseForm.status === 'approved' && (
+                  <p className="text-xs text-slate-500 mt-1 bg-green-50 p-2 rounded border border-green-200">
+                    💡 デフォルトメッセージ: 助け合いの精神に心より感謝申し上げます。ありがとうございます。業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。
+                  </p>
+                )}
+                {responseForm.status === 'rejected' && (
+                  <p className="text-xs text-slate-500 mt-1 bg-red-50 p-2 rounded border border-red-200">
+                    💡 デフォルトメッセージ: ご協力の姿勢に心より感謝申し上げます。
+                  </p>
+                )}
               </div>
             </div>
           )}
