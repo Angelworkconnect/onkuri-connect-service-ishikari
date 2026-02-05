@@ -74,12 +74,10 @@ export default function HelpRequestManager({ user, allStaff }) {
         const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
         
         for (const response of responses) {
-          // この応答者とこの依頼に関連する通知を削除
+          // この応答者に関連する通知を削除（category: general）
           const relatedAnnouncements = allAnnouncements.filter(a => {
-            const titleMatch = a.title.includes(response.responder_name) || a.title.includes(request.title);
-            const categoryMatch = a.category === 'thanks';
-            const contentMatch = a.content.includes('ヘルプコール') || a.content.includes(request.title);
-            return (titleMatch || contentMatch) && categoryMatch;
+            const titleMatch = a.title.includes(response.responder_name) && a.title.includes('ヘルプコール');
+            return titleMatch && a.category === 'general';
           });
           
           for (const announcement of relatedAnnouncements) {
