@@ -64,9 +64,30 @@ export default function HelpRequestManager({ user, allStaff }) {
   });
 
   const updateRequestMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.HelpRequest.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      await base44.entities.HelpRequest.update(id, data);
+      
+      // クローズ時は関連する通知を削除
+      if (data.status === 'closed') {
+        const responses = helpResponses.filter(r => r.help_request_id === id);
+        const allAnnouncements = await base44.entities.Announcement.list();
+        
+        for (const response of responses) {
+          // この応答者への通知を検索して削除
+          const relatedAnnouncements = allAnnouncements.filter(a => 
+            a.title.includes(response.responder_name) && 
+            (a.title.includes('ヘルプコール承認通知') || a.title.includes('ヘルプコール'))
+          );
+          
+          for (const announcement of relatedAnnouncements) {
+            await base44.entities.Announcement.delete(announcement.id);
+          }
+        }
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-help-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
       setEditDialogOpen(false);
       resetForm();
     },
