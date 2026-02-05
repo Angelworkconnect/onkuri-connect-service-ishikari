@@ -373,18 +373,6 @@ export default function Dashboard() {
                   <TabsTrigger value="urgent" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
                     緊急
                   </TabsTrigger>
-                  <TabsTrigger value="shift" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                    シフト
-                  </TabsTrigger>
-                  <TabsTrigger value="welfare" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                    福利厚生
-                  </TabsTrigger>
-                  <TabsTrigger value="event" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                    イベント
-                  </TabsTrigger>
-                  <TabsTrigger value="thanks" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                    サンクス
-                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="all" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
@@ -409,58 +397,6 @@ export default function Dashboard() {
                     <div className="text-center py-8 text-slate-400">
                       <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
                       <p className="text-sm">緊急のお知らせはありません</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="shift" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-                  {announcements.filter(a => a.category === 'shift').length > 0 ? (
-                    announcements.filter(a => a.category === 'shift').map((announcement) => (
-                      <AnnouncementCard key={announcement.id} announcement={announcement} />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-slate-400">
-                      <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">シフトのお知らせはありません</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="welfare" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-                  {announcements.filter(a => a.category === 'welfare').length > 0 ? (
-                    announcements.filter(a => a.category === 'welfare').map((announcement) => (
-                      <AnnouncementCard key={announcement.id} announcement={announcement} />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-slate-400">
-                      <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">福利厚生のお知らせはありません</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="event" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-                  {announcements.filter(a => a.category === 'event').length > 0 ? (
-                    announcements.filter(a => a.category === 'event').map((announcement) => (
-                      <AnnouncementCard key={announcement.id} announcement={announcement} />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-slate-400">
-                      <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">イベントのお知らせはありません</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="thanks" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-                  {announcements.filter(a => a.category === 'thanks').length > 0 ? (
-                    announcements.filter(a => a.category === 'thanks').map((announcement) => (
-                      <AnnouncementCard key={announcement.id} announcement={announcement} />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-slate-400">
-                      <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">サンクスのお知らせはありません</p>
                     </div>
                   )}
                 </TabsContent>
