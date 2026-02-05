@@ -70,20 +70,10 @@ export default function HelpRequestManager({ user, allStaff }) {
       // クローズ時は関連する通知を削除
       if (data.status === 'closed') {
         try {
-          const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
-          const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
+          const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
           
-          for (const response of responses) {
-            // この応答者のヘルプコール関連の全お知らせを削除
-            const relatedAnnouncements = allAnnouncements.filter(a => {
-              const includesName = a.title.includes(response.responder_name);
-              const includesHelpCall = a.title.includes('ヘルプコール');
-              return includesName && includesHelpCall && a.category === 'general';
-            });
-            
-            for (const announcement of relatedAnnouncements) {
-              await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-            }
+          for (const announcement of allAnnouncements) {
+            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
           }
         } catch (error) {
           console.error('お知らせ削除エラー:', error);
@@ -103,19 +93,10 @@ export default function HelpRequestManager({ user, allStaff }) {
     mutationFn: async (id) => {
       // 削除前に関連する通知を削除
       try {
-        const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
-        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
+        const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
         
-        for (const response of responses) {
-          const relatedAnnouncements = allAnnouncements.filter(a => {
-            const includesName = a.title.includes(response.responder_name);
-            const includesHelpCall = a.title.includes('ヘルプコール');
-            return includesName && includesHelpCall && a.category === 'general';
-          });
-          
-          for (const announcement of relatedAnnouncements) {
-            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-          }
+        for (const announcement of allAnnouncements) {
+          await base44.asServiceRole.entities.Announcement.delete(announcement.id);
         }
       } catch (error) {
         console.error('お知らせ削除エラー:', error);
@@ -140,6 +121,7 @@ export default function HelpRequestManager({ user, allStaff }) {
           title: `ヘルプコール承認通知 - ${response.responder_name}様`,
           content: `${data.admin_message || 'ヘルプコールへの挙手ありがとうございました。承認されました。ご協力をお願いいたします。'}`,
           category: 'general',
+          help_request_id: response.help_request_id,
         });
       }
       
@@ -150,11 +132,13 @@ export default function HelpRequestManager({ user, allStaff }) {
           title: `ヘルプコール - ${response.responder_name}様`,
           content: `お気持ちありがとうございます。${data.admin_message || '今回は他の方に依頼させていただくことになりました。'}`,
           category: 'general',
+          help_request_id: response.help_request_id,
         });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-help-responses'] });
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
       setResponseDialogOpen(false);
       setSelectedResponse(null);
     },
