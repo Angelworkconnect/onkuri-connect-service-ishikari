@@ -370,7 +370,7 @@ export default function Dashboard() {
               </div>
               <div className="p-4 space-y-3">
                 {announcements.length > 0 ? (
-                  announcements.slice(0, 3).map((announcement) => (
+                  announcements.map((announcement) => (
                     <AnnouncementCard key={announcement.id} announcement={announcement} />
                   ))
                 ) : (

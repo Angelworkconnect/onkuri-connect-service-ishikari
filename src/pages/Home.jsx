@@ -376,7 +376,7 @@ export default function Home() {
             </div>
           </div>
           <div className="space-y-4">
-            {announcements.slice(0, 3).map((announcement) => (
+            {announcements.map((announcement) => (
               <motion.div
                 key={announcement.id}
                 initial={{ opacity: 0, x: -20 }}
