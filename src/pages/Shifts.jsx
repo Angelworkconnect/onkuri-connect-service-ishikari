@@ -103,7 +103,7 @@ export default function Shifts() {
   });
 
   const openShifts = filteredShifts.filter(s => s.status === 'open');
-  const otherShifts = filteredShifts.filter(s => s.status !== 'open');
+  const otherShifts = filteredShifts.filter(s => s.status === 'filled' || s.status === 'cancelled');
 
   const hasApplied = (shiftId) => {
     return myApplications.some(app => app.shift_id === shiftId);
@@ -112,6 +112,12 @@ export default function Shifts() {
   const handleApply = async (shift) => {
     if (!user) {
       base44.auth.redirectToLogin();
+      return;
+    }
+
+    // Check if shift is not open
+    if (shift.status !== 'open') {
+      alert('このシフトは現在応募を受け付けていません');
       return;
     }
 
