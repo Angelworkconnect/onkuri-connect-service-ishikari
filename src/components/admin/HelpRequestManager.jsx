@@ -100,8 +100,33 @@ export default function HelpRequestManager({ user, allStaff }) {
   });
 
   const deleteRequestMutation = useMutation({
-    mutationFn: (id) => base44.entities.HelpRequest.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-help-requests'] }),
+    mutationFn: async (id) => {
+      // 削除前に関連する通知を削除
+      try {
+        const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
+        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
+        
+        for (const response of responses) {
+          const relatedAnnouncements = allAnnouncements.filter(a => {
+            const includesName = a.title.includes(response.responder_name);
+            const includesHelpCall = a.title.includes('ヘルプコール');
+            return includesName && includesHelpCall && a.category === 'general';
+          });
+          
+          for (const announcement of relatedAnnouncements) {
+            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+          }
+        }
+      } catch (error) {
+        console.error('お知らせ削除エラー:', error);
+      }
+      
+      await base44.entities.HelpRequest.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-help-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+    },
   });
 
   const updateResponseMutation = useMutation({
