@@ -854,13 +854,29 @@ export default function AdminPanel() {
     }
   };
 
+  const updateAnnouncementMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Announcement.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-announcements']);
+      setAnnouncementDialogOpen(false);
+      resetAnnouncementForm();
+    },
+  });
+
+  const handleEditAnnouncement = (announcement) => {
+    setEditingAnnouncement(announcement);
+    setAnnouncementForm({
+      title: announcement.title,
+      content: announcement.content,
+      category: announcement.category,
+      is_pinned: announcement.is_pinned || false,
+    });
+    setAnnouncementDialogOpen(true);
+  };
+
   const handleSubmitAnnouncement = () => {
     if (editingAnnouncement) {
-      base44.entities.Announcement.update(editingAnnouncement.id, announcementForm).then(() => {
-        queryClient.invalidateQueries(['admin-announcements']);
-        setAnnouncementDialogOpen(false);
-        resetAnnouncementForm();
-      });
+      updateAnnouncementMutation.mutate({ id: editingAnnouncement.id, data: announcementForm });
     } else {
       createAnnouncementMutation.mutate(announcementForm);
     }
@@ -1503,9 +1519,14 @@ export default function AdminPanel() {
                       </TableCell>
                       <TableCell>{format(new Date(announcement.created_date), 'M/d HH:mm')}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => deleteAnnouncementMutation.mutate(announcement.id)}>
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditAnnouncement(announcement)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteAnnouncementMutation.mutate(announcement.id)}>
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1944,7 +1965,7 @@ export default function AdminPanel() {
       <Dialog open={announcementDialogOpen} onOpenChange={setAnnouncementDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>新規お知らせ</DialogTitle>
+            <DialogTitle>{editingAnnouncement ? 'お知らせ編集' : '新規お知らせ'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -1969,7 +1990,9 @@ export default function AdminPanel() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAnnouncementDialogOpen(false)}>キャンセル</Button>
-            <Button onClick={handleSubmitAnnouncement} className="bg-[#2D4A6F]">投稿</Button>
+            <Button onClick={handleSubmitAnnouncement} className="bg-[#2D4A6F]">
+              {editingAnnouncement ? '更新' : '投稿'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
