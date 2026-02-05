@@ -51,14 +51,20 @@ export default function Home() {
 
   const { data: shifts = [] } = useQuery({
     queryKey: ['shifts-open'],
-    queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, '-date', 3),
+    queryFn: async () => {
+      const allVisible = await base44.entities.Shift.filter({ is_visible: true }, '-date', 10);
+      return allVisible.filter(s => s.status === 'open' || s.status === 'filled').slice(0, 3);
+    },
     refetchInterval: 3000,
     staleTime: 0,
   });
 
   const { data: allShifts = [] } = useQuery({
     queryKey: ['shifts-all'],
-    queryFn: () => base44.entities.Shift.filter({ is_visible: true }),
+    queryFn: async () => {
+      const allVisible = await base44.entities.Shift.filter({ is_visible: true });
+      return allVisible.filter(s => s.status === 'open' || s.status === 'filled');
+    },
     refetchInterval: 3000,
     staleTime: 0,
   });
@@ -136,6 +142,13 @@ export default function Home() {
       if (confirm('応募するにはログインが必要です。ログインページに移動しますか？')) {
         base44.auth.redirectToLogin();
       }
+      return;
+    }
+
+    // Check shift status
+    const shift = shifts.find(s => s.id === shiftId);
+    if (shift && shift.status !== 'open') {
+      alert('このシフトは現在応募を受け付けていません');
       return;
     }
 
