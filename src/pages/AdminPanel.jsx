@@ -138,6 +138,17 @@ export default function AdminPanel() {
     date: new Date().toISOString().split('T')[0],
   });
 
+  const [dicePrizeDialogOpen, setDicePrizeDialogOpen] = useState(false);
+  const [editingDicePrize, setEditingDicePrize] = useState(null);
+  const [dicePrizeForm, setDicePrizeForm] = useState({
+    dice_number: 1,
+    prize_name: '',
+    points: '',
+    emoji: '🎁',
+    color: 'bg-gradient-to-br from-purple-400 to-pink-400',
+    is_active: true,
+  });
+
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [serviceForm, setServiceForm] = useState({
@@ -257,6 +268,11 @@ export default function AdminPanel() {
   const { data: allTips = [] } = useQuery({
     queryKey: ['admin-tips'],
     queryFn: () => base44.entities.TipRecord.list('-date'),
+  });
+
+  const { data: dicePrizes = [] } = useQuery({
+    queryKey: ['admin-dice-prizes'],
+    queryFn: () => base44.entities.DicePrize.list('dice_number'),
   });
 
   const { data: allServices = [] } = useQuery({
@@ -430,6 +446,29 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
   });
 
+  const createDicePrizeMutation = useMutation({
+    mutationFn: (data) => base44.entities.DicePrize.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-dice-prizes']);
+      setDicePrizeDialogOpen(false);
+      resetDicePrizeForm();
+    },
+  });
+
+  const updateDicePrizeMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.DicePrize.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-dice-prizes']);
+      setDicePrizeDialogOpen(false);
+      resetDicePrizeForm();
+    },
+  });
+
+  const deleteDicePrizeMutation = useMutation({
+    mutationFn: (id) => base44.entities.DicePrize.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-dice-prizes']),
+  });
+
   const updateSettingsMutation = useMutation({
     mutationFn: (data) => {
       if (siteSettings && siteSettings.id) {
@@ -552,6 +591,43 @@ export default function AdminPanel() {
       reason: '',
       date: new Date().toISOString().split('T')[0],
     });
+  };
+
+  const resetDicePrizeForm = () => {
+    setDicePrizeForm({
+      dice_number: 1,
+      prize_name: '',
+      points: '',
+      emoji: '🎁',
+      color: 'bg-gradient-to-br from-purple-400 to-pink-400',
+      is_active: true,
+    });
+    setEditingDicePrize(null);
+  };
+
+  const handleEditDicePrize = (prize) => {
+    setEditingDicePrize(prize);
+    setDicePrizeForm({
+      dice_number: prize.dice_number,
+      prize_name: prize.prize_name,
+      points: prize.points,
+      emoji: prize.emoji || '🎁',
+      color: prize.color || 'bg-gradient-to-br from-purple-400 to-pink-400',
+      is_active: prize.is_active !== false,
+    });
+    setDicePrizeDialogOpen(true);
+  };
+
+  const handleSubmitDicePrize = () => {
+    const data = {
+      ...dicePrizeForm,
+      points: Number(dicePrizeForm.points),
+    };
+    if (editingDicePrize) {
+      updateDicePrizeMutation.mutate({ id: editingDicePrize.id, data });
+    } else {
+      createDicePrizeMutation.mutate(data);
+    }
   };
 
   const resetServiceForm = () => {
@@ -1435,6 +1511,7 @@ export default function AdminPanel() {
 
                   {/* Tips Tab */}
                   <TabsContent value="tips">
+                  <div className="space-y-6">
                   <Card className="border-0 shadow-lg">
                   <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
                   <h2 className="text-lg font-medium">サンクス管理</h2>
@@ -2188,6 +2265,111 @@ export default function AdminPanel() {
             <Button variant="outline" onClick={() => setBenefitAppDialogOpen(false)}>キャンセル</Button>
             <Button onClick={handleSubmitBenefitApp} className="bg-[#2D4A6F]">
               更新
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dice Prize Dialog */}
+      <Dialog open={dicePrizeDialogOpen} onOpenChange={setDicePrizeDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{editingDicePrize ? '賞品編集' : '新規賞品追加'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>サイコロの出目 *</Label>
+              <Select 
+                value={String(dicePrizeForm.dice_number)} 
+                onValueChange={(v) => setDicePrizeForm({...dicePrizeForm, dice_number: Number(v)})}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">⚀ 1</SelectItem>
+                  <SelectItem value="2">⚁ 2</SelectItem>
+                  <SelectItem value="3">⚂ 3</SelectItem>
+                  <SelectItem value="4">⚃ 4</SelectItem>
+                  <SelectItem value="5">⚄ 5</SelectItem>
+                  <SelectItem value="6">⚅ 6</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>賞品名 *</Label>
+              <Input 
+                value={dicePrizeForm.prize_name} 
+                onChange={(e) => setDicePrizeForm({...dicePrizeForm, prize_name: e.target.value})}
+                placeholder="例: ラッキーボーナス"
+              />
+            </div>
+            <div>
+              <Label>ポイント *</Label>
+              <Input 
+                type="number" 
+                value={dicePrizeForm.points} 
+                onChange={(e) => setDicePrizeForm({...dicePrizeForm, points: e.target.value})}
+                placeholder="例: 1000"
+              />
+            </div>
+            <div>
+              <Label>絵文字</Label>
+              <Input 
+                value={dicePrizeForm.emoji} 
+                onChange={(e) => setDicePrizeForm({...dicePrizeForm, emoji: e.target.value})}
+                placeholder="例: 🎁"
+                maxLength={2}
+              />
+            </div>
+            <div>
+              <Label>背景カラークラス *</Label>
+              <Select 
+                value={dicePrizeForm.color.startsWith('bg-gradient') ? 'custom' : dicePrizeForm.color}
+                onValueChange={(v) => {
+                  if (v !== 'custom') {
+                    setDicePrizeForm({...dicePrizeForm, color: v});
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bg-gradient-to-br from-purple-400 to-pink-400">💜 紫→ピンク</SelectItem>
+                  <SelectItem value="bg-gradient-to-br from-blue-400 to-cyan-400">💙 青→水色</SelectItem>
+                  <SelectItem value="bg-gradient-to-br from-green-400 to-emerald-400">💚 緑→エメラルド</SelectItem>
+                  <SelectItem value="bg-gradient-to-br from-yellow-400 to-orange-400">💛 黄→オレンジ</SelectItem>
+                  <SelectItem value="bg-gradient-to-br from-red-400 to-pink-400">❤️ 赤→ピンク</SelectItem>
+                  <SelectItem value="bg-gradient-to-br from-indigo-400 to-purple-400">🔮 インディゴ→紫</SelectItem>
+                  <SelectItem value="custom">🎨 カスタム</SelectItem>
+                </SelectContent>
+              </Select>
+              {(dicePrizeForm.color.startsWith('bg-gradient') && !['bg-gradient-to-br from-purple-400 to-pink-400', 'bg-gradient-to-br from-blue-400 to-cyan-400', 'bg-gradient-to-br from-green-400 to-emerald-400', 'bg-gradient-to-br from-yellow-400 to-orange-400', 'bg-gradient-to-br from-red-400 to-pink-400', 'bg-gradient-to-br from-indigo-400 to-purple-400'].includes(dicePrizeForm.color)) && (
+                <div className="mt-2">
+                  <Label className="text-xs text-slate-500">カスタムカラー</Label>
+                  <Input 
+                    value={dicePrizeForm.color} 
+                    onChange={(e) => setDicePrizeForm({...dicePrizeForm, color: e.target.value})}
+                    placeholder="bg-gradient-to-br from-purple-400 to-pink-400"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox"
+                checked={dicePrizeForm.is_active}
+                onChange={(e) => setDicePrizeForm({...dicePrizeForm, is_active: e.target.checked})}
+                className="w-4 h-4"
+              />
+              <Label>有効にする</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDicePrizeDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={handleSubmitDicePrize} 
+              className="bg-purple-600 hover:bg-purple-700"
+              disabled={!dicePrizeForm.prize_name || !dicePrizeForm.points}
+            >
+              {editingDicePrize ? '更新' : '追加'}
             </Button>
           </DialogFooter>
         </DialogContent>
