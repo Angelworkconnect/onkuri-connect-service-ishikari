@@ -112,7 +112,7 @@ export default function HelpRequestManager({ user, allStaff }) {
       time: '',
       location: '',
       urgency: 'medium',
-      status: 'open',
+      status: 'pending',
       admin_notes: '',
     });
     setEditingRequest(null);
@@ -198,9 +198,20 @@ export default function HelpRequestManager({ user, allStaff }) {
                       <Badge className={urgency.color}>{urgency.label}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={request.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>
-                        {request.status === 'open' ? 'オープン' : 'クローズ'}
-                      </Badge>
+                      <Select 
+                        value={request.status} 
+                        onValueChange={(newStatus) => updateRequestMutation.mutate({ id: request.id, data: { status: newStatus } })}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">承認待ち</SelectItem>
+                          <SelectItem value="approved">承認</SelectItem>
+                          <SelectItem value="rejected">不承認</SelectItem>
+                          <SelectItem value="closed">クローズ</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
@@ -292,7 +303,9 @@ export default function HelpRequestManager({ user, allStaff }) {
               <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="open">オープン</SelectItem>
+                  <SelectItem value="pending">承認待ち</SelectItem>
+                  <SelectItem value="approved">承認</SelectItem>
+                  <SelectItem value="rejected">不承認</SelectItem>
                   <SelectItem value="closed">クローズ</SelectItem>
                 </SelectContent>
               </Select>
