@@ -70,10 +70,26 @@ export default function HelpRequestManager({ user, allStaff }) {
       // クローズ時は関連する通知を削除
       if (data.status === 'closed') {
         try {
-          const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
-          
-          for (const announcement of allAnnouncements) {
+          // 新しいお知らせ（help_request_id付き）
+          const newAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
+          for (const announcement of newAnnouncements) {
             await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+          }
+          
+          // 古いお知らせ（help_request_idなし）
+          const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
+          const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
+          
+          for (const response of responses) {
+            const oldAnnouncements = allAnnouncements.filter(a => 
+              a.category === 'general' &&
+              a.title.includes('ヘルプコール') &&
+              a.title.includes(response.responder_name)
+            );
+            
+            for (const announcement of oldAnnouncements) {
+              await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+            }
           }
         } catch (error) {
           console.error('お知らせ削除エラー:', error);
@@ -93,10 +109,26 @@ export default function HelpRequestManager({ user, allStaff }) {
     mutationFn: async (id) => {
       // 削除前に関連する通知を削除
       try {
-        const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
-        
-        for (const announcement of allAnnouncements) {
+        // 新しいお知らせ（help_request_id付き）
+        const newAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
+        for (const announcement of newAnnouncements) {
           await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+        }
+        
+        // 古いお知らせ（help_request_idなし）
+        const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
+        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
+        
+        for (const response of responses) {
+          const oldAnnouncements = allAnnouncements.filter(a => 
+            a.category === 'general' &&
+            a.title.includes('ヘルプコール') &&
+            a.title.includes(response.responder_name)
+          );
+          
+          for (const announcement of oldAnnouncements) {
+            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
+          }
         }
       } catch (error) {
         console.error('お知らせ削除エラー:', error);
