@@ -1,0 +1,404 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertCircle, Clock, MapPin, HandIcon, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { format } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
+
+const urgencyConfig = {
+  low: { label: '低', color: 'bg-blue-100 text-blue-700' },
+  medium: { label: '中', color: 'bg-yellow-100 text-yellow-700' },
+  high: { label: '高', color: 'bg-orange-100 text-orange-700' },
+  urgent: { label: '緊急', color: 'bg-red-100 text-red-700' },
+};
+
+export default function HelpCallSection({ user }) {
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false);
+  const [responseDialogOpen, setResponseDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [expandedRequests, setExpandedRequests] = useState({});
+  const queryClient = useQueryClient();
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    urgency: 'medium',
+  });
+
+  const [responseMessage, setResponseMessage] = useState('');
+
+  const { data: helpRequests = [] } = useQuery({
+    queryKey: ['help-requests'],
+    queryFn: () => base44.entities.HelpRequest.filter({ status: 'open' }, '-created_date'),
+  });
+
+  const { data: myResponses = [] } = useQuery({
+    queryKey: ['my-help-responses', user?.email],
+    queryFn: () => user ? base44.entities.HelpResponse.filter({ responder_email: user.email }) : [],
+    enabled: !!user,
+  });
+
+  const createRequestMutation = useMutation({
+    mutationFn: async (data) => {
+      return base44.entities.HelpRequest.create({
+        ...data,
+        created_by_email: user.email,
+        created_by_name: user.full_name || user.email,
+        status: 'open',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['help-requests'] });
+      setRequestDialogOpen(false);
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+        location: '',
+        urgency: 'medium',
+      });
+    },
+  });
+
+  const respondMutation = useMutation({
+    mutationFn: async ({ requestId, message }) => {
+      const response = await base44.entities.HelpResponse.create({
+        help_request_id: requestId,
+        responder_email: user.email,
+        responder_name: user.full_name || user.email,
+        message: message || '',
+        status: 'pending',
+        points_awarded: true,
+      });
+
+      await base44.entities.TipRecord.create({
+        user_email: user.email,
+        user_name: user.full_name || user.email,
+        tip_type: 'special_thanks',
+        amount: 10,
+        reason: 'ヘルプコール挙手ボーナス',
+        given_by: 'システム自動付与',
+        date: format(new Date(), 'yyyy-MM-dd'),
+      });
+
+      return response;
+    },
+    onSuccess: () => {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+      queryClient.invalidateQueries({ queryKey: ['help-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['my-help-responses'] });
+      queryClient.invalidateQueries({ queryKey: ['tips'] });
+      setResponseDialogOpen(false);
+      setResponseMessage('');
+      setSelectedRequest(null);
+    },
+  });
+
+  const handleSubmitRequest = () => {
+    createRequestMutation.mutate(formData);
+  };
+
+  const handleRespond = (request) => {
+    setSelectedRequest(request);
+    setResponseDialogOpen(true);
+  };
+
+  const handleSubmitResponse = () => {
+    if (!selectedRequest) return;
+    respondMutation.mutate({
+      requestId: selectedRequest.id,
+      message: responseMessage,
+    });
+  };
+
+  const hasResponded = (requestId) => {
+    return myResponses.some(r => r.help_request_id === requestId);
+  };
+
+  const toggleExpand = (requestId) => {
+    setExpandedRequests(prev => ({
+      ...prev,
+      [requestId]: !prev[requestId]
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
+                <AlertCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">🆘 人財穴埋め ヘルプコール</h3>
+                <p className="text-sm text-slate-600">急なお願いにみんなで助け合い</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setRequestDialogOpen(true)}
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg"
+            >
+              ヘルプ依頼を作成
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Help Requests List */}
+      {helpRequests.length > 0 ? (
+        <div className="space-y-4">
+          <AnimatePresence>
+            {helpRequests.map((request) => {
+              const urgency = urgencyConfig[request.urgency] || urgencyConfig.medium;
+              const isExpanded = expandedRequests[request.id];
+              const responded = hasResponded(request.id);
+
+              return (
+                <motion.div
+                  key={request.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge className={`${urgency.color} font-medium`}>
+                              {urgency.label}
+                            </Badge>
+                            <span className="text-xs text-slate-500">
+                              {format(new Date(request.created_date), 'M月d日 HH:mm')}
+                            </span>
+                          </div>
+                          <h4 className="text-lg font-bold text-slate-800 mb-2">{request.title}</h4>
+                          <div className="space-y-1 text-sm text-slate-600">
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-orange-500" />
+                              <span>{request.date} {request.time}</span>
+                            </div>
+                            {request.location && (
+                              <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-orange-500" />
+                                <span>{request.location}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description Toggle */}
+                      <button
+                        onClick={() => toggleExpand(request.id)}
+                        className="w-full text-left text-sm text-slate-600 mb-3 hover:text-slate-800 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">詳細内容</span>
+                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </div>
+                      </button>
+
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="p-4 bg-slate-50 rounded-lg mb-4">
+                              <p className="text-sm text-slate-700 whitespace-pre-wrap">{request.description}</p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Action Button */}
+                      <div className="mt-4">
+                        {responded ? (
+                          <div className="flex items-center justify-center gap-2 py-2 px-4 bg-green-50 text-green-700 rounded-lg">
+                            <Sparkles className="w-4 h-4" />
+                            <span className="font-medium">挙手済み (+10pt獲得)</span>
+                          </div>
+                        ) : (
+                          <Button
+                            onClick={() => handleRespond(request)}
+                            className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-500 hover:via-orange-500 hover:to-red-500 text-white font-bold text-lg py-6 shadow-xl transform hover:scale-105 transition-all duration-200"
+                          >
+                            <motion.div
+                              animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                              transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
+                              className="mr-3"
+                            >
+                              <HandIcon className="w-6 h-6" />
+                            </motion.div>
+                            <span>✋ 挙手する！（+10pt）</span>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      ) : (
+        <Card className="border-0 shadow-sm">
+          <div className="p-8 text-center text-slate-500">
+            <AlertCircle className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+            <p>現在、ヘルプコールはありません</p>
+          </div>
+        </Card>
+      )}
+
+      {/* Create Request Dialog */}
+      <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ヘルプ依頼を作成</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">タイトル*</label>
+              <Input
+                placeholder="例：急遽スタッフが必要です"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">詳細内容*</label>
+              <Textarea
+                placeholder="詳しい状況をご記入ください"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="h-24"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">希望日*</label>
+                <Input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">希望時間</label>
+                <Input
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">場所</label>
+              <Input
+                placeholder="例：デイサービス"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">緊急度</label>
+              <Select value={formData.urgency} onValueChange={(v) => setFormData({ ...formData, urgency: v })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">低</SelectItem>
+                  <SelectItem value="medium">中</SelectItem>
+                  <SelectItem value="high">高</SelectItem>
+                  <SelectItem value="urgent">緊急</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRequestDialogOpen(false)}>
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleSubmitRequest}
+              disabled={!formData.title || !formData.description || !formData.date || createRequestMutation.isPending}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              依頼を作成
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Response Dialog */}
+      <Dialog open={responseDialogOpen} onOpenChange={setResponseDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>挙手する</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {selectedRequest && (
+              <div className="p-4 bg-slate-50 rounded-lg mb-4">
+                <p className="font-medium text-slate-800 mb-1">{selectedRequest.title}</p>
+                <p className="text-sm text-slate-600">
+                  {selectedRequest.date} {selectedRequest.time}
+                </p>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                メッセージ（任意）
+              </label>
+              <Textarea
+                placeholder="一言メッセージがあればご記入ください"
+                value={responseMessage}
+                onChange={(e) => setResponseMessage(e.target.value)}
+                className="h-20"
+              />
+            </div>
+            <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-sm text-green-700 font-medium text-center">
+                ✨ 挙手で10ptゲット！
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResponseDialogOpen(false)}>
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleSubmitResponse}
+              disabled={respondMutation.isPending}
+              className="bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white"
+            >
+              <HandIcon className="w-4 h-4 mr-2" />
+              挙手する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
