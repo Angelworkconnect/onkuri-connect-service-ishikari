@@ -40,7 +40,7 @@ export default function HelpCallSection({ user }) {
 
   const { data: helpRequests = [] } = useQuery({
     queryKey: ['help-requests'],
-    queryFn: () => base44.entities.HelpRequest.filter({ status: 'approved' }, '-created_date'),
+    queryFn: () => base44.entities.HelpRequest.filter({ status: 'open' }, '-created_date'),
   });
 
   const { data: myResponses = [] } = useQuery({
@@ -55,7 +55,7 @@ export default function HelpCallSection({ user }) {
         ...data,
         created_by_email: user.email,
         created_by_name: user.full_name || user.email,
-        status: 'pending',
+        status: 'open',
       });
     },
     onSuccess: () => {

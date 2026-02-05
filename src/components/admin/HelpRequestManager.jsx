@@ -112,7 +112,7 @@ export default function HelpRequestManager({ user, allStaff }) {
       time: '',
       location: '',
       urgency: 'medium',
-      status: 'pending',
+      status: 'open',
       admin_notes: '',
     });
     setEditingRequest(null);
@@ -206,10 +206,18 @@ export default function HelpRequestManager({ user, allStaff }) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="pending">承認待ち</SelectItem>
-                          <SelectItem value="approved">承認</SelectItem>
-                          <SelectItem value="rejected">不承認</SelectItem>
-                          <SelectItem value="closed">クローズ</SelectItem>
+                          <SelectItem value="open">
+                            <span className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                              オープン
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="closed">
+                            <span className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+                              クローズ
+                            </span>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -303,9 +311,7 @@ export default function HelpRequestManager({ user, allStaff }) {
               <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">承認待ち</SelectItem>
-                  <SelectItem value="approved">承認</SelectItem>
-                  <SelectItem value="rejected">不承認</SelectItem>
+                  <SelectItem value="open">オープン</SelectItem>
                   <SelectItem value="closed">クローズ</SelectItem>
                 </SelectContent>
               </Select>
