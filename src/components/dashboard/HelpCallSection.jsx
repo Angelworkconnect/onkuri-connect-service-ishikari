@@ -46,9 +46,13 @@ export default function HelpCallSection({ user }) {
 
   const { data: myResponses = [] } = useQuery({
     queryKey: ['my-help-responses', user?.email],
-    queryFn: () => user ? base44.entities.HelpResponse.filter({ responder_email: user.email }) : [],
+    queryFn: () => user ? base44.entities.HelpResponse.filter({ responder_email: user.email }, '-created_date') : [],
     enabled: !!user,
   });
+
+  const getMyResponseForRequest = (requestId) => {
+    return myResponses.find(r => r.help_request_id === requestId);
+  };
 
   const createRequestMutation = useMutation({
     mutationFn: async (data) => {
@@ -182,6 +186,7 @@ export default function HelpCallSection({ user }) {
               const urgency = urgencyConfig[request.urgency] || urgencyConfig.medium;
               const isExpanded = expandedRequests[request.id];
               const responded = hasResponded(request.id);
+              const myResponse = getMyResponseForRequest(request.id);
 
               return (
                 <motion.div
@@ -194,10 +199,23 @@ export default function HelpCallSection({ user }) {
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <Badge className={`${urgency.color} font-medium`}>
                               {urgency.label}
                             </Badge>
+                            {myResponse && (
+                              <Badge className={
+                                myResponse.status === 'approved' 
+                                  ? 'bg-green-100 text-green-700 border-green-200' 
+                                  : myResponse.status === 'rejected' 
+                                  ? 'bg-red-100 text-red-700 border-red-200' 
+                                  : 'bg-amber-100 text-amber-700 border-amber-200'
+                              } variant="outline">
+                                {myResponse.status === 'approved' ? '✅ 承認済' : 
+                                 myResponse.status === 'rejected' ? '❌ 不承認' : 
+                                 '⏳ 審査中'}
+                              </Badge>
+                            )}
                             <span className="text-xs text-slate-500">
                               {format(new Date(request.created_date), 'M月d日 HH:mm')}
                             </span>
