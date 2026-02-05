@@ -1559,6 +1559,60 @@ export default function AdminPanel() {
                   </Table>
                   </div>
                   </Card>
+
+                  <Card className="border-0 shadow-lg">
+                  <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+                  <h2 className="text-lg font-medium">双六ゲーム賞品設定</h2>
+                  <Button onClick={() => { resetDicePrizeForm(); setDicePrizeDialogOpen(true); }} className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  賞品追加
+                  </Button>
+                  </div>
+                  <div className="overflow-x-auto">
+                  <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>出目</TableHead>
+                      <TableHead>絵文字</TableHead>
+                      <TableHead>賞品名</TableHead>
+                      <TableHead>ポイント</TableHead>
+                      <TableHead>カラー</TableHead>
+                      <TableHead>状態</TableHead>
+                      <TableHead>操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dicePrizes.map((prize) => (
+                      <TableRow key={prize.id}>
+                        <TableCell className="font-bold text-lg">{prize.dice_number}</TableCell>
+                        <TableCell className="text-2xl">{prize.emoji || '🎁'}</TableCell>
+                        <TableCell className="font-medium">{prize.prize_name}</TableCell>
+                        <TableCell className="font-semibold text-purple-600">{prize.points}pt</TableCell>
+                        <TableCell>
+                          <div className={`w-16 h-8 rounded ${prize.color}`} />
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={prize.is_active !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>
+                            {prize.is_active !== false ? '有効' : '無効'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleEditDicePrize(prize)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => deleteDicePrizeMutation.mutate(prize.id)}>
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  </Table>
+                  </div>
+                  </Card>
+                  </div>
                   </TabsContent>
 
 

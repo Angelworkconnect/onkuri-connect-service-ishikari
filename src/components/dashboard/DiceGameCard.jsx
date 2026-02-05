@@ -10,21 +10,27 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import confetti from 'canvas-confetti';
 
-const prizes = {
-  1: { name: '残念賞', points: 10, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  2: { name: 'ジュース', points: 20, emoji: '🧃', color: 'from-orange-400 to-orange-500' },
-  3: { name: 'お菓子', points: 30, emoji: '🍪', color: 'from-yellow-400 to-yellow-500' },
-  4: { name: 'ゴミ袋', points: 40, emoji: '🗑️', color: 'from-blue-400 to-blue-500' },
-  5: { name: '残念賞', points: 50, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  6: { name: 'PayPay 200円', points: 200, emoji: '💰', color: 'from-purple-400 to-purple-500' }
-};
-
 export default function DiceGameCard({ user }) {
   const [rolling, setRolling] = useState(false);
   const [result, setResult] = useState(null);
   const [diceNumber, setDiceNumber] = useState(1);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+
+  const { data: dicePrizes = [] } = useQuery({
+    queryKey: ['dice-prizes'],
+    queryFn: () => base44.entities.DicePrize.filter({ is_active: true }),
+  });
+
+  const prizes = dicePrizes.reduce((acc, prize) => {
+    acc[prize.dice_number] = {
+      name: prize.prize_name,
+      points: prize.points,
+      emoji: prize.emoji || '🎁',
+      color: prize.color?.replace('bg-gradient-to-br ', '') || 'from-purple-400 to-pink-400',
+    };
+    return acc;
+  }, {});
 
   const { data: todayRoll } = useQuery({
     queryKey: ['diceRoll', today, user?.email],

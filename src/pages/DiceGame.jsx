@@ -8,15 +8,6 @@ import { Dices, Sparkles, Gift, Trophy, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import confetti from 'canvas-confetti';
 
-const prizes = {
-  1: { name: '残念賞', points: 10, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  2: { name: 'ジュース', points: 20, emoji: '🧃', color: 'from-orange-400 to-orange-500' },
-  3: { name: 'お菓子', points: 30, emoji: '🍪', color: 'from-yellow-400 to-yellow-500' },
-  4: { name: 'ゴミ袋', points: 40, emoji: '🗑️', color: 'from-blue-400 to-blue-500' },
-  5: { name: '残念賞', points: 50, emoji: '😢', color: 'from-gray-400 to-gray-500' },
-  6: { name: 'スペシャル', points: 200, emoji: '✨', color: 'from-yellow-400 via-pink-500 to-purple-600', isSpecial: true }
-};
-
 export default function DiceGame() {
   const [user, setUser] = useState(null);
   const [rolling, setRolling] = useState(false);
@@ -24,6 +15,21 @@ export default function DiceGame() {
   const [diceNumber, setDiceNumber] = useState(1);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+
+  const { data: dicePrizes = [] } = useQuery({
+    queryKey: ['dice-prizes'],
+    queryFn: () => base44.entities.DicePrize.filter({ is_active: true }),
+  });
+
+  const prizes = dicePrizes.reduce((acc, prize) => {
+    acc[prize.dice_number] = {
+      name: prize.prize_name,
+      points: prize.points,
+      emoji: prize.emoji || '🎁',
+      color: prize.color?.replace('bg-gradient-to-br ', '') || 'from-purple-400 to-pink-400',
+    };
+    return acc;
+  }, {});
 
   useEffect(() => {
     base44.auth.me().then(async (u) => {
@@ -78,7 +84,7 @@ export default function DiceGame() {
       await base44.entities.TipRecord.create({
         user_email: user.email,
         user_name: user.full_name || user.email,
-        tip_type: 'special_thanks',
+        tip_type: 'sugoroku_thanks',
         amount: prize.points,
         reason: `双六ゲーム - ${prize.name}が当たりました！`,
         given_by: 'システム自動付与',
@@ -267,19 +273,14 @@ export default function DiceGame() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {Object.entries(prizes).map(([num, prize]) => (
+              {Object.entries(prizes).sort((a, b) => Number(a[0]) - Number(b[0])).map(([num, prize]) => (
                 <div
                   key={num}
-                  className={`bg-gradient-to-r ${prize.color} text-white p-4 rounded-xl text-center shadow-md ${
-                    prize.isSpecial ? 'ring-4 ring-yellow-300 animate-pulse' : ''
-                  }`}
+                  className={`bg-gradient-to-r ${prize.color} text-white p-4 rounded-xl text-center shadow-md`}
                 >
                   <div className="text-4xl mb-2">{prize.emoji}</div>
                   <p className="font-bold">{num} - {prize.name}</p>
                   <p className="text-sm opacity-90">{prize.points}pt</p>
-                  {prize.isSpecial && (
-                    <p className="text-xs mt-1 font-semibold">🎉 大当たり！</p>
-                  )}
                 </div>
               ))}
             </div>
