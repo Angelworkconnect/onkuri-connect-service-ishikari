@@ -38,6 +38,7 @@ import {
 import { createPageUrl } from '@/utils';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
+import HelpRequestManager from '../components/admin/HelpRequestManager';
 import { format } from "date-fns";
 
 const serviceTypes = [
@@ -942,6 +943,11 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">福利厚生管理</span>
               <span className="sm:hidden">福利</span>
             </TabsTrigger>
+            <TabsTrigger value="help" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Bell className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">ヘルプコール</span>
+              <span className="sm:hidden">ヘルプ</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Site Settings Tab */}
@@ -1616,6 +1622,11 @@ export default function AdminPanel() {
                   </TabsContent>
 
 
+
+          {/* Help Call Tab */}
+          <TabsContent value="help">
+            <HelpRequestManager user={user} allStaff={allStaff} />
+          </TabsContent>
 
           {/* Benefits Tab */}
           <TabsContent value="benefits">
