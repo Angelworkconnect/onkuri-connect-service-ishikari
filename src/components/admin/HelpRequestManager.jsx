@@ -70,16 +70,15 @@ export default function HelpRequestManager({ user, allStaff }) {
       // クローズ時は関連する通知を削除
       if (data.status === 'closed') {
         try {
-          // 最新のデータを取得
           const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
           const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
           
           for (const response of responses) {
-            // この応答者に関連するヘルプコール通知を削除
+            // この応答者のヘルプコール関連の全お知らせを削除
             const relatedAnnouncements = allAnnouncements.filter(a => {
-              const matchPattern1 = a.title === `ヘルプコール承認通知 - ${response.responder_name}様`;
-              const matchPattern2 = a.title === `ヘルプコール - ${response.responder_name}様`;
-              return (matchPattern1 || matchPattern2) && a.category === 'general';
+              const includesName = a.title.includes(response.responder_name);
+              const includesHelpCall = a.title.includes('ヘルプコール');
+              return includesName && includesHelpCall && a.category === 'general';
             });
             
             for (const announcement of relatedAnnouncements) {
