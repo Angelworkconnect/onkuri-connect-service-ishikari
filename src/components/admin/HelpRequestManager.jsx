@@ -72,32 +72,33 @@ export default function HelpRequestManager({ user, allStaff }) {
         try {
           // この依頼に対する応答を取得
           const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
+          const responderNames = responses.map(r => r.responder_name);
           
           // すべてのお知らせを取得
           const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({});
           
-          for (const announcement of allAnnouncements) {
-            let shouldDelete = false;
-            
+          // 削除対象のお知らせIDを収集
+          const announcementsToDelete = allAnnouncements.filter(announcement => {
             // help_request_idが一致する場合
             if (announcement.help_request_id === id) {
-              shouldDelete = true;
+              return true;
             }
             
             // または、応答者名とヘルプコールがタイトルに含まれる場合
-            if (!shouldDelete && announcement.category === 'general') {
-              for (const response of responses) {
-                if (announcement.title.includes('ヘルプコール') && 
-                    announcement.title.includes(response.responder_name)) {
-                  shouldDelete = true;
-                  break;
-                }
-              }
+            if (announcement.category === 'general' && announcement.title.includes('ヘルプコール')) {
+              return responderNames.some(name => announcement.title.includes(name));
             }
             
-            if (shouldDelete) {
-              await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-            }
+            return false;
+          });
+          
+          // まとめて削除（Promise.allで並列実行）
+          if (announcementsToDelete.length > 0) {
+            await Promise.all(
+              announcementsToDelete.map(announcement => 
+                base44.asServiceRole.entities.Announcement.delete(announcement.id)
+              )
+            );
           }
         } catch (error) {
           console.error('お知らせ削除エラー:', error);
@@ -119,32 +120,33 @@ export default function HelpRequestManager({ user, allStaff }) {
       try {
         // この依頼に対する応答を取得
         const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
+        const responderNames = responses.map(r => r.responder_name);
         
         // すべてのお知らせを取得
         const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({});
         
-        for (const announcement of allAnnouncements) {
-          let shouldDelete = false;
-          
+        // 削除対象のお知らせIDを収集
+        const announcementsToDelete = allAnnouncements.filter(announcement => {
           // help_request_idが一致する場合
           if (announcement.help_request_id === id) {
-            shouldDelete = true;
+            return true;
           }
           
           // または、応答者名とヘルプコールがタイトルに含まれる場合
-          if (!shouldDelete && announcement.category === 'general') {
-            for (const response of responses) {
-              if (announcement.title.includes('ヘルプコール') && 
-                  announcement.title.includes(response.responder_name)) {
-                shouldDelete = true;
-                break;
-              }
-            }
+          if (announcement.category === 'general' && announcement.title.includes('ヘルプコール')) {
+            return responderNames.some(name => announcement.title.includes(name));
           }
           
-          if (shouldDelete) {
-            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-          }
+          return false;
+        });
+        
+        // まとめて削除（Promise.allで並列実行）
+        if (announcementsToDelete.length > 0) {
+          await Promise.all(
+            announcementsToDelete.map(announcement => 
+              base44.asServiceRole.entities.Announcement.delete(announcement.id)
+            )
+          );
         }
       } catch (error) {
         console.error('お知らせ削除エラー:', error);
