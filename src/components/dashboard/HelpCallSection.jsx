@@ -258,6 +258,30 @@ export default function HelpCallSection({ user }) {
                             <div className="p-4 bg-slate-50 rounded-lg mb-4">
                               <p className="text-sm text-slate-700 whitespace-pre-wrap">{request.description}</p>
                             </div>
+                            
+                            {myResponse && myResponse.status === 'approved' && (
+                              <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
+                                <p className="text-sm text-green-800 font-medium whitespace-pre-wrap">
+                                  {myResponse.admin_message || '助け合いの精神に心より感謝申し上げます。ありがとうございます。\n業務終了後、人材穴埋めサンクスポイントを付与させて頂きます。'}
+                                </p>
+                              </div>
+                            )}
+                            
+                            {myResponse && myResponse.status === 'rejected' && (
+                              <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+                                <p className="text-sm text-red-800 font-medium whitespace-pre-wrap">
+                                  {myResponse.admin_message || 'ご協力の姿勢に心より感謝申し上げます。'}
+                                </p>
+                              </div>
+                            )}
+                            
+                            {myResponse && myResponse.status === 'pending' && (
+                              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-4">
+                                <p className="text-sm text-amber-800">
+                                  管理者による審査をお待ちください...
+                                </p>
+                              </div>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
