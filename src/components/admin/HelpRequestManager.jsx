@@ -70,24 +70,32 @@ export default function HelpRequestManager({ user, allStaff }) {
       // クローズ時は関連する通知を削除
       if (data.status === 'closed') {
         try {
-          // 新しいお知らせ（help_request_id付き）
-          const newAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
-          for (const announcement of newAnnouncements) {
-            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-          }
-          
-          // 古いお知らせ（help_request_idなし）
+          // この依頼に対する応答を取得
           const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
-          const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
           
-          for (const response of responses) {
-            const oldAnnouncements = allAnnouncements.filter(a => 
-              a.category === 'general' &&
-              a.title.includes('ヘルプコール') &&
-              a.title.includes(response.responder_name)
-            );
+          // すべてのお知らせを取得
+          const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({});
+          
+          for (const announcement of allAnnouncements) {
+            let shouldDelete = false;
             
-            for (const announcement of oldAnnouncements) {
+            // help_request_idが一致する場合
+            if (announcement.help_request_id === id) {
+              shouldDelete = true;
+            }
+            
+            // または、応答者名とヘルプコールがタイトルに含まれる場合
+            if (!shouldDelete && announcement.category === 'general') {
+              for (const response of responses) {
+                if (announcement.title.includes('ヘルプコール') && 
+                    announcement.title.includes(response.responder_name)) {
+                  shouldDelete = true;
+                  break;
+                }
+              }
+            }
+            
+            if (shouldDelete) {
               await base44.asServiceRole.entities.Announcement.delete(announcement.id);
             }
           }
@@ -109,24 +117,32 @@ export default function HelpRequestManager({ user, allStaff }) {
     mutationFn: async (id) => {
       // 削除前に関連する通知を削除
       try {
-        // 新しいお知らせ（help_request_id付き）
-        const newAnnouncements = await base44.asServiceRole.entities.Announcement.filter({ help_request_id: id });
-        for (const announcement of newAnnouncements) {
-          await base44.asServiceRole.entities.Announcement.delete(announcement.id);
-        }
-        
-        // 古いお知らせ（help_request_idなし）
+        // この依頼に対する応答を取得
         const responses = await base44.asServiceRole.entities.HelpResponse.filter({ help_request_id: id });
-        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
         
-        for (const response of responses) {
-          const oldAnnouncements = allAnnouncements.filter(a => 
-            a.category === 'general' &&
-            a.title.includes('ヘルプコール') &&
-            a.title.includes(response.responder_name)
-          );
+        // すべてのお知らせを取得
+        const allAnnouncements = await base44.asServiceRole.entities.Announcement.filter({});
+        
+        for (const announcement of allAnnouncements) {
+          let shouldDelete = false;
           
-          for (const announcement of oldAnnouncements) {
+          // help_request_idが一致する場合
+          if (announcement.help_request_id === id) {
+            shouldDelete = true;
+          }
+          
+          // または、応答者名とヘルプコールがタイトルに含まれる場合
+          if (!shouldDelete && announcement.category === 'general') {
+            for (const response of responses) {
+              if (announcement.title.includes('ヘルプコール') && 
+                  announcement.title.includes(response.responder_name)) {
+                shouldDelete = true;
+                break;
+              }
+            }
+          }
+          
+          if (shouldDelete) {
             await base44.asServiceRole.entities.Announcement.delete(announcement.id);
           }
         }
