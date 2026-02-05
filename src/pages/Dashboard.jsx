@@ -20,6 +20,7 @@ import QRScanner from "@/components/attendance/QRScanner";
 import InfoSection from "@/components/dashboard/InfoSection";
 import TipBenefitSection from "@/components/dashboard/TipBenefitSection";
 import DiceGameCard from "@/components/dashboard/DiceGameCard";
+import HelpCallSection from "@/components/dashboard/HelpCallSection";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -308,6 +309,9 @@ export default function Dashboard() {
                 )}
               </div>
             </Card>
+
+            {/* Help Call Section */}
+            <HelpCallSection user={user} />
           </div>
 
           {/* Right Column */}
