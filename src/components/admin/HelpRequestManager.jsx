@@ -65,22 +65,25 @@ export default function HelpRequestManager({ user, allStaff }) {
 
   const updateRequestMutation = useMutation({
     mutationFn: async ({ id, data }) => {
+      const request = helpRequests.find(r => r.id === id);
       await base44.entities.HelpRequest.update(id, data);
       
       // クローズ時は関連する通知を削除
-      if (data.status === 'closed') {
+      if (data.status === 'closed' && request) {
         const responses = helpResponses.filter(r => r.help_request_id === id);
-        const allAnnouncements = await base44.entities.Announcement.list();
+        const allAnnouncements = await base44.asServiceRole.entities.Announcement.list();
         
         for (const response of responses) {
-          // この応答者への通知を検索して削除
-          const relatedAnnouncements = allAnnouncements.filter(a => 
-            a.title.includes(response.responder_name) && 
-            (a.title.includes('ヘルプコール承認通知') || a.title.includes('ヘルプコール'))
-          );
+          // この応答者とこの依頼に関連する通知を削除
+          const relatedAnnouncements = allAnnouncements.filter(a => {
+            const titleMatch = a.title.includes(response.responder_name) || a.title.includes(request.title);
+            const categoryMatch = a.category === 'thanks';
+            const contentMatch = a.content.includes('ヘルプコール') || a.content.includes(request.title);
+            return (titleMatch || contentMatch) && categoryMatch;
+          });
           
           for (const announcement of relatedAnnouncements) {
-            await base44.entities.Announcement.delete(announcement.id);
+            await base44.asServiceRole.entities.Announcement.delete(announcement.id);
           }
         }
       }
