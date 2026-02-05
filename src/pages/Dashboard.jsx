@@ -49,7 +49,12 @@ export default function Dashboard() {
 
   const { data: announcements = [] } = useQuery({
     queryKey: ['announcements'],
-    queryFn: () => base44.entities.Announcement.list('-created_date', 5),
+    queryFn: async () => {
+      const all = await base44.entities.Announcement.list('-created_date', 20);
+      const urgent = all.filter(a => a.category === 'urgent');
+      const others = all.filter(a => a.category !== 'urgent').slice(0, 5);
+      return [...urgent, ...others];
+    },
   });
 
   const { data: openShifts = [] } = useQuery({
