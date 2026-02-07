@@ -180,6 +180,8 @@ export default function AdminPanel() {
     admin_notes: '',
   });
 
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
   const [settingsForm, setSettingsForm] = useState({
     hero_title: '',
     hero_subtitle: '',
@@ -1358,8 +1360,8 @@ export default function AdminPanel() {
                                 <Input 
                                   type="date" 
                                   className="max-w-xs"
-                                  defaultValue={new Date().toISOString().split('T')[0]}
-                                  id="date-filter"
+                                  value={selectedDate}
+                                  onChange={(e) => setSelectedDate(e.target.value)}
                                 />
                               </div>
                               <div className="overflow-x-auto">
@@ -1377,7 +1379,7 @@ export default function AdminPanel() {
                                   </TableHeader>
                                   <TableBody>
                                     {attendanceRecords
-                                      .filter(r => r.date === (document.getElementById('date-filter')?.value || new Date().toISOString().split('T')[0]))
+                                      .filter(r => r.date === selectedDate)
                                       .map((record) => {
                                         let hours = 0;
                                         if (record.clock_in && record.clock_out) {
