@@ -1327,380 +1327,82 @@ export default function AdminPanel() {
                   </div>
                   </Card>
 
+                  <Card className="border-0 shadow-lg p-6">
+                  <AttendanceCalendar 
+                  attendanceRecords={attendanceRecords} 
+                  staff={allStaff}
+                  />
+                  </Card>
+
                   <Card className="border-0 shadow-lg">
-                  <Tabs defaultValue="calendar" className="w-full">
-                  <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-white">
-                   <TabsTrigger value="calendar" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                     カレンダー
-                   </TabsTrigger>
-                   <TabsTrigger value="by-date" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                     日別
-                   </TabsTrigger>
-                   <TabsTrigger value="by-staff" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                     人別
-                   </TabsTrigger>
-                   <TabsTrigger value="by-month" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
-                     月別統計
-                   </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="calendar" className="p-6">
-                   <AttendanceCalendar 
-                     attendanceRecords={attendanceRecords} 
-                     staff={allStaff}
-                   />
-                  </TabsContent>
-
-                  <TabsContent value="by-date" className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex gap-4 items-center">
-                        <Input 
-                          type="date" 
-                          className="w-48"
-                          defaultValue={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => {
-                            const selectedDate = e.target.value;
-                            const dayRecords = attendanceRecords.filter(r => r.date === selectedDate);
-                            // この日付のデータでフィルタリング
-                          }}
-                        />
-                      </div>
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>スタッフ</TableHead>
-                              <TableHead>カテゴリー</TableHead>
-                              <TableHead>出勤</TableHead>
-                              <TableHead>退勤</TableHead>
-                              <TableHead>勤務時間</TableHead>
-                              <TableHead>状態</TableHead>
-                              <TableHead>操作</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {attendanceRecords
-                              .filter(r => r.date === new Date().toISOString().split('T')[0])
-                              .map((record) => {
-                                let hours = 0;
-                                if (record.clock_in && record.clock_out) {
-                                  const [inH, inM] = record.clock_in.split(':').map(Number);
-                                  const [outH, outM] = record.clock_out.split(':').map(Number);
-                                  hours = ((outH * 60 + outM) - (inH * 60 + inM)) / 60;
-                                }
-                                return (
-                                  <TableRow key={record.id}>
-                                    <TableCell className="font-medium">{getStaffName(record.user_email)}</TableCell>
-                                    <TableCell>
-                                      <Badge className={
-                                        allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? 'bg-indigo-100 text-indigo-700' :
-                                        allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? 'bg-emerald-100 text-emerald-700' :
-                                        allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'bg-amber-100 text-amber-700' :
-                                        'bg-cyan-100 text-cyan-700'
-                                      } variant="outline">
-                                        {allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? '管理者' : 
-                                         allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? '正社員' : 
-                                         allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'パート' : 
-                                         '単発'}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell>{record.clock_in}</TableCell>
-                                    <TableCell>{record.clock_out || '-'}</TableCell>
-                                    <TableCell className="font-semibold text-[#2D4A6F]">
-                                      {hours > 0 ? `${hours.toFixed(1)}h` : '-'}
-                                    </TableCell>
-                                    <TableCell>
-                                      <Badge className={
-                                        record.status === 'working' ? 'bg-[#7CB342]/10 text-[#7CB342]' :
-                                        record.status === 'approved' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' :
-                                        'bg-slate-100 text-slate-500'
-                                      }>
-                                        {record.status === 'working' ? '勤務中' : record.status === 'approved' ? '承認済' : '完了'}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="flex gap-2">
-                                        <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
-                                          <Edit className="w-4 h-4" />
-                                        </Button>
-                                        <Button 
-                                          variant="ghost" 
-                                          size="icon" 
-                                          onClick={() => {
-                                            if (confirm('この勤怠記録を削除してもよろしいですか？')) {
-                                              deleteAttendanceMutation.mutate(record.id);
-                                            }
-                                          }}
-                                        >
-                                          <Trash2 className="w-4 h-4 text-red-500" />
-                                        </Button>
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="by-staff" className="p-6">
-                    <div className="space-y-4">
-                      {getUniqueStaffEmails().map(email => {
-                        const staffRecords = attendanceRecords.filter(r => r.user_email === email);
-                        return (
-                          <Card key={email} className="mb-4">
-                            <div className="p-4 bg-slate-50 border-b">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div>
-                                    <p className="font-semibold text-slate-900">{getStaffName(email)}</p>
-                                    <p className="text-xs text-slate-500">{email}</p>
-                                  </div>
-                                  <Badge className={
-                                    allStaff.find(s => s.email === email)?.role === 'admin' ? 'bg-indigo-100 text-indigo-700' :
-                                    allStaff.find(s => s.email === email)?.role === 'full_time' ? 'bg-emerald-100 text-emerald-700' :
-                                    allStaff.find(s => s.email === email)?.role === 'part_time' ? 'bg-amber-100 text-amber-700' :
-                                    'bg-cyan-100 text-cyan-700'
-                                  } variant="outline">
-                                    {allStaff.find(s => s.email === email)?.role === 'admin' ? '管理者' : 
-                                     allStaff.find(s => s.email === email)?.role === 'full_time' ? '正社員' : 
-                                     allStaff.find(s => s.email === email)?.role === 'part_time' ? 'パート' : 
-                                     '単発'}
-                                  </Badge>
-                                </div>
-                                <div className="flex gap-4 text-sm">
-                                  <div>
-                                    <span className="text-slate-600">合計時間: </span>
-                                    <span className="font-bold text-[#2D4A6F]">{calculateTotalHours(email)}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-slate-600">出勤日数: </span>
-                                    <span className="font-semibold">{staffRecords.length}日</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="overflow-x-auto">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>日付</TableHead>
-                                    <TableHead>出勤</TableHead>
-                                    <TableHead>退勤</TableHead>
-                                    <TableHead>勤務時間</TableHead>
-                                    <TableHead>状態</TableHead>
-                                    <TableHead>操作</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {staffRecords.map((record) => {
-                                    let hours = 0;
-                                    if (record.clock_in && record.clock_out) {
-                                      const [inH, inM] = record.clock_in.split(':').map(Number);
-                                      const [outH, outM] = record.clock_out.split(':').map(Number);
-                                      hours = ((outH * 60 + outM) - (inH * 60 + inM)) / 60;
-                                    }
-                                    return (
-                                      <TableRow key={record.id}>
-                                        <TableCell>{format(new Date(record.date), 'yyyy/M/d')}</TableCell>
-                                        <TableCell>{record.clock_in}</TableCell>
-                                        <TableCell>{record.clock_out || '-'}</TableCell>
-                                        <TableCell className="font-semibold text-[#2D4A6F]">
-                                          {hours > 0 ? `${hours.toFixed(1)}h` : '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                          <Badge className={
-                                            record.status === 'working' ? 'bg-[#7CB342]/10 text-[#7CB342]' :
-                                            record.status === 'approved' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' :
-                                            'bg-slate-100 text-slate-500'
-                                          }>
-                                            {record.status === 'working' ? '勤務中' : record.status === 'approved' ? '承認済' : '完了'}
-                                          </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                          <div className="flex gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
-                                              <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button 
-                                              variant="ghost" 
-                                              size="icon" 
-                                              onClick={() => {
-                                                if (confirm('この勤怠記録を削除してもよろしいですか？')) {
-                                                  deleteAttendanceMutation.mutate(record.id);
-                                                }
-                                              }}
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
-                                          </div>
-                                        </TableCell>
-                                      </TableRow>
-                                    );
-                                  })}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="by-month" className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex gap-4 items-center mb-6">
-                        <Input 
-                          type="month" 
-                          className="w-48"
-                          defaultValue={new Date().toISOString().slice(0, 7)}
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100">
-                          <p className="text-sm text-slate-600 mb-1">総出勤日数</p>
-                          <p className="text-3xl font-bold text-[#2D4A6F]">{attendanceRecords.length}</p>
-                        </Card>
-                        <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100">
-                          <p className="text-sm text-slate-600 mb-1">スタッフ数</p>
-                          <p className="text-3xl font-bold text-[#7CB342]">{getUniqueStaffEmails().length}</p>
-                        </Card>
-                        <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100">
-                          <p className="text-sm text-slate-600 mb-1">総勤務時間</p>
-                          <p className="text-3xl font-bold text-purple-600">
-                            {(() => {
-                              let totalMinutes = 0;
-                              attendanceRecords.forEach(r => {
-                                if (r.clock_in && r.clock_out) {
-                                  const [inH, inM] = r.clock_in.split(':').map(Number);
-                                  const [outH, outM] = r.clock_out.split(':').map(Number);
-                                  totalMinutes += (outH * 60 + outM) - (inH * 60 + inM);
-                                }
-                              });
-                              return `${Math.floor(totalMinutes / 60)}h`;
-                            })()}
-                          </p>
-                        </Card>
-                      </div>
-
-                      {getUniqueStaffEmails().map(email => {
-                        const staffRecords = attendanceRecords.filter(r => r.user_email === email);
-                        let totalMinutes = 0;
-                        staffRecords.forEach(r => {
-                          if (r.clock_in && r.clock_out) {
-                            const [inH, inM] = r.clock_in.split(':').map(Number);
-                            const [outH, outM] = r.clock_out.split(':').map(Number);
-                            totalMinutes += (outH * 60 + outM) - (inH * 60 + inM);
-                          }
-                        });
-                        const avgMinutes = staffRecords.length > 0 ? totalMinutes / staffRecords.length : 0;
-
-                        return (
-                          <Card key={email} className="mb-4">
-                            <div className="p-4 bg-slate-50 border-b">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div>
-                                    <p className="font-semibold text-slate-900">{getStaffName(email)}</p>
-                                    <p className="text-xs text-slate-500">{email}</p>
-                                  </div>
-                                  <Badge className={
-                                    allStaff.find(s => s.email === email)?.role === 'admin' ? 'bg-indigo-100 text-indigo-700' :
-                                    allStaff.find(s => s.email === email)?.role === 'full_time' ? 'bg-emerald-100 text-emerald-700' :
-                                    allStaff.find(s => s.email === email)?.role === 'part_time' ? 'bg-amber-100 text-amber-700' :
-                                    'bg-cyan-100 text-cyan-700'
-                                  } variant="outline">
-                                    {allStaff.find(s => s.email === email)?.role === 'admin' ? '管理者' : 
-                                     allStaff.find(s => s.email === email)?.role === 'full_time' ? '正社員' : 
-                                     allStaff.find(s => s.email === email)?.role === 'part_time' ? 'パート' : 
-                                     '単発'}
-                                  </Badge>
-                                </div>
-                                <div className="flex gap-4 text-sm">
-                                  <div>
-                                    <span className="text-slate-600">出勤日数: </span>
-                                    <span className="font-semibold">{staffRecords.length}日</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-slate-600">合計時間: </span>
-                                    <span className="font-bold text-[#2D4A6F]">{calculateTotalHours(email)}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-slate-600">平均時間/日: </span>
-                                    <span className="font-semibold">{avgMinutes > 0 ? `${(avgMinutes / 60).toFixed(1)}h` : '-'}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="overflow-x-auto">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>日付</TableHead>
-                                    <TableHead>出勤</TableHead>
-                                    <TableHead>退勤</TableHead>
-                                    <TableHead>勤務時間</TableHead>
-                                    <TableHead>状態</TableHead>
-                                    <TableHead>操作</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {staffRecords.map((record) => {
-                                    let hours = 0;
-                                    if (record.clock_in && record.clock_out) {
-                                      const [inH, inM] = record.clock_in.split(':').map(Number);
-                                      const [outH, outM] = record.clock_out.split(':').map(Number);
-                                      hours = ((outH * 60 + outM) - (inH * 60 + inM)) / 60;
-                                    }
-                                    return (
-                                      <TableRow key={record.id}>
-                                        <TableCell>{format(new Date(record.date), 'yyyy/M/d')}</TableCell>
-                                        <TableCell>{record.clock_in}</TableCell>
-                                        <TableCell>{record.clock_out || '-'}</TableCell>
-                                        <TableCell className="font-semibold text-[#2D4A6F]">
-                                          {hours > 0 ? `${hours.toFixed(1)}h` : '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                          <Badge className={
-                                            record.status === 'working' ? 'bg-[#7CB342]/10 text-[#7CB342]' :
-                                            record.status === 'approved' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' :
-                                            'bg-slate-100 text-slate-500'
-                                          }>
-                                            {record.status === 'working' ? '勤務中' : record.status === 'approved' ? '承認済' : '完了'}
-                                          </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                          <div className="flex gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
-                                              <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button 
-                                              variant="ghost" 
-                                              size="icon" 
-                                              onClick={() => {
-                                                if (confirm('この勤怠記録を削除してもよろしいですか？')) {
-                                                  deleteAttendanceMutation.mutate(record.id);
-                                                }
-                                              }}
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
-                                          </div>
-                                        </TableCell>
-                                      </TableRow>
-                                    );
-                                  })}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </TabsContent>
-                  </Tabs>
+                  <div className="p-6 border-b">
+                  <h2 className="text-lg font-medium">勤怠一覧（テーブル表示）</h2>
+                  </div>
+                  {getUniqueStaffEmails().length > 0 && (
+                  <div className="p-6 border-b bg-slate-50">
+                   <h3 className="text-sm font-medium mb-4 text-slate-700">人別合計時間</h3>
+                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                     {getUniqueStaffEmails().map(email => (
+                       <div key={email} className="bg-white p-3 rounded-lg border border-slate-200">
+                         <p className="text-sm font-medium text-slate-900">{getStaffName(email)}</p>
+                         <p className="text-lg font-semibold text-[#2D4A6F]">{calculateTotalHours(email)}</p>
+                       </div>
+                     ))}
+                   </div>
+                  </div>
+                  )}
+                  <div className="overflow-x-auto">
+                  <Table>
+                  <TableHeader>
+                  <TableRow>
+                   <TableHead>スタッフ</TableHead>
+                   <TableHead>カテゴリー</TableHead>
+                   <TableHead>日付</TableHead>
+                   <TableHead>出勤</TableHead>
+                   <TableHead>退勤</TableHead>
+                   <TableHead>状態</TableHead>
+                   <TableHead>操作</TableHead>
+                  </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                  {attendanceRecords.slice(0, 50).map((record) => (
+                   <TableRow key={record.id}>
+                     <TableCell className="font-medium">{getStaffName(record.user_email)}</TableCell>
+                     <TableCell>
+                       <Badge className={
+                         allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' :
+                         allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                         allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                         'bg-cyan-100 text-cyan-700 border-cyan-200'
+                       } variant="outline">
+                         {allStaff.find(s => s.email === record.user_email)?.role === 'admin' ? '管理者' : 
+                          allStaff.find(s => s.email === record.user_email)?.role === 'full_time' ? '正社員' : 
+                          allStaff.find(s => s.email === record.user_email)?.role === 'part_time' ? 'パート' : 
+                          '単発'}
+                       </Badge>
+                     </TableCell>
+                     <TableCell>{format(new Date(record.date), 'M/d')}</TableCell>
+                     <TableCell>{record.clock_in}</TableCell>
+                     <TableCell>{record.clock_out || '-'}</TableCell>
+                     <TableCell>
+                       <Badge className={
+                         record.status === 'working' ? 'bg-[#7CB342]/10 text-[#7CB342]' :
+                         record.status === 'approved' ? 'bg-[#2D4A6F]/10 text-[#2D4A6F]' :
+                         'bg-slate-100 text-slate-500'
+                       }>
+                         {record.status === 'working' ? '勤務中' : record.status === 'approved' ? '承認済' : '完了'}
+                       </Badge>
+                     </TableCell>
+                     <TableCell>
+                       <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
+                         <Edit className="w-4 h-4" />
+                       </Button>
+                     </TableCell>
+                   </TableRow>
+                  ))}
+                  </TableBody>
+                  </Table>
+                  </div>
                   </Card>
                   </div>
                   </TabsContent>
