@@ -207,6 +207,11 @@ export default function AdminPanel() {
       const isStaffAdmin = staff && staff.role === 'admin';
       const isApproved = staff && staff.approval_status === 'approved';
       
+      // Set full_name from Staff entity
+      if (staff) {
+        u.full_name = staff.full_name;
+      }
+      
       if (!isUserAdmin && !isStaffAdmin) {
         // If no staff record exists, create one as admin (for initial setup)
         if (staffList.length === 0) {
