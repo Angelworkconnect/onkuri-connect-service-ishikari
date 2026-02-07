@@ -147,29 +147,31 @@ export default function HelpCallSection({ user }) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="border-0 shadow-lg bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
-                <AlertCircle className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-800">🆘 人財穴埋め ヘルプコール</h3>
-                <p className="text-sm text-slate-600">急なお願いにみんなで助け合い</p>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-800">🆘 人財穴埋め ヘルプコール</h3>
+                <p className="text-xs sm:text-sm text-slate-600">急なお願いにみんなで助け合い</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button
                 onClick={() => setMyResponsesDialogOpen(true)}
                 variant="outline"
-                className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                size="sm"
+                className="border-orange-300 text-orange-600 hover:bg-orange-50 flex-1 sm:flex-none"
               >
-                <HandIcon className="w-4 h-4 mr-2" />
-                私の挙手
+                <HandIcon className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">私の挙手</span>
               </Button>
               <Button
                 onClick={() => setRequestDialogOpen(true)}
-                className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg"
+                size="sm"
+                className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 ヘルプ依頼を作成
               </Button>
@@ -196,43 +198,41 @@ export default function HelpCallSection({ user }) {
                   exit={{ opacity: 0, y: -10 }}
                 >
                   <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-                    <div className="p-5">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <Badge className={`${urgency.color} font-medium`}>
-                              {urgency.label}
+                    <div className="p-4 sm:p-5">
+                      <div className="mb-3">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <Badge className={`${urgency.color} font-medium text-xs`}>
+                            {urgency.label}
+                          </Badge>
+                          {myResponse && (
+                            <Badge className={
+                              myResponse.status === 'approved' 
+                                ? 'bg-green-100 text-green-700 border-green-200' 
+                                : myResponse.status === 'rejected' 
+                                ? 'bg-red-100 text-red-700 border-red-200' 
+                                : 'bg-amber-100 text-amber-700 border-amber-200'
+                            } variant="outline">
+                              {myResponse.status === 'approved' ? '✅ 承認済' : 
+                               myResponse.status === 'rejected' ? '❌ 不承認' : 
+                               '⏳ 審査中'}
                             </Badge>
-                            {myResponse && (
-                              <Badge className={
-                                myResponse.status === 'approved' 
-                                  ? 'bg-green-100 text-green-700 border-green-200' 
-                                  : myResponse.status === 'rejected' 
-                                  ? 'bg-red-100 text-red-700 border-red-200' 
-                                  : 'bg-amber-100 text-amber-700 border-amber-200'
-                              } variant="outline">
-                                {myResponse.status === 'approved' ? '✅ 承認済' : 
-                                 myResponse.status === 'rejected' ? '❌ 不承認' : 
-                                 '⏳ 審査中'}
-                              </Badge>
-                            )}
-                            <span className="text-xs text-slate-500">
-                              {format(new Date(request.created_date), 'M月d日 HH:mm')}
-                            </span>
+                          )}
+                          <span className="text-xs text-slate-500">
+                            {format(new Date(request.created_date), 'M月d日 HH:mm')}
+                          </span>
+                        </div>
+                        <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 break-words">{request.title}</h4>
+                        <div className="space-y-1 text-sm text-slate-600">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                            <span className="break-words">{request.date} {request.time}</span>
                           </div>
-                          <h4 className="text-lg font-bold text-slate-800 mb-2">{request.title}</h4>
-                          <div className="space-y-1 text-sm text-slate-600">
+                          {request.location && (
                             <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-orange-500" />
-                              <span>{request.date} {request.time}</span>
+                              <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                              <span className="break-words">{request.location}</span>
                             </div>
-                            {request.location && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-orange-500" />
-                                <span>{request.location}</span>
-                              </div>
-                            )}
-                          </div>
+                          )}
                         </div>
                       </div>
 
@@ -289,21 +289,21 @@ export default function HelpCallSection({ user }) {
                       {/* Action Button */}
                       <div className="mt-4">
                         {responded ? (
-                          <div className="flex items-center justify-center gap-2 py-2 px-4 bg-green-50 text-green-700 rounded-lg">
-                            <Sparkles className="w-4 h-4" />
-                            <span className="font-medium">挙手済み (+10pt獲得)</span>
+                          <div className="flex items-center justify-center gap-2 py-2 px-3 sm:px-4 bg-green-50 text-green-700 rounded-lg">
+                            <Sparkles className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium text-sm sm:text-base">挙手済み (+10pt獲得)</span>
                           </div>
                         ) : (
                           <Button
                             onClick={() => handleRespond(request)}
-                            className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-500 hover:via-orange-500 hover:to-red-500 text-white font-bold text-lg py-6 shadow-xl transform hover:scale-105 transition-all duration-200"
+                            className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-500 hover:via-orange-500 hover:to-red-500 text-white font-bold text-base sm:text-lg py-4 sm:py-6 shadow-xl hover:scale-105 transition-all duration-200"
                           >
                             <motion.div
                               animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
                               transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
-                              className="mr-3"
+                              className="mr-2 sm:mr-3"
                             >
-                              <HandIcon className="w-6 h-6" />
+                              <HandIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             </motion.div>
                             <span>✋ 挙手する！（+10pt）</span>
                           </Button>
