@@ -2054,7 +2054,9 @@ export default function AdminPanel() {
                                 {(() => {
                                   const msgDate = new Date(msg.created_date);
                                   const now = new Date();
-                                  return msgDate.toDateString() === now.toDateString()
+                                  const msgDay = format(msgDate, 'yyyy-MM-dd');
+                                  const today = format(now, 'yyyy-MM-dd');
+                                  return msgDay === today
                                     ? format(msgDate, 'HH:mm')
                                     : format(msgDate, "M'月'd'日' HH:mm");
                                 })()}
