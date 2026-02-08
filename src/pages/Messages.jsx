@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Send, ChevronLeft, Calendar, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { formatMessageTime, getMessageTimestamp } from "@/utils/datetime";
+import { formatMessageTime, getMessageTimestamp } from "@/components/utils/datetime";
 
 export default function MessagesPage() {
   const [user, setUser] = useState(null);

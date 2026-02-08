@@ -40,7 +40,7 @@ import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import { format } from "date-fns";
-import { formatMessageTime, getMessageTimestamp } from "@/utils/datetime";
+import { formatMessageTime, getMessageTimestamp } from "@/components/utils/datetime";
 
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
