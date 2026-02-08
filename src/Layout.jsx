@@ -17,14 +17,16 @@ import {
 } from "@/components/ui/sheet";
 import { 
   Home, Calendar, Clock, FileText, Users, 
-  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock
+  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle
 } from "lucide-react";
+import NotificationBell from './components/notifications/NotificationBell';
 
 const navigation = [
   { name: 'ホーム', href: 'Home', icon: Home },
   { name: 'シフト', href: 'Shifts', icon: Calendar },
   { name: '勤怠', href: 'Attendance', icon: Clock },
   { name: '応募履歴', href: 'MyApplications', icon: FileText },
+  { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
 ];
@@ -116,6 +118,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* User Menu */}
             <div className="flex items-center gap-2">
+              {user && <NotificationBell userEmail={user.email} />}
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
