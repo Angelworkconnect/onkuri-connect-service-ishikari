@@ -390,6 +390,14 @@ export default function AdminPanel() {
     mutationFn: async (data) => {
       const shift = await base44.entities.Shift.create(data);
       
+      // お知らせを作成
+      await base44.entities.Announcement.create({
+        title: `新しいシフト募集: ${data.title}`,
+        content: `${data.date} ${data.start_time}〜${data.end_time}\n場所: ${data.location}\n${data.description || ''}`,
+        category: 'shift',
+        is_pinned: false,
+      });
+      
       // 全スタッフに通知を送信
       const notifications = allStaff.map(staff => ({
         user_email: staff.email,
@@ -406,6 +414,7 @@ export default function AdminPanel() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-shifts']);
+      queryClient.invalidateQueries(['admin-announcements']);
       setShiftDialogOpen(false);
       resetShiftForm();
     },
