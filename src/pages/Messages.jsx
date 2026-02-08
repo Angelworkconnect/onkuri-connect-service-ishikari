@@ -264,7 +264,7 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {format(new Date(conv.lastMessage.created_date), 'M月d日 HH:mm', { locale: ja })}
+                        {format(new Date(conv.lastMessage.created_date), "M'月'd'日' HH:mm", { locale: ja })}
                       </p>
                     </div>
                   ))
@@ -320,14 +320,14 @@ export default function MessagesPage() {
                                   )}
                                   {relatedInfo && relatedMsg.related_type === 'shift' && (
                                    <div className="text-xs text-slate-600 space-y-1">
-                                     <p>📅 {format(new Date(relatedInfo.date), 'M月d日', { locale: ja })} {relatedInfo.start_time}〜{relatedInfo.end_time}</p>
+                                     <p>📅 {format(new Date(relatedInfo.date), "M'月'd'日'", { locale: ja })} {relatedInfo.start_time}〜{relatedInfo.end_time}</p>
                                      <p>📍 {relatedInfo.location}</p>
                                      {relatedInfo.description && <p className="text-slate-700 mt-1">{relatedInfo.description}</p>}
                                    </div>
                                   )}
                                   {relatedInfo && relatedMsg.related_type === 'help_request' && (
                                    <div className="text-xs text-slate-600 space-y-1">
-                                     <p>📅 {format(new Date(relatedInfo.date), 'M月d日', { locale: ja })} {relatedInfo.time || ''}</p>
+                                     <p>📅 {format(new Date(relatedInfo.date), "M'月'd'日'", { locale: ja })} {relatedInfo.time || ''}</p>
                                      <p>📍 {relatedInfo.location}</p>
                                      {relatedInfo.description && <p className="text-slate-700 mt-1">{relatedInfo.description}</p>}
                                    </div>
@@ -356,7 +356,7 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {format(new Date(msg.created_date), 'M月d日 HH:mm', { locale: ja })}
+                            {format(new Date(msg.created_date), "M'月'd'日' HH:mm", { locale: ja })}
                           </p>
                         </div>
                       </div>
