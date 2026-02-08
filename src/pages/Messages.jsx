@@ -39,11 +39,15 @@ export default function MessagesPage() {
       return [...sent, ...received].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
     enabled: !!user,
+    refetchInterval: 10000, // 10秒ごと
+    staleTime: 5000,
   });
 
   const { data: allStaff = [] } = useQuery({
     queryKey: ['all-staff'],
     queryFn: () => base44.entities.Staff.list(),
+    staleTime: 300000, // 5分
+    refetchOnWindowFocus: false,
   });
 
   const sendMessageMutation = useMutation({

@@ -22,6 +22,8 @@ export default function NotificationBell({ userEmail }) {
     queryKey: ['notifications', userEmail],
     queryFn: () => base44.entities.Notification.filter({ user_email: userEmail }),
     enabled: !!userEmail,
+    refetchInterval: 30000, // 30秒ごと
+    staleTime: 20000,
   });
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
