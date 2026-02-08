@@ -263,7 +263,7 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {format(new Date(conv.lastMessage.created_date), 'M/d HH:mm')}
+                        {format(new Date(conv.lastMessage.created_date), 'M月d日 HH:mm')}
                       </p>
                     </div>
                   ))
@@ -355,7 +355,7 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {format(new Date(msg.created_date), 'HH:mm')}
+                            {format(new Date(msg.created_date), 'M月d日 HH:mm')}
                           </p>
                         </div>
                       </div>
