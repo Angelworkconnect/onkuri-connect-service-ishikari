@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Send, ChevronLeft, Calendar, AlertCircle } from "lucide-react";
-import { format } from "date-fns";
+import { format, isToday } from "date-fns";
 import { ja } from "date-fns/locale";
 
 export default function MessagesPage() {
@@ -264,7 +264,9 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {format(new Date(conv.lastMessage.created_date), "M'月'd'日' HH:mm", { locale: ja })}
+                        {isToday(new Date(conv.lastMessage.created_date))
+                          ? format(new Date(conv.lastMessage.created_date), 'HH:mm')
+                          : format(new Date(conv.lastMessage.created_date), "M'月'd'日' HH:mm", { locale: ja })}
                       </p>
                     </div>
                   ))
@@ -356,7 +358,9 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {format(new Date(msg.created_date), "M'月'd'日' HH:mm", { locale: ja })}
+                            {isToday(new Date(msg.created_date))
+                              ? format(new Date(msg.created_date), 'HH:mm')
+                              : format(new Date(msg.created_date), "M'月'd'日' HH:mm", { locale: ja })}
                           </p>
                         </div>
                       </div>
