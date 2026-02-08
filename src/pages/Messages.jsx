@@ -50,6 +50,16 @@ export default function MessagesPage() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: shifts = [] } = useQuery({
+    queryKey: ['shifts-for-messages'],
+    queryFn: () => base44.entities.Shift.list('-date'),
+  });
+
+  const { data: helpRequests = [] } = useQuery({
+    queryKey: ['help-requests-for-messages'],
+    queryFn: () => base44.entities.HelpRequest.list('-created_date'),
+  });
+
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
       const message = await base44.entities.Message.create(data);
@@ -177,6 +187,16 @@ export default function MessagesPage() {
     return '一般';
   };
 
+  const getRelatedInfo = (msg) => {
+    if (msg.related_type === 'shift' && msg.related_id) {
+      return shifts.find(s => s.id === msg.related_id);
+    }
+    if (msg.related_type === 'help_request' && msg.related_id) {
+      return helpRequests.find(h => h.id === msg.related_id);
+    }
+    return null;
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -280,6 +300,44 @@ export default function MessagesPage() {
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {selectedConversation.lastMessage.related_type !== 'general' && (
+                      <div className="mb-4">
+                        <Card className="p-4 bg-blue-50 border-blue-200">
+                          <div className="flex items-start gap-3">
+                            {getCategoryIcon(selectedConversation.lastMessage.related_type)}
+                            <div className="flex-1">
+                              <p className="font-medium text-sm text-slate-900 mb-1">
+                                {getCategoryLabel(selectedConversation.lastMessage.related_type)}
+                              </p>
+                              {selectedConversation.lastMessage.related_title && (
+                                <p className="text-sm text-slate-700">{selectedConversation.lastMessage.related_title}</p>
+                              )}
+                              {(() => {
+                                const relatedInfo = getRelatedInfo(selectedConversation.lastMessage);
+                                if (relatedInfo && selectedConversation.lastMessage.related_type === 'shift') {
+                                  return (
+                                    <div className="text-xs text-slate-600 mt-2 space-y-1">
+                                      <p>📅 {format(new Date(relatedInfo.date), 'M月d日')} {relatedInfo.start_time}〜{relatedInfo.end_time}</p>
+                                      <p>📍 {relatedInfo.location}</p>
+                                    </div>
+                                  );
+                                }
+                                if (relatedInfo && selectedConversation.lastMessage.related_type === 'help_request') {
+                                  return (
+                                    <div className="text-xs text-slate-600 mt-2 space-y-1">
+                                      <p>📅 {format(new Date(relatedInfo.date), 'M月d日')} {relatedInfo.time || ''}</p>
+                                      <p>📍 {relatedInfo.location}</p>
+                                      <p className="text-slate-700 mt-1">{relatedInfo.description}</p>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
+                    )}
                     {getConversationMessages().map(msg => (
                       <div
                         key={msg.id}
