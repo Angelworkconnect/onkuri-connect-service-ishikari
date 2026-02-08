@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Bell, MessageCircle, Calendar, AlertCircle, Megaphone, Sparkles } from "lucide-react";
 import { format } from "date-fns";
+import { formatMessageTime } from "@/utils/datetime";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
 

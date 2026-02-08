@@ -57,13 +57,13 @@ import Dashboard from './pages/Dashboard';
 import DiceGame from './pages/DiceGame';
 import Documents from './pages/Documents';
 import Home from './pages/Home';
+import Messages from './pages/Messages';
 import MyApplications from './pages/MyApplications';
 import PayrollExport from './pages/PayrollExport';
 import Shifts from './pages/Shifts';
 import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
-import Messages from './pages/Messages';
 import __Layout from './Layout.jsx';
 
 
@@ -78,13 +78,13 @@ export const PAGES = {
     "DiceGame": DiceGame,
     "Documents": Documents,
     "Home": Home,
+    "Messages": Messages,
     "MyApplications": MyApplications,
     "PayrollExport": PayrollExport,
     "Shifts": Shifts,
     "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
-    "Messages": Messages,
 }
 
 export const pagesConfig = {

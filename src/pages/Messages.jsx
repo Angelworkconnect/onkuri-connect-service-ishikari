@@ -7,8 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Send, ChevronLeft, Calendar, AlertCircle } from "lucide-react";
-import { format, isToday, startOfDay } from "date-fns";
+import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import { formatMessageTime, getMessageTimestamp } from "@/utils/datetime";
 
 export default function MessagesPage() {
   const [user, setUser] = useState(null);
@@ -37,7 +38,7 @@ export default function MessagesPage() {
       if (!user) return [];
       const sent = await base44.entities.Message.filter({ sender_email: user.email });
       const received = await base44.entities.Message.filter({ receiver_email: user.email });
-      return [...sent, ...received].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      return [...sent, ...received].sort((a, b) => getMessageTimestamp(b) - getMessageTimestamp(a));
     },
     enabled: !!user,
     refetchInterval: 10000, // 10秒ごと
@@ -114,7 +115,7 @@ export default function MessagesPage() {
       }
       
       const conv = conversationMap.get(otherPersonEmail);
-      if (new Date(msg.created_date) > new Date(conv.lastMessage.created_date)) {
+      if (getMessageTimestamp(msg) > getMessageTimestamp(conv.lastMessage)) {
         conv.lastMessage = msg;
       }
       
@@ -124,7 +125,7 @@ export default function MessagesPage() {
     });
     
     return Array.from(conversationMap.values()).sort(
-      (a, b) => new Date(b.lastMessage.created_date) - new Date(a.lastMessage.created_date)
+      (a, b) => getMessageTimestamp(b.lastMessage) - getMessageTimestamp(a.lastMessage)
     );
   };
 
@@ -143,7 +144,7 @@ export default function MessagesPage() {
         (msg.sender_email === user.email && msg.receiver_email === selectedConversation.email) ||
         (msg.receiver_email === user.email && msg.sender_email === selectedConversation.email)
       )
-      .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+      .sort((a, b) => getMessageTimestamp(a) - getMessageTimestamp(b));
   };
 
   const handleSendMessage = () => {
@@ -264,9 +265,7 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {isToday(new Date(conv.lastMessage.created_date))
-                          ? format(new Date(conv.lastMessage.created_date), 'HH:mm')
-                          : format(new Date(conv.lastMessage.created_date), "M'月'd'日' HH:mm")}
+                        {formatMessageTime(conv.lastMessage.created_date)}
                       </p>
                     </div>
                   ))
@@ -358,9 +357,7 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {isToday(new Date(msg.created_date))
-                              ? format(new Date(msg.created_date), 'HH:mm')
-                              : format(new Date(msg.created_date), "M'月'd'日' HH:mm")}
+                            {formatMessageTime(msg.created_date)}
                           </p>
                         </div>
                       </div>
