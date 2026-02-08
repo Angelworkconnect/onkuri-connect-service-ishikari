@@ -300,44 +300,45 @@ export default function MessagesPage() {
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {selectedConversation.lastMessage.related_type !== 'general' && (
-                      <div className="mb-4">
-                        <Card className="p-4 bg-blue-50 border-blue-200">
-                          <div className="flex items-start gap-3">
-                            {getCategoryIcon(selectedConversation.lastMessage.related_type)}
-                            <div className="flex-1">
-                              <p className="font-medium text-sm text-slate-900 mb-1">
-                                {getCategoryLabel(selectedConversation.lastMessage.related_type)}
-                              </p>
-                              {selectedConversation.lastMessage.related_title && (
-                                <p className="text-sm text-slate-700">{selectedConversation.lastMessage.related_title}</p>
-                              )}
-                              {(() => {
-                                const relatedInfo = getRelatedInfo(selectedConversation.lastMessage);
-                                if (relatedInfo && selectedConversation.lastMessage.related_type === 'shift') {
-                                  return (
-                                    <div className="text-xs text-slate-600 mt-2 space-y-1">
+                    {(() => {
+                      const convMessages = getConversationMessages();
+                      const relatedMsg = convMessages.find(m => m.related_type && m.related_type !== 'general');
+                      if (relatedMsg) {
+                        const relatedInfo = getRelatedInfo(relatedMsg);
+                        return (
+                          <div className="mb-4">
+                            <Card className="p-4 bg-blue-50 border-blue-200">
+                              <div className="flex items-start gap-3">
+                                {getCategoryIcon(relatedMsg.related_type)}
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm text-slate-900 mb-1">
+                                    {getCategoryLabel(relatedMsg.related_type)}
+                                  </p>
+                                  {relatedMsg.related_title && (
+                                    <p className="text-sm text-slate-700 mb-2">{relatedMsg.related_title}</p>
+                                  )}
+                                  {relatedInfo && relatedMsg.related_type === 'shift' && (
+                                    <div className="text-xs text-slate-600 space-y-1">
                                       <p>📅 {format(new Date(relatedInfo.date), 'M月d日')} {relatedInfo.start_time}〜{relatedInfo.end_time}</p>
                                       <p>📍 {relatedInfo.location}</p>
+                                      {relatedInfo.description && <p className="text-slate-700 mt-1">{relatedInfo.description}</p>}
                                     </div>
-                                  );
-                                }
-                                if (relatedInfo && selectedConversation.lastMessage.related_type === 'help_request') {
-                                  return (
-                                    <div className="text-xs text-slate-600 mt-2 space-y-1">
+                                  )}
+                                  {relatedInfo && relatedMsg.related_type === 'help_request' && (
+                                    <div className="text-xs text-slate-600 space-y-1">
                                       <p>📅 {format(new Date(relatedInfo.date), 'M月d日')} {relatedInfo.time || ''}</p>
                                       <p>📍 {relatedInfo.location}</p>
-                                      <p className="text-slate-700 mt-1">{relatedInfo.description}</p>
+                                      {relatedInfo.description && <p className="text-slate-700 mt-1">{relatedInfo.description}</p>}
                                     </div>
-                                  );
-                                }
-                                return null;
-                              })()}
-                            </div>
+                                  )}
+                                </div>
+                              </div>
+                            </Card>
                           </div>
-                        </Card>
-                      </div>
-                    )}
+                        );
+                      }
+                      return null;
+                    })()}
                     {getConversationMessages().map(msg => (
                       <div
                         key={msg.id}
