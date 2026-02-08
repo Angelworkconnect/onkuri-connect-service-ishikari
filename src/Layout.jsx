@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
+
+// スマホキャッシュ対策：アプリバージョン管理
+const APP_BUILD_VERSION = "2026-02-09-datetime-fix-v1";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +42,53 @@ export default function Layout({ children, currentPageName }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // スマホキャッシュ対策：バージョンチェックと強制更新
+    const checkAndUpdateVersion = () => {
+      try {
+        const savedVersion = localStorage.getItem('app_build_version');
+        
+        if (savedVersion !== APP_BUILD_VERSION) {
+          console.log(`[Version Update] ${savedVersion} → ${APP_BUILD_VERSION}`);
+          
+          // バージョン更新
+          localStorage.setItem('app_build_version', APP_BUILD_VERSION);
+          
+          // Service Worker キャッシュクリア試行
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+              registrations.forEach(reg => {
+                console.log('[SW] Unregistering:', reg.scope);
+                reg.unregister();
+              });
+            });
+          }
+          
+          // Cache Storage クリア試行
+          if ('caches' in window) {
+            caches.keys().then(names => {
+              names.forEach(name => {
+                console.log('[Cache] Deleting:', name);
+                caches.delete(name);
+              });
+            });
+          }
+          
+          // 旧バージョンから移行の場合は強制リロード
+          if (savedVersion) {
+            console.log('[Reload] Forcing reload for cache clear...');
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('[Version Check Error]', error);
+      }
+    };
+    
+    checkAndUpdateVersion();
+
     base44.auth.me().then(async (u) => {
       if (u) {
         // Check if user is admin in User entity
@@ -224,6 +274,13 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
-    </div>
-  );
-}
+
+      {/* デバッグ：ビルドバージョン表示（開発確認用） */}
+      {isAdmin && (
+        <div className="fixed bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-mono z-50">
+          Build: {APP_BUILD_VERSION}
+        </div>
+      )}
+      </div>
+      );
+      }
