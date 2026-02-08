@@ -371,7 +371,23 @@ export default function AdminPanel() {
   });
 
   const createShiftMutation = useMutation({
-    mutationFn: (data) => base44.entities.Shift.create(data),
+    mutationFn: async (data) => {
+      const shift = await base44.entities.Shift.create(data);
+      
+      // 全スタッフに通知を送信
+      const notifications = allStaff.map(staff => ({
+        user_email: staff.email,
+        type: 'shift',
+        title: `新しいシフト募集: ${data.title}`,
+        content: `${data.date} ${data.start_time}〜${data.end_time} ${data.location}`,
+        related_id: shift.id,
+        link_url: '/Shifts',
+      }));
+      
+      await base44.entities.Notification.bulkCreate(notifications);
+      
+      return shift;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-shifts']);
       setShiftDialogOpen(false);
