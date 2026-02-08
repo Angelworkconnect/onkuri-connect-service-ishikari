@@ -52,16 +52,17 @@ export default function MessagesPage() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.Message.create(data);
+      const message = await base44.entities.Message.create(data);
       // Create notification for receiver
       await base44.entities.Notification.create({
         user_email: data.receiver_email,
         type: 'message',
-        title: '新しいメッセージ',
-        content: `${data.sender_name}さんからメッセージが届きました`,
-        related_id: data.related_id,
+        title: `${data.sender_name}からメッセージ`,
+        content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
+        related_id: message.id,
         link_url: '/Messages',
       });
+      return message;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['messages']);
