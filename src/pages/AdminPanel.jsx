@@ -342,7 +342,7 @@ export default function AdminPanel() {
         info_benefits_items: siteSettings.info_benefits_items || [],
       });
     }
-  }, [siteSettings && siteSettings.id]);
+  }, [siteSettings?.id]);
 
   const createStaffMutation = useMutation({
     mutationFn: (data) => base44.entities.Staff.create(data),
