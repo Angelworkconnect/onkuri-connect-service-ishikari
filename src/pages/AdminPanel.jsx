@@ -180,6 +180,9 @@ export default function AdminPanel() {
     admin_notes: '',
   });
 
+  const [selectedStaffForMessage, setSelectedStaffForMessage] = useState(null);
+  const [messageContent, setMessageContent] = useState('');
+
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   const [settingsForm, setSettingsForm] = useState({
@@ -298,6 +301,19 @@ export default function AdminPanel() {
   const { data: allBenefitApps = [] } = useQuery({
     queryKey: ['admin-benefit-apps'],
     queryFn: () => base44.entities.BenefitApplication.list('-created_date'),
+  });
+
+  const { data: allMessages = [] } = useQuery({
+    queryKey: ['admin-messages'],
+    queryFn: async () => {
+      if (!user) return [];
+      const sent = await base44.entities.Message.filter({ sender_email: user.email });
+      const received = await base44.entities.Message.filter({ receiver_email: user.email });
+      return [...sent, ...received].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    },
+    enabled: !!user,
+    refetchInterval: 10000,
+    staleTime: 5000,
   });
 
   const { data: siteSettings = {} } = useQuery({
@@ -569,6 +585,33 @@ export default function AdminPanel() {
     onSuccess: () => queryClient.invalidateQueries(['admin-benefit-apps']),
   });
 
+  const sendMessageMutation = useMutation({
+    mutationFn: async (data) => {
+      const message = await base44.entities.Message.create(data);
+      
+      // 受信者に通知を送信
+      await base44.entities.Notification.create({
+        user_email: data.receiver_email,
+        type: 'message',
+        title: `${data.sender_name}からメッセージ`,
+        content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
+        related_id: message.id,
+        link_url: '/Messages',
+      });
+      
+      return message;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-messages']);
+      setMessageContent('');
+    },
+  });
+
+  const markMessageAsReadMutation = useMutation({
+    mutationFn: (id) => base44.entities.Message.update(id, { is_read: true }),
+    onSuccess: () => queryClient.invalidateQueries(['admin-messages']),
+  });
+
   const resetShiftForm = () => {
     setShiftForm({
       title: '', date: '', start_time: '', end_time: '', location: '',
@@ -687,6 +730,34 @@ export default function AdminPanel() {
       admin_notes: '',
     });
     setEditingBenefitApp(null);
+  };
+
+  const handleSendMessage = () => {
+    if (!messageContent.trim() || !selectedStaffForMessage) return;
+    
+    sendMessageMutation.mutate({
+      sender_email: user.email,
+      sender_name: user.full_name,
+      receiver_email: selectedStaffForMessage.email,
+      receiver_name: selectedStaffForMessage.full_name,
+      content: messageContent,
+      related_type: 'general',
+    });
+  };
+
+  const getConversationWithStaff = (staffEmail) => {
+    return allMessages.filter(m => 
+      (m.sender_email === user.email && m.receiver_email === staffEmail) ||
+      (m.receiver_email === user.email && m.sender_email === staffEmail)
+    ).sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+  };
+
+  const getUnreadCountForStaff = (staffEmail) => {
+    return allMessages.filter(m => 
+      m.sender_email === staffEmail && 
+      m.receiver_email === user.email && 
+      !m.is_read
+    ).length;
   };
 
   const handleEditService = (service) => {
@@ -989,7 +1060,12 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">ヘルプコール</span>
               <span className="sm:hidden">ヘルプ</span>
             </TabsTrigger>
-          </TabsList>
+            <TabsTrigger value="messages" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <MessageCircle className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">メッセージ</span>
+              <span className="sm:hidden">MSG</span>
+            </TabsTrigger>
+            </TabsList>
 
           {/* Site Settings Tab */}
           <TabsContent value="settings">
@@ -1886,6 +1962,127 @@ export default function AdminPanel() {
           {/* Help Call Tab */}
           <TabsContent value="help">
             <HelpRequestManager user={user} allStaff={allStaff} />
+          </TabsContent>
+
+          {/* Messages Tab */}
+          <TabsContent value="messages">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* スタッフ一覧 */}
+              <Card className="border-0 shadow-lg lg:col-span-1">
+                <div className="p-4 sm:p-6 border-b">
+                  <h2 className="text-lg font-medium">スタッフ一覧</h2>
+                </div>
+                <div className="divide-y max-h-[600px] overflow-y-auto">
+                  {allStaff.map((staff) => {
+                    const unreadCount = getUnreadCountForStaff(staff.email);
+                    const lastMessage = allMessages.find(m => 
+                      (m.sender_email === staff.email && m.receiver_email === user.email) ||
+                      (m.receiver_email === staff.email && m.sender_email === user.email)
+                    );
+
+                    return (
+                      <div
+                        key={staff.id}
+                        onClick={() => setSelectedStaffForMessage(staff)}
+                        className={`p-4 cursor-pointer hover:bg-slate-50 transition-colors ${
+                          selectedStaffForMessage?.id === staff.id ? 'bg-[#2D4A6F]/5' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#2D4A6F] text-white flex items-center justify-center font-semibold">
+                              {staff.full_name[0]}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900">{staff.full_name}</p>
+                              {lastMessage && (
+                                <p className="text-xs text-slate-500 truncate max-w-[150px]">
+                                  {lastMessage.content}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {unreadCount > 0 && (
+                            <Badge className="bg-red-500 text-white">{unreadCount}</Badge>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+
+              {/* メッセージエリア */}
+              <Card className="border-0 shadow-lg lg:col-span-2">
+                {selectedStaffForMessage ? (
+                  <>
+                    <div className="p-4 sm:p-6 border-b">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#2D4A6F] text-white flex items-center justify-center font-semibold">
+                          {selectedStaffForMessage.full_name[0]}
+                        </div>
+                        <div>
+                          <h2 className="text-lg font-medium">{selectedStaffForMessage.full_name}</h2>
+                          <p className="text-sm text-slate-500">{selectedStaffForMessage.email}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+                      {getConversationWithStaff(selectedStaffForMessage.email).map((msg) => {
+                        const isSent = msg.sender_email === user.email;
+
+                        // 未読メッセージを既読にする
+                        if (!isSent && !msg.is_read) {
+                          markMessageAsReadMutation.mutate(msg.id);
+                        }
+
+                        return (
+                          <div key={msg.id} className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[70%] ${isSent ? 'bg-[#2D4A6F] text-white' : 'bg-slate-100 text-slate-900'} rounded-lg p-3`}>
+                              <p className="text-sm">{msg.content}</p>
+                              <p className={`text-xs mt-1 ${isSent ? 'text-white/70' : 'text-slate-500'}`}>
+                                {format(new Date(msg.created_date), 'M/d HH:mm')}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="p-4 border-t">
+                      <div className="flex gap-2">
+                        <Textarea
+                          value={messageContent}
+                          onChange={(e) => setMessageContent(e.target.value)}
+                          placeholder="メッセージを入力..."
+                          className="flex-1"
+                          rows={2}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                        <Button 
+                          onClick={handleSendMessage}
+                          disabled={!messageContent.trim() || sendMessageMutation.isPending}
+                          className="bg-[#2D4A6F]"
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-12 text-center text-slate-400">
+                    <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>スタッフを選択してメッセージを開始してください</p>
+                  </div>
+                )}
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Benefits Tab */}
