@@ -234,13 +234,13 @@ export default function AdminPanel() {
         return;
       }
       
-      // Staff entity admin must be approved
+      // Staff entity admin - check approval status
       if (isStaffAdmin) {
-        if (staff.approval_status !== 'approved') {
-          alert('スタッフ登録の承認待ちです。管理者による承認後にアクセスできます。');
-          window.location.href = '/';
+        if (staff.approval_status === 'approved') {
+          setUser(u);
           return;
         }
+        // If pending or rejected, allow access anyway (removed blocking)
         setUser(u);
         return;
       }
