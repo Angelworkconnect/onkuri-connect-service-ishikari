@@ -49,59 +49,43 @@ export function formatMessageTime(dateInput) {
   const date = parseToDate(dateInput);
   
   if (!date) {
+    console.error('[formatMessageTime] Invalid date input:', dateInput);
     return '—';
   }
   
-  const formatter = new Intl.DateTimeFormat('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
+  // 現在時刻（JST）取得
+  const nowJST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
   
-  // 現在時刻（JST）
-  const now = new Date();
-  const jstNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  // メッセージ日時（JST）取得
+  const msgJST = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
   
-  // メッセージ日時（JST）
-  const jstDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  // 日付部分のみ比較用（YYYY-MM-DD形式）
+  const nowDateStr = `${nowJST.getFullYear()}-${String(nowJST.getMonth() + 1).padStart(2, '0')}-${String(nowJST.getDate()).padStart(2, '0')}`;
+  const msgDateStr = `${msgJST.getFullYear()}-${String(msgJST.getMonth() + 1).padStart(2, '0')}-${String(msgJST.getDate()).padStart(2, '0')}`;
   
-  // 日付部分のみ比較用
-  const nowDateStr = `${jstNow.getFullYear()}-${String(jstNow.getMonth() + 1).padStart(2, '0')}-${String(jstNow.getDate()).padStart(2, '0')}`;
-  const msgDateStr = `${jstDate.getFullYear()}-${String(jstDate.getMonth() + 1).padStart(2, '0')}-${String(jstDate.getDate()).padStart(2, '0')}`;
+  // 時刻部分のフォーマット（HH:mm）
+  const hours = String(msgJST.getHours()).padStart(2, '0');
+  const minutes = String(msgJST.getMinutes()).padStart(2, '0');
+  const timeStr = `${hours}:${minutes}`;
   
-  // 昨日の日付
-  const yesterday = new Date(jstNow);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-  
-  // 時刻部分のフォーマット
-  const timeFormatter = new Intl.DateTimeFormat('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
-  const timeStr = timeFormatter.format(date);
-  
-  // 今日
+  // 今日の場合 → HH:mm
   if (msgDateStr === nowDateStr) {
     return timeStr;
   }
   
-  // 昨日
+  // 昨日の場合 → 昨日 HH:mm
+  const yesterday = new Date(nowJST);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+  
   if (msgDateStr === yesterdayStr) {
     return `昨日 ${timeStr}`;
   }
   
-  // それ以前
-  const parts = formatter.formatToParts(date);
-  const year = parts.find(p => p.type === 'year')?.value || '';
-  const month = parts.find(p => p.type === 'month')?.value || '';
-  const day = parts.find(p => p.type === 'day')?.value || '';
+  // それ以前 → YYYY/MM/DD HH:mm
+  const year = msgJST.getFullYear();
+  const month = String(msgJST.getMonth() + 1).padStart(2, '0');
+  const day = String(msgJST.getDate()).padStart(2, '0');
   
   return `${year}/${month}/${day} ${timeStr}`;
 }
