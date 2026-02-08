@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Bell, MessageCircle, Calendar, AlertCircle, Megaphone, Sparkles } from "lucide-react";
 import { format } from "date-fns";
-import { formatMessageTime } from "@/utils/datetime";
+import { formatMessageTime } from "@/components/utils/datetime";
 import { Link } from "react-router-dom";
 import { createPageUrl } from '@/utils';
 
@@ -109,7 +109,7 @@ export default function NotificationBell({ userEmail }) {
                     <p className="font-medium text-sm text-slate-900">{notification.title}</p>
                     <p className="text-xs text-slate-600 truncate">{notification.content}</p>
                     <p className="text-xs text-slate-400 mt-1">
-                      {format(new Date(notification.created_date), 'M/d HH:mm')}
+                      {formatMessageTime(notification.created_date)}
                     </p>
                   </div>
                   {!notification.is_read && (
