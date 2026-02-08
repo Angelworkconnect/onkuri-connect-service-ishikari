@@ -39,7 +39,7 @@ import { createPageUrl } from '@/utils';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
-import { format } from "date-fns";
+import { format, isToday } from "date-fns";
 
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
@@ -2051,15 +2051,9 @@ export default function AdminPanel() {
                             <div className={`max-w-[70%] ${isSent ? 'bg-[#2D4A6F] text-white' : 'bg-slate-100 text-slate-900'} rounded-lg p-3`}>
                               <p className="text-sm">{msg.content}</p>
                               <p className={`text-xs mt-1 ${isSent ? 'text-white/70' : 'text-slate-500'}`}>
-                                {(() => {
-                                  const msgDate = new Date(msg.created_date);
-                                  const now = new Date();
-                                  const msgDay = format(msgDate, 'yyyy-MM-dd');
-                                  const today = format(now, 'yyyy-MM-dd');
-                                  return msgDay === today
-                                    ? format(msgDate, 'HH:mm')
-                                    : format(msgDate, "M'月'd'日' HH:mm");
-                                })()}
+                                {isToday(new Date(msg.created_date))
+                                  ? format(new Date(msg.created_date), 'HH:mm')
+                                  : format(new Date(msg.created_date), "M'月'd'日' HH:mm")}
                               </p>
                             </div>
                           </div>
