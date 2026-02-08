@@ -267,10 +267,8 @@ export default function MessagesPage() {
                         {(() => {
                           const msgDate = new Date(conv.lastMessage.created_date);
                           const now = new Date();
-                          const isSameDay = msgDate.getFullYear() === now.getFullYear() &&
-                                           msgDate.getMonth() === now.getMonth() &&
-                                           msgDate.getDate() === now.getDate();
-                          return isSameDay
+                          console.log('Message date:', msgDate, 'Now:', now, 'Same day?:', msgDate.toDateString() === now.toDateString());
+                          return msgDate.toDateString() === now.toDateString()
                             ? format(msgDate, 'HH:mm')
                             : format(msgDate, "M'月'd'日' HH:mm");
                         })()}
@@ -368,10 +366,7 @@ export default function MessagesPage() {
                             {(() => {
                               const msgDate = new Date(msg.created_date);
                               const now = new Date();
-                              const isSameDay = msgDate.getFullYear() === now.getFullYear() &&
-                                               msgDate.getMonth() === now.getMonth() &&
-                                               msgDate.getDate() === now.getDate();
-                              return isSameDay
+                              return msgDate.toDateString() === now.toDateString()
                                 ? format(msgDate, 'HH:mm')
                                 : format(msgDate, "M'月'd'日' HH:mm");
                             })()}
