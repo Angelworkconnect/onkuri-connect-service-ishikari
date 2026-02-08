@@ -2051,7 +2051,16 @@ export default function AdminPanel() {
                             <div className={`max-w-[70%] ${isSent ? 'bg-[#2D4A6F] text-white' : 'bg-slate-100 text-slate-900'} rounded-lg p-3`}>
                               <p className="text-sm">{msg.content}</p>
                               <p className={`text-xs mt-1 ${isSent ? 'text-white/70' : 'text-slate-500'}`}>
-                                {format(new Date(msg.created_date), 'M/d HH:mm')}
+                                {(() => {
+                                  const msgDate = new Date(msg.created_date);
+                                  const now = new Date();
+                                  const isSameDay = msgDate.getFullYear() === now.getFullYear() &&
+                                                   msgDate.getMonth() === now.getMonth() &&
+                                                   msgDate.getDate() === now.getDate();
+                                  return isSameDay
+                                    ? format(msgDate, 'HH:mm')
+                                    : format(msgDate, "M'月'd'日' HH:mm");
+                                })()}
                               </p>
                             </div>
                           </div>
