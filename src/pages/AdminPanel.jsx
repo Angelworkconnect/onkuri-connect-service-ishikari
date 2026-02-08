@@ -310,7 +310,7 @@ export default function AdminPanel() {
       if (!user) return [];
       const sent = await base44.entities.Message.filter({ sender_email: user.email });
       const received = await base44.entities.Message.filter({ receiver_email: user.email });
-      return [...sent, ...received].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      return [...sent, ...received].sort((a, b) => getMessageTimestamp(b) - getMessageTimestamp(a));
     },
     enabled: !!user,
     refetchInterval: 10000,
@@ -400,6 +400,7 @@ export default function AdminPanel() {
       });
       
       // 全スタッフに通知を送信
+      const nowUtc = Date.now();
       const notifications = allStaff.map(staff => ({
         user_email: staff.email,
         type: 'shift',
@@ -407,6 +408,7 @@ export default function AdminPanel() {
         content: `${data.date} ${data.start_time}〜${data.end_time} ${data.location}`,
         related_id: shift.id,
         link_url: '/Shifts',
+        createdAtUtc: nowUtc
       }));
       
       await base44.entities.Notification.bulkCreate(notifications);
@@ -764,7 +766,7 @@ export default function AdminPanel() {
     return allMessages.filter(m => 
       (m.sender_email === user.email && m.receiver_email === staffEmail) ||
       (m.receiver_email === user.email && m.sender_email === staffEmail)
-    ).sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+    ).sort((a, b) => getMessageTimestamp(a) - getMessageTimestamp(b));
   };
 
   const getUnreadCountForStaff = (staffEmail) => {
