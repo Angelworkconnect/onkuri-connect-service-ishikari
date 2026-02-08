@@ -1,38 +1,58 @@
 /**
- * 日時処理の共通ユーティリティ
+ * 日時処理の共通ユーティリティ（スマホ完全対応版）
  * タイムゾーン: Asia/Tokyo (JST) で統一
+ * 
+ * 【重要】スマホ対策として以下を禁止：
+ * - toLocaleString()
+ * - Intl.DateTimeFormat()
+ * - date-fns-tz
+ * - new Date(ISO文字列) での直接変換
+ * 
+ * 代わりに、UTC+9時間の手動計算とgetUTC系メソッドを使用
  */
 
+const TIMEZONE_OFFSET_MS = 9 * 60 * 60 * 1000; // JST = UTC+9
+
 /**
- * 入力値を Date オブジェクトに正規化
- * @param {string|Date|number|null|undefined} input - 変換する値
- * @returns {Date|null} - 正常な Date または null
+ * スマホ対応：UTCミリ秒を手動でJST変換してフォーマット
+ * @param {number} utcMs - UTCミリ秒
+ * @returns {string} - フォーマット済み日時文字列
  */
-export function parseToDate(input) {
-  if (!input) return null;
-  
-  try {
-    // すでに Date オブジェクトの場合
-    if (input instanceof Date) {
-      return isNaN(input.getTime()) ? null : input;
-    }
-    
-    // 数値（UNIX タイムスタンプ）の場合
-    if (typeof input === 'number') {
-      const date = new Date(input);
-      return isNaN(date.getTime()) ? null : date;
-    }
-    
-    // 文字列の場合
-    if (typeof input === 'string') {
-      const date = new Date(input);
-      return isNaN(date.getTime()) ? null : date;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('parseToDate error:', error, input);
-    return null;
+function formatUtcMsManual(utcMs) {
+  if (typeof utcMs !== 'number' || utcMs <= 0 || isNaN(utcMs)) {
+    return '—';
+  }
+
+  // JSTに変換（手動で+9時間）
+  const jstMs = utcMs + TIMEZONE_OFFSET_MS;
+  const date = new Date(jstMs);
+
+  // UTC系メソッドで値を取得（スマホ対応）
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  const day = date.getUTCDate();
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+
+  // ゼロ埋め
+  const MM = String(month).padStart(2, '0');
+  const DD = String(day).padStart(2, '0');
+  const HH = String(hours).padStart(2, '0');
+  const mm = String(minutes).padStart(2, '0');
+
+  // 今日・昨日判定（JST基準）
+  const nowJst = Date.now() + TIMEZONE_OFFSET_MS;
+  const nowDate = new Date(nowJst);
+  const todayStart = Date.UTC(nowDate.getUTCFullYear(), nowDate.getUTCMonth(), nowDate.getUTCDate());
+  const yesterdayStart = todayStart - 24 * 60 * 60 * 1000;
+  const messageStart = Date.UTC(year, month - 1, day);
+
+  if (messageStart === todayStart) {
+    return `${HH}:${mm}`;
+  } else if (messageStart === yesterdayStart) {
+    return `昨日 ${HH}:${mm}`;
+  } else {
+    return `${year}/${MM}/${DD} ${HH}:${mm}`;
   }
 }
 
@@ -42,69 +62,52 @@ export function parseToDate(input) {
  * - 昨日: 昨日 HH:mm
  * - それ以前: YYYY/MM/DD HH:mm
  * 
+ * スマホWebView/OSロケール依存を排除するため、完全手動フォーマット
+ * 
  * @param {number} timestampMs - UTC基準のUNIXタイムスタンプ（ミリ秒）
  * @returns {string} - フォーマット済み文字列
  */
 export function formatMessageTimeFromUtc(timestampMs) {
-  // 無効値チェック
-  if (!timestampMs || isNaN(timestampMs) || timestampMs === 0) {
-    return '—';
-  }
-  
-  // UTC ミリ秒から Date オブジェクト作成
-  const date = new Date(timestampMs);
-  
-  // 現在時刻（JST）取得
-  const nowJST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
-  
-  // メッセージ日時（JST）取得
-  const msgJST = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
-  
-  // 日付部分のみ比較用（YYYY-MM-DD形式）
-  const nowDateStr = `${nowJST.getFullYear()}-${String(nowJST.getMonth() + 1).padStart(2, '0')}-${String(nowJST.getDate()).padStart(2, '0')}`;
-  const msgDateStr = `${msgJST.getFullYear()}-${String(msgJST.getMonth() + 1).padStart(2, '0')}-${String(msgJST.getDate()).padStart(2, '0')}`;
-  
-  // 時刻部分のフォーマット（HH:mm）
-  const hours = String(msgJST.getHours()).padStart(2, '0');
-  const minutes = String(msgJST.getMinutes()).padStart(2, '0');
-  const timeStr = `${hours}:${minutes}`;
-  
-  // 今日の場合 → HH:mm
-  if (msgDateStr === nowDateStr) {
-    return timeStr;
-  }
-  
-  // 昨日の場合 → 昨日 HH:mm
-  const yesterday = new Date(nowJST);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-  
-  if (msgDateStr === yesterdayStr) {
-    return `昨日 ${timeStr}`;
-  }
-  
-  // それ以前 → YYYY/MM/DD HH:mm
-  const year = msgJST.getFullYear();
-  const month = String(msgJST.getMonth() + 1).padStart(2, '0');
-  const day = String(msgJST.getDate()).padStart(2, '0');
-  
-  return `${year}/${month}/${day} ${timeStr}`;
+  return formatUtcMsManual(timestampMs);
 }
 
 /**
- * 既存データから createdAtUtc への変換用（後方互換）
- * @param {Object} record - メッセージまたは通知レコード
- * @returns {number} - UTC ミリ秒タイムスタンプ
+ * スマホ対応：レコードからUTCミリ秒を取得
+ * 後方互換性のため、createdAtUtc → 旧フィールドの順で確認
+ * 
+ * @param {Object} record - Message/Notification/HelpRequest/HelpResponse等
+ * @returns {number} - UTCタイムスタンプ（ミリ秒）、無効なら0
  */
 export function getTimestampUtc(record) {
-  // 既に createdAtUtc がある場合はそのまま返す
-  if (record.createdAtUtc && !isNaN(record.createdAtUtc) && record.createdAtUtc > 0) {
+  if (!record) return 0;
+
+  // 新フィールド優先
+  if (record.createdAtUtc && typeof record.createdAtUtc === 'number' && record.createdAtUtc > 0) {
     return record.createdAtUtc;
   }
-  
-  // 既存フィールドから変換を試みる
-  const date = parseToDate(record.created_date || record.updated_date);
-  return date ? date.getTime() : 0;
+
+  // 旧データの後方互換（スマホ対応：ISO文字列→number変換）
+  const legacyFields = [record.createdAt, record.sentAt, record.updated_date, record.created_date];
+  for (const field of legacyFields) {
+    if (!field) continue;
+    
+    if (typeof field === 'number' && field > 0) {
+      return field;
+    }
+    
+    if (typeof field === 'string') {
+      try {
+        const parsed = new Date(field);
+        if (!isNaN(parsed.getTime())) {
+          return parsed.getTime();
+        }
+      } catch (e) {
+        // 無視して次へ
+      }
+    }
+  }
+
+  return 0;
 }
 
 /**
@@ -114,4 +117,33 @@ export function getTimestampUtc(record) {
  */
 export function getMessageTimestamp(message) {
   return getTimestampUtc(message);
+}
+
+/**
+ * 入力値を Date オブジェクトに正規化（後方互換用のみ）
+ * @param {string|Date|number|null|undefined} input - 変換する値
+ * @returns {Date|null} - 正常な Date または null
+ */
+export function parseToDate(input) {
+  if (!input) return null;
+  
+  try {
+    if (input instanceof Date) {
+      return isNaN(input.getTime()) ? null : input;
+    }
+    
+    if (typeof input === 'number') {
+      const date = new Date(input);
+      return isNaN(date.getTime()) ? null : date;
+    }
+    
+    if (typeof input === 'string') {
+      const date = new Date(input);
+      return isNaN(date.getTime()) ? null : date;
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
 }
