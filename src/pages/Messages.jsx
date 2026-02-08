@@ -267,10 +267,10 @@ export default function MessagesPage() {
                         {(() => {
                           const msgDate = new Date(conv.lastMessage.created_date);
                           const now = new Date();
-                          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                          const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
-                          const isToday = today.getTime() === msgDay.getTime();
-                          return isToday 
+                          const isSameDay = msgDate.getFullYear() === now.getFullYear() && 
+                                           msgDate.getMonth() === now.getMonth() && 
+                                           msgDate.getDate() === now.getDate();
+                          return isSameDay 
                             ? format(msgDate, 'HH:mm')
                             : format(msgDate, "M'月'd'日' HH:mm");
                         })()}
@@ -368,10 +368,10 @@ export default function MessagesPage() {
                             {(() => {
                               const msgDate = new Date(msg.created_date);
                               const now = new Date();
-                              const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                              const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
-                              const isToday = today.getTime() === msgDay.getTime();
-                              return isToday 
+                              const isSameDay = msgDate.getFullYear() === now.getFullYear() && 
+                                               msgDate.getMonth() === now.getMonth() && 
+                                               msgDate.getDate() === now.getDate();
+                              return isSameDay 
                                 ? format(msgDate, 'HH:mm')
                                 : format(msgDate, "M'月'd'日' HH:mm");
                             })()}
