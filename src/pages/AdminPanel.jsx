@@ -40,7 +40,7 @@ import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import { format } from "date-fns";
-import { formatMessageTime, getMessageTimestamp } from "@/components/utils/datetime";
+import { formatMessageTimeFromUtc, getMessageTimestamp, getTimestampUtc } from "@/components/utils/datetime";
 
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
@@ -597,7 +597,11 @@ export default function AdminPanel() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
-      const message = await base44.entities.Message.create(data);
+      const nowUtc = Date.now();
+      const message = await base44.entities.Message.create({
+        ...data,
+        createdAtUtc: nowUtc
+      });
       
       // 受信者に通知を送信
       await base44.entities.Notification.create({
@@ -607,6 +611,7 @@ export default function AdminPanel() {
         content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
         related_id: message.id,
         link_url: '/Messages',
+        createdAtUtc: nowUtc
       });
       
       return message;

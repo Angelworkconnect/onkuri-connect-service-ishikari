@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Send, ChevronLeft, Calendar, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { formatMessageTime, getMessageTimestamp } from "@/components/utils/datetime";
+import { formatMessageTimeFromUtc, getMessageTimestamp, getTimestampUtc } from "@/components/utils/datetime";
 
 export default function MessagesPage() {
   const [user, setUser] = useState(null);
@@ -64,7 +64,11 @@ export default function MessagesPage() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
-      const message = await base44.entities.Message.create(data);
+      const nowUtc = Date.now();
+      const message = await base44.entities.Message.create({
+        ...data,
+        createdAtUtc: nowUtc
+      });
       // Create notification for receiver
       await base44.entities.Notification.create({
         user_email: data.receiver_email,
@@ -73,6 +77,7 @@ export default function MessagesPage() {
         content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
         related_id: message.id,
         link_url: '/Messages',
+        createdAtUtc: nowUtc
       });
       return message;
     },
@@ -265,7 +270,7 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {formatMessageTime(conv.lastMessage.created_date)}
+                        {formatMessageTimeFromUtc(getTimestampUtc(conv.lastMessage))}
                       </p>
                     </div>
                   ))
@@ -357,7 +362,7 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {formatMessageTime(msg.created_date)}
+                            {formatMessageTimeFromUtc(getTimestampUtc(msg))}
                           </p>
                         </div>
                       </div>

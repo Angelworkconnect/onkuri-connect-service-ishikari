@@ -37,21 +37,22 @@ export function parseToDate(input) {
 }
 
 /**
- * メッセージの日時を JST で表示用にフォーマット
+ * UTC ミリ秒タイムスタンプから JST 表示用にフォーマット
  * - 今日: HH:mm
  * - 昨日: 昨日 HH:mm
  * - それ以前: YYYY/MM/DD HH:mm
  * 
- * @param {string|Date|number} dateInput - メッセージの日時
+ * @param {number} timestampMs - UTC基準のUNIXタイムスタンプ（ミリ秒）
  * @returns {string} - フォーマット済み文字列
  */
-export function formatMessageTime(dateInput) {
-  const date = parseToDate(dateInput);
-  
-  if (!date) {
-    console.error('[formatMessageTime] Invalid date input:', dateInput);
+export function formatMessageTimeFromUtc(timestampMs) {
+  // 無効値チェック
+  if (!timestampMs || isNaN(timestampMs) || timestampMs === 0) {
     return '—';
   }
+  
+  // UTC ミリ秒から Date オブジェクト作成
+  const date = new Date(timestampMs);
   
   // 現在時刻（JST）取得
   const nowJST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
@@ -91,11 +92,26 @@ export function formatMessageTime(dateInput) {
 }
 
 /**
+ * 既存データから createdAtUtc への変換用（後方互換）
+ * @param {Object} record - メッセージまたは通知レコード
+ * @returns {number} - UTC ミリ秒タイムスタンプ
+ */
+export function getTimestampUtc(record) {
+  // 既に createdAtUtc がある場合はそのまま返す
+  if (record.createdAtUtc && !isNaN(record.createdAtUtc) && record.createdAtUtc > 0) {
+    return record.createdAtUtc;
+  }
+  
+  // 既存フィールドから変換を試みる
+  const date = parseToDate(record.created_date || record.updated_date);
+  return date ? date.getTime() : 0;
+}
+
+/**
  * メッセージをソートするための比較用タイムスタンプ取得
  * @param {Object} message - メッセージオブジェクト
  * @returns {number} - UNIX タイムスタンプ（ミリ秒）
  */
 export function getMessageTimestamp(message) {
-  const date = parseToDate(message.created_date || message.updated_date);
-  return date ? date.getTime() : 0;
+  return getTimestampUtc(message);
 }
