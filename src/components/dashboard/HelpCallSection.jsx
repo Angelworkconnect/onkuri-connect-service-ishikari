@@ -62,6 +62,7 @@ export default function HelpCallSection({ user }) {
         created_by_email: user.email,
         created_by_name: user.full_name || user.email,
         status: 'open',
+        createdAtUtc: Date.now()
       });
     },
     onSuccess: () => {
@@ -87,6 +88,7 @@ export default function HelpCallSection({ user }) {
         message: message || '',
         status: 'pending',
         points_awarded: true,
+        createdAtUtc: Date.now()
       });
 
       await base44.entities.TipRecord.create({

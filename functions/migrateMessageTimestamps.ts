@@ -97,6 +97,60 @@ Deno.serve(async (req) => {
       results.errors.push(`Notifications migration error: ${error.message}`);
     }
 
+    // HelpRequest のマイグレーション
+    try {
+      const helpRequests = await base44.asServiceRole.entities.HelpRequest.list();
+      results.helpRequestsProcessed = helpRequests.length;
+
+      for (const req of helpRequests) {
+        if (req.createdAtUtc && req.createdAtUtc > 0) continue;
+
+        let timestampUtc = 0;
+        if (req.created_date) {
+          try {
+            const date = new Date(req.created_date);
+            if (!isNaN(date.getTime())) timestampUtc = date.getTime();
+          } catch (e) {
+            results.errors.push(`HelpRequest ${req.id}: Invalid created_date`);
+          }
+        }
+
+        if (timestampUtc > 0) {
+          await base44.asServiceRole.entities.HelpRequest.update(req.id, { createdAtUtc: timestampUtc });
+          results.helpRequestsUpdated = (results.helpRequestsUpdated || 0) + 1;
+        }
+      }
+    } catch (error) {
+      results.errors.push(`HelpRequests migration error: ${error.message}`);
+    }
+
+    // HelpResponse のマイグレーション
+    try {
+      const helpResponses = await base44.asServiceRole.entities.HelpResponse.list();
+      results.helpResponsesProcessed = helpResponses.length;
+
+      for (const res of helpResponses) {
+        if (res.createdAtUtc && res.createdAtUtc > 0) continue;
+
+        let timestampUtc = 0;
+        if (res.created_date) {
+          try {
+            const date = new Date(res.created_date);
+            if (!isNaN(date.getTime())) timestampUtc = date.getTime();
+          } catch (e) {
+            results.errors.push(`HelpResponse ${res.id}: Invalid created_date`);
+          }
+        }
+
+        if (timestampUtc > 0) {
+          await base44.asServiceRole.entities.HelpResponse.update(res.id, { createdAtUtc: timestampUtc });
+          results.helpResponsesUpdated = (results.helpResponsesUpdated || 0) + 1;
+        }
+      }
+    } catch (error) {
+      results.errors.push(`HelpResponses migration error: ${error.message}`);
+    }
+
     return Response.json({
       success: true,
       results
