@@ -205,44 +205,46 @@ export default function AdminPanel() {
       const isUserAdmin = u.role === 'admin';
       const staff = staffList.length > 0 ? staffList[0] : null;
       const isStaffAdmin = staff && staff.role === 'admin';
-      const isApproved = staff && staff.approval_status === 'approved';
       
       // Set full_name from Staff entity
       if (staff) {
         u.full_name = staff.full_name;
       }
       
-      if (!isUserAdmin && !isStaffAdmin) {
-        // If no staff record exists, create one as admin (for initial setup)
-        if (staffList.length === 0) {
+      // User entity admin has full access regardless of Staff entity
+      if (isUserAdmin) {
+        // Auto-create Staff record if missing
+        if (!staff) {
           try {
             await base44.entities.Staff.create({
               full_name: u.full_name || u.email,
               email: u.email,
               role: 'admin',
               approval_status: 'approved',
+              status: 'active',
             });
-            alert('管理者として登録されました。画面を再読み込みします。');
-            window.location.reload();
-            return;
           } catch (error) {
-            console.error('スタッフ登録エラー:', error);
+            console.error('スタッフ自動登録エラー:', error);
           }
         }
-        
-        alert('管理者権限がありません。この画面へのアクセスは管理者カテゴリのスタッフのみに制限されています。');
-        window.location.href = '/';
+        setUser(u);
         return;
       }
       
-      // Check if staff is approved
-      if (isStaffAdmin && !isApproved) {
-        alert('スタッフ登録の承認待ちです。管理者による承認後にアクセスできます。');
-        window.location.href = '/';
+      // Staff entity admin must be approved
+      if (isStaffAdmin) {
+        if (staff.approval_status !== 'approved') {
+          alert('スタッフ登録の承認待ちです。管理者による承認後にアクセスできます。');
+          window.location.href = '/';
+          return;
+        }
+        setUser(u);
         return;
       }
       
-      setUser(u);
+      // No admin access
+      alert('管理者権限がありません。');
+      window.location.href = '/';
     }).catch(() => {
       base44.auth.redirectToLogin();
     });
