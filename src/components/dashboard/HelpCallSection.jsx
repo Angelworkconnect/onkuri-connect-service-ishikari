@@ -12,7 +12,7 @@ import { AlertCircle, Clock, MapPin, HandIcon, Sparkles, ChevronDown, ChevronUp 
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { formatMessageTimeFromUtc, getTimestampUtc } from '@/components/utils/datetime';
+import { generateDisplayTimeText, getDisplayTimeText } from '@/components/utils/datetime';
 
 const urgencyConfig = {
   low: { label: '低', color: 'bg-blue-100 text-blue-700' },
@@ -62,7 +62,8 @@ export default function HelpCallSection({ user }) {
         created_by_email: user.email,
         created_by_name: user.full_name || user.email,
         status: 'open',
-        createdAtUtc: Date.now()
+        createdAtUtc: Date.now(),
+        displayTimeText: generateDisplayTimeText()
       });
     },
     onSuccess: () => {
@@ -88,7 +89,8 @@ export default function HelpCallSection({ user }) {
         message: message || '',
         status: 'pending',
         points_awarded: true,
-        createdAtUtc: Date.now()
+        createdAtUtc: Date.now(),
+        displayTimeText: generateDisplayTimeText()
       });
 
       await base44.entities.TipRecord.create({
@@ -221,7 +223,7 @@ export default function HelpCallSection({ user }) {
                             </Badge>
                           )}
                           <span className="text-xs text-slate-500">
-                            {formatMessageTimeFromUtc(getTimestampUtc(request))}
+                            {getDisplayTimeText(request)}
                           </span>
                         </div>
                         <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 break-words">{request.title}</h4>
@@ -473,7 +475,7 @@ export default function HelpCallSection({ user }) {
                     )}
                     
                     <p className="text-xs text-slate-400 mt-3">
-                      挙手日時: {formatMessageTimeFromUtc(getTimestampUtc(response))}
+                      挙手日時: {getDisplayTimeText(response)}
                     </p>
                   </Card>
                 );

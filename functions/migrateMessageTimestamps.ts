@@ -52,7 +52,8 @@ Deno.serve(async (req) => {
         // 更新
         if (timestampUtc > 0) {
           await base44.asServiceRole.entities.Message.update(msg.id, {
-            createdAtUtc: timestampUtc
+            createdAtUtc: timestampUtc,
+            displayTimeText: generateDisplayTimeTextFromUtc(timestampUtc)
           });
           results.messagesUpdated++;
         }
@@ -88,7 +89,8 @@ Deno.serve(async (req) => {
         // 更新
         if (timestampUtc > 0) {
           await base44.asServiceRole.entities.Notification.update(notif.id, {
-            createdAtUtc: timestampUtc
+            createdAtUtc: timestampUtc,
+            displayTimeText: generateDisplayTimeTextFromUtc(timestampUtc)
           });
           results.notificationsUpdated++;
         }
@@ -116,7 +118,10 @@ Deno.serve(async (req) => {
         }
 
         if (timestampUtc > 0) {
-          await base44.asServiceRole.entities.HelpRequest.update(req.id, { createdAtUtc: timestampUtc });
+          await base44.asServiceRole.entities.HelpRequest.update(req.id, {
+            createdAtUtc: timestampUtc,
+            displayTimeText: generateDisplayTimeTextFromUtc(timestampUtc)
+          });
           results.helpRequestsUpdated = (results.helpRequestsUpdated || 0) + 1;
         }
       }
@@ -143,7 +148,10 @@ Deno.serve(async (req) => {
         }
 
         if (timestampUtc > 0) {
-          await base44.asServiceRole.entities.HelpResponse.update(res.id, { createdAtUtc: timestampUtc });
+          await base44.asServiceRole.entities.HelpResponse.update(res.id, {
+            createdAtUtc: timestampUtc,
+            displayTimeText: generateDisplayTimeTextFromUtc(timestampUtc)
+          });
           results.helpResponsesUpdated = (results.helpResponsesUpdated || 0) + 1;
         }
       }
