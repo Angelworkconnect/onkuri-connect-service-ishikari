@@ -472,7 +472,7 @@ export default function HelpRequestManager({ user, allStaff }) {
                             </div>
                           )}
                           <p className="text-xs text-slate-400 mt-2">
-                            {format(new Date(response.created_date), 'yyyy/MM/dd HH:mm')}
+                            {response.displayTimeText || format(new Date(response.created_date || response.createdAtUtc), 'yyyy/MM/dd HH:mm')}
                           </p>
                         </div>
                         <Button
