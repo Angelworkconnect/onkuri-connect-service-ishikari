@@ -40,7 +40,7 @@ import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import { format } from "date-fns";
-import { formatMessageTimeFromUtc, getMessageTimestamp, getTimestampUtc } from "@/components/utils/datetime";
+import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
@@ -2059,7 +2059,7 @@ export default function AdminPanel() {
                             <div className={`max-w-[70%] ${isSent ? 'bg-[#2D4A6F] text-white' : 'bg-slate-100 text-slate-900'} rounded-lg p-3`}>
                               <p className="text-sm">{msg.content}</p>
                               <p className={`text-xs mt-1 ${isSent ? 'text-white/70' : 'text-slate-500'}`}>
-                                {formatMessageTime(msg.created_date)}
+                                {getDisplayTimeText(msg)}
                               </p>
                             </div>
                           </div>
