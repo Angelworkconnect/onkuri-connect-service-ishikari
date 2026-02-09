@@ -183,6 +183,7 @@ export default function AdminPanel() {
 
   const [selectedStaffForMessage, setSelectedStaffForMessage] = useState(null);
   const [messageContent, setMessageContent] = useState('');
+  const [markedAsReadIds, setMarkedAsReadIds] = useState(new Set());
 
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -763,10 +764,20 @@ export default function AdminPanel() {
   };
 
   const getConversationWithStaff = (staffEmail) => {
-    return allMessages.filter(m => 
+    const conversation = allMessages.filter(m => 
       (m.sender_email === user.email && m.receiver_email === staffEmail) ||
       (m.receiver_email === user.email && m.sender_email === staffEmail)
     ).sort((a, b) => getMessageTimestamp(a) - getMessageTimestamp(b));
+    
+    // Mark unread messages as read (only once per message)
+    conversation.forEach(msg => {
+      if (msg.receiver_email === user.email && !msg.is_read && !markedAsReadIds.has(msg.id)) {
+        setMarkedAsReadIds(prev => new Set([...prev, msg.id]));
+        markMessageAsReadMutation.mutate(msg.id);
+      }
+    });
+    
+    return conversation;
   };
 
   const getUnreadCountForStaff = (staffEmail) => {
@@ -2048,11 +2059,6 @@ export default function AdminPanel() {
                     <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
                       {getConversationWithStaff(selectedStaffForMessage.email).map((msg) => {
                         const isSent = msg.sender_email === user.email;
-
-                        // 未読メッセージを既読にする
-                        if (!isSent && !msg.is_read) {
-                          markMessageAsReadMutation.mutate(msg.id);
-                        }
 
                         return (
                           <div key={msg.id} className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}>
