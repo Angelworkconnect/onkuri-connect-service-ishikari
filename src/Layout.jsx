@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { 
   Home, Calendar, Clock, FileText, Users, 
-  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle
+  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell
 } from "lucide-react";
 import NotificationBell from './components/notifications/NotificationBell';
 
@@ -32,6 +32,10 @@ const navigation = [
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
+];
+
+const settingsNavigation = [
+  { name: '通知設定', href: 'NotificationSettings' },
 ];
 
 
@@ -192,6 +196,18 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuItem className="cursor-pointer">
                         <User className="w-4 h-4 mr-2" />
                         ダッシュボード
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={createPageUrl('Notifications')}>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Bell className="w-4 h-4 mr-2" />
+                        通知一覧
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={createPageUrl('NotificationSettings')}>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Settings className="w-4 h-4 mr-2" />
+                        通知設定
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />

@@ -65,6 +65,8 @@ import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
 import VersionCheck from './pages/VersionCheck';
+import Notifications from './pages/Notifications';
+import NotificationSettings from './pages/NotificationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +89,8 @@ export const PAGES = {
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
     "VersionCheck": VersionCheck,
+    "Notifications": Notifications,
+    "NotificationSettings": NotificationSettings,
 }
 
 export const pagesConfig = {
