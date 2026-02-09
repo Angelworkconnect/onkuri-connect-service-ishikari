@@ -135,15 +135,15 @@ export default function NotificationsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6 pb-8">
         <Card className="border-0 shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="border-b bg-slate-50 p-4">
-              <TabsList className="w-full grid grid-cols-7 gap-1">
-                <TabsTrigger value="all" className="text-xs">すべて</TabsTrigger>
-                <TabsTrigger value="unread" className="text-xs">未読</TabsTrigger>
-                <TabsTrigger value="shift" className="text-xs">シフト</TabsTrigger>
-                <TabsTrigger value="announcement" className="text-xs">お知らせ</TabsTrigger>
-                <TabsTrigger value="help_request" className="text-xs">ヘルプ</TabsTrigger>
-                <TabsTrigger value="message" className="text-xs">メッセージ</TabsTrigger>
-                <TabsTrigger value="tip" className="text-xs">サンクス</TabsTrigger>
+            <div className="border-b bg-slate-50 p-4 overflow-x-auto">
+              <TabsList className="inline-flex min-w-full">
+                <TabsTrigger value="all" className="text-xs px-3 flex-shrink-0">すべて</TabsTrigger>
+                <TabsTrigger value="unread" className="text-xs px-3 flex-shrink-0">未読</TabsTrigger>
+                <TabsTrigger value="shift" className="text-xs px-3 flex-shrink-0">シフト</TabsTrigger>
+                <TabsTrigger value="announcement" className="text-xs px-3 flex-shrink-0">お知らせ</TabsTrigger>
+                <TabsTrigger value="help_request" className="text-xs px-3 flex-shrink-0">ヘルプ</TabsTrigger>
+                <TabsTrigger value="message" className="text-xs px-3 flex-shrink-0">メッセージ</TabsTrigger>
+                <TabsTrigger value="tip" className="text-xs px-3 flex-shrink-0">サンクス</TabsTrigger>
               </TabsList>
             </div>
 

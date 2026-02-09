@@ -59,14 +59,14 @@ import Documents from './pages/Documents';
 import Home from './pages/Home';
 import Messages from './pages/Messages';
 import MyApplications from './pages/MyApplications';
+import NotificationSettings from './pages/NotificationSettings';
+import Notifications from './pages/Notifications';
 import PayrollExport from './pages/PayrollExport';
 import Shifts from './pages/Shifts';
 import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
 import VersionCheck from './pages/VersionCheck';
-import Notifications from './pages/Notifications';
-import NotificationSettings from './pages/NotificationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -83,14 +83,14 @@ export const PAGES = {
     "Home": Home,
     "Messages": Messages,
     "MyApplications": MyApplications,
+    "NotificationSettings": NotificationSettings,
+    "Notifications": Notifications,
     "PayrollExport": PayrollExport,
     "Shifts": Shifts,
     "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
     "VersionCheck": VersionCheck,
-    "Notifications": Notifications,
-    "NotificationSettings": NotificationSettings,
 }
 
 export const pagesConfig = {
