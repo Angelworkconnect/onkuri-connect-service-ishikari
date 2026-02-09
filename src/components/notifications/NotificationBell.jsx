@@ -103,17 +103,17 @@ export default function NotificationBell({ userEmail }) {
               asChild
             >
               <Link to={notification.link_url || createPageUrl('Dashboard')}>
-                <div className="flex gap-3 w-full">
-                  <div className="mt-1">{getIcon(notification.type)}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-slate-900">{notification.title}</p>
+                <div className="flex gap-2 w-full">
+                  <div className="mt-1 flex-shrink-0">{getIcon(notification.type)}</div>
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <p className="font-medium text-sm text-slate-900 truncate">{notification.title}</p>
                     <p className="text-xs text-slate-600 truncate">{notification.content}</p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-slate-400 mt-1 truncate">
                       {getDisplayTimeText(notification)}
                     </p>
                   </div>
                   {!notification.is_read && (
-                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
                   )}
                 </div>
               </Link>
