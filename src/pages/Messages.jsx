@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageCircle, Send, ChevronLeft, Calendar, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { formatMessageTimeFromUtc, getMessageTimestamp, getTimestampUtc } from "@/components/utils/datetime";
+import { generateDisplayTimeText, getDisplayTimeText, getMessageTimestamp, getTimestampUtc } from "@/components/utils/datetime";
 
 export default function MessagesPage() {
   const [user, setUser] = useState(null);
@@ -65,9 +65,11 @@ export default function MessagesPage() {
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
       const nowUtc = Date.now();
+      const displayTime = generateDisplayTimeText();
       const message = await base44.entities.Message.create({
         ...data,
-        createdAtUtc: nowUtc
+        createdAtUtc: nowUtc,
+        displayTimeText: displayTime
       });
       // Create notification for receiver
       await base44.entities.Notification.create({
@@ -77,7 +79,8 @@ export default function MessagesPage() {
         content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
         related_id: message.id,
         link_url: '/Messages',
-        createdAtUtc: nowUtc
+        createdAtUtc: nowUtc,
+        displayTimeText: displayTime
       });
       return message;
     },
@@ -270,7 +273,7 @@ export default function MessagesPage() {
                       </div>
                       <p className="text-sm text-slate-600 truncate">{conv.lastMessage.content}</p>
                       <p className="text-xs text-slate-400 mt-1">
-                        {formatMessageTimeFromUtc(getTimestampUtc(conv.lastMessage))}
+                        {getDisplayTimeText(conv.lastMessage)}
                       </p>
                     </div>
                   ))
@@ -362,7 +365,7 @@ export default function MessagesPage() {
                           <p className={`text-xs mt-1 ${
                             msg.sender_email === user.email ? 'text-white/70' : 'text-slate-400'
                           }`}>
-                            {formatMessageTimeFromUtc(getTimestampUtc(msg))}
+                            {getDisplayTimeText(msg)}
                           </p>
                         </div>
                       </div>
