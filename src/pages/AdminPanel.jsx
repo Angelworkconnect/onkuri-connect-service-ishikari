@@ -184,6 +184,12 @@ export default function AdminPanel() {
   const [selectedStaffForMessage, setSelectedStaffForMessage] = useState(null);
   const [messageContent, setMessageContent] = useState('');
   const [markedAsReadIds, setMarkedAsReadIds] = useState(new Set());
+  const [broadcastDialogOpen, setBroadcastDialogOpen] = useState(false);
+  const [broadcastForm, setBroadcastForm] = useState({
+    content: '',
+    target: 'all',
+    targetRole: 'all',
+  });
 
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -622,6 +628,49 @@ export default function AdminPanel() {
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-messages']);
       setMessageContent('');
+    },
+  });
+
+  const broadcastMessageMutation = useMutation({
+    mutationFn: async (data) => {
+      const nowUtc = Date.now();
+      
+      // 送信対象のスタッフを絞り込み
+      let targetStaff = allStaff;
+      if (data.target === 'role' && data.targetRole !== 'all') {
+        targetStaff = allStaff.filter(s => s.role === data.targetRole);
+      }
+      
+      // メッセージと通知を一斉作成
+      const messages = targetStaff.map(staff => ({
+        sender_email: user.email,
+        sender_name: user.full_name,
+        receiver_email: staff.email,
+        receiver_name: staff.full_name,
+        content: data.content,
+        related_type: 'general',
+        createdAtUtc: nowUtc
+      }));
+      
+      const notifications = targetStaff.map(staff => ({
+        user_email: staff.email,
+        type: 'message',
+        title: `${user.full_name}から一斉メッセージ`,
+        content: data.content.substring(0, 50) + (data.content.length > 50 ? '...' : ''),
+        link_url: '/Messages',
+        createdAtUtc: nowUtc
+      }));
+      
+      await base44.entities.Message.bulkCreate(messages);
+      await base44.entities.Notification.bulkCreate(notifications);
+      
+      return { count: targetStaff.length };
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries(['admin-messages']);
+      setBroadcastDialogOpen(false);
+      setBroadcastForm({ content: '', target: 'all', targetRole: 'all' });
+      alert(`${result.count}名にメッセージを送信しました`);
     },
   });
 
@@ -1997,8 +2046,16 @@ export default function AdminPanel() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* スタッフ一覧 */}
               <Card className="border-0 shadow-lg lg:col-span-1">
-                <div className="p-4 sm:p-6 border-b">
+                <div className="p-4 sm:p-6 border-b flex justify-between items-center">
                   <h2 className="text-lg font-medium">スタッフ一覧</h2>
+                  <Button 
+                    onClick={() => setBroadcastDialogOpen(true)} 
+                    size="sm"
+                    className="bg-[#E8A4B8] hover:bg-[#D393A7]"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    一斉送信
+                  </Button>
                 </div>
                 <div className="divide-y max-h-[600px] overflow-y-auto">
                   {allStaff.map((staff) => {
@@ -2917,6 +2974,77 @@ export default function AdminPanel() {
               disabled={!dicePrizeForm.prize_name || !dicePrizeForm.points}
             >
               {editingDicePrize ? '更新' : '追加'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Broadcast Message Dialog */}
+      <Dialog open={broadcastDialogOpen} onOpenChange={setBroadcastDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>一斉メッセージ送信</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>送信対象 *</Label>
+              <Select value={broadcastForm.target} onValueChange={(v) => setBroadcastForm({...broadcastForm, target: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全スタッフ</SelectItem>
+                  <SelectItem value="role">職種指定</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {broadcastForm.target === 'role' && (
+              <div>
+                <Label>職種選択 *</Label>
+                <Select value={broadcastForm.targetRole} onValueChange={(v) => setBroadcastForm({...broadcastForm, targetRole: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全職種</SelectItem>
+                    <SelectItem value="admin">管理者</SelectItem>
+                    <SelectItem value="full_time">正社員</SelectItem>
+                    <SelectItem value="part_time">パート</SelectItem>
+                    <SelectItem value="temporary">単発</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            <div>
+              <Label>対象人数</Label>
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <span className="text-2xl font-bold text-[#2D4A6F]">
+                  {broadcastForm.target === 'all' 
+                    ? allStaff.length 
+                    : broadcastForm.targetRole === 'all'
+                      ? allStaff.length
+                      : allStaff.filter(s => s.role === broadcastForm.targetRole).length
+                  }名
+                </span>
+              </div>
+            </div>
+            
+            <div>
+              <Label>メッセージ内容 *</Label>
+              <Textarea
+                value={broadcastForm.content}
+                onChange={(e) => setBroadcastForm({...broadcastForm, content: e.target.value})}
+                placeholder="全スタッフに送信するメッセージを入力してください"
+                className="h-32"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBroadcastDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={() => broadcastMessageMutation.mutate(broadcastForm)}
+              disabled={!broadcastForm.content.trim() || broadcastMessageMutation.isPending}
+              className="bg-[#E8A4B8] hover:bg-[#D393A7]"
+            >
+              {broadcastMessageMutation.isPending ? '送信中...' : '一斉送信'}
             </Button>
           </DialogFooter>
         </DialogContent>
