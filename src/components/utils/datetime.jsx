@@ -105,3 +105,11 @@ export function getTimestampUtc(record) {
 export function formatMessageTimeFromUtc(timestampMs) {
   return getDisplayTimeText({ createdAtUtc: timestampMs });
 }
+
+/**
+ * 並び替え用：メッセージのタイムスタンプ取得（後方互換）
+ * @deprecated getTimestampUtc() を使用してください
+ */
+export function getMessageTimestamp(message) {
+  return getTimestampUtc(message);
+}
