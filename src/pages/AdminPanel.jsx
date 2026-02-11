@@ -3308,7 +3308,7 @@ export default function AdminPanel() {
                     <p className="text-3xl font-bold text-red-900">
                       {totalPaidOut.toLocaleString()}pt
                     </p>
-                    <p className="text-xs text-red-600 mt-1">{allPayouts.filter(p => p.user_email === selectedStaffForTips.email).length}回</p>
+                    <p className="text-xs text-red-600 mt-1">{allPayouts.filter(p => p.user_email === selectedStaffForTips.email && !p.is_deleted).length}回</p>
                   </Card>
                   <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100">
                     <p className="text-sm text-green-700 mb-1">現在の残高</p>
