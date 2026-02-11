@@ -505,13 +505,28 @@ export default function AdminPanel() {
   });
 
   const createTipMutation = useMutation({
-    mutationFn: (data) => {
+    mutationFn: async (data) => {
       const staff = allStaff.find(s => s.email === data.user_email);
-      return base44.entities.TipRecord.create({
+      const tipRecord = await base44.entities.TipRecord.create({
         ...data,
         user_name: staff?.full_name || data.user_email,
         given_by: user.full_name,
       });
+
+      // 通知を作成
+      const nowUtc = Date.now();
+      const tipTypeName = tipTypes.find(t => t.value === data.tip_type)?.label || 'サンクスポイント';
+      await base44.entities.Notification.create({
+        user_email: data.user_email,
+        type: 'tip',
+        title: `${tipTypeName}を獲得しました！`,
+        content: `${data.amount}ポイントが付与されました。${data.reason}`,
+        related_id: tipRecord.id,
+        link_url: '/TipsHistory',
+        createdAtUtc: nowUtc
+      });
+
+      return tipRecord;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-tips']);
