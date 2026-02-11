@@ -521,7 +521,12 @@ export default function AdminPanel() {
   });
 
   const deleteTipMutation = useMutation({
-    mutationFn: (id) => base44.entities.TipRecord.delete(id),
+    mutationFn: (id) => base44.entities.TipRecord.update(id, { is_deleted: true }),
+    onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
+  });
+
+  const restoreTipMutation = useMutation({
+    mutationFn: (id) => base44.entities.TipRecord.update(id, { is_deleted: false }),
     onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
   });
 
@@ -542,7 +547,12 @@ export default function AdminPanel() {
   });
 
   const deletePayoutMutation = useMutation({
-    mutationFn: (id) => base44.entities.Payout.delete(id),
+    mutationFn: (id) => base44.entities.Payout.update(id, { is_deleted: true }),
+    onSuccess: () => queryClient.invalidateQueries(['admin-payouts']),
+  });
+
+  const restorePayoutMutation = useMutation({
+    mutationFn: (id) => base44.entities.Payout.update(id, { is_deleted: false }),
     onSuccess: () => queryClient.invalidateQueries(['admin-payouts']),
   });
 
@@ -3275,10 +3285,10 @@ export default function AdminPanel() {
           
           {selectedStaffForTips && (() => {
             const totalEarned = allTips
-              .filter(t => t.user_email === selectedStaffForTips.email)
+              .filter(t => t.user_email === selectedStaffForTips.email && !t.is_deleted)
               .reduce((sum, t) => sum + t.amount, 0);
             const totalPaidOut = allPayouts
-              .filter(p => p.user_email === selectedStaffForTips.email)
+              .filter(p => p.user_email === selectedStaffForTips.email && !p.is_deleted)
               .reduce((sum, p) => sum + p.amount, 0);
             const balance = totalEarned - totalPaidOut;
 
@@ -3314,11 +3324,12 @@ export default function AdminPanel() {
                   <TabsList className="w-full mb-4">
                     <TabsTrigger value="tips" className="flex-1">付与履歴</TabsTrigger>
                     <TabsTrigger value="payouts" className="flex-1">払い出し履歴</TabsTrigger>
+                    <TabsTrigger value="deleted" className="flex-1">削除済み</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="tips" className="space-y-3 max-h-[400px] overflow-y-auto">
                     {allTips
-                      .filter(tip => tip.user_email === selectedStaffForTips.email)
+                      .filter(tip => tip.user_email === selectedStaffForTips.email && !tip.is_deleted)
                       .map((tip) => (
                         <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow border-l-4 border-l-green-400">
                           <div className="flex justify-between items-start">
@@ -3342,11 +3353,7 @@ export default function AdminPanel() {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
-                                onClick={() => {
-                                  if (confirm('このポイント付与を削除してもよろしいですか？')) {
-                                    deleteTipMutation.mutate(tip.id);
-                                  }
-                                }}
+                                onClick={() => deleteTipMutation.mutate(tip.id)}
                                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -3355,7 +3362,7 @@ export default function AdminPanel() {
                           </div>
                         </Card>
                       ))}
-                    {allTips.filter(t => t.user_email === selectedStaffForTips.email).length === 0 && (
+                    {allTips.filter(t => t.user_email === selectedStaffForTips.email && !t.is_deleted).length === 0 && (
                       <div className="text-center py-12 text-slate-400">
                         <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
                         <p>まだポイントが付与されていません</p>
@@ -3365,7 +3372,7 @@ export default function AdminPanel() {
 
                   <TabsContent value="payouts" className="space-y-3 max-h-[400px] overflow-y-auto">
                     {allPayouts
-                      .filter(payout => payout.user_email === selectedStaffForTips.email)
+                      .filter(payout => payout.user_email === selectedStaffForTips.email && !payout.is_deleted)
                       .map((payout) => (
                         <Card key={payout.id} className="p-4 hover:shadow-md transition-shadow border-l-4 border-l-red-400">
                           <div className="flex justify-between items-start">
@@ -3390,11 +3397,7 @@ export default function AdminPanel() {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
-                                onClick={() => {
-                                  if (confirm('この払い出しを削除してもよろしいですか？')) {
-                                    deletePayoutMutation.mutate(payout.id);
-                                  }
-                                }}
+                                onClick={() => deletePayoutMutation.mutate(payout.id)}
                                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -3403,10 +3406,98 @@ export default function AdminPanel() {
                           </div>
                         </Card>
                       ))}
-                    {allPayouts.filter(p => p.user_email === selectedStaffForTips.email).length === 0 && (
+                    {allPayouts.filter(p => p.user_email === selectedStaffForTips.email && !p.is_deleted).length === 0 && (
                       <div className="text-center py-12 text-slate-400">
                         <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
                         <p>まだ払い出しはありません</p>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="deleted" className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {/* 削除済み付与 */}
+                    {allTips
+                      .filter(tip => tip.user_email === selectedStaffForTips.email && tip.is_deleted)
+                      .map((tip) => (
+                        <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow bg-slate-50 border-slate-300 opacity-60">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Badge variant="outline" className="bg-slate-100">
+                                  付与（削除済）
+                                </Badge>
+                                <Badge variant="outline" className="bg-green-50 text-green-700">
+                                  {tipTypes.find(t => t.value === tip.tip_type)?.label}
+                                </Badge>
+                                <span className="text-xs text-slate-500">
+                                  {format(new Date(tip.date), 'yyyy/M/d')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
+                              <p className="text-xs text-slate-400">付与者: {tip.given_by || '-'}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-slate-400">+{tip.amount.toLocaleString()}<span className="text-sm">pt</span></p>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => restoreTipMutation.mutate(tip.id)}
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                              >
+                                復元
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+
+                    {/* 削除済み払い出し */}
+                    {allPayouts
+                      .filter(payout => payout.user_email === selectedStaffForTips.email && payout.is_deleted)
+                      .map((payout) => (
+                        <Card key={payout.id} className="p-4 hover:shadow-md transition-shadow bg-slate-50 border-slate-300 opacity-60">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Badge variant="outline" className="bg-slate-100">
+                                  払い出し（削除済）
+                                </Badge>
+                                <Badge variant="outline" className="bg-red-50 text-red-700">
+                                  {payout.payout_method === 'cash' ? '現金' : 
+                                   payout.payout_method === 'bank_transfer' ? '銀行振込' : 'その他'}
+                                </Badge>
+                                <span className="text-xs text-slate-500">
+                                  {format(new Date(payout.date), 'yyyy/M/d')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">{payout.reason || '-'}</p>
+                              <p className="text-xs text-slate-400">処理者: {payout.processed_by || '-'}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-slate-400">-{payout.amount.toLocaleString()}<span className="text-sm">pt</span></p>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => restorePayoutMutation.mutate(payout.id)}
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                              >
+                                復元
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+
+                    {[...allTips, ...allPayouts].filter(item => 
+                      item.user_email === selectedStaffForTips.email && item.is_deleted
+                    ).length === 0 && (
+                      <div className="text-center py-12 text-slate-400">
+                        <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <p>削除された履歴はありません</p>
                       </div>
                     )}
                   </TabsContent>
