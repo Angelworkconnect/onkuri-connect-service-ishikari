@@ -144,6 +144,14 @@ export default function AdminPanel() {
   const [tipFilterMonth, setTipFilterMonth] = useState('');
   const [staffTipHistoryDialogOpen, setStaffTipHistoryDialogOpen] = useState(false);
   const [selectedStaffForTips, setSelectedStaffForTips] = useState(null);
+  const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
+  const [payoutForm, setPayoutForm] = useState({
+    user_email: '',
+    amount: '',
+    reason: '',
+    payout_method: 'cash',
+    date: new Date().toISOString().split('T')[0],
+  });
 
   const [dicePrizeDialogOpen, setDicePrizeDialogOpen] = useState(false);
   const [editingDicePrize, setEditingDicePrize] = useState(null);
@@ -294,6 +302,11 @@ export default function AdminPanel() {
   const { data: allTips = [] } = useQuery({
     queryKey: ['admin-tips'],
     queryFn: () => base44.entities.TipRecord.list('-date'),
+  });
+
+  const { data: allPayouts = [] } = useQuery({
+    queryKey: ['admin-payouts'],
+    queryFn: () => base44.entities.Payout.list('-date'),
   });
 
   const { data: dicePrizes = [] } = useQuery({
@@ -510,6 +523,27 @@ export default function AdminPanel() {
   const deleteTipMutation = useMutation({
     mutationFn: (id) => base44.entities.TipRecord.delete(id),
     onSuccess: () => queryClient.invalidateQueries(['admin-tips']),
+  });
+
+  const createPayoutMutation = useMutation({
+    mutationFn: (data) => {
+      const staff = allStaff.find(s => s.email === data.user_email);
+      return base44.entities.Payout.create({
+        ...data,
+        user_name: staff?.full_name || data.user_email,
+        processed_by: user.full_name,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-payouts']);
+      setPayoutDialogOpen(false);
+      resetPayoutForm();
+    },
+  });
+
+  const deletePayoutMutation = useMutation({
+    mutationFn: (id) => base44.entities.Payout.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['admin-payouts']),
   });
 
   const createDicePrizeMutation = useMutation({
@@ -730,6 +764,16 @@ export default function AdminPanel() {
       tip_type: 'special_thanks',
       amount: '',
       reason: '',
+      date: new Date().toISOString().split('T')[0],
+    });
+  };
+
+  const resetPayoutForm = () => {
+    setPayoutForm({
+      user_email: '',
+      amount: '',
+      reason: '',
+      payout_method: 'cash',
       date: new Date().toISOString().split('T')[0],
     });
   };
@@ -3229,79 +3273,165 @@ export default function AdminPanel() {
             </DialogTitle>
           </DialogHeader>
           
-          {selectedStaffForTips && (
-            <div className="py-4">
-              {/* サマリー */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100">
-                  <p className="text-sm text-purple-700 mb-1">累計ポイント</p>
-                  <p className="text-3xl font-bold text-purple-900">
-                    {allTips
-                      .filter(t => t.user_email === selectedStaffForTips.email)
-                      .reduce((sum, t) => sum + t.amount, 0)
-                      .toLocaleString()}pt
-                  </p>
-                </Card>
-                <Card className="p-4 bg-gradient-to-br from-pink-50 to-pink-100">
-                  <p className="text-sm text-pink-700 mb-1">付与回数</p>
-                  <p className="text-3xl font-bold text-pink-900">
-                    {allTips.filter(t => t.user_email === selectedStaffForTips.email).length}回
-                  </p>
-                </Card>
-              </div>
+          {selectedStaffForTips && (() => {
+            const totalEarned = allTips
+              .filter(t => t.user_email === selectedStaffForTips.email)
+              .reduce((sum, t) => sum + t.amount, 0);
+            const totalPaidOut = allPayouts
+              .filter(p => p.user_email === selectedStaffForTips.email)
+              .reduce((sum, p) => sum + p.amount, 0);
+            const balance = totalEarned - totalPaidOut;
 
-              {/* 履歴一覧 */}
-              <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                <h3 className="font-medium text-slate-900 mb-3">付与履歴</h3>
-                {allTips
-                  .filter(tip => tip.user_email === selectedStaffForTips.email)
-                  .map((tip) => (
-                    <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline">
-                              {tipTypes.find(t => t.value === tip.tip_type)?.label}
-                            </Badge>
-                            <span className="text-xs text-slate-500">
-                              {format(new Date(tip.date), 'yyyy/M/d')}
-                            </span>
+            return (
+              <div className="py-4">
+                {/* サマリー */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100">
+                    <p className="text-sm text-purple-700 mb-1">累計獲得</p>
+                    <p className="text-3xl font-bold text-purple-900">
+                      {totalEarned.toLocaleString()}pt
+                    </p>
+                    <p className="text-xs text-purple-600 mt-1">ボーナス基準</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-br from-red-50 to-red-100">
+                    <p className="text-sm text-red-700 mb-1">払い出し済み</p>
+                    <p className="text-3xl font-bold text-red-900">
+                      {totalPaidOut.toLocaleString()}pt
+                    </p>
+                    <p className="text-xs text-red-600 mt-1">{allPayouts.filter(p => p.user_email === selectedStaffForTips.email).length}回</p>
+                  </Card>
+                  <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100">
+                    <p className="text-sm text-green-700 mb-1">現在の残高</p>
+                    <p className="text-3xl font-bold text-green-900">
+                      {balance.toLocaleString()}pt
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">利用可能</p>
+                  </Card>
+                </div>
+
+                {/* 履歴タブ */}
+                <Tabs defaultValue="tips" className="w-full">
+                  <TabsList className="w-full mb-4">
+                    <TabsTrigger value="tips" className="flex-1">付与履歴</TabsTrigger>
+                    <TabsTrigger value="payouts" className="flex-1">払い出し履歴</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="tips" className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {allTips
+                      .filter(tip => tip.user_email === selectedStaffForTips.email)
+                      .map((tip) => (
+                        <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow border-l-4 border-l-green-400">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Badge variant="outline" className="bg-green-50 text-green-700">
+                                  {tipTypes.find(t => t.value === tip.tip_type)?.label}
+                                </Badge>
+                                <span className="text-xs text-slate-500">
+                                  {format(new Date(tip.date), 'yyyy/M/d')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
+                              <p className="text-xs text-slate-400">付与者: {tip.given_by || '-'}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-green-600">+{tip.amount.toLocaleString()}<span className="text-sm">pt</span></p>
+                                <p className="text-xs text-slate-500">¥{tip.amount.toLocaleString()}</p>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  if (confirm('このポイント付与を削除してもよろしいですか？')) {
+                                    deleteTipMutation.mutate(tip.id);
+                                  }
+                                }}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
-                          <p className="text-xs text-slate-400">付与者: {tip.given_by || '-'}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-[#C17A8E]">{tip.amount.toLocaleString()}<span className="text-sm">pt</span></p>
-                            <p className="text-xs text-slate-500">¥{tip.amount.toLocaleString()}</p>
-                          </div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => {
-                              if (confirm('このポイント付与を削除してもよろしいですか？')) {
-                                deleteTipMutation.mutate(tip.id);
-                              }
-                            }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        </Card>
+                      ))}
+                    {allTips.filter(t => t.user_email === selectedStaffForTips.email).length === 0 && (
+                      <div className="text-center py-12 text-slate-400">
+                        <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <p>まだポイントが付与されていません</p>
                       </div>
-                    </Card>
-                  ))}
-                {allTips.filter(t => t.user_email === selectedStaffForTips.email).length === 0 && (
-                  <div className="text-center py-12 text-slate-400">
-                    <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                    <p>まだポイントが付与されていません</p>
-                  </div>
-                )}
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="payouts" className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {allPayouts
+                      .filter(payout => payout.user_email === selectedStaffForTips.email)
+                      .map((payout) => (
+                        <Card key={payout.id} className="p-4 hover:shadow-md transition-shadow border-l-4 border-l-red-400">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Badge variant="outline" className="bg-red-50 text-red-700">
+                                  {payout.payout_method === 'cash' ? '現金' : 
+                                   payout.payout_method === 'bank_transfer' ? '銀行振込' : 'その他'}
+                                </Badge>
+                                <span className="text-xs text-slate-500">
+                                  {format(new Date(payout.date), 'yyyy/M/d')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2">{payout.reason || '-'}</p>
+                              <p className="text-xs text-slate-400">処理者: {payout.processed_by || '-'}</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-red-600">-{payout.amount.toLocaleString()}<span className="text-sm">pt</span></p>
+                                <p className="text-xs text-slate-500">¥{payout.amount.toLocaleString()}</p>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  if (confirm('この払い出しを削除してもよろしいですか？')) {
+                                    deletePayoutMutation.mutate(payout.id);
+                                  }
+                                }}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    {allPayouts.filter(p => p.user_email === selectedStaffForTips.email).length === 0 && (
+                      <div className="text-center py-12 text-slate-400">
+                        <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <p>まだ払い出しはありません</p>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </div>
-            </div>
-          )}
+            );
+          })()}
           
           <DialogFooter>
+            <Button 
+              onClick={() => {
+                resetPayoutForm();
+                setPayoutForm({
+                  ...payoutForm,
+                  user_email: selectedStaffForTips?.email || '',
+                });
+                setStaffTipHistoryDialogOpen(false);
+                setPayoutDialogOpen(true);
+              }}
+              variant="outline"
+              className="mr-auto text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              払い出し
+            </Button>
             <Button 
               onClick={() => {
                 resetTipForm();
@@ -3315,10 +3445,83 @@ export default function AdminPanel() {
               className="bg-[#C17A8E] hover:bg-[#B06979]"
             >
               <Plus className="w-4 h-4 mr-2" />
-              このスタッフにポイント付与
+              ポイント付与
             </Button>
             <Button variant="outline" onClick={() => setStaffTipHistoryDialogOpen(false)}>
               閉じる
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payout Dialog */}
+      <Dialog open={payoutDialogOpen} onOpenChange={setPayoutDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ポイント払い出し</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>スタッフ *</Label>
+              <Select value={payoutForm.user_email} onValueChange={(v) => setPayoutForm({...payoutForm, user_email: v})}>
+                <SelectTrigger><SelectValue placeholder="スタッフを選択" /></SelectTrigger>
+                <SelectContent>
+                  {allStaff.map(s => (
+                    <SelectItem key={s.email} value={s.email}>{s.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>払い出し金額（円）*</Label>
+              <Input 
+                type="number" 
+                value={payoutForm.amount} 
+                onChange={(e) => setPayoutForm({...payoutForm, amount: e.target.value})}
+                placeholder="5000"
+              />
+              <p className="text-xs text-slate-500 mt-1">※1ポイント = 1円として換算されます</p>
+            </div>
+            <div>
+              <Label>払い出し方法 *</Label>
+              <Select value={payoutForm.payout_method} onValueChange={(v) => setPayoutForm({...payoutForm, payout_method: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">現金</SelectItem>
+                  <SelectItem value="bank_transfer">銀行振込</SelectItem>
+                  <SelectItem value="other">その他</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>理由 *</Label>
+              <Textarea 
+                value={payoutForm.reason} 
+                onChange={(e) => setPayoutForm({...payoutForm, reason: e.target.value})}
+                placeholder="例：給与振込、現金交換"
+                className="h-24"
+              />
+            </div>
+            <div>
+              <Label>払い出し日 *</Label>
+              <Input 
+                type="date" 
+                value={payoutForm.date} 
+                onChange={(e) => setPayoutForm({...payoutForm, date: e.target.value})}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPayoutDialogOpen(false)}>キャンセル</Button>
+            <Button 
+              onClick={() => createPayoutMutation.mutate({
+                ...payoutForm,
+                amount: Number(payoutForm.amount),
+              })} 
+              className="bg-red-600 hover:bg-red-700"
+              disabled={!payoutForm.user_email || !payoutForm.amount || !payoutForm.reason || createPayoutMutation.isPending}
+            >
+              払い出し
             </Button>
           </DialogFooter>
         </DialogContent>
