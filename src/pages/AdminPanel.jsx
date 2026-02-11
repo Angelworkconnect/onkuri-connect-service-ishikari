@@ -530,6 +530,7 @@ export default function AdminPanel() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-tips']);
+      queryClient.invalidateQueries(['notifications']);
       setTipDialogOpen(false);
       resetTipForm();
     },
