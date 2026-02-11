@@ -142,6 +142,8 @@ export default function AdminPanel() {
   const [tipFilterStaff, setTipFilterStaff] = useState('all');
   const [tipFilterType, setTipFilterType] = useState('all');
   const [tipFilterMonth, setTipFilterMonth] = useState('');
+  const [staffTipHistoryDialogOpen, setStaffTipHistoryDialogOpen] = useState(false);
+  const [selectedStaffForTips, setSelectedStaffForTips] = useState(null);
 
   const [dicePrizeDialogOpen, setDicePrizeDialogOpen] = useState(false);
   const [editingDicePrize, setEditingDicePrize] = useState(null);
@@ -2009,7 +2011,14 @@ export default function AdminPanel() {
                   .sort((a, b) => b.total - a.total)
                   .slice(0, 12)
                   .map(({ staff, total, count }) => (
-                  <Card key={staff.id} className="p-4 bg-gradient-to-br from-slate-50 to-white hover:shadow-md transition-shadow">
+                  <Card 
+                  key={staff.id} 
+                  className="p-4 bg-gradient-to-br from-slate-50 to-white hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => {
+                  setSelectedStaffForTips(staff);
+                  setStaffTipHistoryDialogOpen(true);
+                  }}
+                  >
                   <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-[#C17A8E] text-white flex items-center justify-center font-semibold text-sm">
@@ -2017,6 +2026,7 @@ export default function AdminPanel() {
                   </div>
                   <span className="font-medium text-slate-900">{staff.full_name}</span>
                   </div>
+                  <Edit className="w-4 h-4 text-slate-400" />
                   </div>
                   <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-bold text-[#C17A8E]">{total.toLocaleString()}</span>
@@ -3195,6 +3205,120 @@ export default function AdminPanel() {
               className="bg-[#E8A4B8] hover:bg-[#D393A7]"
             >
               {broadcastMessageMutation.isPending ? '送信中...' : '一斉送信'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Staff Tip History Dialog */}
+      <Dialog open={staffTipHistoryDialogOpen} onOpenChange={setStaffTipHistoryDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {selectedStaffForTips && (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-[#C17A8E] text-white flex items-center justify-center font-bold text-lg">
+                    {selectedStaffForTips.full_name[0]}
+                  </div>
+                  <div>
+                    <p className="text-xl">{selectedStaffForTips.full_name}</p>
+                    <p className="text-sm font-normal text-slate-500">{selectedStaffForTips.email}</p>
+                  </div>
+                </>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedStaffForTips && (
+            <div className="py-4">
+              {/* サマリー */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100">
+                  <p className="text-sm text-purple-700 mb-1">累計ポイント</p>
+                  <p className="text-3xl font-bold text-purple-900">
+                    {allTips
+                      .filter(t => t.user_email === selectedStaffForTips.email)
+                      .reduce((sum, t) => sum + t.amount, 0)
+                      .toLocaleString()}pt
+                  </p>
+                </Card>
+                <Card className="p-4 bg-gradient-to-br from-pink-50 to-pink-100">
+                  <p className="text-sm text-pink-700 mb-1">付与回数</p>
+                  <p className="text-3xl font-bold text-pink-900">
+                    {allTips.filter(t => t.user_email === selectedStaffForTips.email).length}回
+                  </p>
+                </Card>
+              </div>
+
+              {/* 履歴一覧 */}
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                <h3 className="font-medium text-slate-900 mb-3">付与履歴</h3>
+                {allTips
+                  .filter(tip => tip.user_email === selectedStaffForTips.email)
+                  .map((tip) => (
+                    <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline">
+                              {tipTypes.find(t => t.value === tip.tip_type)?.label}
+                            </Badge>
+                            <span className="text-xs text-slate-500">
+                              {format(new Date(tip.date), 'yyyy/M/d')}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
+                          <p className="text-xs text-slate-400">付与者: {tip.given_by || '-'}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-[#C17A8E]">{tip.amount.toLocaleString()}<span className="text-sm">pt</span></p>
+                            <p className="text-xs text-slate-500">¥{tip.amount.toLocaleString()}</p>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => {
+                              if (confirm('このポイント付与を削除してもよろしいですか？')) {
+                                deleteTipMutation.mutate(tip.id);
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                {allTips.filter(t => t.user_email === selectedStaffForTips.email).length === 0 && (
+                  <div className="text-center py-12 text-slate-400">
+                    <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                    <p>まだポイントが付与されていません</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button 
+              onClick={() => {
+                resetTipForm();
+                setTipForm({
+                  ...tipForm,
+                  user_email: selectedStaffForTips?.email || '',
+                });
+                setStaffTipHistoryDialogOpen(false);
+                setTipDialogOpen(true);
+              }}
+              className="bg-[#C17A8E] hover:bg-[#B06979]"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              このスタッフにポイント付与
+            </Button>
+            <Button variant="outline" onClick={() => setStaffTipHistoryDialogOpen(false)}>
+              閉じる
             </Button>
           </DialogFooter>
         </DialogContent>
