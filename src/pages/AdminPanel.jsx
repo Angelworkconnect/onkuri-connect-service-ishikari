@@ -3563,6 +3563,27 @@ export default function AdminPanel() {
                 </SelectContent>
               </Select>
             </div>
+            
+            {payoutForm.user_email && (() => {
+              const earned = allTips.filter(t => t.user_email === payoutForm.user_email && !t.is_deleted).reduce((sum, t) => sum + t.amount, 0);
+              const paidOut = allPayouts.filter(p => p.user_email === payoutForm.user_email && !p.is_deleted).reduce((sum, p) => sum + p.amount, 0);
+              const balance = earned - paidOut;
+              const inputAmount = Number(payoutForm.amount) || 0;
+              const isOverBalance = inputAmount > balance;
+
+              return (
+                <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-slate-600">現在の残高</span>
+                    <span className="text-2xl font-bold text-green-600">{balance.toLocaleString()}pt</span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    累計獲得: {earned.toLocaleString()}pt | 払い出し済み: {paidOut.toLocaleString()}pt
+                  </div>
+                </div>
+              );
+            })()}
+
             <div>
               <Label>払い出し金額（円）*</Label>
               <Input 
@@ -3570,8 +3591,32 @@ export default function AdminPanel() {
                 value={payoutForm.amount} 
                 onChange={(e) => setPayoutForm({...payoutForm, amount: e.target.value})}
                 placeholder="5000"
+                max={payoutForm.user_email ? (() => {
+                  const earned = allTips.filter(t => t.user_email === payoutForm.user_email && !t.is_deleted).reduce((sum, t) => sum + t.amount, 0);
+                  const paidOut = allPayouts.filter(p => p.user_email === payoutForm.user_email && !p.is_deleted).reduce((sum, p) => sum + p.amount, 0);
+                  return earned - paidOut;
+                })() : undefined}
               />
-              <p className="text-xs text-slate-500 mt-1">※1ポイント = 1円として換算されます</p>
+              {payoutForm.user_email && Number(payoutForm.amount) > 0 && (() => {
+                const earned = allTips.filter(t => t.user_email === payoutForm.user_email && !t.is_deleted).reduce((sum, t) => sum + t.amount, 0);
+                const paidOut = allPayouts.filter(p => p.user_email === payoutForm.user_email && !p.is_deleted).reduce((sum, p) => sum + p.amount, 0);
+                const balance = earned - paidOut;
+                const inputAmount = Number(payoutForm.amount);
+                
+                if (inputAmount > balance) {
+                  return (
+                    <p className="text-xs text-red-600 mt-1 font-medium">
+                      ❌ 残高不足です（残高: {balance.toLocaleString()}pt）
+                    </p>
+                  );
+                }
+                return (
+                  <p className="text-xs text-slate-500 mt-1">※1ポイント = 1円として換算されます</p>
+                );
+              })()}
+              {!payoutForm.user_email && (
+                <p className="text-xs text-slate-500 mt-1">※1ポイント = 1円として換算されます</p>
+              )}
             </div>
             <div>
               <Label>払い出し方法 *</Label>
@@ -3610,7 +3655,19 @@ export default function AdminPanel() {
                 amount: Number(payoutForm.amount),
               })} 
               className="bg-red-600 hover:bg-red-700"
-              disabled={!payoutForm.user_email || !payoutForm.amount || !payoutForm.reason || createPayoutMutation.isPending}
+              disabled={
+                !payoutForm.user_email || 
+                !payoutForm.amount || 
+                !payoutForm.reason || 
+                createPayoutMutation.isPending ||
+                (() => {
+                  if (!payoutForm.user_email) return false;
+                  const earned = allTips.filter(t => t.user_email === payoutForm.user_email && !t.is_deleted).reduce((sum, t) => sum + t.amount, 0);
+                  const paidOut = allPayouts.filter(p => p.user_email === payoutForm.user_email && !p.is_deleted).reduce((sum, p) => sum + p.amount, 0);
+                  const balance = earned - paidOut;
+                  return Number(payoutForm.amount) > balance;
+                })()
+              }
             >
               払い出し
             </Button>
