@@ -515,6 +515,15 @@ export default function AdminPanel() {
 
       // 通知を作成
       const nowUtc = Date.now();
+      const jstMs = nowUtc + (9 * 60 * 60 * 1000);
+      const date = new Date(jstMs);
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const hours = String(date.getUTCHours()).padStart(2, '0');
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      const displayTimeText = `${year}/${month}/${day} ${hours}:${minutes}`;
+
       const tipTypeName = tipTypes.find(t => t.value === data.tip_type)?.label || 'サンクスポイント';
       await base44.entities.Notification.create({
         user_email: data.user_email,
@@ -523,7 +532,8 @@ export default function AdminPanel() {
         content: `${data.amount}ポイントが付与されました。${data.reason}`,
         related_id: tipRecord.id,
         link_url: '/TipsHistory',
-        createdAtUtc: nowUtc
+        createdAtUtc: nowUtc,
+        displayTimeText: displayTimeText
       });
 
       return tipRecord;
