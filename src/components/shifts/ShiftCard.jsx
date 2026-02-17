@@ -38,7 +38,7 @@ export default function ShiftCard({ shift, onApply, showApplyButton = true }) {
             </Badge>
           </div>
           <span className="text-sm font-medium text-[#2D4A6F]">
-            {format(new Date(shift.date), 'M月d日')}
+            {shift.date ? format(new Date(shift.date), 'M月d日') : '日付未設定'}
           </span>
         </div>
 
