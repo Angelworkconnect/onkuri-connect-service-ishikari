@@ -1544,7 +1544,7 @@ export default function AdminPanel() {
                     <TableRow key={app.id}>
                       <TableCell className="font-medium">{app.applicant_name || app.applicant_email}</TableCell>
                       <TableCell>{getShiftTitle(app.shift_id)}</TableCell>
-                      <TableCell>{format(new Date(app.created_date), 'M/d HH:mm')}</TableCell>
+                      <TableCell>{safeFormat(app.created_date, 'M/d HH:mm')}</TableCell>
                       <TableCell className="max-w-xs truncate">{app.message || '-'}</TableCell>
                       <TableCell>
                         <Badge className={
@@ -2491,7 +2491,7 @@ export default function AdminPanel() {
                           <TableCell className="font-medium">{app.user_name}</TableCell>
                           <TableCell>{allBenefits.find(b => b.id === app.benefit_id)?.title || '不明'}</TableCell>
                           <TableCell>{format(new Date(app.request_date), 'yyyy/M/d')}</TableCell>
-                          <TableCell>{format(new Date(app.created_date), 'M/d HH:mm')}</TableCell>
+                          <TableCell>{safeFormat(app.created_date, 'M/d HH:mm')}</TableCell>
                           <TableCell>
                             <Badge className={
                               app.status === 'approved' ? 'bg-green-100 text-green-700' :
