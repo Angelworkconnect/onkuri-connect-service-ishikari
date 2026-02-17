@@ -2001,7 +2001,7 @@ export default function AdminPanel() {
                           {categoryTypes.find(c => c.value === announcement.category)?.label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{format(new Date(announcement.created_date), 'M/d HH:mm')}</TableCell>
+                      <TableCell>{safeFormat(announcement.created_date, 'M/d HH:mm')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button variant="ghost" size="icon" onClick={() => handleEditAnnouncement(announcement)}>
