@@ -2490,7 +2490,7 @@ export default function AdminPanel() {
                         <TableRow key={app.id}>
                           <TableCell className="font-medium">{app.user_name}</TableCell>
                           <TableCell>{allBenefits.find(b => b.id === app.benefit_id)?.title || '不明'}</TableCell>
-                          <TableCell>{format(new Date(app.request_date), 'yyyy/M/d')}</TableCell>
+                          <TableCell>{safeFormat(app.request_date, 'yyyy/M/d')}</TableCell>
                           <TableCell>{safeFormat(app.created_date, 'M/d HH:mm')}</TableCell>
                           <TableCell>
                             <Badge className={
