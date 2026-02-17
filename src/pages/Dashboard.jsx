@@ -32,9 +32,15 @@ export default function Dashboard() {
       // Staffエンティティから名前と承認状態を取得
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) {
-        u.full_name = staffList[0].full_name;
-        u.approval_status = staffList[0].approval_status || 'pending';
-        u.staff_role = staffList[0].role;
+        const staff = staffList[0];
+        u.full_name = staff.full_name;
+        u.approval_status = staff.approval_status || 'pending';
+        u.staff_role = staff.role;
+        
+        // 管理者の場合はroleもadminに設定
+        if (staff.role === 'admin') {
+          u.role = 'admin';
+        }
       } else {
         // スタッフ登録がない場合は登録ページへリダイレクト
         window.location.href = createPageUrl('StaffRegistration');
