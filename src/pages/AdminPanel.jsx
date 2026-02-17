@@ -2171,7 +2171,7 @@ export default function AdminPanel() {
                   if (tipFilterStaff !== 'all' && tip.user_email !== tipFilterStaff) return false;
                   if (tipFilterType !== 'all' && tip.tip_type !== tipFilterType) return false;
                   if (tipFilterMonth) {
-                  const tipMonth = format(new Date(tip.date), 'yyyy-MM');
+                  const tipMonth = safeFormat(tip.date, 'yyyy-MM');
                   if (tipMonth !== tipFilterMonth) return false;
                   }
                   return true;
@@ -2212,7 +2212,7 @@ export default function AdminPanel() {
                   if (tipFilterStaff !== 'all' && tip.user_email !== tipFilterStaff) return false;
                   if (tipFilterType !== 'all' && tip.tip_type !== tipFilterType) return false;
                   if (tipFilterMonth) {
-                  const tipMonth = format(new Date(tip.date), 'yyyy-MM');
+                  const tipMonth = safeFormat(tip.date, 'yyyy-MM');
                   if (tipMonth !== tipFilterMonth) return false;
                   }
                   return true;
