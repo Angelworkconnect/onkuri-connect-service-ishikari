@@ -1944,7 +1944,7 @@ export default function AdminPanel() {
                            '承認待ち'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{format(new Date(s.created_date), 'yyyy/M/d')}</TableCell>
+                      <TableCell>{safeFormat(s.created_date, 'yyyy/M/d')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2 flex-wrap">
                           <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
