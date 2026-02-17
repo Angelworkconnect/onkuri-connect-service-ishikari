@@ -3080,7 +3080,7 @@ export default function AdminPanel() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-slate-600">利用希望日:</span>
-                  <span className="font-medium">{format(new Date(editingBenefitApp.request_date), 'yyyy年M月d日')}</span>
+                  <span className="font-medium">{safeFormat(editingBenefitApp.request_date, 'yyyy年M月d日')}</span>
                 </div>
                 {editingBenefitApp.notes && (
                   <div className="pt-2 border-t">
