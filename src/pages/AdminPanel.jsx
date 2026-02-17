@@ -2199,7 +2199,7 @@ export default function AdminPanel() {
                   <div className="text-sm text-slate-500">¥{tip.amount.toLocaleString()}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500">{format(new Date(tip.date), 'yyyy/M/d')} by {tip.given_by}</span>
+                  <span className="text-xs text-slate-500">{safeFormat(tip.date, 'yyyy/M/d')} by {tip.given_by}</span>
                   <Button variant="ghost" size="icon" onClick={() => deleteTipMutation.mutate(tip.id)} className="h-8 w-8">
                   <Trash2 className="w-4 h-4 text-red-500" />
                   </Button>
@@ -3372,7 +3372,7 @@ export default function AdminPanel() {
                                   {tipTypes.find(t => t.value === tip.tip_type)?.label}
                                 </Badge>
                                 <span className="text-xs text-slate-500">
-                                  {format(new Date(tip.date), 'yyyy/M/d')}
+                                  {safeFormat(tip.date, 'yyyy/M/d')}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
@@ -3463,7 +3463,7 @@ export default function AdminPanel() {
                                   {tipTypes.find(t => t.value === tip.tip_type)?.label}
                                 </Badge>
                                 <span className="text-xs text-slate-500">
-                                  {format(new Date(tip.date), 'yyyy/M/d')}
+                                  {safeFormat(tip.date, 'yyyy/M/d')}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 mb-2">{tip.reason || '-'}</p>
