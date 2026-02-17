@@ -1762,7 +1762,7 @@ export default function AdminPanel() {
                                             }
                                             return (
                                               <TableRow key={record.id}>
-                                                <TableCell className="font-medium">{format(new Date(record.date), 'M/d (E)', { locale: undefined })}</TableCell>
+                                                <TableCell className="font-medium">{safeFormat(record.date, 'M/d')}</TableCell>
                                                 <TableCell className="font-mono">{record.clock_in}</TableCell>
                                                 <TableCell className="font-mono">{record.clock_out || '-'}</TableCell>
                                                 <TableCell className="font-semibold text-[#2D4A6F]">
