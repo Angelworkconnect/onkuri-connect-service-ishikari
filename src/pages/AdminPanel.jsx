@@ -1470,7 +1470,7 @@ export default function AdminPanel() {
                     <TableRow key={shift.id}>
                       <TableCell className="font-medium">{shift.title}</TableCell>
                       <TableCell>
-                        {format(new Date(shift.date), 'M/d')} {shift.start_time}〜{shift.end_time}
+                        {safeFormat(shift.date, 'M/d')} {shift.start_time}〜{shift.end_time}
                       </TableCell>
                       <TableCell>{shift.location}</TableCell>
                       <TableCell>
