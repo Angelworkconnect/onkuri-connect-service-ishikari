@@ -42,6 +42,13 @@ import HelpRequestManager from '../components/admin/HelpRequestManager';
 import { format } from "date-fns";
 import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
+const safeFormat = (dateValue, formatStr) => {
+  if (!dateValue) return '-';
+  const d = new Date(dateValue);
+  if (isNaN(d.getTime())) return '-';
+  return format(d, formatStr);
+};
+
 const serviceTypes = [
   { value: 'day_service', label: '通所介護' },
   { value: 'home_care', label: '訪問介護' },
