@@ -3416,7 +3416,7 @@ export default function AdminPanel() {
                                    payout.payout_method === 'bank_transfer' ? '銀行振込' : 'その他'}
                                 </Badge>
                                 <span className="text-xs text-slate-500">
-                                  {format(new Date(payout.date), 'yyyy/M/d')}
+                                  {safeFormat(payout.date, 'yyyy/M/d')}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 mb-2">{payout.reason || '-'}</p>
@@ -3502,7 +3502,7 @@ export default function AdminPanel() {
                                    payout.payout_method === 'bank_transfer' ? '銀行振込' : 'その他'}
                                 </Badge>
                                 <span className="text-xs text-slate-500">
-                                  {format(new Date(payout.date), 'yyyy/M/d')}
+                                  {safeFormat(payout.date, 'yyyy/M/d')}
                                 </span>
                               </div>
                               <p className="text-sm text-slate-600 mb-2">{payout.reason || '-'}</p>
