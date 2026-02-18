@@ -168,12 +168,17 @@ export default function HelpRequestManager({ user, allStaff }) {
     mutationFn: async ({ id, data }) => {
       await base44.entities.HelpResponse.update(id, data);
       
-      // 承認時：承認された本人へ個別通知 + 同じヘルプコールに挙手した全員へ告知
+      // 承認時：承認された本人へ個別通知 + ヘルプリクエストに承認者名を保存 + 全スタッフへ告知
       if (data.status === 'approved') {
         const response = helpResponses.find(r => r.id === id);
         const requestId = response.help_request_id;
         const request = helpRequests.find(r => r.id === requestId);
         const requestTitle = request?.title || 'ヘルプコール';
+
+        // ヘルプリクエスト自体に承認者名を記録（全員が達成バナーを見られるようにする）
+        await base44.entities.HelpRequest.update(requestId, {
+          approved_responder_name: response.responder_name,
+        });
 
         // 承認された本人への通知
         await base44.entities.Announcement.create({
