@@ -214,6 +214,8 @@ export default function HelpRequestManager({ user, allStaff }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-help-responses'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-help-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['help-requests'] });
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
       setResponseDialogOpen(false);
       setSelectedResponse(null);
