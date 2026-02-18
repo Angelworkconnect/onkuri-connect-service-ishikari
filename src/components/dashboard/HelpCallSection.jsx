@@ -203,7 +203,16 @@ export default function HelpCallSection({ user }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                 >
-                  <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                  <Card className={`border-0 shadow-md hover:shadow-lg transition-shadow ${isApproved ? 'ring-2 ring-green-400' : ''}`}>
+                    {isApproved && (
+                      <div className="bg-gradient-to-r from-green-400 to-emerald-500 px-4 py-3 rounded-t-xl flex items-center gap-2">
+                        <span className="text-2xl">🎉</span>
+                        <p className="text-white font-bold text-sm sm:text-base">
+                          助っ人さん表れる！達成されました。ありがとうございます。
+                        </p>
+                        <span className="text-2xl">🎉</span>
+                      </div>
+                    )}
                     <div className="p-4 sm:p-5">
                       <div className="mb-3">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
