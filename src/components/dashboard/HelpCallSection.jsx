@@ -194,6 +194,7 @@ export default function HelpCallSection({ user }) {
               const isExpanded = expandedRequests[request.id];
               const responded = hasResponded(request.id);
               const myResponse = getMyResponseForRequest(request.id);
+              const isApproved = myResponse?.status === 'approved';
 
               return (
                 <motion.div
