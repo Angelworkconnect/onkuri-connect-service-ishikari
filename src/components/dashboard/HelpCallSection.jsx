@@ -626,7 +626,21 @@ export default function HelpCallSection({ user }) {
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (window.confirm(`「${editingRequest?.title}」を削除しますか？`)) {
+                  deleteRequestMutation.mutate(editingRequest.id);
+                  setEditDialogOpen(false);
+                  setEditingRequest(null);
+                }
+              }}
+              className="border-red-300 text-red-600 hover:bg-red-50 sm:mr-auto"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              削除する
+            </Button>
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               キャンセル
             </Button>
