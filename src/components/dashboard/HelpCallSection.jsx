@@ -237,6 +237,7 @@ export default function HelpCallSection({ user }) {
                           </span>
                         </div>
                         <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 break-words">{request.title}</h4>
+                        <p className="text-xs text-slate-500 mb-1">依頼者：{request.created_by_name || request.created_by_email}</p>
                         <div className="space-y-1 text-sm text-slate-600">
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-orange-500 flex-shrink-0" />
