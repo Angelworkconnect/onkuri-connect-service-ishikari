@@ -108,7 +108,8 @@ export default function HelpCallSection({ user }) {
     setEditDialogOpen(true);
   };
 
-  const handleDeleteRequest = (request) => {
+  const handleDeleteRequest = (e, request) => {
+    e.stopPropagation();
     if (window.confirm(`「${request.title}」を削除しますか？`)) {
       deleteRequestMutation.mutate(request.id);
     }
