@@ -275,7 +275,27 @@ export default function HelpCallSection({ user }) {
                             {getDisplayTimeText(request)}
                           </span>
                         </div>
-                        <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 break-words">{request.title}</h4>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 break-words flex-1">{request.title}</h4>
+                          {request.created_by_email === user?.email && (
+                            <div className="flex gap-1 flex-shrink-0">
+                              <button
+                                onClick={() => handleEditRequest(request)}
+                                className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded transition-colors"
+                                title="編集"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteRequest(request)}
+                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                title="削除"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-500 mb-1">依頼者：{request.created_by_name || request.created_by_email}</p>
                         <div className="space-y-1 text-sm text-slate-600">
                           <div className="flex items-center gap-2">
