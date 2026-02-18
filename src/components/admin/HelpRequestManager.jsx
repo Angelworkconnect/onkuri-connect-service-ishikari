@@ -183,9 +183,10 @@ export default function HelpRequestManager({ user, allStaff }) {
           help_request_id: requestId,
         });
 
-        // 同じヘルプコールに挙手した他の全員へ告知（承認・不承認・審査中問わず）
-        const otherResponses = helpResponses.filter(r => r.help_request_id === requestId && r.id !== id);
-        await Promise.all(otherResponses.map(other =>
+        // 全スタッフへ告知（承認された本人以外）
+        const allStaffList = await base44.asServiceRole.entities.Staff.filter({ status: 'active' });
+        const otherStaff = allStaffList.filter(s => s.email !== response.responder_email);
+        await Promise.all(otherStaff.map(staff =>
           base44.entities.Announcement.create({
             title: `ヘルプコール達成のお知らせ`,
             content: `「${requestTitle}」のヘルプコールは ${response.responder_name} さんが助っ人として承認されました。ご協力の姿勢に心より感謝申し上げます。`,
