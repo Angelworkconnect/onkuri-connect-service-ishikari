@@ -236,6 +236,8 @@ export default function HelpCallSection({ user }) {
               const responded = hasResponded(request.id);
               const myResponse = getMyResponseForRequest(request.id);
               const isApproved = myResponse?.status === 'approved';
+              // 承認済み助っ人がいる場合は全員に達成バナーを表示
+              const isAchieved = !!request.approved_responder_name;
 
               return (
                 <motion.div
