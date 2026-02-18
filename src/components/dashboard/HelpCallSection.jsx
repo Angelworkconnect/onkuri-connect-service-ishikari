@@ -39,6 +39,8 @@ export default function HelpCallSection({ user }) {
 
   const [responseMessage, setResponseMessage] = useState('');
   const [myResponsesDialogOpen, setMyResponsesDialogOpen] = useState(false);
+  const [editingRequest, setEditingRequest] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const { data: helpRequests = [] } = useQuery({
     queryKey: ['help-requests'],
