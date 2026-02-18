@@ -102,7 +102,8 @@ export default function HelpCallSection({ user }) {
     },
   });
 
-  const handleEditRequest = (request) => {
+  const handleEditRequest = (e, request) => {
+    e.stopPropagation();
     setEditingRequest({ ...request });
     setEditDialogOpen(true);
   };
