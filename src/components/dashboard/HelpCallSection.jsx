@@ -82,6 +82,43 @@ export default function HelpCallSection({ user }) {
     },
   });
 
+  const updateRequestMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      return base44.entities.HelpRequest.update(id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['help-requests'] });
+      setEditDialogOpen(false);
+      setEditingRequest(null);
+    },
+  });
+
+  const deleteRequestMutation = useMutation({
+    mutationFn: async (id) => {
+      return base44.entities.HelpRequest.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['help-requests'] });
+    },
+  });
+
+  const handleEditRequest = (request) => {
+    setEditingRequest({ ...request });
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteRequest = (request) => {
+    if (window.confirm(`「${request.title}」を削除しますか？`)) {
+      deleteRequestMutation.mutate(request.id);
+    }
+  };
+
+  const handleUpdateRequest = () => {
+    if (!editingRequest) return;
+    const { id, title, description, date, time, location, urgency } = editingRequest;
+    updateRequestMutation.mutate({ id, data: { title, description, date, time, location, urgency } });
+  };
+
   const respondMutation = useMutation({
     mutationFn: async ({ requestId, message }) => {
       const response = await base44.entities.HelpResponse.create({
