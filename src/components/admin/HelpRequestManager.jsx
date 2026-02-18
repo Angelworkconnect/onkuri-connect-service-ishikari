@@ -168,15 +168,31 @@ export default function HelpRequestManager({ user, allStaff }) {
     mutationFn: async ({ id, data }) => {
       await base44.entities.HelpResponse.update(id, data);
       
-      // 承認時のメッセージ送信
+      // 承認時：承認された本人へ個別通知 + 同じヘルプコールに挙手した全員へ告知
       if (data.status === 'approved') {
         const response = helpResponses.find(r => r.id === id);
+        const requestId = response.help_request_id;
+        const request = helpRequests.find(r => r.id === requestId);
+        const requestTitle = request?.title || 'ヘルプコール';
+
+        // 承認された本人への通知
         await base44.entities.Announcement.create({
           title: `ヘルプコール承認通知 - ${response.responder_name}様`,
           content: `${data.admin_message || 'ヘルプコールへの挙手ありがとうございました。承認されました。ご協力をお願いいたします。'}`,
           category: 'general',
-          help_request_id: response.help_request_id,
+          help_request_id: requestId,
         });
+
+        // 同じヘルプコールに挙手した他の全員へ告知（承認・不承認・審査中問わず）
+        const otherResponses = helpResponses.filter(r => r.help_request_id === requestId && r.id !== id);
+        await Promise.all(otherResponses.map(other =>
+          base44.entities.Announcement.create({
+            title: `ヘルプコール達成のお知らせ`,
+            content: `「${requestTitle}」のヘルプコールは ${response.responder_name} さんが助っ人として承認されました。ご協力の姿勢に心より感謝申し上げます。`,
+            category: 'general',
+            help_request_id: requestId,
+          })
+        ));
       }
       
       // 不承認時のメッセージ送信
