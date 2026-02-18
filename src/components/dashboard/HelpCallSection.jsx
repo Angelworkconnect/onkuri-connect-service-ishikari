@@ -376,7 +376,7 @@ export default function HelpCallSection({ user }) {
                             <Sparkles className="w-4 h-4 flex-shrink-0" />
                             <span className="font-medium text-sm sm:text-base">挙手済み (+10pt獲得)</span>
                           </div>
-                        ) : (
+                        ) : !isAchieved ? (
                           <Button
                             onClick={() => handleRespond(request)}
                             className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-500 hover:via-orange-500 hover:to-red-500 text-white font-bold text-base sm:text-lg py-4 sm:py-6 shadow-xl hover:scale-105 transition-all duration-200"
@@ -390,7 +390,7 @@ export default function HelpCallSection({ user }) {
                             </motion.div>
                             <span>✋ 挙手する！（+10pt）</span>
                           </Button>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </Card>
