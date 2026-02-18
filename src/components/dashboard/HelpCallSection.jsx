@@ -282,14 +282,14 @@ export default function HelpCallSection({ user }) {
                           {request.created_by_email === user?.email && (
                             <div className="flex gap-1 flex-shrink-0">
                               <button
-                                onClick={() => handleEditRequest(request)}
+                                onClick={(e) => handleEditRequest(e, request)}
                                 className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded transition-colors"
                                 title="編集"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={() => handleDeleteRequest(request)}
+                                onClick={(e) => handleDeleteRequest(e, request)}
                                 className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                                 title="削除"
                               >
