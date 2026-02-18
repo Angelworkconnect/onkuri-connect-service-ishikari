@@ -560,6 +560,85 @@ export default function HelpCallSection({ user }) {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Request Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>ヘルプ依頼を編集</DialogTitle>
+          </DialogHeader>
+          {editingRequest && (
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">タイトル*</label>
+                <Input
+                  value={editingRequest.title}
+                  onChange={(e) => setEditingRequest({ ...editingRequest, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">詳細内容*</label>
+                <Textarea
+                  value={editingRequest.description}
+                  onChange={(e) => setEditingRequest({ ...editingRequest, description: e.target.value })}
+                  className="h-24"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">希望日*</label>
+                  <Input
+                    type="date"
+                    value={editingRequest.date}
+                    onChange={(e) => setEditingRequest({ ...editingRequest, date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">希望時間</label>
+                  <Input
+                    type="time"
+                    value={editingRequest.time || ''}
+                    onChange={(e) => setEditingRequest({ ...editingRequest, time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">場所</label>
+                <Input
+                  value={editingRequest.location || ''}
+                  onChange={(e) => setEditingRequest({ ...editingRequest, location: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">緊急度</label>
+                <Select value={editingRequest.urgency} onValueChange={(v) => setEditingRequest({ ...editingRequest, urgency: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">低</SelectItem>
+                    <SelectItem value="medium">中</SelectItem>
+                    <SelectItem value="high">高</SelectItem>
+                    <SelectItem value="urgent">緊急</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleUpdateRequest}
+              disabled={!editingRequest?.title || !editingRequest?.description || !editingRequest?.date || updateRequestMutation.isPending}
+              className="bg-blue-500 hover:bg-blue-600"
+            >
+              更新する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Response Dialog */}
       <Dialog open={responseDialogOpen} onOpenChange={setResponseDialogOpen}>
         <DialogContent className="sm:max-w-md">
