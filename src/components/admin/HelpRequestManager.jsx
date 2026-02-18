@@ -56,11 +56,15 @@ export default function HelpRequestManager({ user, allStaff }) {
   const { data: helpRequests = [] } = useQuery({
     queryKey: ['admin-help-requests'],
     queryFn: () => base44.entities.HelpRequest.list('-created_date'),
+    refetchInterval: 5000,
+    staleTime: 0,
   });
 
   const { data: helpResponses = [] } = useQuery({
     queryKey: ['admin-help-responses'],
     queryFn: () => base44.entities.HelpResponse.list('-created_date'),
+    refetchInterval: 5000,
+    staleTime: 0,
   });
 
   const updateRequestMutation = useMutation({
