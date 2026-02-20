@@ -1588,12 +1588,25 @@ export default function AdminPanel() {
                   <TabsContent value="attendance">
                     <div className="space-y-6">
                       <Card className="border-0 shadow-lg p-6 bg-white">
-                        <div className="flex justify-between items-center mb-4">
-                          <h2 className="text-lg font-medium">レポート生成</h2>
-                          <Button onClick={() => setReportDialogOpen(true)} className="bg-[#2D4A6F]">
-                            <Download className="w-4 h-4 mr-2" />
-                            レポート生成
-                          </Button>
+                        <div className="flex flex-wrap justify-between items-center gap-3">
+                          <h2 className="text-lg font-medium">勤怠管理</h2>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              onClick={() => {
+                                setEditingAttendance(null);
+                                setAttendanceForm({ user_email: '', user_name: '', date: new Date().toISOString().split('T')[0], clock_in: '', clock_out: '', status: 'completed' });
+                                setAttendanceDialogOpen(true);
+                              }}
+                              className="bg-[#7CB342] hover:bg-[#6BA232]"
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              勤怠追加
+                            </Button>
+                            <Button onClick={() => setReportDialogOpen(true)} className="bg-[#2D4A6F]">
+                              <Download className="w-4 h-4 mr-2" />
+                              レポート生成
+                            </Button>
+                          </div>
                         </div>
                       </Card>
 
