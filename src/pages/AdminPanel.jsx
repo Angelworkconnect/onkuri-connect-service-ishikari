@@ -3742,14 +3742,14 @@ export default function AdminPanel() {
       <Dialog open={attendanceDialogOpen} onOpenChange={setAttendanceDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>勤怠編集</DialogTitle>
+            <DialogTitle>{editingAttendance ? '勤怠編集' : '勤怠追加'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
               <Label>スタッフ *</Label>
               <Select value={attendanceForm.user_email} onValueChange={(v) => {
-                const staff = allStaff.find(s => s.email === v);
-                setAttendanceForm({...attendanceForm, user_email: v, user_name: staff?.full_name || ''});
+                const staffMember = allStaff.find(s => s.email === v);
+                setAttendanceForm({...attendanceForm, user_email: v, user_name: staffMember?.full_name || ''});
               }}>
                 <SelectTrigger><SelectValue placeholder="スタッフを選択" /></SelectTrigger>
                 <SelectContent>
@@ -3775,7 +3775,7 @@ export default function AdminPanel() {
             </div>
             <div>
               <Label>状態 *</Label>
-              <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v, clock_out: v === 'working' ? '' : attendanceForm.clock_out})}>
+              <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="working">勤務中</SelectItem>
@@ -3786,20 +3786,28 @@ export default function AdminPanel() {
             </div>
           </div>
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              className="text-red-600 hover:bg-red-50 mr-auto"
-              onClick={() => {
-                if (confirm('この勤怠記録を削除してもよろしいですか？')) {
-                  deleteAttendanceMutation.mutate(editingAttendance.id);
-                }
-              }}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              削除
-            </Button>
+            {editingAttendance && (
+              <Button 
+                variant="outline" 
+                className="text-red-600 hover:bg-red-50 mr-auto"
+                onClick={() => {
+                  if (confirm('この勤怠記録を削除してもよろしいですか？')) {
+                    deleteAttendanceMutation.mutate(editingAttendance.id);
+                  }
+                }}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                削除
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setAttendanceDialogOpen(false)}>キャンセル</Button>
-            <Button onClick={handleSubmitAttendance} className="bg-[#2D4A6F]">更新</Button>
+            <Button 
+              onClick={handleSubmitAttendance} 
+              className="bg-[#2D4A6F]"
+              disabled={!attendanceForm.user_email || !attendanceForm.date || (createAttendanceMutation.isPending || updateAttendanceMutation.isPending)}
+            >
+              {editingAttendance ? '更新' : '追加'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
