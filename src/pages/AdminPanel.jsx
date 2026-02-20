@@ -998,8 +998,25 @@ export default function AdminPanel() {
     setAttendanceDialogOpen(true);
   };
 
+  const createAttendanceMutation = useMutation({
+    mutationFn: (data) => base44.entities.Attendance.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-attendance']);
+      setAttendanceDialogOpen(false);
+      resetAttendanceForm();
+    },
+  });
+
   const handleSubmitAttendance = () => {
-    updateAttendanceMutation.mutate({ id: editingAttendance.id, data: attendanceForm });
+    if (editingAttendance) {
+      updateAttendanceMutation.mutate({ id: editingAttendance.id, data: attendanceForm });
+    } else {
+      const staffMember = allStaff.find(s => s.email === attendanceForm.user_email);
+      createAttendanceMutation.mutate({
+        ...attendanceForm,
+        user_name: staffMember?.full_name || attendanceForm.user_email,
+      });
+    }
   };
 
   const getStaffName = (userEmail) => {
