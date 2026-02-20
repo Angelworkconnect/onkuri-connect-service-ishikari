@@ -1813,9 +1813,14 @@ export default function AdminPanel() {
                                                   </Badge>
                                                 </TableCell>
                                                 <TableCell>
-                                                  <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
-                                                    <Edit className="w-4 h-4" />
-                                                  </Button>
+                                                  <div className="flex gap-1">
+                                                    <Button variant="ghost" size="icon" onClick={() => handleEditAttendance(record)}>
+                                                      <Edit className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteAttendanceMutation.mutate(record.id); }}>
+                                                      <Trash2 className="w-4 h-4 text-red-500" />
+                                                    </Button>
+                                                  </div>
                                                 </TableCell>
                                               </TableRow>
                                             );
