@@ -106,8 +106,14 @@ export default function AttendanceCalendar({ attendanceRecords, staff }) {
                 </div>
                 <div className="space-y-0.5 overflow-y-auto flex-1 max-h-[80px]">
                   {dayAttendance.map((record) => (
-                    <div key={record.id} className="bg-slate-50 rounded px-1 py-0.5 border border-slate-100">
-                      <div className="font-medium text-slate-700 truncate text-[10px]">{getStaffName(record.user_email)}</div>
+                    <div key={record.id} className={`rounded px-1 py-0.5 border ${
+                      record.status === 'working'
+                        ? 'bg-green-50 border-green-200'
+                        : record.status === 'approved'
+                        ? 'bg-blue-50 border-blue-100'
+                        : 'bg-slate-50 border-slate-100'
+                    }`}>
+                      <div className={`font-medium truncate text-[10px] ${record.status === 'working' ? 'text-green-700' : 'text-slate-700'}`}>{getStaffName(record.user_email)}</div>
                       <div className="text-slate-400 text-[9px]">{record.clock_in || '未'} 〜 {record.clock_out || '未'}</div>
                     </div>
                   ))}
