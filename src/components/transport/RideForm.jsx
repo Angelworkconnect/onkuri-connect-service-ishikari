@@ -408,7 +408,14 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
              <div className="flex flex-wrap gap-2 mb-3">
                {(() => {
                  const currentPassengerNames = new Set(passengers.map(p => p.clientName).filter(n => n.trim()));
-                 return clients.filter(c => !currentPassengerNames.has(c.name)).map(c => {
+                 const bookedInThisTrip = new Set();
+                 todayRides.forEach(ride => {
+                   if (ride.id !== editingRide?.id && ride.tripType === form.tripType) {
+                     const ridePassengers = ridePassengersMap[ride.id] || [];
+                     ridePassengers.forEach(p => bookedInThisTrip.add(p.clientName));
+                   }
+                 });
+                 return clients.filter(c => !currentPassengerNames.has(c.name) && !bookedInThisTrip.has(c.name)).map(c => {
                    const bgColor = c.gender === 'male' ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100' : c.gender === 'female' ? 'bg-pink-50 border-pink-300 text-pink-700 hover:bg-pink-100' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100';
                    return (
                      <button key={c.id} onClick={() => addClientPassenger(c.name)} className={`text-xs px-3 py-1.5 rounded-lg border-2 font-medium transition-all ${bgColor}`}>
