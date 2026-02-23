@@ -11,8 +11,6 @@ import PreCheckForm from '../components/transport/PreCheckForm';
 import DriverCheckForm from '../components/transport/DriverCheckForm';
 import { format } from 'date-fns';
 
-const today = new Date().toISOString().split('T')[0];
-
 const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
 const statusBadge = (s) => {
   if (s === 'APPROVED') return <Badge className="bg-green-100 text-green-700">承認済</Badge>;
