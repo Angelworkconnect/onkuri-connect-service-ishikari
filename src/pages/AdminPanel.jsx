@@ -36,6 +36,7 @@ import {
         Eye, EyeOff, Sparkles, Settings, Gift, MessageCircle, Send, Truck
       } from "lucide-react";
 import { createPageUrl } from '@/utils';
+import { Link } from 'react-router-dom';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
