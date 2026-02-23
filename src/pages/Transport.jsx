@@ -198,26 +198,34 @@ export default function Transport() {
     (form.abnormality === 'NONE' || form.abnormalityNote.trim());
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-50">
+    <div className="min-h-screen bg-slate-100">
       {/* ヘッダー */}
-      <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white px-4 pt-6 pb-10 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 text-9xl flex items-center justify-end pr-8">🚌</div>
+      <div className="bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 text-white px-4 pt-8 pb-16 relative overflow-hidden">
+        {/* 装飾 */}
+        <div className="absolute -top-8 -right-8 w-48 h-48 bg-white/10 rounded-full" />
+        <div className="absolute top-4 right-16 w-24 h-24 bg-yellow-400/20 rounded-full" />
+        <div className="absolute -bottom-6 -left-6 w-36 h-36 bg-pink-400/20 rounded-full" />
         <div className="relative max-w-2xl mx-auto">
-          <p className="text-blue-100 text-sm">{greeting}</p>
-          <h1 className="text-2xl font-bold">{user?.full_name || 'スタッフ'} さん</h1>
-          <p className="text-blue-200 text-sm">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {[
-              { label: '今日の送迎', value: todayRides.length },
-              { label: '承認待ち', value: todayRides.filter(r => r.status === 'SUBMITTED').length },
-              { label: '承認済み', value: todayRides.filter(r => r.status === 'APPROVED').length },
-            ].map(({ label, value }) => (
-              <div key={label} className="bg-white/20 backdrop-blur rounded-xl p-2.5 text-center">
-                <p className="text-2xl font-bold">{value}</p>
-                <p className="text-xs text-blue-100">{label}</p>
-              </div>
-            ))}
-          </div>
+          <p className="text-violet-200 text-sm font-medium">{greeting}</p>
+          <h1 className="text-3xl font-black tracking-tight mt-1">{user?.full_name || 'スタッフ'} <span className="text-yellow-300">さん</span></h1>
+          <p className="text-blue-200 text-sm mt-1">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
+        </div>
+      </div>
+
+      {/* 統計カード（ヘッダーの外に出す） */}
+      <div className="max-w-2xl mx-auto px-4 -mt-8">
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: '今日の送迎', value: todayRides.length, color: 'from-blue-500 to-blue-600', icon: '🚌' },
+            { label: '承認待ち', value: todayRides.filter(r => r.status === 'SUBMITTED').length, color: 'from-amber-400 to-orange-500', icon: '⏳' },
+            { label: '承認済み', value: todayRides.filter(r => r.status === 'APPROVED').length, color: 'from-emerald-400 to-green-600', icon: '✅' },
+          ].map(({ label, value, color, icon }) => (
+            <div key={label} className={`bg-gradient-to-br ${color} rounded-2xl p-3 text-center shadow-lg`}>
+              <div className="text-xl mb-1">{icon}</div>
+              <p className="text-2xl font-black text-white">{value}</p>
+              <p className="text-xs text-white/80 font-medium">{label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
