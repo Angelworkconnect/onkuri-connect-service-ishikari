@@ -221,16 +221,17 @@ export default function TransportAdmin() {
 
       <div className="max-w-5xl mx-auto px-4 py-5">
         <Tabs defaultValue="approval">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800 border border-slate-700">
-            <TabsTrigger value="approval" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400">
+          <TabsList className="grid w-full grid-cols-5 bg-slate-800 border border-slate-700">
+            <TabsTrigger value="approval" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400 text-xs">
               承認待ち
               {submittedRides.length > 0 && (
-                <span className="ml-1.5 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{submittedRides.length}</span>
+                <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{submittedRides.length}</span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="checks" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400">点検記録</TabsTrigger>
-            <TabsTrigger value="vehicles" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400">車両管理</TabsTrigger>
-            <TabsTrigger value="templates" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400">ルートテンプレ</TabsTrigger>
+            <TabsTrigger value="checks" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400 text-xs">点検記録</TabsTrigger>
+            <TabsTrigger value="vehicles" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400 text-xs">車両管理</TabsTrigger>
+            <TabsTrigger value="templates" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400 text-xs">ルート</TabsTrigger>
+            <TabsTrigger value="export" className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-slate-400 text-xs">PDF出力</TabsTrigger>
           </TabsList>
 
           {/* ===== 承認待ち ===== */}

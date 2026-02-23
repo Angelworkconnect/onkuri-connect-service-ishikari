@@ -135,20 +135,13 @@ export default function TransportDashboard() {
               <h1 className="text-2xl font-bold tracking-tight">{user?.full_name || 'スタッフ'} さん</h1>
               <p className="text-blue-200 text-sm mt-0.5">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
             </div>
-            <div className="flex flex-col gap-1.5">
-              {isAdmin && (
-                <Link to={createPageUrl('TransportAdmin')}>
-                  <button className="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all">
-                    <Settings className="w-3 h-3" />管理
-                  </button>
-                </Link>
-              )}
-              <Link to={createPageUrl('TransportExport')}>
+            {isAdmin && (
+              <Link to={createPageUrl('TransportAdmin')}>
                 <button className="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all">
-                  <FileText className="w-3 h-3" />PDF
+                  <Settings className="w-3 h-3" />管理センター
                 </button>
               </Link>
-            </div>
+            )}
           </div>
 
           {/* 今日のカウンター */}
