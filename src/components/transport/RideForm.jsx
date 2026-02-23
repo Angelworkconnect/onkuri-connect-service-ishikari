@@ -327,10 +327,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
               </div>
               <div>
                 <label className="text-xs font-bold text-slate-600 mb-1 block">便種別 *</label>
-                <Select value={form.tripType} onValueChange={v => {
-                  setForm(f => ({ ...f, tripType: v }));
-                  setPassengers([]);
-                }}>
+                <Select value={form.tripType} onValueChange={v => setForm(f => ({ ...f, tripType: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PICKUP">🌅 朝便（迎え）</SelectItem>
