@@ -24,7 +24,7 @@ export default function Transport() {
   const [mode, setMode] = useState(null); // 'ride' | 'precheck' | 'drivercheck'
   const [editingRide, setEditingRide] = useState(null);
   const [selectedRidePassengers, setSelectedRidePassengers] = useState(null);
-  const [today, setToday] = useState(() => new Date().toISOString().split('T')[0]);
+  const [today, setToday] = useState(() => new Date(Date.now() + 9*3600000).toISOString().split('T')[0]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -42,14 +42,15 @@ export default function Transport() {
   useEffect(() => {
     const timer = setInterval(() => {
       const newToday = new Date().toISOString().split('T')[0];
-      setToday(prevToday => {
-        if (prevToday !== newToday) {
-          queryClient.invalidateQueries({ queryKey: ['transport-today'] });
-          queryClient.invalidateQueries({ queryKey: ['transport-precheck-today'] });
-          queryClient.invalidateQueries({ queryKey: ['transport-drivercheck-today'] });
-        }
-        return newToday;
-      });
+      const currentToday = new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
+          setToday(prevToday => {
+            if (prevToday !== currentToday) {
+              queryClient.invalidateQueries({ queryKey: ['transport-today'] });
+              queryClient.invalidateQueries({ queryKey: ['transport-precheck-today'] });
+              queryClient.invalidateQueries({ queryKey: ['transport-drivercheck-today'] });
+            }
+            return currentToday;
+          });
     }, 60000);
     return () => clearInterval(timer);
   }, [queryClient]);
