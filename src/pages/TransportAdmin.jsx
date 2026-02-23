@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -32,6 +32,20 @@ export default function TransportAdmin() {
   const [ridePassengers, setRidePassengers] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  // PDF出力用state
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const [dateFrom, setDateFrom] = useState(today);
+  const [dateTo, setDateTo] = useState(today);
+  const [filterVehicleId, setFilterVehicleId] = useState('all');
+  const [filterTripType, setFilterTripType] = useState('all');
+  const [exportMode, setExportMode] = useState('daily');
+  const [ridesData, setRidesData] = useState(null);
+  const [passengersMap, setPassengersMap] = useState({});
+  const [preChecksData, setPreChecksData] = useState([]);
+  const [driverChecksData, setDriverChecksData] = useState([]);
+  const [isExportLoading, setIsExportLoading] = useState(false);
+  const printAreaRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(async (u) => {
