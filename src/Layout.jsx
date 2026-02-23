@@ -19,9 +19,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { 
-  Home, Calendar, Clock, FileText, Users, 
-  Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell
-} from "lucide-react";
+        Home, Calendar, Clock, FileText, Users, 
+        Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell, Truck
+      } from "lucide-react";
 import NotificationBell from './components/notifications/NotificationBell';
 
 const navigation = [
