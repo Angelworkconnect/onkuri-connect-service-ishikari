@@ -32,7 +32,8 @@ const navigation = [
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
-];
+  { name: '送迎管理', href: 'TransportDashboard', icon: Truck },
+  ];
 
 const settingsNavigation = [
   { name: '通知設定', href: 'NotificationSettings' },
