@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Plus, CheckCircle2, Clock, Truck, AlertTriangle, ClipboardCheck, User } from 'lucide-react';
+import { Plus, CheckCircle2, Clock, Truck, AlertTriangle, ClipboardCheck, User, Trash2 } from 'lucide-react';
 import RideForm from '../components/transport/RideForm';
 import PreCheckForm from '../components/transport/PreCheckForm';
 import DriverCheckForm from '../components/transport/DriverCheckForm';
@@ -80,6 +80,14 @@ export default function Transport() {
     queryFn: () => base44.entities.DriverDailyCheck.filter({ date: today, driverEmail: user.email }),
     enabled: !!user,
     select: (data) => data[0] || null,
+  });
+
+  const deleteRideMutation = useMutation({
+    mutationFn: (id) => base44.entities.Ride.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['transport-today']);
+      queryClient.invalidateQueries(['transport-my']);
+    },
   });
 
   const handleSaved = () => {
@@ -234,9 +242,14 @@ export default function Transport() {
                         {ride.date} {ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ''}
                       </p>
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => { setEditingRide(ride); setMode('ride'); }}>
-                      編集
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => { setEditingRide(ride); setMode('ride'); }}>
+                        編集
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}>
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))}
