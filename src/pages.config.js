@@ -67,6 +67,7 @@ import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
 import VersionCheck from './pages/VersionCheck';
+import TransportDashboard from './pages/TransportDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -91,6 +92,7 @@ export const PAGES = {
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
     "VersionCheck": VersionCheck,
+    "TransportDashboard": TransportDashboard,
 }
 
 export const pagesConfig = {
