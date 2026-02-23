@@ -556,7 +556,7 @@ export default function TransportAdmin() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setVehicleDialog(false)}>キャンセル</Button>
-            <Button className="bg-[#2D4A6F]" disabled={!vehicleForm.name || !vehicleForm.plateNumber} onClick={() => saveVehicleMutation.mutate({ ...vehicleForm, capacity: vehicleForm.capacity ? Number(vehicleForm.capacity) : undefined })}>
+            <Button className="bg-[#2D4A6F]" disabled={!vehicleForm.name || !vehicleForm.plateNumber} onClick={() => saveVehicleMutation.mutate({ ...vehicleForm, capacityRegular: vehicleForm.capacityRegular ? Number(vehicleForm.capacityRegular) : undefined, capacityWithWheelchair: vehicleForm.capacityWithWheelchair ? Number(vehicleForm.capacityWithWheelchair) : undefined })}>
               {editingVehicle ? '更新' : '登録'}
             </Button>
           </DialogFooter>
