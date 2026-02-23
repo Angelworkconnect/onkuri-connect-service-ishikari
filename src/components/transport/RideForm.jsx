@@ -99,6 +99,11 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   };
 
   const addClientPassenger = (clientName) => {
+    const alreadyAdded = passengers.some(p => p.clientName === clientName);
+    if (alreadyAdded) {
+      alert(`${clientName}さんは既に追加されています`);
+      return;
+    }
     setPassengers(prev => [...prev, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
   };
   const removePassenger = (i) => setPassengers(prev => prev.filter((_, idx) => idx !== i));
