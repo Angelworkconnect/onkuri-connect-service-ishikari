@@ -3,13 +3,12 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, CheckCircle, Car, Clock, MapPin, Users, Plus, ChevronRight, FileText, Settings, AlertCircle, Truck } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Car, Clock, Plus, FileText, Settings, AlertCircle, Truck, Sun, Moon, Users, ChevronRight, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import RideFormDialog from '@/components/transport/RideFormDialog.jsx';
@@ -18,8 +17,8 @@ import VehicleCheckDialog from '@/components/transport/VehicleCheckDialog.jsx';
 
 const today = format(new Date(), 'yyyy-MM-dd');
 const tripTypeLabel = { PICKUP: '朝便（迎え）', DROPOFF: '帰便（送り）', OTHER: 'その他' };
-const statusColor = { DRAFT: 'bg-yellow-100 text-yellow-700', SUBMITTED: 'bg-blue-100 text-blue-700', APPROVED: 'bg-green-100 text-green-700' };
-const statusLabel = { DRAFT: '下書き', SUBMITTED: '提出済', APPROVED: '承認済' };
+const statusColor = { DRAFT: 'bg-yellow-100 text-yellow-700 border-yellow-200', SUBMITTED: 'bg-blue-100 text-blue-700 border-blue-200', APPROVED: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+const statusLabel = { DRAFT: '記録中', SUBMITTED: '提出済', APPROVED: '✓ 承認済' };
 
 export default function TransportDashboard() {
   const [user, setUser] = useState(null);
@@ -87,7 +86,6 @@ export default function TransportDashboard() {
         abnormalityNote: data.abnormalityNote,
         status: 'SUBMITTED',
       });
-      // 管理者に通知
       const admins = await base44.entities.Staff.filter({ role: 'admin' });
       await Promise.all(admins.map(admin =>
         base44.entities.Notification.create({
@@ -111,172 +109,220 @@ export default function TransportDashboard() {
 
   const openEndDialog = (ride) => {
     setEndingRide(ride);
-    setEndForm({
-      endTime: format(new Date(), 'HH:mm'),
-      endOdometerKm: '',
-      abnormality: 'NONE',
-      abnormalityNote: '',
-    });
+    setEndForm({ endTime: format(new Date(), 'HH:mm'), endOdometerKm: '', abnormality: 'NONE', abnormalityNote: '' });
     setEndDialogOpen(true);
   };
 
   const driverChecked = todayDriverCheck.length > 0;
-  const checkedVehicleIds = new Set(todayVehicleChecks.map(c => c.vehicleId));
   const submittedCount = submittedRides.length;
   const draftRides = todayRides.filter(r => r.status === 'DRAFT');
   const submittedToday = todayRides.filter(r => r.status === 'SUBMITTED').length;
   const approvedToday = todayRides.filter(r => r.status === 'APPROVED').length;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? '😊 おはようございます' : hour < 17 ? '☀️ こんにちは' : '🌙 おつかれさまです';
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <Truck className="w-6 h-6 text-blue-600" />
-            送迎運行管理
-          </h1>
-          <p className="text-sm text-slate-500">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-blue-50 to-indigo-50">
+      {/* カラフルヘッダー */}
+      <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white px-4 pt-6 pb-10 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-2 right-10 text-9xl">🚌</div>
         </div>
-        <div className="flex gap-2">
-          {isAdmin && (
-            <Link to={createPageUrl('TransportAdmin')}>
-              <Button variant="outline" size="sm"><Settings className="w-4 h-4 mr-1" />管理</Button>
-            </Link>
-          )}
-          <Link to={createPageUrl('TransportExport')}>
-            <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-1" />PDF出力</Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* 警告バナー */}
-      {!driverChecked && (
-        <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-amber-800">運転者健康確認が未実施です</p>
+        <div className="relative max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-blue-100 text-sm">{greeting}</p>
+              <h1 className="text-2xl font-bold tracking-tight">{user?.full_name || 'スタッフ'} さん</h1>
+              <p className="text-blue-200 text-sm mt-0.5">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {isAdmin && (
+                <Link to={createPageUrl('TransportAdmin')}>
+                  <button className="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all">
+                    <Settings className="w-3 h-3" />管理
+                  </button>
+                </Link>
+              )}
+              <Link to={createPageUrl('TransportExport')}>
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all">
+                  <FileText className="w-3 h-3" />PDF
+                </button>
+              </Link>
+            </div>
           </div>
-          <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => setDriverCheckOpen(true)}>
-            確認する
-          </Button>
-        </div>
-      )}
 
-      {/* 統計カード */}
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-slate-800">{todayRides.length}</p>
-            <p className="text-xs text-slate-500">今日の運行</p>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-blue-600">{submittedToday}</p>
-            <p className="text-xs text-slate-500">提出済み</p>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 text-center">
-            <p className="text-2xl font-bold text-green-600">{approvedToday}</p>
-            <p className="text-xs text-slate-500">承認済み</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* 新規運行 */}
-      <div className="grid grid-cols-2 gap-3">
-        <Button
-          className="h-16 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md flex-col gap-1"
-          onClick={() => { setEditingRide(null); setRideDialogOpen(true); }}
-        >
-          <Plus className="w-5 h-5" />
-          <span className="text-sm font-bold">新規運行を開始</span>
-        </Button>
-        <div className="grid grid-cols-1 gap-2">
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setDriverCheckOpen(true)}>
-            {driverChecked ? <CheckCircle className="w-3 h-3 mr-1 text-green-500" /> : <AlertCircle className="w-3 h-3 mr-1 text-amber-500" />}
-            運転者確認
-          </Button>
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setVehicleCheckOpen(true)}>
-            <Car className="w-3 h-3 mr-1" />
-            車両点検記録
-          </Button>
-        </div>
-      </div>
-
-      {/* 進行中・今日の運行 */}
-      {draftRides.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50 shadow-sm">
-          <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-sm font-bold text-orange-700">🚌 進行中の運行（完了報告が必要）</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 space-y-2">
-            {draftRides.map(ride => (
-              <div key={ride.id} className="bg-white rounded-lg p-3 flex items-center justify-between shadow-sm">
-                <div>
-                  <p className="font-medium text-sm text-slate-800">{tripTypeLabel[ride.tripType]}</p>
-                  <p className="text-xs text-slate-500">{ride.vehicleName} / {ride.driverName} / 出発 {ride.startTime}</p>
-                </div>
-                <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
-                  onClick={() => openEndDialog(ride)}>
-                  完了報告
-                </Button>
+          {/* 今日のカウンター */}
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            {[
+              { label: '今日の運行', value: todayRides.length, color: 'bg-white/20' },
+              { label: '提出済み', value: submittedToday, color: 'bg-white/20' },
+              { label: '承認済み', value: approvedToday, color: 'bg-emerald-400/30' },
+            ].map(({ label, value, color }) => (
+              <div key={label} className={`${color} backdrop-blur rounded-xl p-2.5 text-center`}>
+                <p className="text-2xl font-bold">{value}</p>
+                <p className="text-xs text-blue-100">{label}</p>
               </div>
             ))}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </div>
+      </div>
 
-      {/* 今日の全運行 */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-bold text-slate-700">今日の運行記録</CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 pb-4 space-y-2">
-          {todayRides.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-4">今日の運行はまだありません</p>
-          ) : (
-            todayRides.map(ride => (
-              <div key={ride.id} className="border rounded-lg p-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-slate-800">{tripTypeLabel[ride.tripType]}</span>
-                      <Badge className={`text-xs px-2 py-0 ${statusColor[ride.status]}`}>{statusLabel[ride.status]}</Badge>
-                      {ride.abnormality !== 'NONE' && <Badge className="text-xs px-2 py-0 bg-red-100 text-red-700">要注意</Badge>}
-                    </div>
-                    <p className="text-xs text-slate-500">
-                      {ride.vehicleName} / {ride.driverName} / {ride.startTime}{ride.endTime ? `〜${ride.endTime}` : ''} / {ride.distanceKm ? `${ride.distanceKm}km` : '走行中'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => { setEditingRide(ride); setRideDialogOpen(true); }}>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+      <div className="max-w-2xl mx-auto px-4 -mt-4 space-y-4 pb-10">
 
-      {/* 管理者：承認待ち */}
-      {isAdmin && submittedCount > 0 && (
-        <Card className="border-blue-200 bg-blue-50 shadow-sm">
-          <CardContent className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium text-blue-700">承認待ちの運行が {submittedCount} 件あります</span>
+        {/* 警告バナー */}
+        {!driverChecked && (
+          <div className="bg-amber-400 rounded-2xl p-4 flex items-center gap-3 shadow-lg shadow-amber-200">
+            <div className="bg-white/30 rounded-full p-2">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 text-white">
+              <p className="font-bold text-sm">運転者健康確認が未実施！</p>
+              <p className="text-xs text-amber-100">運行前に必ず確認してください</p>
+            </div>
+            <button
+              className="bg-white text-amber-600 font-bold text-xs px-3 py-1.5 rounded-full shadow"
+              onClick={() => setDriverCheckOpen(true)}
+            >
+              今すぐ確認
+            </button>
+          </div>
+        )}
+
+        {/* 承認待ち（管理者） */}
+        {isAdmin && submittedCount > 0 && (
+          <div className="bg-blue-600 rounded-2xl p-4 flex items-center gap-3 shadow-lg shadow-blue-200">
+            <div className="bg-white/20 rounded-full p-2">
+              <AlertCircle className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 text-white">
+              <p className="font-bold text-sm">承認待ち：{submittedCount}件</p>
+              <p className="text-xs text-blue-200">スタッフからの提出があります</p>
             </div>
             <Link to={createPageUrl('TransportAdmin')}>
-              <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white text-xs">承認する</Button>
+              <button className="bg-white text-blue-600 font-bold text-xs px-3 py-1.5 rounded-full shadow">承認する</button>
             </Link>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+
+        {/* 進行中の運行 */}
+        {draftRides.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border-2 border-orange-200">
+            <div className="bg-gradient-to-r from-orange-400 to-red-400 px-4 py-2.5 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-white" />
+              <span className="text-white font-bold text-sm">進行中の運行 — 完了報告してください</span>
+            </div>
+            <div className="p-3 space-y-2">
+              {draftRides.map(ride => (
+                <div key={ride.id} className="flex items-center justify-between bg-orange-50 rounded-xl p-3 border border-orange-100">
+                  <div>
+                    <p className="font-bold text-sm text-slate-800">{tripTypeLabel[ride.tripType]}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">🚌 {ride.vehicleName}｜🕐 出発 {ride.startTime}</p>
+                  </div>
+                  <button
+                    className="bg-gradient-to-r from-orange-400 to-red-400 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-sm"
+                    onClick={() => openEndDialog(ride)}
+                  >
+                    完了報告
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* メインアクションボタン */}
+        <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">アクション</p>
+          {/* 新規運行ボタン（大） */}
+          <button
+            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-2xl p-5 flex items-center gap-4 shadow-md shadow-blue-200 transition-all active:scale-98"
+            onClick={() => { setEditingRide(null); setRideDialogOpen(true); }}
+          >
+            <div className="bg-white/20 rounded-2xl p-3">
+              <Plus className="w-8 h-8" />
+            </div>
+            <div className="text-left">
+              <p className="text-xl font-bold">新規運行を開始</p>
+              <p className="text-blue-100 text-sm">テンプレを選ぶだけ！1分で完了</p>
+            </div>
+          </button>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              className={`flex items-center gap-3 rounded-2xl p-4 border-2 transition-all ${driverChecked ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'}`}
+              onClick={() => setDriverCheckOpen(true)}
+            >
+              <div className={`rounded-full p-2 ${driverChecked ? 'bg-emerald-100' : 'bg-amber-100'}`}>
+                {driverChecked
+                  ? <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  : <AlertCircle className="w-5 h-5 text-amber-500" />
+                }
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-slate-500">健康確認</p>
+                <p className={`text-sm font-bold ${driverChecked ? 'text-emerald-700' : 'text-amber-700'}`}>
+                  {driverChecked ? '完了 ✓' : '未実施'}
+                </p>
+              </div>
+            </button>
+
+            <button
+              className="flex items-center gap-3 rounded-2xl p-4 border-2 border-slate-200 bg-slate-50 transition-all hover:border-blue-200 hover:bg-blue-50"
+              onClick={() => setVehicleCheckOpen(true)}
+            >
+              <div className="bg-slate-100 rounded-full p-2">
+                <Car className="w-5 h-5 text-slate-500" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-slate-500">車両点検</p>
+                <p className="text-sm font-bold text-slate-700">記録する</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* 今日の運行記録 */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-4 py-3 border-b bg-slate-50 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-slate-400" />
+            <span className="text-sm font-bold text-slate-600">今日の運行記録</span>
+          </div>
+          {todayRides.length === 0 ? (
+            <div className="py-10 text-center">
+              <p className="text-4xl mb-2">🚌</p>
+              <p className="text-slate-400 text-sm">まだ運行記録がありません</p>
+            </div>
+          ) : (
+            <div className="divide-y">
+              {todayRides.map(ride => (
+                <div key={ride.id} className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-bold text-slate-800">{tripTypeLabel[ride.tripType]}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${statusColor[ride.status]}`}>
+                        {statusLabel[ride.status]}
+                      </span>
+                      {ride.abnormality !== 'NONE' && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 border border-red-200 font-medium">⚠ 要注意</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      🚌 {ride.vehicleName}｜👤 {ride.driverName}｜🕐 {ride.startTime}{ride.endTime ? `〜${ride.endTime}` : ''}
+                      {ride.distanceKm ? `｜📍 ${ride.distanceKm}km` : ''}
+                    </p>
+                  </div>
+                  <button
+                    className="text-slate-300 hover:text-blue-500 transition-colors"
+                    onClick={() => { setEditingRide(ride); setRideDialogOpen(true); }}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* ダイアログ群 */}
       <RideFormDialog
@@ -309,58 +355,65 @@ export default function TransportDashboard() {
       <Dialog open={endDialogOpen} onOpenChange={setEndDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>運行完了報告</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-2xl">🏁</span> 運行完了報告
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {endingRide && (
-              <div className="bg-slate-50 rounded-lg p-3 text-sm">
-                <p className="font-medium">{tripTypeLabel[endingRide.tripType]}</p>
-                <p className="text-slate-500">{endingRide.vehicleName} / 出発 {endingRide.startTime} / 開始メーター {endingRide.startOdometerKm}km</p>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                <p className="font-bold text-blue-800">{tripTypeLabel[endingRide.tripType]}</p>
+                <p className="text-xs text-slate-500 mt-0.5">🚌 {endingRide.vehicleName}｜出発 {endingRide.startTime}｜開始 {endingRide.startOdometerKm}km</p>
               </div>
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-700 mb-1 block">到着時刻 *</label>
-                <Input type="time" value={endForm.endTime} onChange={e => setEndForm({ ...endForm, endTime: e.target.value })} />
+                <label className="text-xs font-bold text-slate-600 mb-1 block">🕐 到着時刻 *</label>
+                <Input type="time" value={endForm.endTime} onChange={e => setEndForm({ ...endForm, endTime: e.target.value })}
+                  className="border-2 focus:border-blue-400" />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-700 mb-1 block">終了メーター (km) *</label>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">📍 終了メーター(km) *</label>
                 <Input type="number" placeholder="例: 12345" value={endForm.endOdometerKm}
-                  onChange={e => setEndForm({ ...endForm, endOdometerKm: e.target.value })} />
+                  onChange={e => setEndForm({ ...endForm, endOdometerKm: e.target.value })}
+                  className="border-2 focus:border-blue-400" />
               </div>
             </div>
             {endForm.endOdometerKm && endingRide?.startOdometerKm && (
-              <div className="bg-green-50 rounded p-2 text-sm text-green-700 text-center">
-                走行距離：{Math.max(0, parseFloat(endForm.endOdometerKm) - parseFloat(endingRide.startOdometerKm)).toFixed(1)} km
+              <div className="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-200">
+                <p className="text-emerald-700 font-bold text-lg">
+                  走行距離：{Math.max(0, parseFloat(endForm.endOdometerKm) - parseFloat(endingRide.startOdometerKm)).toFixed(1)} km
+                </p>
               </div>
             )}
             <div>
-              <label className="text-xs font-medium text-slate-700 mb-1 block">異常の有無</label>
+              <label className="text-xs font-bold text-slate-600 mb-1 block">異常の有無</label>
               <Select value={endForm.abnormality} onValueChange={v => setEndForm({ ...endForm, abnormality: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="border-2"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="NONE">なし</SelectItem>
-                  <SelectItem value="MINOR">軽微な異常あり</SelectItem>
-                  <SelectItem value="ACCIDENT">事故・重大事故</SelectItem>
+                  <SelectItem value="NONE">✅ 異常なし</SelectItem>
+                  <SelectItem value="MINOR">⚠️ 軽微な異常あり</SelectItem>
+                  <SelectItem value="ACCIDENT">🚨 事故・重大事故</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {endForm.abnormality !== 'NONE' && (
               <div>
-                <label className="text-xs font-medium text-slate-700 mb-1 block">異常内容</label>
-                <Input placeholder="異常の詳細を入力" value={endForm.abnormalityNote}
-                  onChange={e => setEndForm({ ...endForm, abnormalityNote: e.target.value })} />
+                <label className="text-xs font-bold text-slate-600 mb-1 block">異常内容 *</label>
+                <Input placeholder="異常の詳細を入力してください" value={endForm.abnormalityNote}
+                  onChange={e => setEndForm({ ...endForm, abnormalityNote: e.target.value })}
+                  className="border-2 border-red-200 focus:border-red-400" />
               </div>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEndDialogOpen(false)}>キャンセル</Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold"
               disabled={!endForm.endTime || !endForm.endOdometerKm || endRideMutation.isPending}
               onClick={() => endRideMutation.mutate({ rideId: endingRide.id, data: endForm })}
             >
-              完了・提出
+              {endRideMutation.isPending ? '送信中...' : '完了・提出する'}
             </Button>
           </DialogFooter>
         </DialogContent>

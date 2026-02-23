@@ -66,8 +66,8 @@ import Shifts from './pages/Shifts';
 import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
 import TipsHistory from './pages/TipsHistory';
-import VersionCheck from './pages/VersionCheck';
 import TransportDashboard from './pages/TransportDashboard';
+import VersionCheck from './pages/VersionCheck';
 import TransportAdmin from './pages/TransportAdmin';
 import TransportExport from './pages/TransportExport';
 import __Layout from './Layout.jsx';
@@ -93,8 +93,8 @@ export const PAGES = {
     "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
     "TipsHistory": TipsHistory,
-    "VersionCheck": VersionCheck,
     "TransportDashboard": TransportDashboard,
+    "VersionCheck": VersionCheck,
     "TransportAdmin": TransportAdmin,
     "TransportExport": TransportExport,
 }
