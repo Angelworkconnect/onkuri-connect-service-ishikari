@@ -320,7 +320,7 @@ export default function Transport() {
 
       {/* 送迎入力ダイアログ */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" style={{zIndex: 9999}}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <span className="text-xl">🚌</span> 送迎記録入力
