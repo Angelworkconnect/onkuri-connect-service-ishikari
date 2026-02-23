@@ -200,36 +200,31 @@ export default function Transport() {
   return (
     <div className="min-h-screen bg-slate-100">
       {/* ヘッダー */}
-      <div className="bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 text-white px-4 pt-8 pb-24 relative overflow-hidden">
-        {/* 装飾 */}
+      <div className="bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 text-white px-4 pt-8 pb-8 relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-48 h-48 bg-white/10 rounded-full" />
         <div className="absolute top-4 right-16 w-24 h-24 bg-yellow-400/20 rounded-full" />
-        <div className="absolute -bottom-6 -left-6 w-36 h-36 bg-pink-400/20 rounded-full" />
         <div className="relative max-w-2xl mx-auto">
           <p className="text-violet-200 text-sm font-medium">{greeting}</p>
           <h1 className="text-3xl font-black tracking-tight mt-1">{user?.full_name || 'スタッフ'} <span className="text-yellow-300">さん</span></h1>
           <p className="text-blue-200 text-sm mt-1">{format(new Date(), 'yyyy年M月d日（eee）', { locale: ja })}</p>
+          {/* 統計カード（ヘッダー内） */}
+          <div className="grid grid-cols-3 gap-3 mt-5">
+            {[
+              { label: '今日の送迎', value: todayRides.length, bg: 'bg-white/20', icon: '🚌' },
+              { label: '承認待ち', value: todayRides.filter(r => r.status === 'SUBMITTED').length, bg: 'bg-amber-400/40', icon: '⏳' },
+              { label: '承認済み', value: todayRides.filter(r => r.status === 'APPROVED').length, bg: 'bg-emerald-400/30', icon: '✅' },
+            ].map(({ label, value, bg, icon }) => (
+              <div key={label} className={`${bg} backdrop-blur rounded-2xl p-3 text-center`}>
+                <div className="text-xl mb-1">{icon}</div>
+                <p className="text-2xl font-black text-white">{value}</p>
+                <p className="text-xs text-white/80 font-medium">{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 統計カード（ヘッダーの外に出す） */}
-      <div className="max-w-2xl mx-auto px-4 -mt-14">
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: '今日の送迎', value: todayRides.length, color: 'from-blue-500 to-blue-600', icon: '🚌' },
-            { label: '承認待ち', value: todayRides.filter(r => r.status === 'SUBMITTED').length, color: 'from-amber-400 to-orange-500', icon: '⏳' },
-            { label: '承認済み', value: todayRides.filter(r => r.status === 'APPROVED').length, color: 'from-emerald-400 to-green-600', icon: '✅' },
-          ].map(({ label, value, color, icon }) => (
-            <div key={label} className={`bg-gradient-to-br ${color} rounded-2xl p-3 text-center shadow-lg`}>
-              <div className="text-xl mb-1">{icon}</div>
-              <p className="text-2xl font-black text-white">{value}</p>
-              <p className="text-xs text-white/80 font-medium">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-4 mt-5 space-y-4 pb-10">
+      <div className="max-w-2xl mx-auto px-4 mt-4 space-y-4 pb-10">
         {/* 健康確認警告 */}
         {!driverChecked && (
           <div className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-4 flex items-center gap-3 shadow-lg shadow-amber-200/60">
