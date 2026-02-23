@@ -35,6 +35,9 @@ export default function TransportAdmin() {
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', tripType: 'PICKUP', defaultVehicleId: '', defaultVehicleName: '', defaultPassengerNames: [], isActive: true });
   const [passengerInput, setPassengerInput] = useState('');
+  const [clientDialog, setClientDialog] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
+  const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -83,6 +86,11 @@ export default function TransportAdmin() {
   const { data: driverChecks = [] } = useQuery({
     queryKey: ['ta-driverchecks'],
     queryFn: () => base44.entities.DriverDailyCheck.list('-date', 50),
+    enabled: !!user,
+  });
+  const { data: clients = [] } = useQuery({
+    queryKey: ['ta-clients'],
+    queryFn: () => base44.entities.Client.list('name'),
     enabled: !!user,
   });
 
@@ -153,6 +161,18 @@ export default function TransportAdmin() {
     onSuccess: () => queryClient.invalidateQueries(['ta-templates']),
   });
 
+  const saveClientMutation = useMutation({
+    mutationFn: (data) => editingClient
+      ? base44.entities.Client.update(editingClient.id, data)
+      : base44.entities.Client.create(data),
+    onSuccess: () => { queryClient.invalidateQueries(['ta-clients']); setClientDialog(false); },
+  });
+
+  const deleteClientMutation = useMutation({
+    mutationFn: (id) => base44.entities.Client.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['ta-clients']),
+  });
+
   const handleExportPDF = async (exportType) => {
     setExporting(true);
     try {
@@ -191,6 +211,14 @@ export default function TransportAdmin() {
     setPassengerInput((t?.defaultPassengerNames || []).join('\n'));
     setTemplateDialog(true);
   };
+
+  const openClientDialog = (c = null) => {
+    setEditingClient(c);
+    setClientForm(c ? { name: c.name, phone: c.phone || '', address: c.address || '', wheelchairRequired: c.wheelchairRequired || false, notes: c.notes || '', daysOfWeek: c.daysOfWeek || [], isActive: c.isActive !== false } : { name: '', phone: '', address: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
+    setClientDialog(true);
+  };
+
+  const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
 
   if (!user) return <div className="min-h-screen flex items-center justify-center text-slate-400">読み込み中...</div>;
 
