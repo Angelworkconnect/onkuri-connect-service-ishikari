@@ -243,20 +243,19 @@ export default function Transport() {
 
         {/* 入力ボタン（スタッフのみ） */}
         {!isAdmin && (
-          <div className="bg-white rounded-2xl shadow-sm p-4">
-            <button
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-2xl p-5 flex items-center gap-4 shadow-md"
-              onClick={() => setFormOpen(true)}
-            >
-              <div className="bg-white/20 rounded-2xl p-3">
-                <Plus className="w-8 h-8" />
-              </div>
-              <div className="text-left">
-                <p className="text-xl font-bold">送迎記録を入力</p>
-                <p className="text-blue-100 text-sm">入力後すぐに管理者へ提出されます</p>
-              </div>
-            </button>
-          </div>
+          <button
+            className="w-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 text-white rounded-3xl p-5 flex items-center gap-4 shadow-xl shadow-blue-500/30 hover:scale-[1.02] transition-transform active:scale-100"
+            onClick={() => setFormOpen(true)}
+          >
+            <div className="bg-white/20 rounded-2xl p-3 shrink-0">
+              <Plus className="w-8 h-8" />
+            </div>
+            <div className="text-left flex-1">
+              <p className="text-xl font-black tracking-tight">送迎記録を入力</p>
+              <p className="text-blue-100 text-sm font-medium">入力後すぐに管理者へ提出されます</p>
+            </div>
+            <div className="text-3xl shrink-0">🚌</div>
+          </button>
         )}
 
         {/* 今日の送迎一覧 */}
