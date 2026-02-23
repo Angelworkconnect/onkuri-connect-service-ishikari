@@ -69,6 +69,7 @@ import TipsHistory from './pages/TipsHistory';
 import VersionCheck from './pages/VersionCheck';
 import TransportDashboard from './pages/TransportDashboard';
 import TransportAdmin from './pages/TransportAdmin';
+import TransportExport from './pages/TransportExport';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +96,7 @@ export const PAGES = {
     "VersionCheck": VersionCheck,
     "TransportDashboard": TransportDashboard,
     "TransportAdmin": TransportAdmin,
+    "TransportExport": TransportExport,
 }
 
 export const pagesConfig = {
