@@ -181,7 +181,7 @@ export default function TransportAdmin() {
 
   const openVehicleDialog = (v = null) => {
     setEditingVehicle(v);
-    setVehicleForm(v ? { name: v.name, plateNumber: v.plateNumber, model: v.model || '', capacity: v.capacity || '', isActive: v.isActive !== false } : { name: '', plateNumber: '', model: '', capacity: '', isActive: true });
+    setVehicleForm(v ? { name: v.name, plateNumber: v.plateNumber, model: v.model || '', capacity: v.capacity || '', wheelchairAccessible: v.wheelchairAccessible || false, isActive: v.isActive !== false } : { name: '', plateNumber: '', model: '', capacity: '', wheelchairAccessible: false, isActive: true });
     setVehicleDialog(true);
   };
 
