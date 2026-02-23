@@ -17,6 +17,7 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   const [step, setStep] = useState(1); // 1=基本情報, 2=乗客, 3=終了
   const [saving, setSaving] = useState(false);
   const [savedRide, setSavedRide] = useState(null);
+  const [clients, setClients] = useState([]);
 
   const [form, setForm] = useState({
     date: getToday(),
@@ -39,6 +40,15 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   });
 
   const [passengers, setPassengers] = useState([]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const dayOfWeek = new Date(today).getDay();
+    base44.entities.Client.filter({ isActive: true }).then(allClients => {
+      const todayClients = allClients.filter(c => c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
+      setClients(todayClients);
+    });
+  }, []);
 
   const applyTemplate = (t) => {
     setForm(f => ({
@@ -73,6 +83,10 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
 
   const addPassenger = () => {
     setPassengers(prev => [...prev, { clientName: '', boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
+  };
+
+  const addClientPassenger = (clientName) => {
+    setPassengers(prev => [...prev, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
   };
   const removePassenger = (i) => setPassengers(prev => prev.filter((_, idx) => idx !== i));
   const updatePassenger = (i, key, val) => setPassengers(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
