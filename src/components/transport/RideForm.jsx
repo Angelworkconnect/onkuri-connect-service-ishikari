@@ -107,10 +107,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
     setPassengers(prev => [...prev, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
   };
 
-  const validatePassengerName = (idx, newName) => {
-    const isDuplicate = passengers.some((p, i) => i !== idx && p.clientName === newName && newName.trim());
-    return !isDuplicate;
-  };
+
   const removePassenger = (i) => setPassengers(prev => prev.filter((_, idx) => idx !== i));
   const updatePassenger = (i, key, val) => setPassengers(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
 
