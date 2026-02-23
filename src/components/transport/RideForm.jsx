@@ -101,57 +101,75 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   const saveStep1 = async () => {
     if (!form.vehicleId || !form.driverEmail || !form.startOdometerKm) return;
     setSaving(true);
-    const ride = await base44.entities.Ride.create({
-      ...form,
-      startOdometerKm: Number(form.startOdometerKm),
-      status: 'DRAFT',
-      createdByEmail: user.email,
-      createdByName: user.full_name,
-    });
-    setSavedRide(ride);
-    setSaving(false);
-    setStep(2);
+    try {
+      const ride = await base44.entities.Ride.create({
+        ...form,
+        startOdometerKm: Number(form.startOdometerKm),
+        status: 'DRAFT',
+        createdByEmail: user.email,
+        createdByName: user.full_name,
+      });
+      setSavedRide(ride);
+      setStep(2);
+    } catch (error) {
+      console.error('Error saving ride:', error);
+      alert('保存に失敗しました: ' + (error.message || '不明なエラー'));
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Step2: 乗客保存
   const saveStep2 = async () => {
     setSaving(true);
-    // 既存乗客を削除して再作成
-    const existing = await base44.entities.RidePassenger.filter({ rideId: savedRide.id });
-    for (const p of existing) await base44.entities.RidePassenger.delete(p.id);
-    for (const p of passengers.filter(x => x.clientName.trim())) {
-      await base44.entities.RidePassenger.create({ ...p, rideId: savedRide.id });
+    try {
+      // 既存乗客を削除して再作成
+      const existing = await base44.entities.RidePassenger.filter({ rideId: savedRide.id });
+      for (const p of existing) await base44.entities.RidePassenger.delete(p.id);
+      for (const p of passengers.filter(x => x.clientName.trim())) {
+        await base44.entities.RidePassenger.create({ ...p, rideId: savedRide.id });
+      }
+      setStep(3);
+    } catch (error) {
+      console.error('Error saving passengers:', error);
+      alert('保存に失敗しました: ' + (error.message || '不明なエラー'));
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setStep(3);
   };
 
   // Step3: 終了・提出
   const submitRide = async () => {
     if (!form.endOdometerKm || !form.endTime) return;
     setSaving(true);
-    const dist = Math.max(0, Number(form.endOdometerKm) - Number(form.startOdometerKm));
-    await base44.entities.Ride.update(savedRide.id, {
-      endTime: form.endTime,
-      endOdometerKm: Number(form.endOdometerKm),
-      distanceKm: dist,
-      abnormality: form.abnormality,
-      abnormalityNote: form.abnormalityNote,
-      status: 'SUBMITTED',
-    });
-    // 管理者通知
-    const admins = staff.filter(s => s.role === 'admin');
-    const notifs = admins.map(a => ({
-      user_email: a.email,
-      type: 'transport',
-      title: '新しい送迎記録が提出されました',
-      content: `${form.date} ${form.tripType === 'PICKUP' ? '朝便' : form.tripType === 'DROPOFF' ? '帰便' : 'その他'} / ${form.driverName}`,
-      link_url: '/TransportAdmin',
-      createdAtUtc: Date.now(),
-    }));
-    if (notifs.length) await base44.entities.Notification.bulkCreate(notifs);
-    setSaving(false);
-    onSaved && onSaved();
+    try {
+      const dist = Math.max(0, Number(form.endOdometerKm) - Number(form.startOdometerKm));
+      await base44.entities.Ride.update(savedRide.id, {
+        endTime: form.endTime,
+        endOdometerKm: Number(form.endOdometerKm),
+        distanceKm: dist,
+        abnormality: form.abnormality,
+        abnormalityNote: form.abnormalityNote,
+        status: 'SUBMITTED',
+      });
+      // 管理者通知
+      const admins = staff.filter(s => s.role === 'admin');
+      const notifs = admins.map(a => ({
+        user_email: a.email,
+        type: 'transport',
+        title: '新しい送迎記録が提出されました',
+        content: `${form.date} ${form.tripType === 'PICKUP' ? '朝便' : form.tripType === 'DROPOFF' ? '帰便' : 'その他'} / ${form.driverName}`,
+        link_url: '/TransportAdmin',
+        createdAtUtc: Date.now(),
+      }));
+      if (notifs.length) await base44.entities.Notification.bulkCreate(notifs);
+      onSaved && onSaved();
+    } catch (error) {
+      console.error('Error submitting ride:', error);
+      alert('提出に失敗しました: ' + (error.message || '不明なエラー'));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const canStep1 = form.vehicleId && form.driverEmail && form.startOdometerKm && form.startTime && form.date;
