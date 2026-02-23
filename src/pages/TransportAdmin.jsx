@@ -547,11 +547,11 @@ export default function TransportAdmin() {
           <div><Label>車両名 *</Label><Input value={vehicleForm.name} onChange={e => setVehicleForm(f => ({ ...f, name: e.target.value }))} placeholder="ハイエース1号" /></div>
           <div><Label>ナンバー *</Label><Input value={vehicleForm.plateNumber} onChange={e => setVehicleForm(f => ({ ...f, plateNumber: e.target.value }))} placeholder="札幌 500 あ 1234" /></div>
           <div><Label>車種</Label><Input value={vehicleForm.model} onChange={e => setVehicleForm(f => ({ ...f, model: e.target.value }))} placeholder="ハイエース" /></div>
-          <div className="grid grid-cols-2 gap-2">
-            <div><Label>通常時定員</Label><Input type="number" min="1" value={vehicleForm.capacityRegular} onChange={e => setVehicleForm(f => ({ ...f, capacityRegular: e.target.value }))} placeholder="4" /></div>
-            <div><Label>車椅子時定員</Label><Input type="number" min="1" value={vehicleForm.capacityWithWheelchair} onChange={e => setVehicleForm(f => ({ ...f, capacityWithWheelchair: e.target.value }))} placeholder="3" /></div>
-          </div>
-          <div className="flex items-center gap-2"><Switch checked={vehicleForm.wheelchairAccessible} onCheckedChange={v => setVehicleForm(f => ({ ...f, wheelchairAccessible: v }))} /><Label>車椅子送迎可能</Label></div>
+          <div><Label>通常時定員</Label><Input type="number" min="1" value={vehicleForm.capacityRegular} onChange={e => setVehicleForm(f => ({ ...f, capacityRegular: e.target.value }))} placeholder="4" /></div>
+           <div className="flex items-center gap-2"><Switch checked={vehicleForm.wheelchairAccessible} onCheckedChange={v => setVehicleForm(f => ({ ...f, wheelchairAccessible: v }))} /><Label>車椅子送迎可能</Label></div>
+           {vehicleForm.wheelchairAccessible && (
+             <div><Label>車椅子時定員</Label><Input type="number" min="1" value={vehicleForm.capacityWithWheelchair} onChange={e => setVehicleForm(f => ({ ...f, capacityWithWheelchair: e.target.value }))} placeholder="3" /></div>
+           )}
           <div className="flex items-center gap-2"><Switch checked={vehicleForm.isActive} onCheckedChange={v => setVehicleForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
           </div>
           <DialogFooter>
