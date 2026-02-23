@@ -524,8 +524,226 @@ export default function TransportAdmin() {
               ))}
             </div>
           </TabsContent>
+
+          {/* ===== PDF出力 ===== */}
+          <TabsContent value="export" className="mt-4 space-y-4">
+            <style>{`
+              @media print {
+                body > * { display: none !important; }
+                .print-area { display: block !important; position: fixed; top: 0; left: 0; width: 100%; }
+                .no-print { display: none !important; }
+                @page { margin: 15mm; size: A4; }
+              }
+              .print-area { display: none; }
+            `}</style>
+
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-4 no-print">
+              <p className="text-slate-300 font-bold flex items-center gap-2">
+                <FileText className="w-4 h-4 text-amber-400" /> 出力設定
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 mb-1 block">開始日</label>
+                  <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="bg-slate-700 border-slate-600 text-white" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 mb-1 block">終了日</label>
+                  <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="bg-slate-700 border-slate-600 text-white" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 mb-1 block">出力種類</label>
+                  <Select value={exportMode} onValueChange={setExportMode}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">日別詳細PDF</SelectItem>
+                      <SelectItem value="monthly">月別サマリーPDF</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 mb-1 block">車両</label>
+                  <Select value={filterVehicleId} onValueChange={setFilterVehicleId}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">全車両</SelectItem>
+                      {allVehicles.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 mb-1 block">便種別</label>
+                  <Select value={filterTripType} onValueChange={setFilterTripType}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">全便</SelectItem>
+                      <SelectItem value="PICKUP">朝便（迎え）</SelectItem>
+                      <SelectItem value="DROPOFF">帰便（送り）</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold" disabled={isExportLoading} onClick={loadAndPrint}>
+                <Printer className="w-4 h-4 mr-2" />
+                {isExportLoading ? 'データ読込中...' : 'PDF出力（印刷）'}
+              </Button>
+            </div>
+
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden no-print">
+              <div className="px-4 py-3 border-b border-slate-700 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-slate-400" />
+                <span className="text-slate-300 font-bold text-sm">出力ログ（直近20件）</span>
+              </div>
+              <div className="divide-y divide-slate-700">
+                {exportLogs.length === 0 ? (
+                  <p className="text-slate-500 text-xs text-center py-6">出力履歴はありません</p>
+                ) : exportLogs.map(log => (
+                  <div key={log.id} className="flex items-center justify-between px-4 py-2.5 text-xs">
+                    <div>
+                      <span className="bg-blue-900/50 text-blue-400 px-2 py-0.5 rounded-full mr-2">{log.exportType}</span>
+                      <span className="text-slate-400">{log.dateFrom}〜{log.dateTo}</span>
+                    </div>
+                    <span className="text-slate-500">{log.createdByName} / {log.createdAtUtcMs ? format(new Date(log.createdAtUtcMs), 'MM/dd HH:mm') : '-'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* 印刷エリア */}
+      {ridesData !== null && (
+        <div className="print-area" ref={printAreaRef}>
+          <div style={{ fontFamily: 'serif', fontSize: '10pt', color: '#000' }}>
+            <div style={{ textAlign: 'center', marginBottom: '16px', borderBottom: '2px solid #000', paddingBottom: '8px' }}>
+              <h1 style={{ fontSize: '16pt', fontWeight: 'bold', margin: '0 0 4px 0' }}>運行管理記録（送迎）</h1>
+              <p style={{ margin: '2px 0', fontSize: '9pt' }}>事業所：おんくりの輪</p>
+              <p style={{ margin: '2px 0', fontSize: '9pt' }}>対象期間：{dateFrom}〜{dateTo}</p>
+              <p style={{ margin: '2px 0', fontSize: '8pt', color: '#555' }}>出力日時：{format(new Date(), 'yyyy/MM/dd HH:mm')} / 出力者：{user?.full_name || user?.email}</p>
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px', fontSize: '9pt' }}>
+              <thead><tr style={{ background: '#eee' }}>
+                {['総運行件数', '総走行距離', '異常件数', '事故件数'].map(h => <th key={h} style={{ border: '1px solid #ccc', padding: '4px 8px', textAlign: 'left' }}>{h}</th>)}
+              </tr></thead>
+              <tbody><tr>
+                <td style={{ border: '1px solid #ccc', padding: '4px 8px' }}>{ridesData.length}件</td>
+                <td style={{ border: '1px solid #ccc', padding: '4px 8px' }}>{totalDistance.toFixed(1)}km</td>
+                <td style={{ border: '1px solid #ccc', padding: '4px 8px' }}>{abnormalCount}件</td>
+                <td style={{ border: '1px solid #ccc', padding: '4px 8px' }}>{accidentCount}件</td>
+              </tr></tbody>
+            </table>
+            {Object.entries(groupedByDate).sort(([a], [b]) => a.localeCompare(b)).map(([date, rides]) => {
+              const dayPreChecks = preChecksData.filter(c => c.date === date);
+              const dayDriverChecks = driverChecksData.filter(c => c.date === date);
+              return (
+                <div key={date} style={{ marginBottom: '24px', pageBreakInside: 'avoid' }}>
+                  <h2 style={{ fontSize: '12pt', fontWeight: 'bold', background: '#ddd', padding: '4px 8px', margin: '0 0 8px 0', border: '1px solid #aaa' }}>{date}（{rides.length}便）</h2>
+                  {dayPreChecks.length > 0 && (
+                    <div style={{ marginBottom: '8px' }}>
+                      <p style={{ fontSize: '9pt', fontWeight: 'bold', marginBottom: '4px' }}>【車両使用前点検】</p>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
+                        <thead><tr style={{ background: '#f5f5f5' }}>{['車両', '燃料', 'タイヤ', 'ライト', 'ブレーキ', '外装', '車内', '点検者'].map(h => <th key={h} style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{h}</th>)}</tr></thead>
+                        <tbody>{dayPreChecks.map((c, i) => (
+                          <tr key={i}>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{c.vehicleName}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{fuelLabels[c.fuelLevel] || c.fuelLevel}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.tireOK ? '✓' : '✗'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.lightsOK ? '✓' : '✗'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.brakeOK ? '✓' : '✗'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.exteriorDamageNone ? '✓' : '✗'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.interiorOK ? '✓' : '✗'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{c.checkerName}</td>
+                          </tr>
+                        ))}</tbody>
+                      </table>
+                    </div>
+                  )}
+                  {dayDriverChecks.length > 0 && (
+                    <div style={{ marginBottom: '8px' }}>
+                      <p style={{ fontSize: '9pt', fontWeight: 'bold', marginBottom: '4px' }}>【運転者健康確認】</p>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
+                        <thead><tr style={{ background: '#f5f5f5' }}>{['氏名', '健康状態', 'アルコール確認', '備考'].map(h => <th key={h} style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{h}</th>)}</tr></thead>
+                        <tbody>{dayDriverChecks.map((c, i) => (
+                          <tr key={i}>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{c.driverName}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{c.fitForDuty === 'OK' ? '問題なし' : '要配慮'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px', textAlign: 'center' }}>{c.alcoholCheck ? '実施' : '未記録'}</td>
+                            <td style={{ border: '1px solid #ccc', padding: '3px 5px' }}>{c.notes || ''}</td>
+                          </tr>
+                        ))}</tbody>
+                      </table>
+                    </div>
+                  )}
+                  {rides.map((ride) => (
+                    <div key={ride.id} style={{ marginBottom: '12px', border: '1px solid #aaa', padding: '8px' }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '10pt', marginBottom: '6px', borderBottom: '1px solid #ccc', paddingBottom: '4px' }}>
+                        {tripLabel[ride.tripType]} / {ride.vehicleName}（{ride.vehiclePlate}）
+                      </p>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', marginBottom: '6px' }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9', width: '20%' }}>運転者</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', width: '30%' }}>{ride.driverName}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9', width: '20%' }}>同乗者</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', width: '30%' }}>{ride.attendantName || 'なし'}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>出発時刻</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{ride.startTime}</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>到着時刻</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{ride.endTime}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>開始メーター</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{ride.startOdometerKm}km</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>終了メーター</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{ride.endOdometerKm}km</td>
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>走行距離</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{ride.distanceKm}km</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>異常</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }}>{abnLabels[ride.abnormality || 'NONE']}{ride.abnormalityNote && `：${ride.abnormalityNote}`}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px', background: '#f9f9f9' }}>承認者</td>
+                            <td style={{ border: '1px solid #ddd', padding: '3px 6px' }} colSpan={3}>
+                              {ride.approvedByName || '未承認'} / {ride.approvedAtUtcMs ? format(new Date(ride.approvedAtUtcMs), 'yyyy/MM/dd HH:mm') : ''}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {passengersMap[ride.id]?.length > 0 && (
+                        <>
+                          <p style={{ fontSize: '8pt', fontWeight: 'bold', marginBottom: '4px' }}>乗車利用者</p>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
+                            <thead><tr style={{ background: '#f5f5f5' }}>{['利用者名', '乗車時刻', '降車時刻', 'SB確認', 'メモ'].map(h => <th key={h} style={{ border: '1px solid #ccc', padding: '2px 5px' }}>{h}</th>)}</tr></thead>
+                            <tbody>{passengersMap[ride.id].map((p, i) => (
+                              <tr key={i}>
+                                <td style={{ border: '1px solid #ccc', padding: '2px 5px' }}>{p.clientName}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '2px 5px', textAlign: 'center' }}>{p.boardTime || '-'}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '2px 5px', textAlign: 'center' }}>{p.alightTime || '-'}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '2px 5px', textAlign: 'center' }}>{p.seatBeltChecked ? '✓' : '✗'}</td>
+                                <td style={{ border: '1px solid #ccc', padding: '2px 5px' }}>{p.note || ''}</td>
+                              </tr>
+                            ))}</tbody>
+                          </table>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+            {ridesData.length === 0 && <div style={{ textAlign: 'center', padding: '30px', color: '#888' }}>指定期間・条件で承認済みの運行記録がありません</div>}
+            <div style={{ textAlign: 'center', fontSize: '8pt', color: '#888', marginTop: '16px', borderTop: '1px solid #ccc', paddingTop: '8px' }}>
+              本記録は おんくりの輪 運行管理システムより出力されました / 出力日時：{format(new Date(), 'yyyy/MM/dd HH:mm')}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 車両ダイアログ */}
       <Dialog open={vehicleDialogOpen} onOpenChange={setVehicleDialogOpen}>
