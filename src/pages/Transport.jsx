@@ -109,6 +109,7 @@ export default function Transport() {
   const handleSaved = () => {
     setMode(null);
     queryClient.invalidateQueries(['transport-today']);
+    queryClient.invalidateQueries(['transport-passengers-map']);
     queryClient.invalidateQueries(['transport-my']);
     queryClient.invalidateQueries(['transport-precheck-today']);
     queryClient.invalidateQueries(['transport-drivercheck-today', user?.email]);
