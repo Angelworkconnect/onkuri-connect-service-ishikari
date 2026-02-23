@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, X, ChevronRight, Clock, Gauge } from 'lucide-react';
 
 const getNow = () => {
-  const now = new Date();
+  const now = new Date(Date.now() + 9*3600000);
   return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 };
-const getToday = () => new Date().toISOString().split('T')[0];
+const getToday = () => new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
 
 export default function RideForm({ user, vehicles, staff, templates, editingRide, onSaved, onCancel, todayRides = [], ridePassengersMap = {} }) {
   const [step, setStep] = useState(1); // 1=基本情報, 2=乗客, 3=終了
