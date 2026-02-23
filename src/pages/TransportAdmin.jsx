@@ -196,6 +196,7 @@ export default function TransportAdmin() {
     onSuccess: () => {
       queryClient.invalidateQueries(['ta-submitted']);
       queryClient.invalidateQueries(['ta-draft']);
+      queryClient.invalidateQueries(['ta-approved']);
       setDetailRide(null);
     },
   });
@@ -203,6 +204,7 @@ export default function TransportAdmin() {
   const handleRideSaved = () => {
     setEditingRide(null);
     queryClient.invalidateQueries(['ta-draft']);
+    queryClient.invalidateQueries(['ta-approved']);
   };
 
   const handleExportPDF = async (exportType) => {
@@ -358,6 +360,39 @@ export default function TransportAdmin() {
                 </div>
               )}
             </Card>
+          {/* 承認済み運行一覧 */}
+          <Card className="border-0 shadow mt-4">
+            <div className="p-4 border-b">
+              <h2 className="font-bold">承認済み運行一覧（{approvedRides.length}件）</h2>
+            </div>
+            {approvedRides.length === 0 ? (
+              <div className="py-12 text-center text-slate-400">
+                <CheckCircle className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <p>承認済みの運行はありません</p>
+              </div>
+            ) : (
+              <div className="divide-y">
+                {approvedRides.sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
+                  <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium">{ride.date}</span>
+                        <Badge className="bg-green-100 text-green-700 text-xs">{tripLabel(ride.tripType)}</Badge>
+                        <Badge className="bg-green-100 text-green-700 text-xs">✅ 承認済</Badge>
+                        {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
+                      </div>
+                      <p className="text-sm text-slate-600">{ride.vehicleName} / {ride.driverName}</p>
+                      <p className="text-xs text-slate-400">{ride.startTime} ～ {ride.endTime} / {(ride.distanceKm || 0).toFixed(1)}km</p>
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <Button size="sm" variant="outline" onClick={() => setEditingRide(ride)}>編集</Button>
+                      <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
           </TabsContent>
 
           {/* 点検タブ */}
