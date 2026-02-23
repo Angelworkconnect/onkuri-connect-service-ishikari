@@ -58,7 +58,7 @@ export default function TransportAdmin() {
   const { data: submittedRides = [] } = useQuery({
     queryKey: ['ta-submitted'],
     queryFn: () => base44.entities.Ride.filter({ status: 'SUBMITTED' }),
-    enabled: !!user, refetchInterval: 30000,
+    enabled: !!user,
   });
   const { data: draftRides = [] } = useQuery({
     queryKey: ['ta-draft'],
@@ -67,49 +67,42 @@ export default function TransportAdmin() {
       const rejected = await base44.entities.Ride.filter({ status: 'REJECTED' });
       return [...draft, ...rejected].sort((a, b) => b.updated_date.localeCompare(a.updated_date));
     },
-    enabled: !!user, refetchInterval: 30000,
+    enabled: !!user,
   });
   const { data: approvedRides = [] } = useQuery({
     queryKey: ['ta-approved'],
     queryFn: () => base44.entities.Ride.filter({ status: 'APPROVED' }),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: vehicles = [] } = useQuery({
     queryKey: ['ta-vehicles'],
     queryFn: () => base44.entities.Vehicle.list('name'),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: staff = [] } = useQuery({
     queryKey: ['ta-staff'],
     queryFn: () => base44.entities.Staff.filter({ approval_status: 'approved' }),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: templates = [] } = useQuery({
     queryKey: ['ta-templates'],
     queryFn: () => base44.entities.RouteTemplate.list('name'),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: preChecks = [] } = useQuery({
     queryKey: ['ta-prechecks'],
     queryFn: () => base44.entities.VehiclePreCheck.list('-date', 50),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: driverChecks = [] } = useQuery({
     queryKey: ['ta-driverchecks'],
     queryFn: () => base44.entities.DriverDailyCheck.list('-date', 50),
     enabled: !!user,
-    refetchInterval: 10000,
   });
   const { data: clients = [] } = useQuery({
     queryKey: ['ta-clients'],
     queryFn: () => base44.entities.Client.list('name'),
     enabled: !!user,
-    refetchInterval: 10000,
   });
 
   const approveMutation = useMutation({
