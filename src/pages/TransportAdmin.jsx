@@ -40,6 +40,8 @@ export default function TransportAdmin() {
   const [editingClient, setEditingClient] = useState(null);
   const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
   const [editingRide, setEditingRide] = useState(null);
+  const [editingPreCheck, setEditingPreCheck] = useState(null);
+  const [editingDriverCheck, setEditingDriverCheck] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -192,6 +194,16 @@ export default function TransportAdmin() {
       queryClient.invalidateQueries(['ta-approved']);
       setDetailRide(null);
     },
+  });
+
+  const deletePreCheckMutation = useMutation({
+    mutationFn: (id) => base44.entities.VehiclePreCheck.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['ta-prechecks']),
+  });
+
+  const deleteDriverCheckMutation = useMutation({
+    mutationFn: (id) => base44.entities.DriverDailyCheck.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['ta-driverchecks']),
   });
 
   const handleRideSaved = () => {
@@ -398,30 +410,37 @@ export default function TransportAdmin() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>日付</TableHead>
-                        <TableHead>車両</TableHead>
-                        <TableHead>点検者</TableHead>
-                        <TableHead>燃料</TableHead>
-                        <TableHead>タイヤ</TableHead>
-                        <TableHead>ライト</TableHead>
-                        <TableHead>ブレーキ</TableHead>
-                        <TableHead>外観</TableHead>
-                        <TableHead>問題</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {preChecks.map(c => (
-                        <TableRow key={c.id}>
-                          <TableCell>{c.date}</TableCell>
-                          <TableCell>{c.vehicleName}</TableCell>
-                          <TableCell>{c.checkerName}</TableCell>
-                          <TableCell>{c.fuelLevel}</TableCell>
-                          <TableCell>{c.tireOK ? '✅' : '❌'}</TableCell>
-                          <TableCell>{c.lightsOK ? '✅' : '❌'}</TableCell>
-                          <TableCell>{c.brakeOK ? '✅' : '❌'}</TableCell>
-                          <TableCell>{c.exteriorDamageNone ? '✅' : '❌'}</TableCell>
-                          <TableCell>{c.otherIssue ? <span className="text-red-600">{c.issueNote}</span> : '-'}</TableCell>
-                        </TableRow>
-                      ))}
+                            <TableHead>車両</TableHead>
+                            <TableHead>点検者</TableHead>
+                            <TableHead>燃料</TableHead>
+                            <TableHead>タイヤ</TableHead>
+                            <TableHead>ライト</TableHead>
+                            <TableHead>ブレーキ</TableHead>
+                            <TableHead>外観</TableHead>
+                            <TableHead>問題</TableHead>
+                            <TableHead>操作</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {preChecks.map(c => (
+                            <TableRow key={c.id}>
+                              <TableCell>{c.date}</TableCell>
+                              <TableCell>{c.vehicleName}</TableCell>
+                              <TableCell>{c.checkerName}</TableCell>
+                              <TableCell>{c.fuelLevel}</TableCell>
+                              <TableCell>{c.tireOK ? '✅' : '❌'}</TableCell>
+                              <TableCell>{c.lightsOK ? '✅' : '❌'}</TableCell>
+                              <TableCell>{c.brakeOK ? '✅' : '❌'}</TableCell>
+                              <TableCell>{c.exteriorDamageNone ? '✅' : '❌'}</TableCell>
+                              <TableCell>{c.otherIssue ? <span className="text-red-600">{c.issueNote}</span> : '-'}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Button variant="ghost" size="icon" onClick={() => setEditingPreCheck(c)}><Edit className="w-4 h-4" /></Button>
+                                  <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deletePreCheckMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -433,24 +452,31 @@ export default function TransportAdmin() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>日付</TableHead>
-                        <TableHead>運転者</TableHead>
-                        <TableHead>就業可否</TableHead>
-                        <TableHead>アルコール確認</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {driverChecks.map(c => (
-                        <TableRow key={c.id}>
-                          <TableCell>{c.date}</TableCell>
-                          <TableCell>{c.driverName}</TableCell>
-                          <TableCell>
-                            <Badge className={c.fitForDuty === 'OK' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
-                              {c.fitForDuty === 'OK' ? '問題なし' : '要配慮'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{c.alcoholCheck ? '✅ 実施済み' : '—'}</TableCell>
-                        </TableRow>
-                      ))}
+                            <TableHead>運転者</TableHead>
+                            <TableHead>就業可否</TableHead>
+                            <TableHead>アルコール確認</TableHead>
+                            <TableHead>操作</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {driverChecks.map(c => (
+                            <TableRow key={c.id}>
+                              <TableCell>{c.date}</TableCell>
+                              <TableCell>{c.driverName}</TableCell>
+                              <TableCell>
+                                <Badge className={c.fitForDuty === 'OK' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
+                                  {c.fitForDuty === 'OK' ? '問題なし' : '要配慮'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{c.alcoholCheck ? '✅ 実施済み' : '—'}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Button variant="ghost" size="icon" onClick={() => setEditingDriverCheck(c)}><Edit className="w-4 h-4" /></Button>
+                                  <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteDriverCheckMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                     </TableBody>
                   </Table>
                 </div>
