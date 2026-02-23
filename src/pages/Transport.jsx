@@ -259,10 +259,10 @@ export default function Transport() {
         )}
 
         {/* 今日の送迎一覧 */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b bg-slate-50 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-400" />
-            <span className="text-sm font-bold text-slate-600">今日の送迎一覧</span>
+        <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-slate-100">
+          <div className="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-blue-50 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-blue-400" />
+            <span className="text-sm font-bold text-slate-700">今日の送迎一覧</span>
           </div>
           {todayRides.length === 0 ? (
             <div className="py-10 text-center text-slate-400 text-sm">まだ記録がありません</div>
