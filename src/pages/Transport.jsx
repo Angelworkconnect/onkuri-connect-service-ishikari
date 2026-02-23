@@ -23,6 +23,7 @@ export default function Transport() {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mode, setMode] = useState(null); // 'ride' | 'precheck' | 'drivercheck'
+  const [editingRide, setEditingRide] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function Transport() {
 
   const uncheckedVehicles = vehicles.filter(v => v.isActive !== false && !todayPreChecks.find(c => c.vehicleId === v.id));
   const submittedCount = todayRides.filter(r => r.status === 'SUBMITTED').length;
+  const draftRides = myRides.filter(r => r.status === 'DRAFT' || r.status === 'REJECTED');
 
   return (
     <div className="min-h-screen bg-slate-50 pb-10">
@@ -148,9 +150,9 @@ export default function Transport() {
         )}
 
         {/* フォーム表示エリア */}
-        {mode === 'ride' && (
-          <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} onSaved={handleSaved} onCancel={() => setMode(null)} />
-        )}
+         {mode === 'ride' && (
+           <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} editingRide={editingRide} onSaved={handleSaved} onCancel={() => { setMode(null); setEditingRide(null); }} />
+         )}
         {mode === 'precheck' && (
           <PreCheckForm user={user} vehicles={vehicles} onSaved={handleSaved} onCancel={() => setMode(null)} />
         )}
@@ -208,10 +210,44 @@ export default function Transport() {
           </div>
         )}
 
-        {/* 本日の運行一覧 */}
-        {!mode && (
+        {/* 下書き・差し戻し記録 */}
+        {!mode && draftRides.length > 0 && (
           <div>
-            <h2 className="text-sm font-bold text-slate-600 mb-2">本日の運行（{todayRides.length}件）</h2>
+            <h2 className="text-sm font-bold text-slate-600 mb-2">下書き・差し戻し（{draftRides.length}件）</h2>
+            <div className="space-y-2">
+              {draftRides.map(ride => (
+                <Card key={ride.id} className={`p-3 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow ${ride.status === 'REJECTED' ? 'border-l-4 border-red-500' : 'border-l-4 border-amber-500'}`}>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-bold">{tripLabel(ride.tripType)}</span>
+                        {ride.status === 'REJECTED' ? (
+                          <Badge className="bg-red-100 text-red-700">差し戻し</Badge>
+                        ) : (
+                          <Badge className="bg-amber-100 text-amber-700">下書き</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500">
+                        {ride.vehicleName} / {ride.driverName}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {ride.date} {ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ''}
+                      </p>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => { setEditingRide(ride); setMode('ride'); }}>
+                      編集
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 本日の運行一覧 */}
+         {!mode && (
+           <div>
+             <h2 className="text-sm font-bold text-slate-600 mb-2">本日の運行（{todayRides.length}件）</h2>
             {todayRides.length === 0 ? (
               <div className="text-center py-8 text-slate-400 text-sm bg-white rounded-xl">
                 <Truck className="w-12 h-12 mx-auto mb-2 opacity-30" />
