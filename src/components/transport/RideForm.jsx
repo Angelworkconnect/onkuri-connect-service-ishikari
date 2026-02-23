@@ -55,7 +55,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         // 編集モードの場合、乗客を読み込む
         if (isEditing && editingRide.id) {
           const existingPassengers = await base44.entities.RidePassenger.filter({ rideId: editingRide.id });
-          setPassengers(existingPassengers);
+          setPassengersByTrip(prev => ({ ...prev, [editingRide.tripType]: existingPassengers }));
         }
       } catch (error) {
         console.error('Failed to load clients:', error);
