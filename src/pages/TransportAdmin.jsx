@@ -13,6 +13,7 @@ import { CheckCircle, XCircle, Truck, Download, Settings, ClipboardCheck, Plus, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import RideForm from '../components/transport/RideForm';
 
 const today = new Date().toISOString().split('T')[0];
 const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
@@ -57,6 +58,15 @@ export default function TransportAdmin() {
   const { data: submittedRides = [] } = useQuery({
     queryKey: ['ta-submitted'],
     queryFn: () => base44.entities.Ride.filter({ status: 'SUBMITTED' }),
+    enabled: !!user, refetchInterval: 30000,
+  });
+  const { data: draftRides = [] } = useQuery({
+    queryKey: ['ta-draft'],
+    queryFn: async () => {
+      const draft = await base44.entities.Ride.filter({ status: 'DRAFT' });
+      const rejected = await base44.entities.Ride.filter({ status: 'REJECTED' });
+      return [...draft, ...rejected].sort((a, b) => b.updated_date.localeCompare(a.updated_date));
+    },
     enabled: !!user, refetchInterval: 30000,
   });
   const { data: approvedRides = [] } = useQuery({
@@ -178,9 +188,15 @@ export default function TransportAdmin() {
     mutationFn: (id) => base44.entities.Ride.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['ta-submitted']);
+      queryClient.invalidateQueries(['ta-draft']);
       setDetailRide(null);
     },
   });
+
+  const handleRideSaved = () => {
+    setEditingRide(null);
+    queryClient.invalidateQueries(['ta-draft']);
+  };
 
   const handleExportPDF = async (exportType) => {
     setExporting(true);
@@ -272,9 +288,40 @@ export default function TransportAdmin() {
 
           {/* 承認タブ */}
           <TabsContent value="approval">
+            {/* 差し戻し・下書き記録 */}
+            {draftRides.length > 0 && (
+              <Card className="border-0 shadow mb-4">
+                <div className="p-4 border-b">
+                  <h2 className="font-bold">差し戻し・下書き記録（{draftRides.length}件）</h2>
+                </div>
+                <div className="divide-y">
+                  {draftRides.map(ride => (
+                    <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between border-l-4" style={{ borderLeftColor: ride.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium">{ride.date}</span>
+                          <Badge className="bg-blue-100 text-blue-700 text-xs">{tripLabel(ride.tripType)}</Badge>
+                          <Badge className={ride.status === 'REJECTED' ? 'bg-red-100 text-red-700 text-xs' : 'bg-amber-100 text-amber-700 text-xs'}>
+                            {ride.status === 'REJECTED' ? '差し戻し' : '下書き'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-slate-600">{ride.vehicleName} / {ride.driverName}</p>
+                        <p className="text-xs text-slate-400">{ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ''}</p>
+                        {ride.adminNote && <p className="text-xs text-red-600 mt-1">📝 {ride.adminNote}</p>}
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        <Button size="sm" variant="outline" onClick={() => setEditingRide(ride)}>編集</Button>
+                        <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
             <Card className="border-0 shadow">
               <div className="p-4 border-b">
-                <h2 className="font-bold">承認待ち運行一覧</h2>
+                <h2 className="font-bold">承認待ち運行一覧（{submittedRides.length}件）</h2>
               </div>
               {submittedRides.length === 0 ? (
                 <div className="py-12 text-center text-slate-400">
@@ -583,6 +630,26 @@ export default function TransportAdmin() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* 運行記録編集モーダル */}
+      {editingRide && (
+        <Dialog open={!!editingRide} onOpenChange={() => setEditingRide(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>運行記録を編集</DialogTitle>
+            </DialogHeader>
+            <RideForm 
+              user={user} 
+              vehicles={vehicles} 
+              staff={staff} 
+              templates={templates} 
+              editingRide={editingRide}
+              onSaved={handleRideSaved} 
+              onCancel={() => setEditingRide(null)} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* 承認詳細ダイアログ */}
       <Dialog open={!!detailRide} onOpenChange={() => setDetailRide(null)}>
