@@ -510,47 +510,53 @@ export default function TransportAdmin() {
 
           {/* 利用者管理タブ */}
           <TabsContent value="clients">
-            <Card className="border-0 shadow">
-              <div className="p-4 border-b flex justify-between items-center">
-                <h2 className="font-bold">利用者一覧</h2>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="font-bold text-lg">利用者一覧（曜日別）</h2>
                 <Button className="bg-[#2D4A6F]" onClick={() => openClientDialog()}>
                   <Plus className="w-4 h-4 mr-1" />新規利用者
                 </Button>
               </div>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>名前</TableHead>
-                      <TableHead>性別</TableHead>
-                      <TableHead>電話</TableHead>
-                      <TableHead>利用曜日</TableHead>
-                      <TableHead>♿</TableHead>
-                      <TableHead>状態</TableHead>
-                      <TableHead>操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {clients.map(c => (
-                      <TableRow key={c.id}>
-                        <TableCell className="font-medium">{c.name}</TableCell>
-                        <TableCell className="text-sm">{c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : c.gender === 'other' ? 'その他' : '-'}</TableCell>
-                        <TableCell className="text-sm">{c.phone || '-'}</TableCell>
-                        <TableCell className="text-sm">{c.daysOfWeek && c.daysOfWeek.length > 0 ? c.daysOfWeek.map(d => dayLabels[d]).join('') : '-'}</TableCell>
-                        <TableCell>{c.wheelchairRequired ? '♿' : '-'}</TableCell>
-                        <TableCell><Badge className={c.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>{c.isActive !== false ? '有効' : '無効'}</Badge></TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => openClientDialog(c)}><Edit className="w-4 h-4" /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteClientMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+              {dayLabels.map((dayLabel, dayIdx) => {
+                const dayClients = clients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayIdx));
+                return (
+                  <Card key={dayIdx} className="border-0 shadow">
+                    <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <h3 className="font-bold text-base">{['日', '月', '火', '水', '木', '金', '土'][dayIdx]}曜日（{dayClients.length}名）</h3>
+                    </div>
+                    {dayClients.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400">
+                        <p className="text-sm">利用者がいません</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {dayClients.map(c => (
+                          <div key={c.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium">{c.name}</span>
+                                {c.wheelchairRequired && <Badge className="bg-purple-100 text-purple-700 text-xs">♿</Badge>}
+                                <Badge className={c.isActive !== false ? 'bg-green-100 text-green-700 text-xs' : 'bg-slate-100 text-slate-500 text-xs'}>{c.isActive !== false ? '有効' : '無効'}</Badge>
+                              </div>
+                              <p className="text-sm text-slate-600">
+                                {c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : c.gender === 'other' ? 'その他' : ''}
+                                {c.gender && c.phone && ' / '}
+                                {c.phone}
+                              </p>
+                              {c.notes && <p className="text-xs text-slate-500 mt-1">📝 {c.notes}</p>}
+                            </div>
+                            <div className="flex gap-2 ml-4">
+                              <Button variant="ghost" size="icon" onClick={() => openClientDialog(c)}><Edit className="w-4 h-4" /></Button>
+                              <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteClientMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                            </div>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
           </TabsContent>
 
           {/* テンプレタブ */}
