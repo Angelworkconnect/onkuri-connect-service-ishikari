@@ -2333,11 +2333,11 @@ export default function AdminPanel() {
               <div className="text-5xl mb-4">🚌</div>
               <h2 className="text-xl font-bold text-slate-800 mb-2">送迎管理センター</h2>
               <p className="text-slate-500 mb-6">承認・修正・車両管理・ルート設定・PDF出力は専用の管理センターで行います。</p>
-              <a href={`/${createPageUrl('TransportAdmin')}`}>
+              <Link to={createPageUrl('TransportAdmin')}>
                 <Button className="bg-amber-500 hover:bg-amber-600 text-white text-lg px-8 py-4 h-auto">
                   送迎管理センターを開く →
                 </Button>
-              </a>
+              </Link>
             </div>
           </TabsContent>
 
