@@ -253,6 +253,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
       const dist = Math.max(0, endOdometer - (parseFloat(form.startOdometerKm) || 0));
       
       await base44.entities.Ride.update(rideId, {
+        tripType: form.tripType,
         endTime: form.endTime,
         endOdometerKm: endOdometer,
         distanceKm: dist,
