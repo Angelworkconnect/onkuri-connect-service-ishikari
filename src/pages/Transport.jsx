@@ -296,26 +296,30 @@ export default function Transport() {
               </div>
             ) : (
               <div className="space-y-2">
-                {todayRides.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).map(ride => (
-                  <Card key={ride.id} className="p-3 border-0 shadow-sm">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-bold">{tripLabel(ride.tripType)}</span>
-                          {statusBadge(ride.status)}
-                          {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700">⚠️</Badge>}
-                        </div>
-                        <p className="text-xs text-slate-500">
-                          {ride.vehicleName} / {ride.driverName}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          <Clock className="w-3 h-3 inline mr-1" />{ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ' (運行中)'}
-                          {ride.distanceKm ? ` / ${ride.distanceKm.toFixed(1)}km` : ''}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+                {todayRides.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).map(ride => {
+                   const passengers = ridePassengersMap[ride.id] || [];
+                   return (
+                     <Card key={ride.id} className="p-3 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedRidePassengers({ ride, passengers })}>
+                       <div className="flex items-start justify-between">
+                         <div className="flex-1">
+                           <div className="flex items-center gap-2 mb-1">
+                             <span className="text-sm font-bold">{tripLabel(ride.tripType)}</span>
+                             {statusBadge(ride.status)}
+                             {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700">⚠️</Badge>}
+                           </div>
+                           <p className="text-xs text-slate-500">
+                             {ride.vehicleName} / {ride.driverName}
+                           </p>
+                           <p className="text-xs text-slate-500">
+                             <Clock className="w-3 h-3 inline mr-1" />{ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ' (運行中)'}
+                             {ride.distanceKm ? ` / ${ride.distanceKm.toFixed(1)}km` : ''}
+                           </p>
+                         </div>
+                         <Badge className="bg-blue-100 text-blue-700 ml-2 shrink-0">{passengers.length}名</Badge>
+                       </div>
+                     </Card>
+                   );
+                 })}
               </div>
             )}
           </div>
@@ -343,6 +347,56 @@ export default function Transport() {
             </div>
           </div>
         )}
+
+        {/* 運行詳細ダイアログ */}
+        <Dialog open={!!selectedRidePassengers} onOpenChange={() => setSelectedRidePassengers(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>運行詳細</DialogTitle>
+            </DialogHeader>
+            {selectedRidePassengers && (
+              <div className="space-y-4 py-2">
+                <div className="bg-slate-50 rounded-lg p-3 space-y-2">
+                  <div>
+                    <p className="text-xs text-slate-500">便種別</p>
+                    <p className="text-sm font-bold">{tripLabel(selectedRidePassengers.ride.tripType)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">車両</p>
+                    <p className="text-sm font-bold">{selectedRidePassengers.ride.vehicleName}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">運転者</p>
+                    <p className="text-sm font-bold">{selectedRidePassengers.ride.driverName}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">時間</p>
+                    <p className="text-sm font-bold">{selectedRidePassengers.ride.startTime}{selectedRidePassengers.ride.endTime ? ` ～ ${selectedRidePassengers.ride.endTime}` : ' (運行中)'}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold mb-2">乗客一覧（{selectedRidePassengers.passengers.length}名）</p>
+                  {selectedRidePassengers.passengers.length === 0 ? (
+                    <p className="text-xs text-slate-500">乗客なし</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {selectedRidePassengers.passengers.sort((a, b) => a.order - b.order).map((p, i) => (
+                        <div key={i} className="bg-slate-50 rounded-lg p-2 text-xs">
+                          <p className="font-medium">{p.clientName}</p>
+                          <p className="text-slate-500">
+                            {p.boardTime && <>乗: {p.boardTime}</> } {p.boardTime && p.alightTime && ' / '} {p.alightTime && <>降: {p.alightTime}</>}
+                          </p>
+                          {p.note && <p className="text-slate-500 mt-1">📝 {p.note}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
