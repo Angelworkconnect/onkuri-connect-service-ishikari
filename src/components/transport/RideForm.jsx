@@ -99,7 +99,10 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   };
 
   const addPassenger = () => {
-    setPassengers(prev => [...prev, { clientName: '', boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
+    setPassengersByTrip(prev => ({
+      ...prev,
+      [form.tripType]: [...passengers, { clientName: '', boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: passengers.length }]
+    }));
   };
 
   const addClientPassenger = (clientName) => {
@@ -108,12 +111,25 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
       alert(`${clientName}さんは既に追加されています`);
       return;
     }
-    setPassengers(prev => [...prev, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: prev.length }]);
+    setPassengersByTrip(prev => ({
+      ...prev,
+      [form.tripType]: [...passengers, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: passengers.length }]
+    }));
   };
 
+  const removePassenger = (i) => {
+    setPassengersByTrip(prev => ({
+      ...prev,
+      [form.tripType]: passengers.filter((_, idx) => idx !== i)
+    }));
+  };
 
-  const removePassenger = (i) => setPassengers(prev => prev.filter((_, idx) => idx !== i));
-  const updatePassenger = (i, key, val) => setPassengers(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
+  const updatePassenger = (i, key, val) => {
+    setPassengersByTrip(prev => ({
+      ...prev,
+      [form.tripType]: passengers.map((p, idx) => idx === i ? { ...p, [key]: val } : p)
+    }));
+  };
 
   // Step1保存 → DRAFT作成または更新
   const saveStep1 = async () => {
