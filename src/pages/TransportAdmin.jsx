@@ -253,6 +253,7 @@ export default function TransportAdmin() {
               { value: 'approval', label: `承認 (${submittedRides.length})` },
               { value: 'checks', label: '点検記録' },
               { value: 'vehicles', label: '車両管理' },
+              { value: 'clients', label: '利用者管理' },
               { value: 'templates', label: 'テンプレ' },
               { value: 'export', label: 'PDF出力' },
             ].map(({ value, label }) => (
@@ -404,6 +405,49 @@ export default function TransportAdmin() {
                           <div className="flex gap-2">
                             <Button variant="ghost" size="icon" onClick={() => openVehicleDialog(v)}><Edit className="w-4 h-4" /></Button>
                             <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteVehicleMutation.mutate(v.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* 利用者管理タブ */}
+          <TabsContent value="clients">
+            <Card className="border-0 shadow">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h2 className="font-bold">利用者一覧</h2>
+                <Button className="bg-[#2D4A6F]" onClick={() => openClientDialog()}>
+                  <Plus className="w-4 h-4 mr-1" />新規利用者
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>名前</TableHead>
+                      <TableHead>電話</TableHead>
+                      <TableHead>利用曜日</TableHead>
+                      <TableHead>♿</TableHead>
+                      <TableHead>状態</TableHead>
+                      <TableHead>操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {clients.map(c => (
+                      <TableRow key={c.id}>
+                        <TableCell className="font-medium">{c.name}</TableCell>
+                        <TableCell className="text-sm">{c.phone || '-'}</TableCell>
+                        <TableCell className="text-sm">{c.daysOfWeek && c.daysOfWeek.length > 0 ? c.daysOfWeek.map(d => dayLabels[d]).join('') : '-'}</TableCell>
+                        <TableCell>{c.wheelchairRequired ? '♿' : '-'}</TableCell>
+                        <TableCell><Badge className={c.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>{c.isActive !== false ? '有効' : '無効'}</Badge></TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => openClientDialog(c)}><Edit className="w-4 h-4" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteClientMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
                           </div>
                         </TableCell>
                       </TableRow>
