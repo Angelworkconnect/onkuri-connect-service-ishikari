@@ -237,9 +237,10 @@ export default function Transport() {
         )}
 
         {/* 入力ボタン（スタッフのみ） */}
-        {!isAdmin && (
+        {!isAdmin && !formOpen && (
           <button
-            className="w-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 text-white rounded-3xl p-5 flex items-center gap-4 shadow-xl shadow-blue-500/30 hover:scale-[1.02] transition-transform active:scale-100"
+            type="button"
+            className="w-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 text-white rounded-3xl p-5 flex items-center gap-4 shadow-xl shadow-blue-500/30 active:scale-95 transition-transform"
             onClick={() => setFormOpen(true)}
           >
             <div className="bg-white/20 rounded-2xl p-3 shrink-0">
@@ -251,6 +252,180 @@ export default function Transport() {
             </div>
             <div className="text-3xl shrink-0">🚌</div>
           </button>
+        )}
+
+        {/* インライン入力フォーム */}
+        {!isAdmin && formOpen && (
+          <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-violet-600 to-blue-600 px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white">
+                <span className="text-xl">🚌</span>
+                <span className="font-bold">送迎記録入力</span>
+              </div>
+              <button type="button" onClick={() => setFormOpen(false)} className="text-white/70 hover:text-white text-2xl leading-none">×</button>
+            </div>
+            <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* テンプレ選択 */}
+              {templates.length > 0 && (
+                <div>
+                  <label className="text-xs font-bold text-slate-500 mb-1 block">ルートテンプレから開始（任意）</label>
+                  <div className="flex flex-wrap gap-2">
+                    {templates.map(t => (
+                      <button key={t.id} type="button" onClick={() => applyTemplate(t)}
+                        className="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs px-3 py-1.5 rounded-xl hover:bg-indigo-100 transition-colors font-medium">
+                        {t.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">日付 *</label>
+                  <Input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">便種別 *</label>
+                  <Select value={form.tripType} onValueChange={v => setForm(f => ({ ...f, tripType: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PICKUP">🌅 朝便（迎え）</SelectItem>
+                      <SelectItem value="DROPOFF">🌇 帰便（送り）</SelectItem>
+                      <SelectItem value="OTHER">🚐 その他</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">車両 *</label>
+                <Select value={form.vehicleId || 'none'} onValueChange={v => {
+                  const vehicle = vehicles.find(x => x.id === v);
+                  setForm(f => ({ ...f, vehicleId: v === 'none' ? '' : v, vehicleName: vehicle?.name || '', vehiclePlate: vehicle?.plateNumber || '' }));
+                }}>
+                  <SelectTrigger><SelectValue placeholder="車両を選択" /></SelectTrigger>
+                  <SelectContent>
+                    {vehicles.map(v => <SelectItem key={v.id} value={v.id}>🚌 {v.name}（{v.plateNumber}）</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">運転者 *</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {staff.filter(s => s.approval_status === 'approved').map(s => (
+                    <button key={s.email} type="button" onClick={() => setForm(f => ({ ...f, driverEmail: s.email, driverName: s.full_name }))}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${form.driverEmail === s.email ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${form.driverEmail === s.email ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                        {s.full_name?.[0] || '?'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">{s.full_name}</p>
+                        <p className="text-xs text-slate-400 truncate">{s.role === 'admin' ? '管理者' : s.role === 'full_time' ? '正社員' : s.role === 'part_time' ? 'パート' : '単発'}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">同乗スタッフ（任意）</label>
+                <Select value={form.attendantEmail || 'none'} onValueChange={v => {
+                  const s = staff.find(x => x.email === v);
+                  setForm(f => ({ ...f, attendantEmail: v === 'none' ? '' : v, attendantName: s?.full_name || '' }));
+                }}>
+                  <SelectTrigger><SelectValue placeholder="なし" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">なし</SelectItem>
+                    {staff.filter(s => s.approval_status === 'approved' && s.email !== form.driverEmail).map(s => (
+                      <SelectItem key={s.email} value={s.email}>{s.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">出発時刻 *</label>
+                  <Input type="time" value={form.startTime} onChange={e => setForm(f => ({ ...f, startTime: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">開始メーター(km) *</label>
+                  <Input type="number" placeholder="例: 12345" value={form.startOdometerKm} onChange={e => setForm(f => ({ ...f, startOdometerKm: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">到着時刻</label>
+                  <Input type="time" value={form.endTime} onChange={e => setForm(f => ({ ...f, endTime: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">終了メーター(km)</label>
+                  <Input type="number" placeholder="例: 12378" value={form.endOdometerKm} onChange={e => setForm(f => ({ ...f, endOdometerKm: e.target.value }))} />
+                </div>
+              </div>
+              {form.endOdometerKm && form.startOdometerKm && (
+                <div className="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-200">
+                  <p className="text-emerald-700 font-bold">走行距離：{Math.max(0, parseFloat(form.endOdometerKm) - parseFloat(form.startOdometerKm)).toFixed(1)} km</p>
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-600">乗車利用者</label>
+                  <button type="button" onClick={addPassenger} className="text-xs text-blue-600 font-bold hover:underline">＋ 追加</button>
+                </div>
+                <div className="space-y-2">
+                  {form.passengers.map((p, i) => (
+                    <div key={i} className="bg-slate-50 rounded-xl p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input placeholder="利用者名 *" value={p.clientName} onChange={e => updatePassenger(i, 'clientName', e.target.value)} className="flex-1" />
+                        <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600 text-sm px-2">✗</button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input type="time" placeholder="乗車時刻" value={p.boardTime} onChange={e => updatePassenger(i, 'boardTime', e.target.value)} />
+                        <Input type="time" placeholder="降車時刻" value={p.alightTime} onChange={e => updatePassenger(i, 'alightTime', e.target.value)} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch checked={p.seatBeltChecked} onCheckedChange={v => updatePassenger(i, 'seatBeltChecked', v)} />
+                        <span className="text-xs text-slate-600">シートベルト確認済み</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">異常の有無</label>
+                <Select value={form.abnormality} onValueChange={v => setForm(f => ({ ...f, abnormality: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NONE">✅ 異常なし</SelectItem>
+                    <SelectItem value="MINOR">⚠️ 軽微な異常あり</SelectItem>
+                    <SelectItem value="ACCIDENT">🚨 事故・重大事故</SelectItem>
+                  </SelectContent>
+                </Select>
+                {form.abnormality !== 'NONE' && (
+                  <Input className="mt-2 border-red-200" placeholder="異常の内容を入力してください（必須）" value={form.abnormalityNote}
+                    onChange={e => setForm(f => ({ ...f, abnormalityNote: e.target.value }))} />
+                )}
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700">
+                📋 保存すると管理者に提出されます。提出後は編集できません。
+              </div>
+
+              <div className="flex gap-3 pb-2">
+                <Button variant="outline" className="flex-1" onClick={() => setFormOpen(false)}>キャンセル</Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold"
+                  disabled={!canSubmit || submitMutation.isPending}
+                  onClick={() => submitMutation.mutate()}
+                >
+                  {submitMutation.isPending ? '提出中...' : '提出する'}
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* 今日の送迎一覧 */}
