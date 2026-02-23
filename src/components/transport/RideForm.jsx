@@ -379,14 +379,17 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                <div>
                  <p className="text-xs font-bold text-slate-500 mb-2">本日の利用者一覧（タップで追加）</p>
                  <div className="flex flex-wrap gap-2 mb-3">
-                   {clients.map(c => {
-                     const bgColor = c.gender === 'male' ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100' : c.gender === 'female' ? 'bg-pink-50 border-pink-300 text-pink-700 hover:bg-pink-100' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100';
-                     return (
-                       <button key={c.id} onClick={() => addClientPassenger(c.name)} className={`text-xs px-3 py-1.5 rounded-lg border-2 font-medium transition-all ${bgColor}`}>
-                         {c.wheelchairRequired ? '♿ ' : ''}{c.name}
-                       </button>
-                     );
-                   })}
+                   {(() => {
+                     const addedNames = new Set(passengers.map(p => p.clientName).filter(n => n.trim()));
+                     return clients.filter(c => !addedNames.has(c.name)).map(c => {
+                       const bgColor = c.gender === 'male' ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100' : c.gender === 'female' ? 'bg-pink-50 border-pink-300 text-pink-700 hover:bg-pink-100' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100';
+                       return (
+                         <button key={c.id} onClick={() => addClientPassenger(c.name)} className={`text-xs px-3 py-1.5 rounded-lg border-2 font-medium transition-all ${bgColor}`}>
+                           {c.wheelchairRequired ? '♿ ' : ''}{c.name}
+                         </button>
+                       );
+                     });
+                   })()}
                  </div>
                </div>
              )}
