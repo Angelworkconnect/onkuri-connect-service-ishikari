@@ -13,30 +13,31 @@ const getNow = () => {
 };
 const getToday = () => new Date().toISOString().split('T')[0];
 
-export default function RideForm({ user, vehicles, staff, templates, onSaved, onCancel }) {
+export default function RideForm({ user, vehicles, staff, templates, editingRide, onSaved, onCancel }) {
   const [step, setStep] = useState(1); // 1=基本情報, 2=乗客, 3=終了
   const [saving, setSaving] = useState(false);
-  const [savedRide, setSavedRide] = useState(null);
+  const [savedRide, setSavedRide] = useState(editingRide || null);
   const [clients, setClients] = useState([]);
+  const isEditing = !!editingRide;
 
   const [form, setForm] = useState({
-    date: getToday(),
-    tripType: 'PICKUP',
-    vehicleId: '',
-    vehicleName: '',
-    vehiclePlate: '',
-    driverEmail: user?.email || '',
-    driverName: user?.full_name || '',
-    attendantEmail: '',
-    attendantName: '',
-    startTime: getNow(),
-    endTime: '',
-    startOdometerKm: '',
-    endOdometerKm: '',
-    abnormality: 'NONE',
-    abnormalityNote: '',
-    routeTemplateId: '',
-    routeTemplateName: '',
+    date: editingRide?.date || getToday(),
+    tripType: editingRide?.tripType || 'PICKUP',
+    vehicleId: editingRide?.vehicleId || '',
+    vehicleName: editingRide?.vehicleName || '',
+    vehiclePlate: editingRide?.vehiclePlate || '',
+    driverEmail: editingRide?.driverEmail || user?.email || '',
+    driverName: editingRide?.driverName || user?.full_name || '',
+    attendantEmail: editingRide?.attendantEmail || '',
+    attendantName: editingRide?.attendantName || '',
+    startTime: editingRide?.startTime || getNow(),
+    endTime: editingRide?.endTime || '',
+    startOdometerKm: editingRide?.startOdometerKm || '',
+    endOdometerKm: editingRide?.endOdometerKm || '',
+    abnormality: editingRide?.abnormality || 'NONE',
+    abnormalityNote: editingRide?.abnormalityNote || '',
+    routeTemplateId: editingRide?.routeTemplateId || '',
+    routeTemplateName: editingRide?.routeTemplateName || '',
   });
 
   const [passengers, setPassengers] = useState([]);
@@ -49,12 +50,18 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
         const allClients = await base44.entities.Client.list('name');
         const todayClients = allClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
         setClients(todayClients);
+        
+        // 編集モードの場合、乗客を読み込む
+        if (isEditing && editingRide.id) {
+          const existingPassengers = await base44.entities.RidePassenger.filter({ rideId: editingRide.id });
+          setPassengers(existingPassengers);
+        }
       } catch (error) {
         console.error('Failed to load clients:', error);
         setClients([]);
       }
     })();
-  }, []);
+  }, [isEditing, editingRide]);
 
   const applyTemplate = (t) => {
     setForm(f => ({
@@ -97,7 +104,7 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   const removePassenger = (i) => setPassengers(prev => prev.filter((_, idx) => idx !== i));
   const updatePassenger = (i, key, val) => setPassengers(prev => prev.map((p, idx) => idx === i ? { ...p, [key]: val } : p));
 
-  // Step1保存 → DRAFT作成
+  // Step1保存 → DRAFT作成または更新
   const saveStep1 = async () => {
     if (!form.vehicleId || !form.driverEmail || !form.startOdometerKm) return;
     setSaving(true);
@@ -117,14 +124,22 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
         routeTemplateName: form.routeTemplateName,
         startOdometerKm: parseFloat(form.startOdometerKm) || 0,
         status: 'DRAFT',
-        createdByEmail: user.email,
-        createdByName: user.full_name,
       };
-      const ride = await base44.entities.Ride.create(rideData);
+      
+      let ride;
+      if (isEditing && editingRide.id && !editingRide.id.startsWith('temp-')) {
+        // 既存の下書きを更新
+        await base44.entities.Ride.update(editingRide.id, rideData);
+        ride = { ...editingRide, ...rideData };
+      } else {
+        // 新規作成
+        rideData.createdByEmail = user.email;
+        rideData.createdByName = user.full_name;
+        ride = await base44.entities.Ride.create(rideData);
+      }
       setSavedRide(ride);
     } catch (error) {
       console.error('Error saving ride:', error);
-      // エラーでも一時的なrideオブジェクトを作成してStep2に進む
       setSavedRide({ id: 'temp-' + Date.now(), ...form });
     } finally {
       setSaving(false);
