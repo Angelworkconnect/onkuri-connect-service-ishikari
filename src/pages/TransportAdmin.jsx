@@ -537,11 +537,12 @@ export default function TransportAdmin() {
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>{editingVehicle ? '車両編集' : '新規車両登録'}</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
-            <div><Label>車両名 *</Label><Input value={vehicleForm.name} onChange={e => setVehicleForm(f => ({ ...f, name: e.target.value }))} placeholder="ハイエース1号" /></div>
-            <div><Label>ナンバー *</Label><Input value={vehicleForm.plateNumber} onChange={e => setVehicleForm(f => ({ ...f, plateNumber: e.target.value }))} placeholder="札幌 500 あ 1234" /></div>
-            <div><Label>車種</Label><Input value={vehicleForm.model} onChange={e => setVehicleForm(f => ({ ...f, model: e.target.value }))} placeholder="ハイエース" /></div>
-            <div><Label>定員</Label><Input type="number" value={vehicleForm.capacity} onChange={e => setVehicleForm(f => ({ ...f, capacity: e.target.value }))} /></div>
-            <div className="flex items-center gap-2"><Switch checked={vehicleForm.isActive} onCheckedChange={v => setVehicleForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
+          <div><Label>車両名 *</Label><Input value={vehicleForm.name} onChange={e => setVehicleForm(f => ({ ...f, name: e.target.value }))} placeholder="ハイエース1号" /></div>
+          <div><Label>ナンバー *</Label><Input value={vehicleForm.plateNumber} onChange={e => setVehicleForm(f => ({ ...f, plateNumber: e.target.value }))} placeholder="札幌 500 あ 1234" /></div>
+          <div><Label>車種</Label><Input value={vehicleForm.model} onChange={e => setVehicleForm(f => ({ ...f, model: e.target.value }))} placeholder="ハイエース" /></div>
+          <div><Label>定員（人）</Label><Input type="number" min="1" value={vehicleForm.capacity} onChange={e => setVehicleForm(f => ({ ...f, capacity: e.target.value }))} placeholder="8" /></div>
+          <div className="flex items-center gap-2"><Switch checked={vehicleForm.wheelchairAccessible} onCheckedChange={v => setVehicleForm(f => ({ ...f, wheelchairAccessible: v }))} /><Label>車椅子送迎可能</Label></div>
+          <div className="flex items-center gap-2"><Switch checked={vehicleForm.isActive} onCheckedChange={v => setVehicleForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setVehicleDialog(false)}>キャンセル</Button>
