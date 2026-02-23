@@ -96,6 +96,59 @@ export default function TransportAdmin() {
     queryFn: () => base44.entities.VehiclePreCheck.list('-checkedAtUtcMs', 10),
   });
 
+  const { data: exportLogs = [] } = useQuery({
+    queryKey: ['exportLogs'],
+    queryFn: () => base44.entities.TransportExportLog.list('-createdAtUtcMs', 20),
+  });
+
+  const logExportMutation = useMutation({
+    mutationFn: () => base44.entities.TransportExportLog.create({
+      exportType: exportMode === 'daily' ? 'PDF_DAILY' : 'PDF_MONTHLY',
+      dateFrom, dateTo,
+      createdByEmail: user?.email || '',
+      createdByName: user?.full_name || user?.email || '',
+      createdAtUtcMs: Date.now(),
+      filterInfo: JSON.stringify({ vehicleId: filterVehicleId, tripType: filterTripType }),
+    }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['exportLogs'] }),
+  });
+
+  const loadAndPrint = async () => {
+    setIsExportLoading(true);
+    try {
+      const rides = await base44.entities.Ride.filter({ status: 'APPROVED' }, 'date');
+      const filtered = rides.filter(r => {
+        if (r.date < dateFrom || r.date > dateTo) return false;
+        if (filterVehicleId !== 'all' && r.vehicleId !== filterVehicleId) return false;
+        if (filterTripType !== 'all' && r.tripType !== filterTripType) return false;
+        return true;
+      });
+      const pMap = {};
+      await Promise.all(filtered.map(async (ride) => {
+        const passengers = await base44.entities.RidePassenger.filter({ rideId: ride.id }, 'order');
+        pMap[ride.id] = passengers;
+      }));
+      const preChecks = await base44.entities.VehiclePreCheck.filter({});
+      const driverChecks = await base44.entities.DriverDailyCheck.filter({});
+      setRidesData(filtered);
+      setPassengersMap(pMap);
+      setPreChecksData(preChecks.filter(c => c.date >= dateFrom && c.date <= dateTo));
+      setDriverChecksData(driverChecks.filter(c => c.date >= dateFrom && c.date <= dateTo));
+      await logExportMutation.mutateAsync();
+      setTimeout(() => window.print(), 500);
+    } finally {
+      setIsExportLoading(false);
+    }
+  };
+
+  const fuelLabels = { FULL: 'FULL', '3_4': '3/4', HALF: '1/2', '1_4': '1/4', LOW: '要給油' };
+  const abnLabels = { NONE: '異常なし', MINOR: '軽微な異常', ACCIDENT: '事故' };
+  const tripLabel = { PICKUP: '朝便（迎え）', DROPOFF: '帰便（送り）', OTHER: 'その他' };
+  const groupedByDate = ridesData ? ridesData.reduce((acc, ride) => { if (!acc[ride.date]) acc[ride.date] = []; acc[ride.date].push(ride); return acc; }, {}) : {};
+  const totalDistance = ridesData ? ridesData.reduce((s, r) => s + (r.distanceKm || 0), 0) : 0;
+  const accidentCount = ridesData ? ridesData.filter(r => r.abnormality === 'ACCIDENT').length : 0;
+  const abnormalCount = ridesData ? ridesData.filter(r => r.abnormality !== 'NONE').length : 0;
+
   const approveMutation = useMutation({
     mutationFn: async (ride) => {
       await base44.entities.Ride.update(ride.id, {
