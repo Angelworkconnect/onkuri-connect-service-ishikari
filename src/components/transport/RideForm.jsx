@@ -74,9 +74,12 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
       routeTemplateId: t.id,
       routeTemplateName: t.name,
     }));
-    setPassengers((t.defaultPassengerNames || []).map((name, i) => ({
-      clientName: name, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: i,
-    })));
+    setPassengersByTrip(prev => ({
+      ...prev,
+      [t.tripType]: (t.defaultPassengerNames || []).map((name, i) => ({
+        clientName: name, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: i,
+      }))
+    }));
   };
 
   const handleVehicleChange = (id) => {
