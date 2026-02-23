@@ -40,7 +40,8 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
     routeTemplateName: editingRide?.routeTemplateName || '',
   });
 
-  const [passengers, setPassengers] = useState([]);
+  const [passengersByTrip, setPassengersByTrip] = useState({ PICKUP: [], DROPOFF: [], OTHER: [] });
+  const passengers = passengersByTrip[form.tripType] || [];
 
   useEffect(() => {
     (async () => {
