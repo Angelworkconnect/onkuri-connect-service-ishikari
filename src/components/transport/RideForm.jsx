@@ -140,13 +140,17 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
 
   // Step3: 終了・提出
   const submitRide = async () => {
-    if (!form.endOdometerKm || !form.endTime) return;
+    const endOdometer = Number(form.endOdometerKm);
+    if (!form.endTime || isNaN(endOdometer)) {
+      alert('終了時刻と終了メーターが必須です');
+      return;
+    }
     setSaving(true);
     try {
-      const dist = Math.max(0, Number(form.endOdometerKm) - Number(form.startOdometerKm));
+      const dist = Math.max(0, endOdometer - Number(form.startOdometerKm));
       await base44.entities.Ride.update(savedRide.id, {
         endTime: form.endTime,
-        endOdometerKm: Number(form.endOdometerKm),
+        endOdometerKm: endOdometer,
         distanceKm: dist,
         abnormality: form.abnormality,
         abnormalityNote: form.abnormalityNote,
