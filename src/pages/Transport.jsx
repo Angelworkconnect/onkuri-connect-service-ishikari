@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Plus, CheckCircle2, Clock, Truck, AlertTriangle, ClipboardCheck, User, Trash2 } from 'lucide-react';
+import { Plus, CheckCircle2, Clock, Truck, AlertTriangle, ClipboardCheck, User, Trash2, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import RideForm from '../components/transport/RideForm';
 import PreCheckForm from '../components/transport/PreCheckForm';
 import DriverCheckForm from '../components/transport/DriverCheckForm';
@@ -24,6 +25,7 @@ export default function Transport() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [mode, setMode] = useState(null); // 'ride' | 'precheck' | 'drivercheck'
   const [editingRide, setEditingRide] = useState(null);
+  const [selectedRidePassengers, setSelectedRidePassengers] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -49,6 +51,18 @@ export default function Transport() {
     queryKey: ['transport-my'],
     queryFn: () => base44.entities.Ride.list('-created_date', 20),
     enabled: !!user,
+  });
+
+  const { data: ridePassengersMap = {} } = useQuery({
+    queryKey: ['transport-passengers-map', todayRides.map(r => r.id).join(',')],
+    queryFn: async () => {
+      const map = {};
+      for (const ride of todayRides) {
+        map[ride.id] = await base44.entities.RidePassenger.filter({ rideId: ride.id });
+      }
+      return map;
+    },
+    enabled: !!user && todayRides.length > 0,
   });
 
   const { data: vehicles = [] } = useQuery({
