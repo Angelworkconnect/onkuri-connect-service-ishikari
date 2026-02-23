@@ -410,7 +410,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                  const currentPassengerNames = new Set(passengers.map(p => p.clientName).filter(n => n.trim()));
                  const bookedInThisTrip = new Set();
                  todayRides.forEach(ride => {
-                   if (ride.id !== editingRide?.id && ride.tripType === form.tripType) {
+                   if (ride.id !== editingRide?.id && ride.tripType === form.tripType && (ride.status === 'SUBMITTED' || ride.status === 'APPROVED')) {
                      const ridePassengers = ridePassengersMap[ride.id] || [];
                      ridePassengers.forEach(p => bookedInThisTrip.add(p.clientName));
                    }
