@@ -824,6 +824,43 @@ export default function TransportAdmin() {
         </DialogContent>
       </Dialog>
 
+      {/* 点検編集ダイアログ */}
+      <Dialog open={!!editingPreCheck} onOpenChange={() => setEditingPreCheck(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>点検記録を編集</DialogTitle></DialogHeader>
+          {editingPreCheck && (
+            <PreCheckForm 
+              user={user} 
+              vehicles={vehicles} 
+              editingPreCheck={editingPreCheck}
+              onSaved={() => {
+                setEditingPreCheck(null);
+                queryClient.invalidateQueries(['ta-prechecks']);
+              }} 
+              onCancel={() => setEditingPreCheck(null)} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 運転者チェック編集ダイアログ */}
+      <Dialog open={!!editingDriverCheck} onOpenChange={() => setEditingDriverCheck(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>日常確認を編集</DialogTitle></DialogHeader>
+          {editingDriverCheck && (
+            <DriverCheckForm 
+              user={user} 
+              editingDriverCheck={editingDriverCheck}
+              onSaved={() => {
+                setEditingDriverCheck(null);
+                queryClient.invalidateQueries(['ta-driverchecks']);
+              }} 
+              onCancel={() => setEditingDriverCheck(null)} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* テンプレダイアログ */}
       <Dialog open={templateDialog} onOpenChange={setTemplateDialog}>
         <DialogContent className="max-w-md">
