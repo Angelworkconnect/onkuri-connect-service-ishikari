@@ -24,6 +24,7 @@ export default function Transport() {
   const [mode, setMode] = useState(null); // 'ride' | 'precheck' | 'drivercheck'
   const [editingRide, setEditingRide] = useState(null);
   const [selectedRidePassengers, setSelectedRidePassengers] = useState(null);
+  const [today, setToday] = useState(() => new Date().toISOString().split('T')[0]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
