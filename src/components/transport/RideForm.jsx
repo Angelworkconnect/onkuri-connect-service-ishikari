@@ -260,21 +260,34 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
         )}
 
         {/* Step 2: 乗客 */}
-        {step === 2 && (
-          <>
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-slate-700">乗車利用者（{passengers.length}名）</p>
-              <button type="button" onClick={addPassenger} className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline">
-                <Plus className="w-3 h-3" />追加
-              </button>
-            </div>
+         {step === 2 && (
+           <>
+             <div className="flex items-center justify-between">
+               <p className="text-sm font-bold text-slate-700">乗車利用者（{passengers.length}名）</p>
+               <button type="button" onClick={addPassenger} className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline">
+                 <Plus className="w-3 h-3" />手動追加
+               </button>
+             </div>
 
-            {passengers.length === 0 && (
-              <div className="text-center py-6 text-slate-400 text-sm">
-                <p>乗客を追加してください</p>
-                <button type="button" onClick={addPassenger} className="mt-2 text-blue-500 text-xs underline">＋ 追加する</button>
-              </div>
-            )}
+             {clients.length > 0 && (
+               <div>
+                 <p className="text-xs font-bold text-slate-500 mb-2">本日の利用者一覧（タップで追加）</p>
+                 <div className="flex flex-wrap gap-2 mb-3">
+                   {clients.map(c => (
+                     <button key={c.id} onClick={() => addClientPassenger(c.name)} className="text-xs px-3 py-1.5 rounded-lg border-2 border-green-300 bg-green-50 text-green-700 font-medium hover:bg-green-100 transition-all">
+                       {c.wheelchairRequired ? '♿ ' : ''}{c.name}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+             )}
+
+             {passengers.length === 0 && (
+               <div className="text-center py-6 text-slate-400 text-sm">
+                 <p>{clients.length > 0 ? '上記から利用者を選択するか' : ''}乗客を追加してください</p>
+                 <button type="button" onClick={addPassenger} className="mt-2 text-blue-500 text-xs underline">＋ 追加する</button>
+               </div>
+             )}
 
             <div className="space-y-3">
               {passengers.map((p, i) => (
