@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 
 export default function DriverCheckForm({ user, onSaved, onCancel }) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
   const [form, setForm] = useState({
     date: today,
     fitForDuty: 'OK',

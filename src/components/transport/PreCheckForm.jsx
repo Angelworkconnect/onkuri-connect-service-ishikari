@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 const FUEL_LABELS = { FULL: '満タン', '3_4': '3/4', HALF: '1/2', '1_4': '1/4', LOW: '少ない' };
 
 export default function PreCheckForm({ user, vehicles, onSaved, onCancel }) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
   const [form, setForm] = useState({
     date: today,
     vehicleId: '',
