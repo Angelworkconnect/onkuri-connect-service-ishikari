@@ -38,6 +38,7 @@ export default function TransportAdmin() {
   const [clientDialog, setClientDialog] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
+  const [editingRide, setEditingRide] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -173,6 +174,14 @@ export default function TransportAdmin() {
     onSuccess: () => queryClient.invalidateQueries(['ta-clients']),
   });
 
+  const deleteRideMutation = useMutation({
+    mutationFn: (id) => base44.entities.Ride.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ta-submitted']);
+      setDetailRide(null);
+    },
+  });
+
   const handleExportPDF = async (exportType) => {
     setExporting(true);
     try {
@@ -275,8 +284,8 @@ export default function TransportAdmin() {
               ) : (
                 <div className="divide-y">
                   {submittedRides.sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
-                    <div key={ride.id} className="p-4 hover:bg-slate-50 cursor-pointer flex items-center justify-between" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>
-                      <div>
+                    <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between border-b last:border-0">
+                      <div className="flex-1 cursor-pointer" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium">{ride.date}</span>
                           <Badge className="bg-blue-100 text-blue-700 text-xs">{tripLabel(ride.tripType)}</Badge>
@@ -285,9 +294,11 @@ export default function TransportAdmin() {
                         <p className="text-sm text-slate-600">{ride.vehicleName} / {ride.driverName}</p>
                         <p className="text-xs text-slate-400">{ride.startTime} ～ {ride.endTime} / {(ride.distanceKm || 0).toFixed(1)}km</p>
                       </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={e => { e.stopPropagation(); setDetailRide(ride); setAdminNote(''); }}>
-                        確認・承認
-                      </Button>
+                      <div className="flex gap-2 ml-4">
+                        <Button size="sm" variant="ghost" onClick={() => setEditingRide(ride)}><Edit className="w-4 h-4" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>確認・承認</Button>
+                      </div>
                     </div>
                   ))}
                 </div>
