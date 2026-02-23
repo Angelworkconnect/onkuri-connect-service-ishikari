@@ -353,6 +353,7 @@ export default function TransportAdmin() {
                       <TableHead>ナンバー</TableHead>
                       <TableHead>車種</TableHead>
                       <TableHead>定員</TableHead>
+                      <TableHead>車椅子</TableHead>
                       <TableHead>状態</TableHead>
                       <TableHead>操作</TableHead>
                     </TableRow>
