@@ -213,7 +213,7 @@ export default function Transport() {
       </div>
 
       {/* 統計カード（ヘッダーの外に出す） */}
-      <div className="max-w-2xl mx-auto px-4 -mt-8">
+      <div className="max-w-2xl mx-auto px-4 -mt-14">
         <div className="grid grid-cols-3 gap-3">
           {[
             { label: '今日の送迎', value: todayRides.length, color: 'from-blue-500 to-blue-600', icon: '🚌' },
