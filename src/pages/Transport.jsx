@@ -295,10 +295,10 @@ export default function Transport() {
         </div>
 
         {/* 自分の最近の記録 */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b bg-slate-50 flex items-center gap-2">
-            <User className="w-4 h-4 text-slate-400" />
-            <span className="text-sm font-bold text-slate-600">自分の送迎履歴（直近30件）</span>
+        <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-slate-100">
+          <div className="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-violet-50 flex items-center gap-2">
+            <User className="w-4 h-4 text-violet-400" />
+            <span className="text-sm font-bold text-slate-700">自分の送迎履歴（直近30件）</span>
           </div>
           {myRides.filter(r => r.date !== today).length === 0 ? (
             <div className="py-8 text-center text-slate-400 text-sm">過去の記録はありません</div>
