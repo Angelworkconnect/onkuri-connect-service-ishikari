@@ -175,7 +175,7 @@ export default function Transport() {
 
         {/* フォーム表示エリア */}
          {mode === 'ride' && (
-            <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} editingRide={editingRide} onSaved={handleSaved} onCancel={() => { setMode(null); setEditingRide(null); }} />
+            <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} editingRide={editingRide} todayRides={todayRides} ridePassengersMap={ridePassengersMap} onSaved={handleSaved} onCancel={() => { setMode(null); setEditingRide(null); }} />
          )}
         {mode === 'precheck' && (
           <PreCheckForm user={user} vehicles={vehicles} onSaved={handleSaved} onCancel={() => setMode(null)} />
