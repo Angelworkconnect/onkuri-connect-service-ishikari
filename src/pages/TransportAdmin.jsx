@@ -363,7 +363,8 @@ export default function TransportAdmin() {
                         <TableCell className="font-medium">{v.name}</TableCell>
                         <TableCell>{v.plateNumber}</TableCell>
                         <TableCell>{v.model || '-'}</TableCell>
-                        <TableCell>{v.capacity || '-'}</TableCell>
+                        <TableCell>{v.capacity ? `${v.capacity}名` : '-'}</TableCell>
+                        <TableCell>{v.wheelchairAccessible ? <Badge className="bg-purple-100 text-purple-700">♿ 可</Badge> : <span className="text-slate-400 text-xs">-</span>}</TableCell>
                         <TableCell><Badge className={v.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>{v.isActive !== false ? '有効' : '無効'}</Badge></TableCell>
                         <TableCell>
                           <div className="flex gap-2">
