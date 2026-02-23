@@ -39,6 +39,21 @@ export default function Transport() {
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const newToday = new Date().toISOString().split('T')[0];
+      setToday(prevToday => {
+        if (prevToday !== newToday) {
+          queryClient.invalidateQueries({ queryKey: ['transport-today'] });
+          queryClient.invalidateQueries({ queryKey: ['transport-precheck-today'] });
+          queryClient.invalidateQueries({ queryKey: ['transport-drivercheck-today'] });
+        }
+        return newToday;
+      });
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [queryClient]);
+
   const { data: todayRides = [] } = useQuery({
     queryKey: ['transport-today'],
     queryFn: () => base44.entities.Ride.filter({ date: today }),
