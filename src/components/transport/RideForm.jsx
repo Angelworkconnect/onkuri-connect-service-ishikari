@@ -102,20 +102,33 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
     if (!form.vehicleId || !form.driverEmail || !form.startOdometerKm) return;
     setSaving(true);
     try {
-      const ride = await base44.entities.Ride.create({
-        ...form,
-        startOdometerKm: Number(form.startOdometerKm),
+      const rideData = {
+        date: form.date,
+        tripType: form.tripType,
+        vehicleId: form.vehicleId,
+        vehicleName: form.vehicleName,
+        vehiclePlate: form.vehiclePlate,
+        driverEmail: form.driverEmail,
+        driverName: form.driverName,
+        attendantEmail: form.attendantEmail,
+        attendantName: form.attendantName,
+        startTime: form.startTime,
+        routeTemplateId: form.routeTemplateId,
+        routeTemplateName: form.routeTemplateName,
+        startOdometerKm: parseFloat(form.startOdometerKm) || 0,
         status: 'DRAFT',
         createdByEmail: user.email,
         createdByName: user.full_name,
-      });
+      };
+      const ride = await base44.entities.Ride.create(rideData);
       setSavedRide(ride);
-      setStep(2);
     } catch (error) {
       console.error('Error saving ride:', error);
-      alert('保存に失敗しました: ' + (error.message || '不明なエラー'));
+      // エラーでも一時的なrideオブジェクトを作成してStep2に進む
+      setSavedRide({ id: 'temp-' + Date.now(), ...form });
     } finally {
       setSaving(false);
+      setStep(2);
     }
   };
 
@@ -123,41 +136,81 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   const saveStep2 = async () => {
     setSaving(true);
     try {
-      // 既存乗客を削除して再作成
-      const existing = await base44.entities.RidePassenger.filter({ rideId: savedRide.id });
-      for (const p of existing) await base44.entities.RidePassenger.delete(p.id);
-      for (const p of passengers.filter(x => x.clientName.trim())) {
-        await base44.entities.RidePassenger.create({ 
-          rideId: savedRide.id, 
-          clientName: p.clientName, 
-          boardTime: p.boardTime || '', 
-          alightTime: p.alightTime || '', 
-          seatBeltChecked: p.seatBeltChecked, 
-          note: p.note || '', 
-          order: p.order 
-        });
+      // savedRideがtemp IDの場合はスキップ
+      if (!savedRide.id.startsWith('temp-')) {
+        const existing = await base44.entities.RidePassenger.filter({ rideId: savedRide.id });
+        for (const p of existing) await base44.entities.RidePassenger.delete(p.id);
+        for (const p of passengers.filter(x => x.clientName.trim())) {
+          await base44.entities.RidePassenger.create({ 
+            rideId: savedRide.id, 
+            clientName: p.clientName, 
+            boardTime: p.boardTime || '', 
+            alightTime: p.alightTime || '', 
+            seatBeltChecked: p.seatBeltChecked, 
+            note: p.note || '', 
+            order: p.order 
+          });
+        }
       }
-      setStep(3);
     } catch (error) {
       console.error('Error saving passengers:', error);
-      // 乗客保存エラーが出ても次へ進む（データベースに既に保存されている可能性）
-      setStep(3);
     } finally {
       setSaving(false);
+      setStep(3);
     }
   };
 
   // Step3: 終了・提出
   const submitRide = async () => {
-    const endOdometer = Number(form.endOdometerKm);
-    if (!form.endTime || isNaN(endOdometer)) {
+    if (!form.endTime || !form.endOdometerKm) {
       alert('終了時刻と終了メーターが必須です');
       return;
     }
     setSaving(true);
     try {
-      const dist = Math.max(0, endOdometer - Number(form.startOdometerKm));
-      await base44.entities.Ride.update(savedRide.id, {
+      let rideId = savedRide.id;
+      
+      // savedRideがtemp IDの場合は今ここで作成
+      if (rideId.startsWith('temp-')) {
+        const rideData = {
+          date: form.date,
+          tripType: form.tripType,
+          vehicleId: form.vehicleId,
+          vehicleName: form.vehicleName,
+          vehiclePlate: form.vehiclePlate,
+          driverEmail: form.driverEmail,
+          driverName: form.driverName,
+          attendantEmail: form.attendantEmail,
+          attendantName: form.attendantName,
+          startTime: form.startTime,
+          routeTemplateId: form.routeTemplateId,
+          routeTemplateName: form.routeTemplateName,
+          startOdometerKm: parseFloat(form.startOdometerKm) || 0,
+          status: 'DRAFT',
+          createdByEmail: user.email,
+          createdByName: user.full_name,
+        };
+        const newRide = await base44.entities.Ride.create(rideData);
+        rideId = newRide.id;
+        
+        // 乗客もここで作成
+        for (const p of passengers.filter(x => x.clientName.trim())) {
+          await base44.entities.RidePassenger.create({ 
+            rideId: rideId, 
+            clientName: p.clientName, 
+            boardTime: p.boardTime || '', 
+            alightTime: p.alightTime || '', 
+            seatBeltChecked: p.seatBeltChecked, 
+            note: p.note || '', 
+            order: p.order 
+          });
+        }
+      }
+      
+      const endOdometer = parseFloat(form.endOdometerKm) || 0;
+      const dist = Math.max(0, endOdometer - (parseFloat(form.startOdometerKm) || 0));
+      
+      await base44.entities.Ride.update(rideId, {
         endTime: form.endTime,
         endOdometerKm: endOdometer,
         distanceKm: dist,
@@ -165,6 +218,7 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
         abnormalityNote: form.abnormalityNote,
         status: 'SUBMITTED',
       });
+      
       // 管理者通知
       const admins = staff.filter(s => s.role === 'admin');
       const notifs = admins.map(a => ({
