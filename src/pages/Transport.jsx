@@ -200,7 +200,7 @@ export default function Transport() {
   return (
     <div className="min-h-screen bg-slate-100">
       {/* ヘッダー */}
-      <div className="bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 text-white px-4 pt-8 pb-16 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 text-white px-4 pt-8 pb-24 relative overflow-hidden">
         {/* 装飾 */}
         <div className="absolute -top-8 -right-8 w-48 h-48 bg-white/10 rounded-full" />
         <div className="absolute top-4 right-16 w-24 h-24 bg-yellow-400/20 rounded-full" />
