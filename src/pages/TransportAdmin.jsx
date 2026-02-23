@@ -37,7 +37,7 @@ export default function TransportAdmin() {
   const [passengerInput, setPassengerInput] = useState('');
   const [clientDialog, setClientDialog] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
-  const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
+  const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function TransportAdmin() {
 
   const openClientDialog = (c = null) => {
     setEditingClient(c);
-    setClientForm(c ? { name: c.name, phone: c.phone || '', address: c.address || '', wheelchairRequired: c.wheelchairRequired || false, notes: c.notes || '', daysOfWeek: c.daysOfWeek || [], isActive: c.isActive !== false } : { name: '', phone: '', address: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
+    setClientForm(c ? { name: c.name, phone: c.phone || '', address: c.address || '', gender: c.gender || '', wheelchairRequired: c.wheelchairRequired || false, notes: c.notes || '', daysOfWeek: c.daysOfWeek || [], isActive: c.isActive !== false } : { name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
     setClientDialog(true);
   };
 
@@ -429,6 +429,7 @@ export default function TransportAdmin() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>名前</TableHead>
+                      <TableHead>性別</TableHead>
                       <TableHead>電話</TableHead>
                       <TableHead>利用曜日</TableHead>
                       <TableHead>♿</TableHead>
@@ -440,6 +441,7 @@ export default function TransportAdmin() {
                     {clients.map(c => (
                       <TableRow key={c.id}>
                         <TableCell className="font-medium">{c.name}</TableCell>
+                        <TableCell className="text-sm">{c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : c.gender === 'other' ? 'その他' : '-'}</TableCell>
                         <TableCell className="text-sm">{c.phone || '-'}</TableCell>
                         <TableCell className="text-sm">{c.daysOfWeek && c.daysOfWeek.length > 0 ? c.daysOfWeek.map(d => dayLabels[d]).join('') : '-'}</TableCell>
                         <TableCell>{c.wheelchairRequired ? '♿' : '-'}</TableCell>
@@ -641,6 +643,17 @@ export default function TransportAdmin() {
           <DialogHeader><DialogTitle>{editingClient ? '利用者編集' : '新規利用者登録'}</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div><Label>名前 *</Label><Input value={clientForm.name} onChange={e => setClientForm(f => ({ ...f, name: e.target.value }))} placeholder="山田 花子" /></div>
+            <div>
+              <Label>性別</Label>
+              <Select value={clientForm.gender} onValueChange={v => setClientForm(f => ({ ...f, gender: v }))}>
+                <SelectTrigger><SelectValue placeholder="選択" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">男性</SelectItem>
+                  <SelectItem value="female">女性</SelectItem>
+                  <SelectItem value="other">その他</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label>電話</Label><Input value={clientForm.phone} onChange={e => setClientForm(f => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
             <div><Label>住所</Label><Input value={clientForm.address} onChange={e => setClientForm(f => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
             <div>
