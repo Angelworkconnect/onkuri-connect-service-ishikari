@@ -12,9 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertTriangle, CheckCircle, Car, Clock, MapPin, Users, Plus, ChevronRight, FileText, Settings, AlertCircle, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import RideFormDialog from '@/components/transport/RideFormDialog';
-import DriverCheckDialog from '@/components/transport/DriverCheckDialog';
-import VehicleCheckDialog from '@/components/transport/VehicleCheckDialog';
+import RideFormDialog from '@/components/transport/RideFormDialog.jsx';
+import DriverCheckDialog from '@/components/transport/DriverCheckDialog.jsx';
+import VehicleCheckDialog from '@/components/transport/VehicleCheckDialog.jsx';
 
 const today = format(new Date(), 'yyyy-MM-dd');
 const tripTypeLabel = { PICKUP: '朝便（迎え）', DROPOFF: '帰便（送り）', OTHER: 'その他' };
