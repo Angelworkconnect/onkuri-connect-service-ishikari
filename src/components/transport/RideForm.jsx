@@ -415,10 +415,24 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
               {passengers.map((p, i) => (
                 <div key={i} className="bg-slate-50 rounded-xl p-3 space-y-2 border border-slate-100">
                   <div className="flex gap-2 items-center">
-                    <span className="text-slate-400 text-xs font-bold w-5">{i+1}</span>
-                    <Input placeholder="利用者名 *" value={p.clientName} onChange={e => updatePassenger(i, 'clientName', e.target.value)} className="flex-1" />
-                    <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
-                  </div>
+                     <span className="text-slate-400 text-xs font-bold w-5">{i+1}</span>
+                     <div className="flex-1">
+                       <Input 
+                         placeholder="利用者名 *" 
+                         value={p.clientName} 
+                         onChange={e => {
+                           const newName = e.target.value;
+                           if (!validatePassengerName(i, newName)) {
+                             alert(`${newName}さんは既に追加されています`);
+                             return;
+                           }
+                           updatePassenger(i, 'clientName', newName);
+                         }} 
+                         className="flex-1" 
+                       />
+                     </div>
+                     <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
+                   </div>
                   <div className="grid grid-cols-2 gap-2 ml-7">
                     <div>
                       <label className="text-xs text-slate-500">乗車時刻</label>
