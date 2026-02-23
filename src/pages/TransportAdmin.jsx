@@ -30,7 +30,7 @@ export default function TransportAdmin() {
   const [exportLogs, setExportLogs] = useState([]);
   const [vehicleDialog, setVehicleDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
-  const [vehicleForm, setVehicleForm] = useState({ name: '', plateNumber: '', model: '', capacity: '', wheelchairAccessible: false, isActive: true });
+  const [vehicleForm, setVehicleForm] = useState({ name: '', plateNumber: '', model: '', capacityRegular: '', capacityWithWheelchair: '', wheelchairAccessible: false, isActive: true });
   const [templateDialog, setTemplateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', tripType: 'PICKUP', defaultVehicleId: '', defaultVehicleName: '', defaultPassengerNames: [], isActive: true });
@@ -181,7 +181,7 @@ export default function TransportAdmin() {
 
   const openVehicleDialog = (v = null) => {
     setEditingVehicle(v);
-    setVehicleForm(v ? { name: v.name, plateNumber: v.plateNumber, model: v.model || '', capacity: v.capacity || '', wheelchairAccessible: v.wheelchairAccessible || false, isActive: v.isActive !== false } : { name: '', plateNumber: '', model: '', capacity: '', wheelchairAccessible: false, isActive: true });
+    setVehicleForm(v ? { name: v.name, plateNumber: v.plateNumber, model: v.model || '', capacityRegular: v.capacityRegular || '', capacityWithWheelchair: v.capacityWithWheelchair || '', wheelchairAccessible: v.wheelchairAccessible || false, isActive: v.isActive !== false } : { name: '', plateNumber: '', model: '', capacityRegular: '', capacityWithWheelchair: '', wheelchairAccessible: false, isActive: true });
     setVehicleDialog(true);
   };
 
@@ -364,7 +364,12 @@ export default function TransportAdmin() {
                         <TableCell className="font-medium">{v.name}</TableCell>
                         <TableCell>{v.plateNumber}</TableCell>
                         <TableCell>{v.model || '-'}</TableCell>
-                        <TableCell>{v.capacity ? `${v.capacity}名` : '-'}</TableCell>
+                        <TableCell className="text-sm">
+                          {v.capacityRegular ? `${v.capacityRegular}名` : '-'}
+                          {v.capacityWithWheelchair && v.wheelchairAccessible && (
+                            <div className="text-xs text-slate-500">♿: {v.capacityWithWheelchair}名</div>
+                          )}
+                        </TableCell>
                         <TableCell>{v.wheelchairAccessible ? <Badge className="bg-purple-100 text-purple-700">♿ 可</Badge> : <span className="text-slate-400 text-xs">-</span>}</TableCell>
                         <TableCell><Badge className={v.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}>{v.isActive !== false ? '有効' : '無効'}</Badge></TableCell>
                         <TableCell>
@@ -542,7 +547,10 @@ export default function TransportAdmin() {
           <div><Label>車両名 *</Label><Input value={vehicleForm.name} onChange={e => setVehicleForm(f => ({ ...f, name: e.target.value }))} placeholder="ハイエース1号" /></div>
           <div><Label>ナンバー *</Label><Input value={vehicleForm.plateNumber} onChange={e => setVehicleForm(f => ({ ...f, plateNumber: e.target.value }))} placeholder="札幌 500 あ 1234" /></div>
           <div><Label>車種</Label><Input value={vehicleForm.model} onChange={e => setVehicleForm(f => ({ ...f, model: e.target.value }))} placeholder="ハイエース" /></div>
-          <div><Label>定員（人）</Label><Input type="number" min="1" value={vehicleForm.capacity} onChange={e => setVehicleForm(f => ({ ...f, capacity: e.target.value }))} placeholder="8" /></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>通常時定員</Label><Input type="number" min="1" value={vehicleForm.capacityRegular} onChange={e => setVehicleForm(f => ({ ...f, capacityRegular: e.target.value }))} placeholder="4" /></div>
+            <div><Label>車椅子時定員</Label><Input type="number" min="1" value={vehicleForm.capacityWithWheelchair} onChange={e => setVehicleForm(f => ({ ...f, capacityWithWheelchair: e.target.value }))} placeholder="3" /></div>
+          </div>
           <div className="flex items-center gap-2"><Switch checked={vehicleForm.wheelchairAccessible} onCheckedChange={v => setVehicleForm(f => ({ ...f, wheelchairAccessible: v }))} /><Label>車椅子送迎可能</Label></div>
           <div className="flex items-center gap-2"><Switch checked={vehicleForm.isActive} onCheckedChange={v => setVehicleForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
           </div>
