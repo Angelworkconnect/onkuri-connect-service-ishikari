@@ -73,36 +73,43 @@ export default function TransportAdmin() {
     queryKey: ['ta-approved'],
     queryFn: () => base44.entities.Ride.filter({ status: 'APPROVED' }),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: vehicles = [] } = useQuery({
     queryKey: ['ta-vehicles'],
     queryFn: () => base44.entities.Vehicle.list('name'),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: staff = [] } = useQuery({
     queryKey: ['ta-staff'],
     queryFn: () => base44.entities.Staff.filter({ approval_status: 'approved' }),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: templates = [] } = useQuery({
     queryKey: ['ta-templates'],
     queryFn: () => base44.entities.RouteTemplate.list('name'),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: preChecks = [] } = useQuery({
     queryKey: ['ta-prechecks'],
     queryFn: () => base44.entities.VehiclePreCheck.list('-date', 50),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: driverChecks = [] } = useQuery({
     queryKey: ['ta-driverchecks'],
     queryFn: () => base44.entities.DriverDailyCheck.list('-date', 50),
     enabled: !!user,
+    refetchInterval: 10000,
   });
   const { data: clients = [] } = useQuery({
     queryKey: ['ta-clients'],
     queryFn: () => base44.entities.Client.list('name'),
     enabled: !!user,
+    refetchInterval: 10000,
   });
 
   const approveMutation = useMutation({
