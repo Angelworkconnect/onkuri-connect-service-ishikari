@@ -1252,6 +1252,11 @@ export default function AdminPanel() {
               <span className="hidden sm:inline">メッセージ</span>
               <span className="sm:hidden">MSG</span>
             </TabsTrigger>
+            <TabsTrigger value="transport" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
+              <Truck className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">送迎管理</span>
+              <span className="sm:hidden">送迎</span>
+            </TabsTrigger>
             </TabsList>
 
           {/* Site Settings Tab */}
