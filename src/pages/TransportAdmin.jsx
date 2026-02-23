@@ -635,6 +635,37 @@ export default function TransportAdmin() {
         </DialogContent>
       </Dialog>
 
+      {/* 利用者ダイアログ */}
+      <Dialog open={clientDialog} onOpenChange={setClientDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>{editingClient ? '利用者編集' : '新規利用者登録'}</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div><Label>名前 *</Label><Input value={clientForm.name} onChange={e => setClientForm(f => ({ ...f, name: e.target.value }))} placeholder="山田 花子" /></div>
+            <div><Label>電話</Label><Input value={clientForm.phone} onChange={e => setClientForm(f => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
+            <div><Label>住所</Label><Input value={clientForm.address} onChange={e => setClientForm(f => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
+            <div>
+              <Label className="mb-2 block">利用曜日（複数選択可）</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {dayLabels.map((label, idx) => (
+                  <button key={idx} onClick={() => { const days = clientForm.daysOfWeek.includes(idx) ? clientForm.daysOfWeek.filter(d => d !== idx) : [...clientForm.daysOfWeek, idx]; setClientForm(f => ({ ...f, daysOfWeek: days })); }} className={`py-2 rounded border-2 text-sm font-bold transition-all ${clientForm.daysOfWeek.includes(idx) ? 'border-[#2D4A6F] bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'border-slate-300 text-slate-600'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2"><Switch checked={clientForm.wheelchairRequired} onCheckedChange={v => setClientForm(f => ({ ...f, wheelchairRequired: v }))} /><Label>車椅子使用</Label></div>
+            <div><Label>備考</Label><Textarea value={clientForm.notes} onChange={e => setClientForm(f => ({ ...f, notes: e.target.value }))} placeholder="特別な対応など" className="h-20" /></div>
+            <div className="flex items-center gap-2"><Switch checked={clientForm.isActive} onCheckedChange={v => setClientForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setClientDialog(false)}>キャンセル</Button>
+            <Button className="bg-[#2D4A6F]" disabled={!clientForm.name} onClick={() => saveClientMutation.mutate(clientForm)}>
+              {editingClient ? '更新' : '登録'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* テンプレダイアログ */}
       <Dialog open={templateDialog} onOpenChange={setTemplateDialog}>
         <DialogContent className="max-w-md">
