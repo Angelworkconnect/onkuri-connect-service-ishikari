@@ -422,8 +422,8 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                          value={p.clientName} 
                          onChange={e => {
                            const newName = e.target.value;
-                           if (!validatePassengerName(i, newName)) {
-                             alert(`${newName}さんは既に追加されています`);
+                           const isDuplicate = passengers.some((passenger, idx) => idx !== i && passenger.clientName === newName && newName.trim());
+                           if (isDuplicate) {
                              return;
                            }
                            updatePassenger(i, 'clientName', newName);
