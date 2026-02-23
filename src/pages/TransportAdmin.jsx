@@ -537,6 +537,43 @@ export default function TransportAdmin() {
           {/* 利用者管理タブ */}
           <TabsContent value="clients">
             <div className="space-y-4">
+              {/* 本日の利用者一覧 */}
+              {(() => {
+                const todayDayOfWeek = new Date().getDay();
+                const todayClients = clients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(todayDayOfWeek));
+                return (
+                  <Card className="border-0 shadow bg-gradient-to-br from-green-50 to-emerald-50">
+                    <div className="p-4 border-b border-green-200">
+                      <h2 className="font-bold text-lg">本日の利用者（{todayClients.length}名）</h2>
+                    </div>
+                    {todayClients.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400">
+                        <p className="text-sm">本日の利用予定者はいません</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {todayClients.map(c => (
+                          <div key={c.id} className="p-4 hover:bg-white/50 flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm ${c.gender === 'male' ? 'bg-blue-500' : c.gender === 'female' ? 'bg-pink-500' : 'bg-slate-500'}`}>
+                                  {c.gender === 'male' ? '♂' : c.gender === 'female' ? '♀' : '?'}
+                                </div>
+                                <div>
+                                  <span className="font-medium">{c.name}</span>
+                                  {c.wheelchairRequired && <Badge className="ml-2 bg-purple-100 text-purple-700 text-xs">♿</Badge>}
+                                </div>
+                              </div>
+                              {c.phone && <p className="text-xs text-slate-500 mt-1 ml-13">{c.phone}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })()}
+
               <div className="flex justify-between items-center">
                 <h2 className="font-bold text-lg">利用者一覧（曜日別）</h2>
                 <Button className="bg-[#2D4A6F]" onClick={() => openClientDialog()}>
