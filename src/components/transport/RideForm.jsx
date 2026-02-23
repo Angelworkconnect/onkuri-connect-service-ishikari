@@ -13,7 +13,7 @@ const getNow = () => {
 };
 const getToday = () => new Date().toISOString().split('T')[0];
 
-export default function RideForm({ user, vehicles, staff, templates, editingRide, allTodayPassengers = [], onSaved, onCancel }) {
+export default function RideForm({ user, vehicles, staff, templates, editingRide, onSaved, onCancel }) {
   const [step, setStep] = useState(1); // 1=基本情報, 2=乗客, 3=終了
   const [saving, setSaving] = useState(false);
   const [savedRide, setSavedRide] = useState(editingRide || null);
