@@ -101,8 +101,8 @@ export default function Transport() {
   const deleteRideMutation = useMutation({
     mutationFn: (id) => base44.entities.Ride.delete(id),
     onSuccess: (_, deletedId) => {
-      queryClient.setQueryData(['transport-today'], (old) => old?.filter(r => r.id !== deletedId));
-      queryClient.setQueryData(['transport-my'], (old) => old?.filter(r => r.id !== deletedId));
+      queryClient.setQueryData({ queryKey: ['transport-today'] }, (old) => old?.filter(r => r.id !== deletedId));
+      queryClient.setQueryData({ queryKey: ['transport-my'] }, (old) => old?.filter(r => r.id !== deletedId));
     },
   });
 
