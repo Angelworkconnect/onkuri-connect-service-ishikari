@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { CheckCircle, XCircle, Car, Route, Edit, Trash2, Plus, Users, Shield, BarChart2, FileSearch, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, XCircle, Car, Route, Edit, Trash2, Plus, Users, Shield, FileSearch, AlertTriangle, ChevronDown, ChevronUp, Printer, Clock, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -204,18 +204,11 @@ export default function TransportAdmin() {
               <p className="text-slate-400 text-xs">管理者専用ダッシュボード</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link to={createPageUrl('TransportExport')}>
-              <Button size="sm" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white">
-                📄 PDF出力
-              </Button>
-            </Link>
-            <Link to={createPageUrl('TransportDashboard')}>
+          <Link to={createPageUrl('TransportDashboard')}>
               <Button size="sm" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white">
                 ← スタッフ画面
               </Button>
             </Link>
-          </div>
         </div>
       </div>
 
