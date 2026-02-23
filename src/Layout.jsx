@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { 
         Home, Calendar, Clock, FileText, Users, 
-        Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell, Truck
+                Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell
       } from "lucide-react";
 import NotificationBell from './components/notifications/NotificationBell';
 
@@ -32,7 +32,6 @@ const navigation = [
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
-  { name: '送迎管理', href: 'TransportDashboard', icon: Truck },
   ];
 
 const settingsNavigation = [
