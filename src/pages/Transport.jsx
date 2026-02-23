@@ -108,11 +108,11 @@ export default function Transport() {
 
   const handleSaved = () => {
     setMode(null);
-    queryClient.invalidateQueries(['transport-today']);
-    queryClient.invalidateQueries(['transport-passengers-map']);
-    queryClient.invalidateQueries(['transport-my']);
-    queryClient.invalidateQueries(['transport-precheck-today']);
-    queryClient.invalidateQueries(['transport-drivercheck-today', user?.email]);
+    queryClient.invalidateQueries({ queryKey: ['transport-today'] });
+    queryClient.invalidateQueries({ queryKey: ['transport-passengers-map'], exact: false });
+    queryClient.invalidateQueries({ queryKey: ['transport-my'] });
+    queryClient.invalidateQueries({ queryKey: ['transport-precheck-today'] });
+    queryClient.invalidateQueries({ queryKey: ['transport-drivercheck-today'] });
   };
 
   if (!user) return (
