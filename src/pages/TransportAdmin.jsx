@@ -30,7 +30,7 @@ export default function TransportAdmin() {
   const [exportLogs, setExportLogs] = useState([]);
   const [vehicleDialog, setVehicleDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
-  const [vehicleForm, setVehicleForm] = useState({ name: '', plateNumber: '', model: '', capacity: '', isActive: true });
+  const [vehicleForm, setVehicleForm] = useState({ name: '', plateNumber: '', model: '', capacity: '', wheelchairAccessible: false, isActive: true });
   const [templateDialog, setTemplateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', tripType: 'PICKUP', defaultVehicleId: '', defaultVehicleName: '', defaultPassengerNames: [], isActive: true });
