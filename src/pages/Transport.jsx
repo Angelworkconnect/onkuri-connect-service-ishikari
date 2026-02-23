@@ -229,7 +229,7 @@ export default function Transport() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 -mt-4 space-y-4 pb-10">
+      <div className="max-w-2xl mx-auto px-4 mt-4 space-y-4 pb-10">
         {/* 健康確認警告 */}
         {!driverChecked && (
           <div className="bg-amber-400 rounded-2xl p-4 flex items-center gap-3 shadow-lg shadow-amber-200">
