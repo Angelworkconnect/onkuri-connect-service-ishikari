@@ -75,6 +75,20 @@ export default function Transport() {
     enabled: !!user,
   });
 
+  const { data: allTodayPassengers = [] } = useQuery({
+    queryKey: ['transport-passengers-today'],
+    queryFn: async () => {
+      const rides = await base44.entities.Ride.filter({ date: today });
+      const passengers = [];
+      for (const ride of rides) {
+        const ridePassengers = await base44.entities.RidePassenger.filter({ rideId: ride.id });
+        passengers.push(...ridePassengers);
+      }
+      return passengers;
+    },
+    enabled: !!user,
+  });
+
   const { data: myDriverCheck } = useQuery({
     queryKey: ['transport-drivercheck-today', user?.email],
     queryFn: () => base44.entities.DriverDailyCheck.filter({ date: today, driverEmail: user.email }),
@@ -159,7 +173,7 @@ export default function Transport() {
 
         {/* フォーム表示エリア */}
          {mode === 'ride' && (
-           <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} editingRide={editingRide} onSaved={handleSaved} onCancel={() => { setMode(null); setEditingRide(null); }} />
+            <RideForm user={user} vehicles={vehicles} staff={staff} templates={templates} editingRide={editingRide} allTodayPassengers={allTodayPassengers} onSaved={handleSaved} onCancel={() => { setMode(null); setEditingRide(null); }} />
          )}
         {mode === 'precheck' && (
           <PreCheckForm user={user} vehicles={vehicles} onSaved={handleSaved} onCancel={() => setMode(null)} />
