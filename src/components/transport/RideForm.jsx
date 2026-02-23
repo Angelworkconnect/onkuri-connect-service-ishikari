@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,12 +42,18 @@ export default function RideForm({ user, vehicles, staff, templates, onSaved, on
   const [passengers, setPassengers] = useState([]);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    const dayOfWeek = new Date(today).getDay();
-    base44.entities.Client.filter({ isActive: true }).then(allClients => {
-      const todayClients = allClients.filter(c => c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
-      setClients(todayClients);
-    });
+    (async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const dayOfWeek = new Date(today).getDay();
+        const allClients = await base44.entities.Client.list('name');
+        const todayClients = allClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
+        setClients(todayClients);
+      } catch (error) {
+        console.error('Failed to load clients:', error);
+        setClients([]);
+      }
+    })();
   }, []);
 
   const applyTemplate = (t) => {
