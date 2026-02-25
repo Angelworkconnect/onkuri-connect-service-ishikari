@@ -43,18 +43,27 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   const [passengersByTrip, setPassengersByTrip] = useState({ PICKUP: [], DROPOFF: [], OTHER: [] });
   const passengers = passengersByTrip[form.tripType] || [];
 
+  const selectedDate = form.date;
+
   useEffect(() => {
     (async () => {
       try {
-        // 選択された日付文字列（例: "2026-02-25"）からそのまま曜日を取得
-        // "YYYY-MM-DD" を "YYYY/MM/DD" に変換してローカル解釈させる
-        const [year, month, day] = form.date.split('-').map(Number);
-        const selectedDate = new Date(year, month - 1, day); // ローカル時刻として解釈
-        const dayOfWeek = selectedDate.getDay(); // 0=日, 1=月, ..., 6=土
+        // 選択された日付文字列（例: "2026-02-25"）から曜日を取得
+        const [year, month, day] = selectedDate.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day); // ローカル時刻として解釈
+        const dayOfWeek = dateObj.getDay(); // 0=日, 1=月, 2=火, 3=水, 4=木, 5=金, 6=土
+        console.log('[RideForm] selectedDate:', selectedDate, 'dayOfWeek:', dayOfWeek);
 
         const allClients = await base44.entities.Client.list('name');
-        const todayClients = allClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
-        setClients(todayClients);
+        console.log('[RideForm] allClients count:', allClients.length);
+        const filtered = allClients.filter(c => {
+          const active = c.isActive !== false;
+          const hasDays = c.daysOfWeek && Array.isArray(c.daysOfWeek) && c.daysOfWeek.length > 0;
+          const hasDay = hasDays && c.daysOfWeek.includes(dayOfWeek);
+          return active && hasDay;
+        });
+        console.log('[RideForm] filtered clients for day', dayOfWeek, ':', filtered.map(c => c.name));
+        setClients(filtered);
         
         // 編集モードの場合、乗客を読み込む
         if (isEditing && editingRide.id) {
@@ -66,7 +75,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         setClients([]);
       }
     })();
-  }, [isEditing, editingRide, form.date]);
+  }, [isEditing, editingRide, selectedDate]);
 
   const applyTemplate = (t) => {
     setForm(f => ({
