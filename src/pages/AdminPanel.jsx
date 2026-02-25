@@ -1190,73 +1190,31 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <TabsList className="bg-white shadow-lg p-1 mb-6 w-full flex-wrap justify-start gap-1">
-              <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-                <Settings className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">サイト設定</span>
-                <span className="sm:hidden">設定</span>
-              </TabsTrigger>
-              <TabsTrigger value="services" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-                <Gift className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">サービス管理</span>
-                <span className="sm:hidden">サービス</span>
-              </TabsTrigger>
-              <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-                <QrCode className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">QRコード</span>
-                <span className="sm:hidden">QR</span>
-              </TabsTrigger>
-              <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Calendar className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">単発管理</span>
-              <span className="sm:hidden">単発</span>
-            </TabsTrigger>
-            <TabsTrigger value="applications" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <FileText className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">応募管理</span>
-              <span className="sm:hidden">応募</span>
-            </TabsTrigger>
-            <TabsTrigger value="attendance" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Clock className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">勤怠管理</span>
-              <span className="sm:hidden">勤怠</span>
-            </TabsTrigger>
-            <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Bell className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">お知らせ</span>
-              <span className="sm:hidden">知</span>
-            </TabsTrigger>
-            <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Users className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">スタッフ管理</span>
-              <span className="sm:hidden">スタッフ</span>
-            </TabsTrigger>
-            <TabsTrigger value="tips" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Sparkles className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">サンクス管理</span>
-              <span className="sm:hidden">サンクス</span>
-            </TabsTrigger>
-
-            <TabsTrigger value="benefits" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Gift className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">福利厚生管理</span>
-              <span className="sm:hidden">福利</span>
-            </TabsTrigger>
-            <TabsTrigger value="help" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Bell className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">ヘルプコール</span>
-              <span className="sm:hidden">ヘルプ</span>
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <MessageCircle className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">メッセージ</span>
-              <span className="sm:hidden">MSG</span>
-            </TabsTrigger>
-            <TabsTrigger value="transport" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs sm:text-sm">
-              <Truck className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">送迎管理</span>
-              <span className="sm:hidden">送迎</span>
-            </TabsTrigger>
+            <TabsList className="bg-white shadow-lg p-1.5 mb-6 w-full flex-wrap justify-start gap-1.5 h-auto">
+              {[
+                { value: 'settings', icon: Settings, label: 'サイト設定' },
+                { value: 'services', icon: Gift, label: 'サービス' },
+                { value: 'qrcode', icon: QrCode, label: 'QRコード' },
+                { value: 'shifts', icon: Calendar, label: '単発管理' },
+                { value: 'applications', icon: FileText, label: '応募管理' },
+                { value: 'attendance', icon: Clock, label: '勤怠管理' },
+                { value: 'announcements', icon: Bell, label: 'お知らせ' },
+                { value: 'staff', icon: Users, label: 'スタッフ' },
+                { value: 'tips', icon: Sparkles, label: 'サンクス' },
+                { value: 'benefits', icon: Gift, label: '福利厚生' },
+                { value: 'help', icon: Bell, label: 'ヘルプ' },
+                { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
+                { value: 'transport', icon: Truck, label: '送迎管理' },
+              ].map(({ value, icon: Icon, label }) => (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 min-w-[56px] h-auto rounded-lg"
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="leading-tight text-center">{label}</span>
+                </TabsTrigger>
+              ))}
             </TabsList>
 
           {/* Site Settings Tab */}
