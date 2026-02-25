@@ -46,7 +46,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   useEffect(() => {
     (async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
         const dayOfWeek = new Date(today).getDay();
         const allClients = await base44.entities.Client.list('name');
         const todayClients = allClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayOfWeek));
