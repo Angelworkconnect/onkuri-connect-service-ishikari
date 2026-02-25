@@ -9,7 +9,7 @@ import { Plus, X, ChevronRight, Clock, Gauge } from 'lucide-react';
 
 const getNow = () => {
   const now = new Date(Date.now() + 9*3600000);
-  return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  return `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}`;
 };
 const getToday = () => new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
 
