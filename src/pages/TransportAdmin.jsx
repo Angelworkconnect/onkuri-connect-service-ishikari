@@ -404,7 +404,7 @@ export default function TransportAdmin() {
               </div>
             ) : (
               <div className="divide-y">
-                {approvedRides.sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
+                {approvedRides.filter(r => !deletedRideIds.includes(r.id)).sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
                   <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
