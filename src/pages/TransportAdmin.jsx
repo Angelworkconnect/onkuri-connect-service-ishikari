@@ -371,7 +371,7 @@ export default function TransportAdmin() {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {submittedRides.sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
+                  {submittedRides.filter(r => !deletedRideIds.includes(r.id)).sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
                     <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between border-b last:border-0">
                       <div className="flex-1 cursor-pointer" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>
                         <div className="flex items-center gap-2 mb-1">
