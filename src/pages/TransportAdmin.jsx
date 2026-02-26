@@ -57,6 +57,26 @@ export default function TransportAdmin() {
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
+  // リアルタイム更新：Rideの変更を即時反映
+  useEffect(() => {
+    const unsub = base44.entities.Ride.subscribe(() => {
+      queryClient.invalidateQueries(['ta-submitted']);
+      queryClient.invalidateQueries(['ta-draft']);
+      queryClient.invalidateQueries(['ta-approved']);
+    });
+    return unsub;
+  }, [queryClient]);
+
+  // リアルタイム更新：各マスタの変更を即時反映
+  useEffect(() => {
+    const unsubVehicle = base44.entities.Vehicle.subscribe(() => queryClient.invalidateQueries(['ta-vehicles']));
+    const unsubClient = base44.entities.Client.subscribe(() => queryClient.invalidateQueries(['ta-clients']));
+    const unsubTemplate = base44.entities.RouteTemplate.subscribe(() => queryClient.invalidateQueries(['ta-templates']));
+    const unsubPreCheck = base44.entities.VehiclePreCheck.subscribe(() => queryClient.invalidateQueries(['ta-prechecks']));
+    const unsubDriverCheck = base44.entities.DriverDailyCheck.subscribe(() => queryClient.invalidateQueries(['ta-driverchecks']));
+    return () => { unsubVehicle(); unsubClient(); unsubTemplate(); unsubPreCheck(); unsubDriverCheck(); };
+  }, [queryClient]);
+
   const { data: submittedRides = [] } = useQuery({
     queryKey: ['ta-submitted'],
     queryFn: () => base44.entities.Ride.filter({ status: 'SUBMITTED' }),
