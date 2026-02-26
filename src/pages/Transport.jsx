@@ -150,7 +150,7 @@ export default function Transport() {
 
   const uncheckedVehicles = vehicles.filter(v => v.isActive !== false && !todayPreChecks.find(c => c.vehicleId === v.id));
   const submittedCount = todayRides.filter(r => r.status === 'SUBMITTED').length;
-  const draftRides = myRides.filter(r => r.status === 'DRAFT' || r.status === 'REJECTED');
+  const draftRides = myRides.filter(r => (r.status === 'DRAFT' || r.status === 'REJECTED') && !deletedIds.includes(r.id));
 
   return (
     <div className="min-h-screen bg-slate-50 pb-10">
