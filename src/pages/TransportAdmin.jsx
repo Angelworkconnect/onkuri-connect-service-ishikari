@@ -209,11 +209,17 @@ export default function TransportAdmin() {
 
   const deleteRideMutation = useMutation({
     mutationFn: (id) => base44.entities.Ride.delete(id),
+    onMutate: (id) => {
+      setDeletedRideIds(prev => [...prev, id]);
+      setDetailRide(null);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['ta-submitted']);
       queryClient.invalidateQueries(['ta-draft']);
       queryClient.invalidateQueries(['ta-approved']);
-      setDetailRide(null);
+    },
+    onError: (_, id) => {
+      setDeletedRideIds(prev => prev.filter(x => x !== id));
     },
   });
 
