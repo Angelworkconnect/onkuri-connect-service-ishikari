@@ -330,7 +330,7 @@ export default function TransportAdmin() {
           {/* 承認タブ */}
           <TabsContent value="approval">
             {/* 差し戻し・下書き記録 */}
-            {draftRides.length > 0 && (
+            {draftRides.filter(r => !deletedRideIds.includes(r.id)).length > 0 && (
               <Card className="border-0 shadow mb-4">
                 <div className="p-4 border-b">
                   <h2 className="font-bold">差し戻し・下書き記録（{draftRides.length}件）</h2>
