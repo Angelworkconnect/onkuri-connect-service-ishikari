@@ -42,6 +42,7 @@ export default function TransportAdmin() {
   const [editingRide, setEditingRide] = useState(null);
   const [editingPreCheck, setEditingPreCheck] = useState(null);
   const [editingDriverCheck, setEditingDriverCheck] = useState(null);
+  const [deletedRideIds, setDeletedRideIds] = useState([]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
