@@ -121,8 +121,19 @@ export default function Transport() {
     },
   });
 
+  // リアルタイム購読：Ride変更を即時反映
+  useEffect(() => {
+    const unsub = base44.entities.Ride.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ['transport-today'] });
+      queryClient.invalidateQueries({ queryKey: ['transport-my'] });
+      queryClient.invalidateQueries({ queryKey: ['transport-passengers-map'], exact: false });
+    });
+    return unsub;
+  }, [queryClient]);
+
   const handleSaved = () => {
     setMode(null);
+    setEditingRide(null);
     queryClient.invalidateQueries({ queryKey: ['transport-today'] });
     queryClient.invalidateQueries({ queryKey: ['transport-passengers-map'], exact: false });
     queryClient.invalidateQueries({ queryKey: ['transport-my'] });
