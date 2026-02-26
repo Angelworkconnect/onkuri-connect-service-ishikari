@@ -395,9 +395,9 @@ export default function TransportAdmin() {
           {/* 承認済み運行一覧 */}
           <Card className="border-0 shadow mt-4">
             <div className="p-4 border-b">
-              <h2 className="font-bold">承認済み運行一覧（{approvedRides.length}件）</h2>
+              <h2 className="font-bold">承認済み運行一覧（{approvedRides.filter(r => !deletedRideIds.includes(r.id)).length}件）</h2>
             </div>
-            {approvedRides.length === 0 ? (
+            {approvedRides.filter(r => !deletedRideIds.includes(r.id)).length === 0 ? (
               <div className="py-12 text-center text-slate-400">
                 <CheckCircle className="w-12 h-12 mx-auto mb-2 opacity-30" />
                 <p>承認済みの運行はありません</p>
