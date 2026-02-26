@@ -115,9 +115,14 @@ export default function Transport() {
 
   const deleteRideMutation = useMutation({
     mutationFn: (id) => base44.entities.Ride.delete(id),
-    onSuccess: (_, deletedId) => {
-      queryClient.setQueryData({ queryKey: ['transport-today'] }, (old) => old?.filter(r => r.id !== deletedId));
-      queryClient.setQueryData({ queryKey: ['transport-my'] }, (old) => old?.filter(r => r.id !== deletedId));
+    onMutate: (deletedId) => {
+      // 楽観的即時更新
+      queryClient.setQueryData(['transport-today'], (old) => old?.filter(r => r.id !== deletedId) ?? []);
+      queryClient.setQueryData(['transport-my'], (old) => old?.filter(r => r.id !== deletedId) ?? []);
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['transport-today'] });
+      queryClient.invalidateQueries({ queryKey: ['transport-my'] });
     },
   });
 
