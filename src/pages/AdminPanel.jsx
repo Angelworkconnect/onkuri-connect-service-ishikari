@@ -282,61 +282,24 @@ export default function AdminPanel() {
     });
   }, []);
 
-  const { data: shifts = [] } = useQuery({
-    queryKey: ['admin-shifts'],
-    queryFn: () => base44.entities.Shift.list('-date'),
-  });
+  // リアルタイム更新
+  useEffect(() => {
+    const map = { Shift: 'admin-shifts', ShiftApplication: 'admin-applications', Announcement: 'admin-announcements', Attendance: 'admin-attendance', Staff: 'admin-staff', TipRecord: 'admin-tips', Payout: 'admin-payouts', BenefitApplication: 'admin-benefit-apps' };
+    const unsubs = Object.entries(map).map(([e, k]) => base44.entities[e].subscribe(() => queryClient.invalidateQueries([k])));
+    return () => unsubs.forEach(fn => fn());
+  }, [queryClient]);
 
-  const { data: applications = [] } = useQuery({
-    queryKey: ['admin-applications'],
-    queryFn: () => base44.entities.ShiftApplication.list('-created_date'),
-  });
-
-  const { data: announcements = [] } = useQuery({
-    queryKey: ['admin-announcements'],
-    queryFn: () => base44.entities.Announcement.list('-created_date'),
-  });
-
-  const { data: attendanceRecords = [] } = useQuery({
-    queryKey: ['admin-attendance'],
-    queryFn: () => base44.entities.Attendance.list('-date'),
-  });
-
-  const { data: allStaff = [] } = useQuery({
-    queryKey: ['admin-staff'],
-    queryFn: () => base44.entities.Staff.list('-created_date'),
-  });
-
-  const { data: allTips = [] } = useQuery({
-    queryKey: ['admin-tips'],
-    queryFn: () => base44.entities.TipRecord.list('-date'),
-  });
-
-  const { data: allPayouts = [] } = useQuery({
-    queryKey: ['admin-payouts'],
-    queryFn: () => base44.entities.Payout.list('-date'),
-  });
-
-  const { data: dicePrizes = [] } = useQuery({
-    queryKey: ['admin-dice-prizes'],
-    queryFn: () => base44.entities.DicePrize.list('dice_number'),
-  });
-
-  const { data: allServices = [] } = useQuery({
-    queryKey: ['admin-services'],
-    queryFn: () => base44.entities.Service.list('order'),
-  });
-
-  const { data: allBenefits = [] } = useQuery({
-    queryKey: ['admin-benefits'],
-    queryFn: () => base44.entities.Benefit.list('order'),
-  });
-
-  const { data: allBenefitApps = [] } = useQuery({
-    queryKey: ['admin-benefit-apps'],
-    queryFn: () => base44.entities.BenefitApplication.list('-created_date'),
-  });
-
+  const { data: shifts = [] } = useQuery({ queryKey: ['admin-shifts'], queryFn: () => base44.entities.Shift.list('-date') });
+  const { data: applications = [] } = useQuery({ queryKey: ['admin-applications'], queryFn: () => base44.entities.ShiftApplication.list('-created_date') });
+  const { data: announcements = [] } = useQuery({ queryKey: ['admin-announcements'], queryFn: () => base44.entities.Announcement.list('-created_date') });
+  const { data: attendanceRecords = [] } = useQuery({ queryKey: ['admin-attendance'], queryFn: () => base44.entities.Attendance.list('-date') });
+  const { data: allStaff = [] } = useQuery({ queryKey: ['admin-staff'], queryFn: () => base44.entities.Staff.list('-created_date') });
+  const { data: allTips = [] } = useQuery({ queryKey: ['admin-tips'], queryFn: () => base44.entities.TipRecord.list('-date') });
+  const { data: allPayouts = [] } = useQuery({ queryKey: ['admin-payouts'], queryFn: () => base44.entities.Payout.list('-date') });
+  const { data: dicePrizes = [] } = useQuery({ queryKey: ['admin-dice-prizes'], queryFn: () => base44.entities.DicePrize.list('dice_number') });
+  const { data: allServices = [] } = useQuery({ queryKey: ['admin-services'], queryFn: () => base44.entities.Service.list('order') });
+  const { data: allBenefits = [] } = useQuery({ queryKey: ['admin-benefits'], queryFn: () => base44.entities.Benefit.list('order') });
+  const { data: allBenefitApps = [] } = useQuery({ queryKey: ['admin-benefit-apps'], queryFn: () => base44.entities.BenefitApplication.list('-created_date') });
   const { data: allMessages = [] } = useQuery({
     queryKey: ['admin-messages'],
     queryFn: async () => {
@@ -349,13 +312,9 @@ export default function AdminPanel() {
     refetchInterval: 10000,
     staleTime: 5000,
   });
-
   const { data: siteSettings = {} } = useQuery({
     queryKey: ['admin-site-settings'],
-    queryFn: async () => {
-      const settings = await base44.entities.SiteSettings.list();
-      return settings.length > 0 ? settings[0] : {};
-    },
+    queryFn: async () => { const s = await base44.entities.SiteSettings.list(); return s.length > 0 ? s[0] : {}; },
   });
 
   useEffect(() => {
