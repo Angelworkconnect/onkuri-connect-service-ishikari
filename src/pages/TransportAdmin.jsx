@@ -362,9 +362,9 @@ export default function TransportAdmin() {
 
             <Card className="border-0 shadow">
               <div className="p-4 border-b">
-                <h2 className="font-bold">承認待ち運行一覧（{submittedRides.length}件）</h2>
+                <h2 className="font-bold">承認待ち運行一覧（{submittedRides.filter(r => !deletedRideIds.includes(r.id)).length}件）</h2>
               </div>
-              {submittedRides.length === 0 ? (
+              {submittedRides.filter(r => !deletedRideIds.includes(r.id)).length === 0 ? (
                 <div className="py-12 text-center text-slate-400">
                   <CheckCircle className="w-12 h-12 mx-auto mb-2 opacity-30" />
                   <p>承認待ちの運行はありません</p>
