@@ -62,11 +62,14 @@ export default function Transport() {
     refetchInterval: 30000,
   });
 
-  const { data: myRides = [] } = useQuery({
+  const { data: myRides = [], refetch: refetchMyRides } = useQuery({
     queryKey: ['transport-my'],
     queryFn: () => base44.entities.Ride.list('-created_date', 20),
     enabled: !!user,
   });
+
+  // 即時削除用のローカルフィルタ
+  const [deletedIds, setDeletedIds] = useState([]);
 
   const { data: ridePassengersMap = {} } = useQuery({
     queryKey: ['transport-passengers-map', todayRides.map(r => r.id).join(',')],
