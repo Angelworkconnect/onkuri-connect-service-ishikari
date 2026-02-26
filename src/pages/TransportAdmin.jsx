@@ -333,10 +333,10 @@ export default function TransportAdmin() {
             {draftRides.filter(r => !deletedRideIds.includes(r.id)).length > 0 && (
               <Card className="border-0 shadow mb-4">
                 <div className="p-4 border-b">
-                  <h2 className="font-bold">差し戻し・下書き記録（{draftRides.length}件）</h2>
+                  <h2 className="font-bold">差し戻し・下書き記録（{draftRides.filter(r => !deletedRideIds.includes(r.id)).length}件）</h2>
                 </div>
                 <div className="divide-y">
-                  {draftRides.map(ride => (
+                  {draftRides.filter(r => !deletedRideIds.includes(r.id)).map(ride => (
                     <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between border-l-4" style={{ borderLeftColor: ride.status === 'REJECTED' ? '#ef4444' : '#f59e0b' }}>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
