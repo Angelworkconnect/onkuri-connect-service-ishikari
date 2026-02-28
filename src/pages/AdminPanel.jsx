@@ -125,6 +125,7 @@ export default function AdminPanel() {
     gender: 'other',
     role: 'temporary',
     approval_status: 'pending',
+    qualifications: [],
   });
 
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
