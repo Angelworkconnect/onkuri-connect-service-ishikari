@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Plus, CheckCircle2, Clock, Truck, AlertTriangle, ClipboardCheck, User, Trash2, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import RideForm from '../components/transport/RideForm';
+import PastRidesView from '../components/transport/PastRidesView';
 import PreCheckForm from '../components/transport/PreCheckForm';
 import DriverCheckForm from '../components/transport/DriverCheckForm';
 import { format } from 'date-fns';
