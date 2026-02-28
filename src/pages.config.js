@@ -69,6 +69,7 @@ import TipsHistory from './pages/TipsHistory';
 import Transport from './pages/Transport';
 import TransportAdmin from './pages/TransportAdmin';
 import VersionCheck from './pages/VersionCheck';
+import ShiftManagement from './pages/ShiftManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +96,7 @@ export const PAGES = {
     "Transport": Transport,
     "TransportAdmin": TransportAdmin,
     "VersionCheck": VersionCheck,
+    "ShiftManagement": ShiftManagement,
 }
 
 export const pagesConfig = {
