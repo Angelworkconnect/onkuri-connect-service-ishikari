@@ -53,7 +53,6 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
     if (!longPressDate) return;
     const date = `${year}-${String(month).padStart(2, '0')}-${String(longPressDate).padStart(2, '0')}`;
     const existing = getRequest(longPressDate);
-    if (!existing && requests.length >= MAX_REQUESTS) { setLongPressDate(null); return; }
     if (existing) onRemove(existing);
     onAdd(date, type);
     setLongPressDate(null);
