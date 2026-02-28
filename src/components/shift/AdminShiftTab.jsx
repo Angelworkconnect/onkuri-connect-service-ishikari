@@ -368,6 +368,7 @@ export default function AdminShiftTab({ user }) {
                 onRemoveEntry={(e) => deleteEntryMutation.mutate(e.id)}
                 isPublished={isPublished}
                 onUpdateRequirement={(date, required_total) => upsertRequirementMutation.mutate({ date, required_total })}
+                closedDays={currentShiftMonth?.closed_days || []}
               />
             </Card>
           </TabsContent>

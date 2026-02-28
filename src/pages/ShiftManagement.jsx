@@ -287,6 +287,7 @@ function AdminView({ year, month, days, allStaff, entries, requests, requirement
                 onDropStaff={onDropStaff}
                 onRemoveEntry={onRemoveEntry}
                 isPublished={isPublished}
+                closedDays={currentShiftMonth?.closed_days || []}
               />
             </Card>
           </TabsContent>
