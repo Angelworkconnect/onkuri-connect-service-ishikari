@@ -454,6 +454,36 @@ export default function AdminShiftTab({ user }) {
           </Tabs>
           )}
 
+          {/* 公開確認ダイアログ */}
+          <Dialog open={publishConfirmOpen} onOpenChange={setPublishConfirmOpen}>
+          <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>シフトを公開しますか？</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            <p className="text-sm text-slate-600">
+              {year}年{month}月のシフトを公開すると、職員に表示されます。公開後は下書き状態に戻すことができます。
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-xs font-medium text-blue-900">公開前のチェックリスト</p>
+              <ul className="text-xs text-blue-800 mt-1 space-y-1">
+                <li>✓ 全てのシフトが確定しましたか？</li>
+                <li>✓ 必要人数が充足していますか？</li>
+                <li>✓ 特記事項は入力されていますか？</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPublishConfirmOpen(false)}>
+              キャンセル
+            </Button>
+            <Button onClick={() => { publishMutation.mutate(); setPublishConfirmOpen(false); }} className="bg-green-600 hover:bg-green-700">
+              公開する
+            </Button>
+          </DialogFooter>
+          </DialogContent>
+          </Dialog>
+
           {/* 特記事項編集ダイアログ */}
           <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
           <DialogContent className="max-w-2xl">
