@@ -11,7 +11,7 @@ const REQUEST_TYPES = {
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
-export default function ShiftRequestCalendar({ year, month, requests, onAdd, onRemove, isLocked }) {
+export default function ShiftRequestCalendar({ year, month, requests, onAdd, onRemove, isLocked, closedDays = [] }) {
   const [longPressDate, setLongPressDate] = useState(null);
   const [lpTimer, setLpTimer] = useState(null);
   const [confirmDay, setConfirmDay] = useState(null); // タップ確認用
