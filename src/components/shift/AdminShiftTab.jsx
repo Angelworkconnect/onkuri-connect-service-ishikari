@@ -231,6 +231,7 @@ export default function AdminShiftTab({ user }) {
                 onDropStaff={handleDropStaff}
                 onRemoveEntry={(e) => deleteEntryMutation.mutate(e.id)}
                 isPublished={isPublished}
+                onUpdateRequirement={(date, required_total) => upsertRequirementMutation.mutate({ date, required_total })}
               />
             </Card>
           </TabsContent>
