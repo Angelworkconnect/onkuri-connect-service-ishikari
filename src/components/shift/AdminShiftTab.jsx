@@ -159,11 +159,22 @@ export default function AdminShiftTab({ user }) {
             <span className="text-lg font-bold text-slate-800 min-w-[100px] text-center">{year}年{month}月</span>
             <button onClick={nextMonth}><ChevronRight className="w-5 h-5 text-slate-500 hover:text-slate-800" /></button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge className={isPublished ? 'bg-green-500 text-white' : 'bg-amber-400 text-white'}>
               {isPublished ? '公開済み' : '下書き'}
             </Badge>
             <span className="text-sm text-slate-400">{entries.length}件</span>
+            {currentShiftMonth && (
+              <div className="flex items-center gap-1.5">
+                <Label className="text-xs text-slate-500 whitespace-nowrap">締切日:</Label>
+                <Input
+                  type="date"
+                  className="h-7 text-xs w-36"
+                  value={currentShiftMonth.request_deadline || ''}
+                  onChange={(e) => updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: e.target.value } })}
+                />
+              </div>
+            )}
             {!isPublished && currentShiftMonth && (
               <Button size="sm" className="bg-indigo-600" onClick={() => publishMutation.mutate()}>
                 <Send className="w-3.5 h-3.5 mr-1" />シフト公開
