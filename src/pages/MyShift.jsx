@@ -89,6 +89,14 @@ export default function MyShift() {
     : new Date(year, month - 2, 15, 23, 59);
   const isDeadlinePassed = new Date() > deadlineDate;
 
+  // 提出可否: 管理者が明示的にfalseにした場合は提出不可
+  const isSubmissionEnabled = currentShiftMonth?.request_submission_enabled ?? true;
+  // 実質的にロック = 締切済み OR 提出不可
+  const isLocked = isDeadlinePassed || !isSubmissionEnabled;
+
+  // 定休曜日
+  const closedDays = currentShiftMonth?.closed_days || [];
+
   // 今月シフト
   const myEntries = entries.filter(e => e.staff_email === user?.email);
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
