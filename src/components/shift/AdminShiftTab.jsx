@@ -261,6 +261,7 @@ export default function AdminShiftTab({ user }) {
         <Tabs defaultValue="grid" className="w-full">
           <TabsList className="bg-white shadow mb-4 h-auto p-1 flex-wrap">
             <TabsTrigger value="grid" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">📅 シフト表</TabsTrigger>
+            <TabsTrigger value="requests" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">🗓️ 希望休</TabsTrigger>
             <TabsTrigger value="ai" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">✨ AI生成</TabsTrigger>
             <TabsTrigger value="staff" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">👥 職員駒</TabsTrigger>
             <TabsTrigger value="fuyou" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white">💕 扶養管理</TabsTrigger>
