@@ -15,6 +15,7 @@ import StaffPiece from '../components/shift/StaffPiece';
 import AIShiftGenerator from '../components/shift/AIShiftGenerator';
 import HeatmapRow from '../components/shift/HeatmapRow';
 import StaffTaxBadge from '../components/shift/StaffTaxBadge';
+import ShiftRequestCalendarComponent from '../components/shift/ShiftRequestCalendar';
 import {
   canPlaceStaff, calcYearlyIncomePrediction, calcSafetyScore,
   getAnnualLimit, getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
@@ -573,12 +574,7 @@ function StaffView({ user, year, month, entries, requests, currentShiftMonth, is
   );
 }
 
-// 遅延インポート回避のためのラッパー
+// 直接インポートに変更（上部にインポートを追加する必要があります）
 function ShiftRequestCalendarLazy(props) {
-  const ShiftRequestCalendar = React.lazy(() => import('../components/shift/ShiftRequestCalendar'));
-  return (
-    <React.Suspense fallback={<div className="h-40 flex items-center justify-center text-slate-400 text-sm">読み込み中...</div>}>
-      <ShiftRequestCalendar {...props} />
-    </React.Suspense>
-  );
+  return <ShiftRequestCalendarComponent {...props} />;
 }
