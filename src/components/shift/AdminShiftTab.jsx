@@ -180,22 +180,17 @@ export default function AdminShiftTab({ user }) {
               <div className="flex items-center gap-1.5">
                 <Label className="text-xs text-slate-500 whitespace-nowrap">毎月締切日:</Label>
                 <Input
-                  type="number"
-                  min="1"
-                  max="31"
-                  className="h-7 text-xs w-16"
+                  type="text"
+                  className="h-7 text-xs w-20"
                   placeholder="15"
                   value={currentShiftMonth.request_deadline ? String(currentShiftMonth.request_deadline).replace(/\D/g, '') : ''}
                   onChange={(e) => {
-                    const day = parseInt(e.target.value, 10);
-                    if (!isNaN(day) && day >= 1 && day <= 31) {
-                      updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
-                    }
-                  }}
-                  onBlur={(e) => {
-                    const day = parseInt(e.target.value, 10);
-                    if (!isNaN(day) && day >= 1 && day <= 31) {
-                      updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                    const input = e.target.value.replace(/\D/g, '');
+                    if (input) {
+                      const day = parseInt(input, 10);
+                      if (day >= 1 && day <= 31) {
+                        updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                      }
                     }
                   }}
                 />
