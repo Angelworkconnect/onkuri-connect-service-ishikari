@@ -186,12 +186,11 @@ export default function AdminShiftTab({ user }) {
                   placeholder="15または15日"
                   value={deadlineInput || currentShiftMonth.request_deadline || ''}
                   onChange={(e) => {
-                    const input = e.target.value;
-                    setDeadlineInput(input);
+                    setDeadlineInput(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const numStr = deadlineInput.replace(/\D/g, '');
+                    if (e.key === 'Enter' && currentShiftMonth?.id) {
+                      const numStr = (e.target as any).value.replace(/\D/g, '');
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
@@ -201,16 +200,16 @@ export default function AdminShiftTab({ user }) {
                       }
                     }
                   }}
-                  onBlur={() => {
-                    if (deadlineInput) {
-                      const numStr = deadlineInput.replace(/\D/g, '');
+                  onBlur={(e) => {
+                    if (currentShiftMonth?.id) {
+                      const numStr = (e.target as any).value.replace(/\D/g, '');
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
                           updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                          setDeadlineInput('');
                         }
                       }
-                      setDeadlineInput('');
                     }
                   }}
                 />
