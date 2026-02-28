@@ -77,7 +77,10 @@ export default function AdminShiftTab({ user }) {
 
   const updateMonthMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.ShiftMonth.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries(['shift-months']),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shift-months'] });
+      queryClient.refetchQueries({ queryKey: ['shift-months'] });
+    },
   });
 
   const createMonthMutation = useMutation({
