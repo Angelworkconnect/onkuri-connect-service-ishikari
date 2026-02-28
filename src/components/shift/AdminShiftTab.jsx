@@ -30,6 +30,7 @@ export default function AdminShiftTab({ user }) {
   const [deadlineInput, setDeadlineInput] = useState('');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: allStaff = [] } = useQuery({
