@@ -169,6 +169,12 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
           </div>
         ))}
         {isLocked && <Badge className="bg-red-100 text-red-700 text-xs">締切済み・編集不可</Badge>}
+        {closedDays.length > 0 && (
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded border bg-slate-200 border-slate-300" />
+            <span className="text-xs text-slate-500">定休日</span>
+          </div>
+        )}
       </div>
     </div>
   );
