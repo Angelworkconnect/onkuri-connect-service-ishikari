@@ -9,10 +9,15 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
   const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
 
   const userEntries = entries.filter(e => e.staff_email === currentUserEmail);
-  const dateToPattern = {};
+  const dateToEntry = {};
   userEntries.forEach(e => {
-    if (!dateToPattern[e.date]) dateToPattern[e.date] = [];
-    dateToPattern[e.date].push(e.shift_type);
+    if (!dateToEntry[e.date]) dateToEntry[e.date] = [];
+    dateToEntry[e.date].push({
+      staff_name: e.staff_name,
+      start_time: e.start_time,
+      end_time: e.end_time,
+      shift_type: e.shift_type
+    });
   });
 
   const getEntryColor = (patternId) => {
@@ -62,40 +67,36 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
 
             {/* 日付セル */}
             {days.map((day) => {
-              const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-              const dayOfWeek = new Date(year, month - 1, day).getDay();
-              const isClosedDay = closedDays.includes(dayOfWeek);
-              const userShifts = dateToPattern[dateStr] || [];
-              const req = requirements.find(r => r.date === dateStr);
+               const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+               const dayOfWeek = new Date(year, month - 1, day).getDay();
+               const isClosedDay = closedDays.includes(dayOfWeek);
+               const dayEntries = dateToEntry[dateStr] || [];
+               const req = requirements.find(r => r.date === dateStr);
 
-              return (
-                <div
-                  key={day}
-                  className={`p-3 rounded-lg border-2 min-h-[140px] ${
-                    isClosedDay ? 'border-slate-300 bg-slate-200 opacity-50' :
-                    dayOfWeek === 0 ? 'border-red-300 bg-red-50' :
-                    dayOfWeek === 6 ? 'border-blue-300 bg-blue-50' :
-                    'border-slate-200 bg-white'
-                  }`}
-                >
-                  <div className="font-bold text-lg text-slate-800 mb-2">{day}</div>
+               return (
+                 <div
+                   key={day}
+                   className={`p-3 rounded-lg border-2 min-h-[140px] ${
+                     isClosedDay ? 'border-slate-300 bg-slate-200 opacity-50' :
+                     dayOfWeek === 0 ? 'border-red-300 bg-red-50' :
+                     dayOfWeek === 6 ? 'border-blue-300 bg-blue-50' :
+                     'border-slate-200 bg-white'
+                   }`}
+                 >
+                   <div className="font-bold text-lg text-slate-800 mb-2">{day}</div>
 
-                  {userShifts.length > 0 ? (
-                    <div className="space-y-1.5">
-                      {userShifts.map((patternId, idx) => {
-                        const pattern = getShiftPattern(parseInt(patternId));
-                        return (
-                          <div key={idx} className={`p-2 rounded text-xs font-bold text-center ${pattern?.color || 'bg-gray-100'}`}>
-                            <div>{pattern?.label.split(' ')[0]}</div>
-                            <div className="text-[10px] mt-0.5">{pattern?.startTime}～</div>
-                            <div className="text-[10px]">{pattern?.endTime}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center text-xs text-slate-400 py-6">休</div>
-                  )}
+                   {dayEntries.length > 0 ? (
+                     <div className="space-y-1.5">
+                       {dayEntries.map((entry, idx) => (
+                         <div key={idx} className="p-2 rounded text-xs bg-indigo-100 border border-indigo-300">
+                           <div className="font-semibold text-indigo-900">{entry.staff_name}</div>
+                           <div className="text-indigo-700 text-[11px] mt-0.5">{entry.start_time}～{entry.end_time}</div>
+                         </div>
+                       ))}
+                     </div>
+                   ) : (
+                     <div className="text-center text-xs text-slate-400 py-6">休</div>
+                   )}
 
                   {req && req.required_total && (
                     <div className="text-[10px] text-slate-500 mt-2 pt-2 border-t border-slate-200">
