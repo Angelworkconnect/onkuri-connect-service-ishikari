@@ -362,6 +362,7 @@ export default function AdminShiftTab({ user }) {
                 staff={allStaff} requests={requests}
                 onDropStaff={handleDropStaff}
                 onRemoveEntry={(e) => deleteEntryMutation.mutate(e.id)}
+                onUpdateEntry={(id, data) => updateEntryMutation.mutate({ id, data })}
                 isPublished={isPublished}
                 onUpdateRequirement={(date, required_total) => upsertRequirementMutation.mutate({ date, required_total })}
                 closedDays={currentShiftMonth?.closed_days || []}
