@@ -303,45 +303,13 @@ export default function AdminShiftTab({ user }) {
         </Card>
       )}
 
-      {currentShiftMonth && (
-        <Card className="p-3 border-0 shadow-sm bg-slate-50">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-semibold text-slate-600 flex items-center gap-1">
-              <Settings className="w-3.5 h-3.5" />定休曜日:
-            </span>
-            {['日','月','火','水','木','金','土'].map((d, i) => {
-              const isOff = (currentShiftMonth.closed_days || []).includes(i);
-              return (
-                <button
-                  key={i}
-                  onClick={() => {
-                    const cur = currentShiftMonth.closed_days || [];
-                    const next = isOff ? cur.filter(x => x !== i) : [...cur, i];
-                    updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { closed_days: next } });
-                  }}
-                  className={`w-8 h-8 rounded-full text-xs font-bold border-2 transition-colors ${
-                    isOff
-                      ? i === 0 ? 'bg-red-500 border-red-600 text-white' : i === 6 ? 'bg-blue-500 border-blue-600 text-white' : 'bg-slate-500 border-slate-600 text-white'
-                      : i === 0 ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100' : i === 6 ? 'bg-blue-50 border-blue-300 text-blue-600 hover:bg-blue-100' : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {d}
-                </button>
-              );
-            })}
-            {(currentShiftMonth.closed_days || []).length > 0 && (
-              <span className="text-xs text-slate-500">
-                ({['日','月','火','水','木','金','土'].filter((_, i) => (currentShiftMonth.closed_days || []).includes(i)).join('・')}曜日が定休)
-              </span>
-            )}
-          </div>
-        </Card>
-      )}
+
 
       {currentShiftMonth && (
         <Tabs defaultValue="grid" className="w-full">
           <TabsList className="bg-white shadow mb-4 h-auto p-1 flex-wrap">
             <TabsTrigger value="grid" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">📅 シフト表</TabsTrigger>
+            <TabsTrigger value="preview" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white">👁️ プレビュー</TabsTrigger>
             <TabsTrigger value="requests" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">🗓️ 希望休</TabsTrigger>
             <TabsTrigger value="ai" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white">✨ AI生成</TabsTrigger>
             <TabsTrigger value="staff" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">👥 職員駒</TabsTrigger>
@@ -368,6 +336,22 @@ export default function AdminShiftTab({ user }) {
                 onRemoveEntry={(e) => deleteEntryMutation.mutate(e.id)}
                 isPublished={isPublished}
                 onUpdateRequirement={(date, required_total) => upsertRequirementMutation.mutate({ date, required_total })}
+                closedDays={currentShiftMonth?.closed_days || []}
+              />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preview">
+            <Card className="p-4 border-0 shadow-lg">
+              <h2 className="text-base font-bold text-slate-800 mb-4">👁️ 職員ビュー プレビュー</h2>
+              <p className="text-sm text-slate-600 mb-4">職員側から見えるシフト表の プレビューです</p>
+              <PublicShiftCalendar
+                entries={entries}
+                requirements={requirements}
+                year={year}
+                month={month}
+                currentUserEmail="preview@test.jp"
+                notes={currentShiftMonth?.notes || ''}
                 closedDays={currentShiftMonth?.closed_days || []}
               />
             </Card>
