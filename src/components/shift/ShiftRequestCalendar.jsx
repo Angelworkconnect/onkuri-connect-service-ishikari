@@ -26,11 +26,13 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
 
   const handleTap = (day) => {
     if (isLocked) return;
-    const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const existing = getRequest(day);
     if (existing) {
-      onRemove(existing);
+      // 登録済み → 削除確認モーダル表示
+      setConfirmDay(day);
     } else {
+      // 未登録 → 即時 OFF 登録
+      const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       onAdd(date, 'OFF');
     }
   };
