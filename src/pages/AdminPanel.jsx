@@ -1060,6 +1060,7 @@ export default function AdminPanel() {
       role: staff.role,
       approval_status: staff.approval_status || 'pending',
       qualifications: staff.qualifications || [],
+      display_in_shift_calendar: staff.display_in_shift_calendar !== false,
     });
     setStaffDialogOpen(true);
   };
