@@ -219,7 +219,18 @@ export default function ShiftMonthGrid({
                       className="absolute top-full left-0 z-50 bg-white border-2 border-indigo-300 rounded-xl shadow-2xl p-2 min-w-[140px] mt-0.5"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <p className="text-[10px] font-bold text-indigo-700 mb-1">{month}/{day} に入れる人</p>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[10px] font-bold text-indigo-700">{month}/{day} に入れる人</p>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showOffRequests}
+                            onChange={(e) => setShowOffRequests(e.target.checked)}
+                            className="w-3 h-3"
+                          />
+                          <span className="text-[9px] text-slate-600">希望休も表示</span>
+                        </label>
+                      </div>
                       {candidates.length === 0 ? (
                         <p className="text-[10px] text-slate-400">候補なし</p>
                       ) : (
