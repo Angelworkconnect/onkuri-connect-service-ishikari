@@ -84,7 +84,7 @@ export default function StaffPiece({ staff, safetyScore, canPlace, warnings, dra
     >
       <div className="flex items-center gap-1 font-bold">
         <span>{staff.full_name}</span>
-        {hasQualification(staff) && <span className="text-[8px]">🌈</span>}
+        {hasCareQualification(staff) && <span className="text-[8px]">🌈</span>}
         <StaffTaxBadge taxMode={staff.tax_mode} />
       </div>
       {warnings && warnings.length > 0 && (
