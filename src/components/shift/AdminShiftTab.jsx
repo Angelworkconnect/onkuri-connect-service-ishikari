@@ -328,7 +328,6 @@ export default function AdminShiftTab({ user }) {
                 <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-300 rounded inline-block" />不足</span>
                 <span className="text-indigo-500 ml-auto text-[11px]">🔵 不足日タップで補充候補を表示</span>
               </div>
-              <ShiftWarningPanel entries={entries} staff={allStaff} requirements={requirements} year={year} month={month} />
               <ShiftMonthGrid
                 year={year} month={month}
                 entries={entries} requirements={requirements}
@@ -343,18 +342,24 @@ export default function AdminShiftTab({ user }) {
           </TabsContent>
 
           <TabsContent value="preview">
-            <Card className="p-4 border-0 shadow-lg">
-              <h2 className="text-base font-bold text-slate-800 mb-4">👁️ 職員ビュー プレビュー</h2>
-              <p className="text-sm text-slate-600 mb-4">職員側から見えるシフト表の プレビューです</p>
-              <PublicShiftCalendar
-                entries={entries}
-                requirements={requirements}
-                year={year}
-                month={month}
-                currentUserEmail="preview@test.jp"
-                notes={currentShiftMonth?.notes || ''}
-                closedDays={currentShiftMonth?.closed_days || []}
-              />
+            <Card className="p-4 border-0 shadow-lg space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-800 mb-4">👁️ 職員ビュー プレビュー</h2>
+                <p className="text-sm text-slate-600 mb-4">職員側から見えるシフト表のプレビューです</p>
+                <PublicShiftCalendar
+                  entries={entries}
+                  requirements={requirements}
+                  year={year}
+                  month={month}
+                  currentUserEmail="preview@test.jp"
+                  notes={currentShiftMonth?.notes || ''}
+                  closedDays={currentShiftMonth?.closed_days || []}
+                />
+              </div>
+              <div className="pt-4 border-t">
+                <h3 className="text-base font-bold text-slate-800 mb-3">⚠️ 警告・確認事項</h3>
+                <ShiftWarningPanel entries={entries} staff={allStaff} requirements={requirements} year={year} month={month} />
+              </div>
             </Card>
           </TabsContent>
 
