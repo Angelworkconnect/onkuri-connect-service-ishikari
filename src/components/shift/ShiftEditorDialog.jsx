@@ -57,14 +57,12 @@ export default function ShiftEditorDialog({ entry, onSave, onDelete, onClose, is
             <label className="text-sm font-medium text-slate-600">シフトパターン</label>
             <Select value={data.shift_type ? String(data.shift_type) : ''} onValueChange={(value) => {
               const pattern = SHIFT_PATTERNS.find(p => p.id === parseInt(value));
-              const updatedData = {
+              setData({
                 ...data,
                 shift_type: value,
                 start_time: pattern?.startTime,
                 end_time: pattern?.endTime,
-              };
-              setData(updatedData);
-              onSave(updatedData);
+              });
             }}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="パターンを選択" />
