@@ -275,7 +275,7 @@ export default function ShiftMonthGrid({
                                 style={style}
                                 onClick={() => { onDropStaff(s, dateStr(day)); setQuickFillDay(null); }}
                               >
-                                {label}{s.full_name?.split(' ').pop() || s.full_name}
+                                {label}{s.full_name}
                               </button>
                             );
                           })}
