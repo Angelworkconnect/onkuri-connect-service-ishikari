@@ -32,8 +32,8 @@ function getGenderColor(staff, safetyScore, canPlace) {
   if (!canPlace) return { cls: 'bg-red-100 border-red-400 text-red-700', style: {} };
   if (safetyScore < 30) return { cls: 'bg-red-100 border-red-400 text-red-700', style: {} };
 
-  if (hasQualification(staff)) {
-    // 虹色グラデーション（border＋background）
+  if (hasCareQualification(staff)) {
+    // 介護系資格者のみ虹色グラデーション（border＋background）
     return {
       cls: 'border-2 text-slate-800 font-semibold',
       style: {
@@ -44,6 +44,7 @@ function getGenderColor(staff, safetyScore, canPlace) {
       },
     };
   }
+  // 運転免許などのみの有資格者は通常カラー（性別ベース）に流れる
 
   if (safetyScore < 60) return { cls: 'bg-yellow-100 border-yellow-400 text-yellow-700', style: {} };
 
