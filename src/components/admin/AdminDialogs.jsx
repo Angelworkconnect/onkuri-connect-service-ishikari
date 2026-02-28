@@ -145,6 +145,15 @@ export default function AdminDialogs({
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex items-center gap-2 p-2 border rounded-lg bg-blue-50">
+              <input
+                type="checkbox"
+                checked={staffForm.display_in_shift_calendar !== false}
+                onChange={(e) => setStaffForm({...staffForm, display_in_shift_calendar: e.target.checked})}
+                className="w-4 h-4 accent-indigo-600"
+              />
+              <Label className="mb-0">シフトカレンダーに表示する</Label>
+            </div>
             <div>
               <Label>保有資格（複数選択可）</Label>
               <div className="mt-2 border rounded-lg p-3 max-h-48 overflow-y-auto bg-slate-50 space-y-1.5">
