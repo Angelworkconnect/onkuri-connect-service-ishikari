@@ -1856,84 +1856,15 @@ export default function AdminPanel() {
 
           {/* Staff Tab */}
           <TabsContent value="staff">
-           <Card className="border-0 shadow-lg">
-             <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
-               <h2 className="text-lg font-medium">スタッフ一覧</h2>
-               <Button onClick={() => { resetStaffForm(); setStaffDialogOpen(true); }} className="bg-[#2D4A6F] w-full sm:w-auto">
-                 <UserPlus className="w-4 h-4 mr-2" />
-                 新規スタッフ登録
-               </Button>
-             </div>
-             <div className="overflow-x-auto">
-             <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>名前</TableHead>
-                    <TableHead>メールアドレス</TableHead>
-                    <TableHead>電話番号</TableHead>
-                    <TableHead>カテゴリー</TableHead>
-                    <TableHead>ステータス</TableHead>
-                    <TableHead>登録日</TableHead>
-                    <TableHead>操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allStaff.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell className="font-medium">{s.full_name}</TableCell>
-                      <TableCell>{s.email}</TableCell>
-                      <TableCell>{s.phone || '-'}</TableCell>
-                      <TableCell>
-                        <Badge className={
-                          s.role === 'admin' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' :
-                          s.role === 'full_time' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                          s.role === 'part_time' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                          'bg-cyan-100 text-cyan-700 border-cyan-200'
-                        } variant="outline">
-                          {s.role === 'admin' ? '管理者' : 
-                           s.role === 'full_time' ? '正社員' : 
-                           s.role === 'part_time' ? 'パート' : 
-                           '単発'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={
-                          s.approval_status === 'approved' ? 'bg-green-100 text-green-700' : 
-                          s.approval_status === 'rejected' ? 'bg-red-100 text-red-700' : 
-                          'bg-amber-100 text-amber-700'
-                        }>
-                          {s.approval_status === 'approved' ? '承認済み' : 
-                           s.approval_status === 'rejected' ? '却下' : 
-                           '承認待ち'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{safeFormat(s.created_date, 'yyyy/M/d')}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 flex-wrap">
-                          <Button variant="ghost" size="icon" onClick={() => handleEditStaff(s)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => inviteStaffMutation.mutate({ email: s.email })}
-                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                          >
-                            <Mail className="w-4 h-4 mr-1" />
-                            招待送信
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => deleteStaffMutation.mutate(s.id)}>
-                            <Trash2 className="w-4 h-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  </TableBody>
-                  </Table>
-                  </div>
-                  </Card>
-                  </TabsContent>
+            <StaffListTabComponent
+              allStaff={allStaff}
+              onEdit={handleEditStaff}
+              onDelete={(id) => deleteStaffMutation.mutate(id)}
+              onInvite={(email) => inviteStaffMutation.mutate({ email })}
+              onAddNew={() => { resetStaffForm(); setStaffDialogOpen(true); }}
+              invitePending={inviteStaffMutation.isPending}
+            />
+          </TabsContent>
 
                   {/* Announcements Tab */}
                   <TabsContent value="announcements">
