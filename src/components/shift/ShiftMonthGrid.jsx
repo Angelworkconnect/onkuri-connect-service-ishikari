@@ -14,11 +14,13 @@ const SHIFT_TYPE_COLORS = {
 
 export default function ShiftMonthGrid({
   year, month, entries, requirements, staff, requests,
-  onDropStaff, onRemoveEntry, isPublished,
+  onDropStaff, onRemoveEntry, isPublished, onUpdateRequirement,
 }) {
   const [dragOver, setDragOver] = useState(null);
   const [draggingStaff, setDraggingStaff] = useState(null);
   const [quickFillDay, setQuickFillDay] = useState(null); // ワンタップ不足補充
+  const [editingReqDay, setEditingReqDay] = useState(null);
+  const [editingReqValue, setEditingReqValue] = useState('');
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
