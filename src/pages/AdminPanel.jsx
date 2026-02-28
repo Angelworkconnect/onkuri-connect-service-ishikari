@@ -754,6 +754,7 @@ export default function AdminPanel() {
       role: 'temporary',
       approval_status: 'pending',
       qualifications: [],
+      display_in_shift_calendar: true,
     });
     setEditingStaff(null);
   };
