@@ -97,9 +97,9 @@ export default function StaffOffDaysPanel({ staff, onUpdate }) {
               <Plus className="w-3 h-3" />
             </Button>
           </div>
-          {(staff.custom_off_dates || []).length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {[...(staff.custom_off_dates || [])].sort().map((date) => (
+          {(localStaff.custom_off_dates || []).length > 0 && (
+           <div className="flex flex-wrap gap-1 mt-2">
+             {[...(localStaff.custom_off_dates || [])].sort().map((date) => (
                 <Badge key={date} variant="outline" className="flex items-center gap-1 px-2 py-0.5">
                   <Calendar className="w-3 h-3" />
                   <span className="text-[10px]">{date}</span>
