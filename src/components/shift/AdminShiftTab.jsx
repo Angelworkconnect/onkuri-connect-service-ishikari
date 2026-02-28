@@ -103,6 +103,11 @@ export default function AdminShiftTab({ user }) {
     onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
   });
 
+  const updateEntryMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.ShiftEntry.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shift-entries', year, month] }),
+  });
+
   const bulkCreateMutation = useMutation({
     mutationFn: async (newEntries) => {
       for (const e of newEntries) {
