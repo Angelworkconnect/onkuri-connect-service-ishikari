@@ -136,7 +136,7 @@ export default function ShiftMonthGrid({
   };
 
   const handleDayCellClick = (day) => {
-    if (isPublished || isClosedDay(day)) return;
+    if (isClosedDay(day)) return;
     const status = getDayStatus(day);
     if (status === 'short' || status === 'warn') {
       setQuickFillDay(day === quickFillDay ? null : day);
