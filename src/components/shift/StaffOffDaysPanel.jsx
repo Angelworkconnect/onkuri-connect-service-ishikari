@@ -9,11 +9,14 @@ const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
 export default function StaffOffDaysPanel({ staff, onUpdate }) {
   const [customDateInput, setCustomDateInput] = useState('');
+  const [localStaff, setLocalStaff] = useState(staff);
 
   const handleToggleDow = (dow) => {
-    const current = staff.hard_off_days || [];
+    const current = localStaff.hard_off_days || [];
     const next = current.includes(dow) ? current.filter(d => d !== dow) : [...current, dow];
-    onUpdate({ ...staff, hard_off_days: next });
+    const updated = { ...localStaff, hard_off_days: next };
+    setLocalStaff(updated);
+    onUpdate(updated);
   };
 
   const handleAddCustomDate = () => {
