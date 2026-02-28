@@ -1,0 +1,245 @@
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, Heart, Calendar } from 'lucide-react';
+import ShiftRequestCalendar from '../components/shift/ShiftRequestCalendar';
+import {
+  calcYearlyIncomePrediction, calcSafetyScore, getAnnualLimit,
+  getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
+} from '../components/shift/taxUtils';
+
+export default function MyShift() {
+  const [user, setUser] = useState(null);
+  const now = new Date();
+  // デフォルト: 翌月（提出期間想定）
+  const defaultMonth = now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2;
+  const defaultYear = now.getMonth() + 2 > 12 ? now.getFullYear() + 1 : now.getFullYear();
+  const [year, setYear] = useState(defaultYear);
+  const [month, setMonth] = useState(defaultMonth);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(async u => {
+      if (!u) { base44.auth.redirectToLogin(); return; }
+      const staffList = await base44.entities.Staff.filter({ email: u.email });
+      if (staffList.length > 0) u.full_name = staffList[0].full_name;
+      setUser(u);
+    }).catch(() => base44.auth.redirectToLogin());
+  }, []);
+
+  const { data: allStaff = [] } = useQuery({
+    queryKey: ['myshift-staff', user?.email],
+    queryFn: () => base44.entities.Staff.filter({ email: user.email }),
+    enabled: !!user,
+  });
+  const myStaff = allStaff[0] || null;
+
+  const { data: shiftMonths = [] } = useQuery({
+    queryKey: ['shift-months'],
+    queryFn: () => base44.entities.ShiftMonth.list('-year'),
+    enabled: !!user,
+  });
+  const currentShiftMonth = shiftMonths.find(sm => sm.year === year && sm.month === month);
+
+  const { data: entries = [] } = useQuery({
+    queryKey: ['shift-entries', year, month],
+    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth?.id }),
+    enabled: !!currentShiftMonth,
+  });
+
+  const { data: myRequests = [] } = useQuery({
+    queryKey: ['my-shift-requests', user?.email, year, month],
+    queryFn: () => base44.entities.ShiftRequest.filter({ staff_email: user.email, year, month }),
+    enabled: !!user,
+  });
+
+  const { data: allAttendance = [] } = useQuery({
+    queryKey: ['myshift-attendance', user?.email],
+    queryFn: () => base44.entities.Attendance.filter({ user_email: user.email }),
+    enabled: !!user,
+  });
+
+  const addRequestMutation = useMutation({
+    mutationFn: (data) => base44.entities.ShiftRequest.create({
+      ...data, year, month,
+      staff_email: user.email, staff_name: user.full_name,
+      shift_month_id: currentShiftMonth?.id || '',
+    }),
+    onSuccess: () => queryClient.invalidateQueries(['my-shift-requests']),
+  });
+
+  const removeRequestMutation = useMutation({
+    mutationFn: (id) => base44.entities.ShiftRequest.delete(id),
+    onSuccess: () => queryClient.invalidateQueries(['my-shift-requests']),
+  });
+
+  const prevMonth = () => {
+    if (month === 1) { setMonth(12); setYear(y => y - 1); } else setMonth(m => m - 1);
+  };
+  const nextMonth = () => {
+    if (month === 12) { setMonth(1); setYear(y => y + 1); } else setMonth(m => m + 1);
+  };
+
+  // 締切チェック（毎月15日 23:59）
+  const isDeadlinePassed = new Date() > new Date(year, month - 2, 15, 23, 59);
+
+  // 今月シフト
+  const myEntries = entries.filter(e => e.staff_email === user?.email);
+  const isPublished = currentShiftMonth?.status === 'PUBLISHED';
+
+  // 勤務時間計算
+  const monthHours = myEntries.reduce((sum, e) => {
+    if (!e.start_time || !e.end_time) return sum + 8;
+    const [sH, sM] = e.start_time.split(':').map(Number);
+    const [eH, eM] = e.end_time.split(':').map(Number);
+    return sum + ((eH * 60 + eM) - (sH * 60 + sM)) / 60;
+  }, 0);
+
+  // 扶養計算
+  let safetyScore = 100, predictedIncome = 0, limit = Infinity;
+  if (myStaff) {
+    const pred = calcYearlyIncomePrediction(myStaff, allAttendance);
+    safetyScore = calcSafetyScore(myStaff, pred.predictedYearlyIncome);
+    predictedIncome = pred.predictedYearlyIncome;
+    limit = getAnnualLimit(myStaff);
+  }
+
+  if (!user) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-slate-400">読み込み中...</div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* ヘッダー */}
+      <div className="bg-gradient-to-br from-indigo-700 to-purple-800 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-6">
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Calendar className="w-6 h-6" />シフト
+          </h1>
+          <p className="text-indigo-200 text-sm mt-0.5">希望休の提出・シフト確認</p>
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+        {/* 月ナビ */}
+        <div className="flex items-center justify-center gap-4">
+          <button onClick={prevMonth}><ChevronLeft className="w-6 h-6 text-slate-500 hover:text-slate-800" /></button>
+          <span className="text-xl font-bold text-slate-800">{year}年{month}月</span>
+          <button onClick={nextMonth}><ChevronRight className="w-6 h-6 text-slate-500 hover:text-slate-800" /></button>
+        </div>
+
+        {/* サマリーカード */}
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="p-3 border-0 shadow-sm text-center">
+            <p className="text-xs text-slate-400 mb-1">今月の勤務</p>
+            <p className="text-xl font-bold text-indigo-600">{myEntries.length}日</p>
+            <p className="text-xs text-slate-400">{Math.round(monthHours)}時間</p>
+          </Card>
+          <Card className="p-3 border-0 shadow-sm text-center">
+            <p className="text-xs text-slate-400 mb-1">希望休</p>
+            <p className="text-xl font-bold text-orange-500">{myRequests.length}日</p>
+          </Card>
+          {myStaff?.tax_mode && myStaff.tax_mode !== 'FULL' ? (
+            <Card className="p-3 border-0 shadow-sm text-center">
+              <p className="text-xs text-slate-400 mb-1">扶養安全度</p>
+              <p className={`text-xl font-bold ${getSafetyColor(safetyScore)}`}>{safetyScore}%</p>
+              <p className="text-xs text-slate-400">{TAX_MODE_LABELS[myStaff.tax_mode]}</p>
+            </Card>
+          ) : (
+            <Card className="p-3 border-0 shadow-sm text-center">
+              <p className="text-xs text-slate-400 mb-1">推定月収</p>
+              <p className="text-lg font-bold text-slate-700">¥{Math.round(monthHours * ((myStaff?.hourly_wage || 1000))).toLocaleString()}</p>
+            </Card>
+          )}
+        </div>
+
+        {/* 扶養メーター */}
+        {myStaff?.tax_mode && myStaff.tax_mode !== 'FULL' && limit < Infinity && (
+          <Card className="p-4 border-0 shadow-sm">
+            <h3 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-1">
+              <Heart className="w-4 h-4 text-pink-500" />あなたの扶養状況
+            </h3>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-slate-500">
+                <span>今年の推定収入: ¥{predictedIncome.toLocaleString()}</span>
+                <span>上限: ¥{limit.toLocaleString()}</span>
+              </div>
+              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full ${getSafetyBgColor(safetyScore)}`}
+                  style={{ width: `${Math.min(100, (predictedIncome / limit) * 100)}%` }} />
+              </div>
+              <p className={`text-sm font-medium ${getSafetyColor(safetyScore)}`}>
+                あと ¥{Math.max(0, limit - predictedIncome).toLocaleString()} まで働けます
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {/* 希望休入力 */}
+        <Card className="p-4 border-0 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-bold text-slate-800">希望休入力</h3>
+            {isDeadlinePassed ? (
+              <Badge className="bg-red-100 text-red-700">締切済み</Badge>
+            ) : (
+              <Badge className="bg-green-100 text-green-700">入力可能</Badge>
+            )}
+          </div>
+          {!isDeadlinePassed && (
+            <p className="text-xs text-slate-400 mb-3">タップ：休み登録　長押し：種類選択（午前休/午後休）</p>
+          )}
+          <ShiftRequestCalendar
+            year={year} month={month}
+            requests={myRequests}
+            onAdd={(date, type) => addRequestMutation.mutate({ date, request_type: type })}
+            onRemove={(req) => removeRequestMutation.mutate(req.id)}
+            isLocked={isDeadlinePassed}
+          />
+        </Card>
+
+        {/* 自分のシフト確認 */}
+        {isPublished && myEntries.length > 0 && (
+          <Card className="p-4 border-0 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-bold text-slate-800">{month}月のシフト確定</h3>
+              <Badge className="bg-green-100 text-green-700">公開済み</Badge>
+            </div>
+            <div className="space-y-1.5">
+              {myEntries.sort((a, b) => a.date.localeCompare(b.date)).map((entry, i) => {
+                const d = new Date(entry.date);
+                const dow = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
+                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                return (
+                  <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${isWeekend ? 'bg-blue-50' : 'bg-slate-50'}`}>
+                    <span className={`text-sm font-bold w-16 ${d.getDay() === 0 ? 'text-red-600' : d.getDay() === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
+                      {month}/{d.getDate()}({dow})
+                    </span>
+                    <span className="text-sm text-slate-600">{entry.start_time}〜{entry.end_time}</span>
+                    {entry.auto_generated && <Badge className="text-[10px] bg-purple-100 text-purple-600 ml-auto">AI</Badge>}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
+        {isPublished && myEntries.length === 0 && (
+          <Card className="p-6 border-0 shadow-sm text-center">
+            <p className="text-slate-400">この月のシフトはまだ割り当てられていません</p>
+          </Card>
+        )}
+
+        {!isPublished && (
+          <Card className="p-4 border-0 shadow-sm text-center bg-amber-50 border-amber-200">
+            <p className="text-sm text-amber-700">シフトは現在準備中です。公開後にここで確認できます。</p>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}

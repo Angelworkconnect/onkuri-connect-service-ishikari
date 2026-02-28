@@ -62,6 +62,7 @@ import MyApplications from './pages/MyApplications';
 import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import PayrollExport from './pages/PayrollExport';
+import ShiftManagement from './pages/ShiftManagement';
 import Shifts from './pages/Shifts';
 import StaffApproval from './pages/StaffApproval';
 import StaffRegistration from './pages/StaffRegistration';
@@ -69,7 +70,7 @@ import TipsHistory from './pages/TipsHistory';
 import Transport from './pages/Transport';
 import TransportAdmin from './pages/TransportAdmin';
 import VersionCheck from './pages/VersionCheck';
-import ShiftManagement from './pages/ShiftManagement';
+import MyShift from './pages/MyShift';
 import __Layout from './Layout.jsx';
 
 
@@ -89,6 +90,7 @@ export const PAGES = {
     "NotificationSettings": NotificationSettings,
     "Notifications": Notifications,
     "PayrollExport": PayrollExport,
+    "ShiftManagement": ShiftManagement,
     "Shifts": Shifts,
     "StaffApproval": StaffApproval,
     "StaffRegistration": StaffRegistration,
@@ -96,7 +98,7 @@ export const PAGES = {
     "Transport": Transport,
     "TransportAdmin": TransportAdmin,
     "VersionCheck": VersionCheck,
-    "ShiftManagement": ShiftManagement,
+    "MyShift": MyShift,
 }
 
 export const pagesConfig = {
