@@ -160,14 +160,8 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
         </div>
       )}
 
-      {/* 上限表示 */}
-      <div className="mt-3 text-sm text-slate-600 font-medium">
-        希望休: {requests.length} / {MAX_REQUESTS} 日
-        {requests.length >= MAX_REQUESTS && <span className="ml-2 text-red-500 text-xs">上限に達しました</span>}
-      </div>
-
       {/* 凡例 */}
-      <div className="flex gap-3 mt-2 flex-wrap">
+      <div className="flex gap-3 mt-3 flex-wrap">
         {Object.entries(REQUEST_TYPES).map(([type, info]) => (
           <div key={type} className="flex items-center gap-1">
             <div className={`w-3 h-3 rounded border ${info.color}`} />
