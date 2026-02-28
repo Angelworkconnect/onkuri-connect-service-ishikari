@@ -455,6 +455,53 @@ export default function AdminShiftTab({ user }) {
             </Card>
           </TabsContent>
 
+          <TabsContent value="offdays">
+            <Card className="p-4 border-0 shadow-lg">
+              <h2 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                🚫 職員の休み日設定
+              </h2>
+              {selectedStaff ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-slate-700">{selectedStaff.full_name}</h3>
+                    <Button size="sm" variant="outline" onClick={() => setSelectedStaff(null)}>戻る</Button>
+                  </div>
+                  <StaffOffDaysPanel
+                    staff={selectedStaff}
+                    onUpdate={(updated) => setSelectedStaff(updated)}
+                  />
+                  <Button 
+                    className="w-full bg-rose-600 hover:bg-rose-700"
+                    onClick={() => updateStaffOffDaysMutation.mutate(selectedStaff)}
+                    disabled={updateStaffOffDaysMutation.isPending}
+                  >
+                    {updateStaffOffDaysMutation.isPending ? '保存中...' : '休み設定を保存'}
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {allStaff.map(staff => (
+                    <button
+                      key={staff.id}
+                      onClick={() => setSelectedStaff(staff)}
+                      className="text-left p-3 bg-white rounded-lg border border-slate-200 hover:border-rose-400 hover:bg-rose-50 transition-colors"
+                    >
+                      <div className="text-sm font-medium text-slate-800 truncate">{staff.full_name}</div>
+                      <div className="text-[11px] text-slate-500 mt-1">
+                        {(staff.hard_off_days || []).length > 0 && (
+                          <div>固定休: {['日','月','火','水','木','金','土'].filter((_, i) => (staff.hard_off_days || []).includes(i)).join('・')}</div>
+                        )}
+                        {(staff.custom_off_dates || []).length > 0 && (
+                          <div>カスタム: {(staff.custom_off_dates || []).length}件</div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
           <TabsContent value="fuyou">
             <FuyouTab allStaff={allStaff} getStaffSafety={getStaffSafety}
               entries={entries} requirements={requirements} year={year} month={month}
