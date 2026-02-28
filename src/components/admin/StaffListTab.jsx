@@ -41,11 +41,31 @@ export default function StaffListTab({ allStaff, onEdit, onDelete, onInvite, onA
           </TableHeader>
           <TableBody>
             {allStaff.map((s) => (
-              <TableRow key={s.id}>
+              <TableRow key={s.id} className={
+                s.qualifications?.length > 0 && s.qualifications.some(q => q !== '無資格')
+                  ? 'bg-gradient-to-r from-purple-50/50 via-pink-50/30 to-sky-50/50'
+                  : s.gender === 'male' ? 'bg-sky-50/30' : s.gender === 'female' ? 'bg-pink-50/30' : ''
+              }>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-1.5">
-                    {s.full_name}
+                    <span className={
+                      s.gender === 'male' ? 'text-sky-700' :
+                      s.gender === 'female' ? 'text-pink-700' : 'text-slate-700'
+                    }>{s.full_name}</span>
+                    {s.qualifications?.length > 0 && s.qualifications.some(q => q !== '無資格') && (
+                      <span className="text-xs">🌈</span>
+                    )}
                   </div>
+                  {s.qualifications?.filter(q => q !== '無資格').length > 0 && (
+                    <div className="flex flex-wrap gap-0.5 mt-0.5">
+                      {s.qualifications.filter(q => q !== '無資格').slice(0,3).map(q => (
+                        <span key={q} className="text-[10px] bg-indigo-100 text-indigo-700 px-1 rounded">{q}</span>
+                      ))}
+                      {s.qualifications.filter(q => q !== '無資格').length > 3 && (
+                        <span className="text-[10px] text-slate-400">+{s.qualifications.filter(q => q !== '無資格').length - 3}</span>
+                      )}
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell>{s.email}</TableCell>
                 <TableCell>{s.phone || '-'}</TableCell>
