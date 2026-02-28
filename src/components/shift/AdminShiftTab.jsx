@@ -190,7 +190,7 @@ export default function AdminShiftTab({ user }) {
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && currentShiftMonth?.id) {
-                      const numStr = (e.target as any).value.replace(/\D/g, '');
+                      const numStr = e.currentTarget.value.replace(/\D/g, '');
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
@@ -202,7 +202,7 @@ export default function AdminShiftTab({ user }) {
                   }}
                   onBlur={(e) => {
                     if (currentShiftMonth?.id) {
-                      const numStr = (e.target as any).value.replace(/\D/g, '');
+                      const numStr = e.currentTarget.value.replace(/\D/g, '');
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
