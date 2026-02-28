@@ -114,7 +114,7 @@ export default function AdminDialogs({
       <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-4 py-4 max-h-[65vh] overflow-y-auto">
             <div><Label>名前 *</Label><Input value={staffForm.full_name} onChange={(e) => setStaffForm({...staffForm, full_name: e.target.value})} placeholder="山田 太郎" /></div>
             <div><Label>メールアドレス *</Label><Input type="email" value={staffForm.email} onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} placeholder="yamada@example.com" /></div>
             <div><Label>電話番号</Label><Input type="tel" value={staffForm.phone} onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} placeholder="090-1234-5678" /></div>
@@ -144,6 +144,40 @@ export default function AdminDialogs({
                   <SelectItem value="pending">承認待ち</SelectItem><SelectItem value="approved">承認済み</SelectItem><SelectItem value="rejected">却下</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label>保有資格（複数選択可）</Label>
+              <div className="mt-2 border rounded-lg p-3 max-h-48 overflow-y-auto bg-slate-50 space-y-1.5">
+                {[
+                  '無資格','看護師','准看護師','介護福祉士','実務者研修','初任者研修',
+                  '理学療法士','作業療法士','言語聴覚士','柔道整復師','あん摩マッサージ指圧師',
+                  '社会福祉士','精神保健福祉士','社会福祉主事任用資格',
+                  '管理栄養士','栄養士','介護支援専門員','認知症介護実践者研修',
+                  '普通自動車免許','普通二種免許','福祉有償運送講習',
+                ].map(q => {
+                  const checked = (staffForm.qualifications || []).includes(q);
+                  return (
+                    <label key={q} className="flex items-center gap-2 cursor-pointer hover:bg-white rounded px-1 py-0.5">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          const cur = staffForm.qualifications || [];
+                          setStaffForm({
+                            ...staffForm,
+                            qualifications: checked ? cur.filter(x => x !== q) : [...cur, q],
+                          });
+                        }}
+                        className="w-4 h-4 accent-indigo-600"
+                      />
+                      <span className="text-sm text-slate-700">{q}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {(staffForm.qualifications || []).length > 0 && (
+                <p className="text-xs text-indigo-600 mt-1">選択中: {(staffForm.qualifications || []).join('、')}</p>
+              )}
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-3">
