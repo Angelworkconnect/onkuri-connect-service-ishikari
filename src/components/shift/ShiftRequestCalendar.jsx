@@ -58,6 +58,12 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
     setLongPressDate(null);
   };
 
+  const confirmRemove = () => {
+    const existing = getRequest(confirmDay);
+    if (existing) onRemove(existing);
+    setConfirmDay(null);
+  };
+
   const cells = [];
   for (let i = 0; i < firstDow; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
