@@ -42,22 +42,23 @@ export default function StaffOffDaysPanel({ staff, onUpdate }) {
             <span className="text-xs font-bold text-slate-700">固定休曜日</span>
             <span className="text-[10px] text-slate-500">({currentDowOffDays})</span>
           </div>
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             {DOW.map((d, i) => {
               const isOff = (staff.hard_off_days || []).includes(i);
               return (
                 <button
                   key={i}
                   onClick={() => handleToggleDow(i)}
-                  className={`w-7 h-7 rounded text-xs font-bold border transition-colors ${
+                  className={`w-9 h-9 rounded-lg text-xs font-bold border-2 transition-all cursor-pointer ${
                     isOff
-                      ? i === 0 ? 'bg-red-500 border-red-600 text-white' 
-                        : i === 6 ? 'bg-blue-500 border-blue-600 text-white'
-                        : 'bg-slate-500 border-slate-600 text-white'
-                      : i === 0 ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
-                        : i === 6 ? 'bg-blue-50 border-blue-300 text-blue-600 hover:bg-blue-100'
-                        : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-100'
+                      ? i === 0 ? 'bg-red-600 border-red-700 text-white shadow-md' 
+                        : i === 6 ? 'bg-blue-600 border-blue-700 text-white shadow-md'
+                        : 'bg-slate-600 border-slate-700 text-white shadow-md'
+                      : i === 0 ? 'bg-red-100 border-red-400 text-red-700 hover:bg-red-200'
+                        : i === 6 ? 'bg-blue-100 border-blue-400 text-blue-700 hover:bg-blue-200'
+                        : 'bg-slate-100 border-slate-400 text-slate-700 hover:bg-slate-200'
                   }`}
+                  title={isOff ? 'クリックで解除' : 'クリックで選択'}
                 >
                   {d}
                 </button>
