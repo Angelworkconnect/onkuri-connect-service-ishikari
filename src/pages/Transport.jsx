@@ -30,6 +30,7 @@ export default function Transport() {
 
   useEffect(() => {
     base44.auth.me().then(async u => {
+      if (!u) { base44.auth.redirectToLogin(); return; }
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) {
         u.full_name = staffList[0].full_name;
@@ -37,7 +38,11 @@ export default function Transport() {
       }
       if (u.role === 'admin') setIsAdmin(true);
       setUser(u);
-    }).catch(() => base44.auth.redirectToLogin());
+    }).catch((e) => {
+      if (e?.response?.status === 401 || e?.status === 401) {
+        base44.auth.redirectToLogin();
+      }
+    });
   }, []);
 
   useEffect(() => {
