@@ -5,7 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Edit, Trash2, ChevronDown, ChevronRight, Calendar, User, Truck, CalendarDays } from 'lucide-react';
 
-const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
+const TRIP = {
+  PICKUP:  { label: '🌅 朝便', badge: 'bg-orange-100 text-orange-700 border border-orange-200', border: 'border-l-4 border-orange-400 bg-orange-50/30' },
+  DROPOFF: { label: '🌇 帰便', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200', border: 'border-l-4 border-indigo-400 bg-indigo-50/30' },
+  OTHER:   { label: '🚐 その他', badge: 'bg-slate-100 text-slate-600 border border-slate-200', border: 'border-l-4 border-slate-300' },
+};
+const tripInfo = (t) => TRIP[t] || TRIP.OTHER;
+const tripBadge = (t) => <Badge className={`text-xs ${tripInfo(t).badge}`}>{tripInfo(t).label}</Badge>;
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
 function RideRow({ ride, onEdit, onDelete }) {
