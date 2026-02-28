@@ -382,10 +382,6 @@ export default function AdminShiftTab({ user }) {
                   />
                 )}
               </div>
-              <div className="pt-4 border-t">
-                <h3 className="text-base font-bold text-slate-800 mb-3">⚠️ 警告・確認事項</h3>
-                <ShiftWarningPanel entries={entries} staff={allStaff} requirements={requirements} year={year} month={month} />
-              </div>
             </Card>
           </TabsContent>
 
