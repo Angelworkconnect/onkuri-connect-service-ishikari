@@ -213,7 +213,7 @@ export default function ShiftMonthGrid({
                               {pattern && <div className="text-[8px] opacity-80">{pattern.startTime}～{pattern.endTime}</div>}
                             </div>
                             {!isPublished && (
-                              <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 ml-1">
+                              <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 ml-1" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   className="text-blue-600 hover:text-blue-800"
                                   onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}
@@ -225,6 +225,7 @@ export default function ShiftMonthGrid({
                                   className="text-red-500 hover:text-red-700"
                                   onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }}
                                   title="削除"
+                                  type="button"
                                 >×</button>
                               </div>
                             )}
