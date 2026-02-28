@@ -223,15 +223,24 @@ export default function ShiftMonthGrid({
                         <p className="text-[10px] text-slate-400">候補なし</p>
                       ) : (
                         <div className="space-y-1 max-h-60 overflow-y-auto">
-                          {candidates.map(s => (
-                            <button
-                              key={s.id}
-                              className="w-full text-left text-[11px] px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-medium"
-                              onClick={() => { onDropStaff(s, dateStr(day)); setQuickFillDay(null); }}
-                            >
-                              {s.full_name}
-                            </button>
-                          ))}
+                          {candidates.map(s => {
+                            const { className, style, label } = getCandidateStyle(s);
+                            return (
+                              <button
+                                key={s.id}
+                                className={className}
+                                style={style}
+                                onClick={() => { onDropStaff(s, dateStr(day)); setQuickFillDay(null); }}
+                              >
+                                {label}{s.full_name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="flex gap-2 flex-wrap mt-1 pt-1 border-t border-slate-100">
+                          <span className="flex items-center gap-0.5 text-[9px] text-pink-600">●女性</span>
+                          <span className="flex items-center gap-0.5 text-[9px] text-sky-600">●男性</span>
+                          <span className="flex items-center gap-0.5 text-[9px] text-purple-600">🌈資格者</span>
                         </div>
                       )}
                       <button className="text-[10px] text-slate-400 mt-1 w-full text-center" onClick={() => setQuickFillDay(null)}>閉じる</button>
