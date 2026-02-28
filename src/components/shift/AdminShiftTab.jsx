@@ -34,6 +34,7 @@ export default function AdminShiftTab({ user }) {
   const [tempNotes, setTempNotes] = useState('');
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
+  const [previewStaffEmail, setPreviewStaffEmail] = useState('');
   const queryClient = useQueryClient();
 
   const { data: allStaff = [] } = useQuery({
