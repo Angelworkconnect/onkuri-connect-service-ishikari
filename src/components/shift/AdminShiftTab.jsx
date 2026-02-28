@@ -283,7 +283,7 @@ export default function AdminShiftTab({ user }) {
               </Button>
             )}
             {isPublished && currentShiftMonth && (
-              <Button size="sm" variant="outline" onClick={() => publishMutation.mutate({ id: currentShiftMonth.id, data: { status: 'DRAFT' } })}>
+              <Button size="sm" variant="outline" onClick={() => updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { status: 'DRAFT' } })}>
                 <ChevronLeft className="w-3.5 h-3.5 mr-1" />下書きに戻す
               </Button>
             )}
