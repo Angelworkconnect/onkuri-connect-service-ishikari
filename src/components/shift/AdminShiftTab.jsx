@@ -366,7 +366,6 @@ export default function AdminShiftTab({ user }) {
                       }`}
                     >
                       <div className="text-sm font-semibold text-slate-800 truncate">{staff.full_name}</div>
-                      <div className="text-xs text-slate-500 mt-1 truncate">{staff.email}</div>
                     </button>
                   ))}
                 </div>
