@@ -30,7 +30,7 @@ const navigation = [
   { name: '勤怠', href: 'Attendance', icon: Clock },
   { name: '応募履歴', href: 'MyApplications', icon: FileText },
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
-  { name: 'シフト管理', href: 'ShiftManagement', icon: Calendar },
+  { name: 'シフト', href: 'MyShift', icon: Calendar },
   { name: '送迎', href: 'Transport', icon: Truck },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
