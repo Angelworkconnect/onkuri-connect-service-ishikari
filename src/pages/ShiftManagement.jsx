@@ -370,6 +370,14 @@ function FuyouDashboard({ allStaff, getStaffSafety, entries, requirements, year,
           扶養・税制管理ダッシュボード
         </h2>
 
+        <div className="mb-3">
+          <FuyouOptimizeButton
+            entries={entries} staff={allStaff} requirements={requirements}
+            year={year} month={month}
+            onRemoveEntry={onRemoveEntry} onDropStaff={onDropStaff}
+          />
+        </div>
+
         {managedStaff.length === 0 ? (
           <p className="text-sm text-slate-400 text-center py-8">扶養制限のある職員はいません</p>
         ) : (
