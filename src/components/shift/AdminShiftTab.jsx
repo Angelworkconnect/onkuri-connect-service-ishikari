@@ -441,8 +441,37 @@ export default function AdminShiftTab({ user }) {
               onRemoveEntry={(e) => deleteEntryMutation.mutate(e.id)}
               onDropStaff={handleDropStaff} />
           </TabsContent>
-        </Tabs>
-      )}
+
+          <TabsContent value="legend">
+            <ShiftLegend />
+          </TabsContent>
+          </Tabs>
+          )}
+
+          {/* 特記事項編集ダイアログ */}
+          <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
+          <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{year}年{month}月 特記事項編集</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              value={tempNotes}
+              onChange={(e) => setTempNotes(e.target.value)}
+              placeholder="特記事項を入力（例：3日体験1名、イベント開催など）"
+              className="h-32"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNotesDialogOpen(false)}>
+              キャンセル
+            </Button>
+            <Button onClick={handleSaveNotes} className="bg-indigo-600">
+              保存
+            </Button>
+          </DialogFooter>
+          </DialogContent>
+          </Dialog>
     </div>
   );
 }
