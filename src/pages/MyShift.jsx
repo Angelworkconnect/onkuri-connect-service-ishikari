@@ -224,7 +224,7 @@ export default function MyShift() {
             requests={myRequests}
             onAdd={(date, type) => addRequestMutation.mutate({ date, request_type: type })}
             onRemove={(req) => removeRequestMutation.mutate(req.id)}
-            isLocked={isLocked}
+            isLocked={false}
             closedDays={closedDays}
           />
           {!isLocked && myRequests.length > 0 && (
