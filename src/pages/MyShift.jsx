@@ -41,6 +41,7 @@ export default function MyShift() {
     queryKey: ['shift-months'],
     queryFn: () => base44.entities.ShiftMonth.list('-year'),
     enabled: !!user,
+    refetchInterval: 10000, // 10秒ごとにリアルタイム反映
   });
   const currentShiftMonth = shiftMonths.find(sm => sm.year === year && sm.month === month);
 

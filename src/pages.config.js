@@ -59,6 +59,7 @@ import Documents from './pages/Documents';
 import Home from './pages/Home';
 import Messages from './pages/Messages';
 import MyApplications from './pages/MyApplications';
+import MyShift from './pages/MyShift';
 import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import PayrollExport from './pages/PayrollExport';
@@ -70,7 +71,6 @@ import TipsHistory from './pages/TipsHistory';
 import Transport from './pages/Transport';
 import TransportAdmin from './pages/TransportAdmin';
 import VersionCheck from './pages/VersionCheck';
-import MyShift from './pages/MyShift';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +87,7 @@ export const PAGES = {
     "Home": Home,
     "Messages": Messages,
     "MyApplications": MyApplications,
+    "MyShift": MyShift,
     "NotificationSettings": NotificationSettings,
     "Notifications": Notifications,
     "PayrollExport": PayrollExport,
@@ -98,7 +99,6 @@ export const PAGES = {
     "Transport": Transport,
     "TransportAdmin": TransportAdmin,
     "VersionCheck": VersionCheck,
-    "MyShift": MyShift,
 }
 
 export const pagesConfig = {
