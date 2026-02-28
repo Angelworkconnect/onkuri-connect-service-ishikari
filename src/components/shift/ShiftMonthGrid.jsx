@@ -186,8 +186,8 @@ export default function ShiftMonthGrid({
                       {candidates.length === 0 ? (
                         <p className="text-[10px] text-slate-400">候補なし</p>
                       ) : (
-                        <div className="space-y-1">
-                          {candidates.slice(0, 6).map(s => (
+                        <div className="space-y-1 max-h-60 overflow-y-auto">
+                          {candidates.map(s => (
                             <button
                               key={s.id}
                               className="w-full text-left text-[11px] px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-medium"
