@@ -4,7 +4,13 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, User, Truck, CalendarDays, ChevronDown, ChevronRight, Clock } from 'lucide-react';
 
-const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
+const TRIP = {
+  PICKUP:  { label: '🌅 朝便', badge: 'bg-orange-100 text-orange-700 border border-orange-200', border: 'border-l-4 border-orange-400 bg-orange-50/30' },
+  DROPOFF: { label: '🌇 帰便', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200', border: 'border-l-4 border-indigo-400 bg-indigo-50/30' },
+  OTHER:   { label: '🚐 その他', badge: 'bg-slate-100 text-slate-600 border border-slate-200', border: 'border-l-4 border-slate-300' },
+};
+const tripInfo = (t) => TRIP[t] || TRIP.OTHER;
+const tripBadge = (t) => <Badge className={`text-xs ${tripInfo(t).badge}`}>{tripInfo(t).label}</Badge>;
 const statusBadge = (s) => {
   if (s === 'APPROVED') return <Badge className="bg-green-100 text-green-700 text-xs">承認済</Badge>;
   if (s === 'SUBMITTED') return <Badge className="bg-blue-100 text-blue-700 text-xs">提出済</Badge>;
