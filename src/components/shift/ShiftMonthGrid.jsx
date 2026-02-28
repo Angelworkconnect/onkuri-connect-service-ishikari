@@ -68,6 +68,22 @@ export default function ShiftMonthGrid({
     });
   };
 
+  const handleReqClick = (e, day) => {
+    if (isPublished) return;
+    e.stopPropagation();
+    const req = getDayRequirement(day);
+    setEditingReqDay(day);
+    setEditingReqValue(String(req));
+  };
+
+  const handleReqSave = (day) => {
+    const val = parseInt(editingReqValue, 10);
+    if (!isNaN(val) && val >= 0) {
+      onUpdateRequirement(dateStr(day), val);
+    }
+    setEditingReqDay(null);
+  };
+
   const handleDayCellClick = (day) => {
     if (isPublished) return;
     const status = getDayStatus(day);
