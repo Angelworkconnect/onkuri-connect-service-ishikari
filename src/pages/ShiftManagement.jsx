@@ -359,7 +359,7 @@ function AdminView({ year, month, days, allStaff, entries, requests, requirement
 }
 
 // ========== 扶養ダッシュボード ==========
-function FuyouDashboard({ allStaff, getStaffSafety }) {
+function FuyouDashboard({ allStaff, getStaffSafety, entries, requirements, year, month, onRemoveEntry, onDropStaff }) {
   const managedStaff = allStaff.filter(s => s.tax_mode && s.tax_mode !== 'FULL');
 
   return (
