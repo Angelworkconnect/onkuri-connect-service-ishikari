@@ -187,6 +187,23 @@ export default function AdminShiftTab({ user }) {
                 />
               </div>
             )}
+            {currentShiftMonth && (
+              <button
+                onClick={() => updateMonthMutation.mutate({
+                  id: currentShiftMonth.id,
+                  data: { request_submission_enabled: !(currentShiftMonth.request_submission_enabled ?? true) }
+                })}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                  (currentShiftMonth.request_submission_enabled ?? true)
+                    ? 'bg-green-100 border-green-400 text-green-700 hover:bg-green-200'
+                    : 'bg-red-100 border-red-400 text-red-700 hover:bg-red-200'
+                }`}
+                title="希望休提出の可否を切り替え"
+              >
+                <span>{(currentShiftMonth.request_submission_enabled ?? true) ? '✅' : '🚫'}</span>
+                提出{(currentShiftMonth.request_submission_enabled ?? true) ? '可能' : '不可'}
+              </button>
+            )}
             {!isPublished && currentShiftMonth && (
               <Button size="sm" className="bg-indigo-600" onClick={() => publishMutation.mutate()}>
                 <Send className="w-3.5 h-3.5 mr-1" />シフト公開
