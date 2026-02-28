@@ -147,6 +147,21 @@ export default function AdminShiftTab({ user }) {
     await bulkCreateMutation.mutateAsync(newEntries);
   };
 
+  const handleOpenNotesDialog = () => {
+    setTempNotes(currentShiftMonth?.notes || '');
+    setNotesDialogOpen(true);
+  };
+
+  const handleSaveNotes = () => {
+    if (currentShiftMonth?.id) {
+      updateMonthMutation.mutate({
+        id: currentShiftMonth.id,
+        data: { notes: tempNotes }
+      });
+      setNotesDialogOpen(false);
+    }
+  };
+
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
