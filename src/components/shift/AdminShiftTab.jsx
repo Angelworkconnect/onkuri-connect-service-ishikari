@@ -130,7 +130,8 @@ export default function AdminShiftTab({ user }) {
       custom_off_dates: staffData.custom_off_dates,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['shift-staff']);
+      queryClient.invalidateQueries({ queryKey: ['shift-staff'] });
+      queryClient.refetchQueries({ queryKey: ['shift-staff'] });
       setSelectedStaff(null);
     },
   });
