@@ -69,12 +69,12 @@ export default function MyShift() {
       staff_email: user.email, staff_name: user.full_name,
       shift_month_id: currentShiftMonth?.id || '',
     }),
-    onSuccess: () => queryClient.invalidateQueries(['my-shift-requests']),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-shift-requests', user?.email, year, month] }),
   });
 
   const removeRequestMutation = useMutation({
     mutationFn: (id) => base44.entities.ShiftRequest.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['my-shift-requests']),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-shift-requests', user?.email, year, month] }),
   });
 
   const prevMonth = () => {
