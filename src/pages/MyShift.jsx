@@ -195,7 +195,9 @@ export default function MyShift() {
         <Card className="p-4 border-0 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base font-bold text-slate-800">希望休入力</h3>
-            {isDeadlinePassed ? (
+            {!isSubmissionEnabled ? (
+              <Badge className="bg-orange-100 text-orange-700">提出停止中</Badge>
+            ) : isDeadlinePassed ? (
               <Badge className="bg-red-100 text-red-700">締切済み</Badge>
             ) : (
               <div className="flex flex-col items-end gap-0.5">
@@ -208,7 +210,12 @@ export default function MyShift() {
               </div>
             )}
           </div>
-          {!isDeadlinePassed && (
+          {!isSubmissionEnabled && (
+            <p className="text-xs text-orange-500 mb-3 bg-orange-50 rounded-lg px-3 py-2">
+              現在、この月の希望休提出は停止されています。管理者にお問い合わせください。
+            </p>
+          )}
+          {!isLocked && (
             <p className="text-xs text-slate-400 mb-3">タップ：休み登録　長押し：種類選択（午前休/午後休）</p>
           )}
           <ShiftRequestCalendar
@@ -216,7 +223,8 @@ export default function MyShift() {
             requests={myRequests}
             onAdd={(date, type) => addRequestMutation.mutate({ date, request_type: type })}
             onRemove={(req) => removeRequestMutation.mutate(req.id)}
-            isLocked={isDeadlinePassed}
+            isLocked={isLocked}
+            closedDays={closedDays}
           />
         </Card>
 
