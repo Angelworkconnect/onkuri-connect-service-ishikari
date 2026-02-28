@@ -184,35 +184,41 @@ export default function AdminShiftTab({ user }) {
                   type="text"
                   className="h-7 text-xs w-24"
                   placeholder="15または15日"
-                  value={deadlineInput || currentShiftMonth.request_deadline || ''}
+                  value={deadlineInput}
                   onChange={(e) => {
                     setDeadlineInput(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && currentShiftMonth?.id) {
-                      const numStr = e.currentTarget.value.replace(/\D/g, '');
+                    if (e.key === 'Enter' && currentShiftMonth?.id && deadlineInput) {
+                      const numStr = deadlineInput.replace(/\D/g, '');
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
                           updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
-                          setDeadlineInput('');
-                        }
-                      }
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (currentShiftMonth?.id) {
-                      const numStr = e.currentTarget.value.replace(/\D/g, '');
-                      if (numStr) {
-                        const day = parseInt(numStr, 10);
-                        if (day >= 1 && day <= 31) {
-                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
-                          setDeadlineInput('');
                         }
                       }
                     }
                   }}
                 />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs px-2"
+                  onClick={() => {
+                    if (currentShiftMonth?.id && deadlineInput) {
+                      const numStr = deadlineInput.replace(/\D/g, '');
+                      if (numStr) {
+                        const day = parseInt(numStr, 10);
+                        if (day >= 1 && day <= 31) {
+                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                        }
+                      }
+                    }
+                  }}
+                  disabled={updateMonthMutation.isPending}
+                >
+                  {updateMonthMutation.isPending ? '保存中...' : '保存'}
+                </Button>
               </div>
             )}
             {currentShiftMonth && (
