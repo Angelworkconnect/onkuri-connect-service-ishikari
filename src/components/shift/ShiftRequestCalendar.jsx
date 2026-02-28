@@ -86,24 +86,27 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
           const req = getRequest(day);
           const dow = (firstDow + day - 1) % 7;
           const isWeekend = dow === 0 || dow === 6;
+          const isClosed = closedDays.includes(dow);
 
           return (
             <button
               key={day}
               className={`
                 relative aspect-square rounded-lg border text-sm font-medium transition-all active:scale-95
-                ${req ? REQUEST_TYPES[req.request_type]?.color || 'bg-red-100 text-red-700 border-red-300' : 
+                ${isClosed ? 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed' :
+                  req ? REQUEST_TYPES[req.request_type]?.color || 'bg-red-100 text-red-700 border-red-300' : 
                   isWeekend ? 'bg-slate-50 border-slate-200 text-slate-400' : 'bg-white border-slate-200 text-slate-700'}
-                ${isLocked ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'}
+                ${(isLocked || isClosed) ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'}
               `}
-              onClick={() => handleTap(day)}
-              onMouseDown={() => handleLongPressStart(day)}
+              onClick={() => !isClosed && handleTap(day)}
+              onMouseDown={() => !isClosed && handleLongPressStart(day)}
               onMouseUp={handleLongPressEnd}
-              onTouchStart={() => handleLongPressStart(day)}
+              onTouchStart={() => !isClosed && handleLongPressStart(day)}
               onTouchEnd={handleLongPressEnd}
             >
               <span className="text-xs">{day}</span>
-              {req && (
+              {isClosed && <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-500 font-bold">休</div>}
+              {req && !isClosed && (
                 <div className="absolute bottom-0.5 left-0 right-0 text-center text-[9px] leading-tight">
                   {REQUEST_TYPES[req.request_type]?.label}
                 </div>
