@@ -190,7 +190,14 @@ export default function MyShift() {
             {isDeadlinePassed ? (
               <Badge className="bg-red-100 text-red-700">締切済み</Badge>
             ) : (
-              <Badge className="bg-green-100 text-green-700">入力可能</Badge>
+              <div className="flex flex-col items-end gap-0.5">
+                <Badge className="bg-green-100 text-green-700">入力可能</Badge>
+                <span className="text-xs text-slate-400">
+                  締切: {currentShiftMonth?.request_deadline
+                    ? currentShiftMonth.request_deadline
+                    : `${year}/${String(month - 1 || 12).padStart(2, '0')}/15`}
+                </span>
+              </div>
             )}
           </div>
           {!isDeadlinePassed && (
