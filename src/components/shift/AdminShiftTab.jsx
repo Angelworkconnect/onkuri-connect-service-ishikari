@@ -28,6 +28,8 @@ export default function AdminShiftTab({ user }) {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2);
   const [deadlineInput, setDeadlineInput] = useState('');
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [tempNotes, setTempNotes] = useState('');
   const queryClient = useQueryClient();
 
   const { data: allStaff = [] } = useQuery({
