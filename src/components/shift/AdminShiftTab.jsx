@@ -192,6 +192,12 @@ export default function AdminShiftTab({ user }) {
                       updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
                     }
                   }}
+                  onBlur={(e) => {
+                    const day = parseInt(e.target.value, 10);
+                    if (!isNaN(day) && day >= 1 && day <= 31) {
+                      updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                    }
+                  }}
                 />
                 <span className="text-xs text-slate-400">日</span>
               </div>
