@@ -1170,6 +1170,7 @@ export default function AdminPanel() {
                 { value: 'benefits', icon: Gift, label: '福利厚生' },
                 { value: 'help', icon: Bell, label: 'ヘルプ' },
                 { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
+                { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
                 { value: 'transport', icon: Truck, label: '送迎管理' },
               ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
