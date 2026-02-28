@@ -39,7 +39,14 @@ import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
-import HelpRequestManager from '../components/admin/HelpRequestManager'; import StaffListTabComponent from '../components/admin/StaffListTab';
+import HelpRequestManager from '../components/admin/HelpRequestManager';
+import StaffListTabComponent from '../components/admin/StaffListTab';
+import TipsTab from '../components/admin/TipsTab';
+import AdminShiftTabComp from '../components/shift/AdminShiftTab';
+import BenefitsTabInline from '../components/admin/BenefitsTabInline';
+import MessagesTab from '../components/admin/MessagesTab';
+import AnnouncementsTab from '../components/admin/AnnouncementsTab';
+import AdminDialogs from '../components/admin/AdminDialogs';
 import { format } from "date-fns";
 import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
