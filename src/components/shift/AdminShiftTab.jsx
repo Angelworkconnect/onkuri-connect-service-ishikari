@@ -378,6 +378,7 @@ export default function AdminShiftTab({ user }) {
                     currentUserEmail={previewStaffEmail}
                     notes={currentShiftMonth?.notes || ''}
                     closedDays={currentShiftMonth?.closed_days || []}
+                    staff={allStaff}
                   />
                 )}
               </div>
