@@ -236,11 +236,11 @@ export default function ShiftMonthGrid({
                               </button>
                             );
                           })}
-                        </div>
-                        <div className="flex gap-2 flex-wrap mt-1 pt-1 border-t border-slate-100">
-                          <span className="flex items-center gap-0.5 text-[9px] text-pink-600">●女性</span>
-                          <span className="flex items-center gap-0.5 text-[9px] text-sky-600">●男性</span>
-                          <span className="flex items-center gap-0.5 text-[9px] text-purple-600">🌈資格者</span>
+                          <div className="flex gap-2 flex-wrap mt-1 pt-1 border-t border-slate-100">
+                            <span className="flex items-center gap-0.5 text-[9px] text-pink-600">●女性</span>
+                            <span className="flex items-center gap-0.5 text-[9px] text-sky-600">●男性</span>
+                            <span className="flex items-center gap-0.5 text-[9px] text-purple-600">🌈資格者</span>
+                          </div>
                         </div>
                       )}
                       <button className="text-[10px] text-slate-400 mt-1 w-full text-center" onClick={() => setQuickFillDay(null)}>閉じる</button>
