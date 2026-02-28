@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import RideForm from '../components/transport/RideForm';
+import ApprovedRidesView from '../components/transport/ApprovedRidesView';
 
 const today = new Date().toISOString().split('T')[0];
 const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
