@@ -2,6 +2,42 @@ import React, { useState } from 'react';
 import StaffPiece from './StaffPiece';
 import { canPlaceStaff } from './taxUtils';
 
+// 介護系加算資格
+const CARE_QUALIFICATIONS = [
+  '介護福祉士', '社会福祉士', '精神保健福祉士', '看護師', '准看護師',
+  '理学療法士', 'PT', '作業療法士', 'OT', '言語聴覚士', 'ST',
+  'ケアマネージャー', '介護支援専門員',
+  'ホームヘルパー1級', 'ホームヘルパー2級', 'ホームヘルパー3級',
+  '初任者研修', '実務者研修', '生活援助従事者研修',
+  '喀痰吸引等研修', '認知症介護基礎研修', '認知症介護実践者研修',
+  '福祉用具専門相談員', '相談支援専門員', '保育士', '社会福祉主事',
+];
+
+function hasCareQual(staff) {
+  return (staff.qualifications || []).some(q => q && CARE_QUALIFICATIONS.some(cq => q.includes(cq)));
+}
+
+function getCandidateStyle(staff) {
+  if (hasCareQual(staff)) {
+    return {
+      className: 'w-full text-left text-[11px] px-2 py-1 rounded-lg font-bold border-2',
+      style: {
+        background: 'linear-gradient(135deg, #ffd6e0 0%, #ffeaa7 33%, #d4f5a0 66%, #a0e4f5 100%)',
+        borderColor: '#cc5de8',
+        color: '#333',
+      },
+      label: '🌈',
+    };
+  }
+  if (staff.gender === 'female') {
+    return { className: 'w-full text-left text-[11px] px-2 py-1 rounded-lg font-medium bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-300', style: {}, label: '' };
+  }
+  if (staff.gender === 'male') {
+    return { className: 'w-full text-left text-[11px] px-2 py-1 rounded-lg font-medium bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300', style: {}, label: '' };
+  }
+  return { className: 'w-full text-left text-[11px] px-2 py-1 rounded-lg font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200', style: {}, label: '' };
+}
+
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 const SHIFT_TYPE_COLORS = {
   FULL: 'bg-indigo-100 text-indigo-700',
