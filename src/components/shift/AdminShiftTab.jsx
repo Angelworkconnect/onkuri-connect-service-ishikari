@@ -344,17 +344,35 @@ export default function AdminShiftTab({ user }) {
           <TabsContent value="preview">
             <Card className="p-4 border-0 shadow-lg space-y-4">
               <div>
-                <h2 className="text-base font-bold text-slate-800 mb-4">👁️ 職員ビュー プレビュー</h2>
-                <p className="text-sm text-slate-600 mb-4">職員側から見えるシフト表のプレビューです</p>
-                <PublicShiftCalendar
-                  entries={entries}
-                  requirements={requirements}
-                  year={year}
-                  month={month}
-                  currentUserEmail="preview@test.jp"
-                  notes={currentShiftMonth?.notes || ''}
-                  closedDays={currentShiftMonth?.closed_days || []}
-                />
+                <h2 className="text-base font-bold text-slate-800 mb-3">👁️ 職員ビュー プレビュー</h2>
+                <div className="mb-4 flex items-center gap-3">
+                  <label className="text-sm font-semibold text-slate-600">職員を選択:</label>
+                  <select 
+                    value={previewStaffEmail}
+                    onChange={(e) => setPreviewStaffEmail(e.target.value)}
+                    className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg bg-white"
+                  >
+                    <option value="">-- 選択してください --</option>
+                    {allStaff.map(s => (
+                      <option key={s.id} value={s.email}>{s.full_name} ({s.email})</option>
+                    ))}
+                  </select>
+                </div>
+                {previewStaffEmail ? (
+                  <PublicShiftCalendar
+                    entries={entries}
+                    requirements={requirements}
+                    year={year}
+                    month={month}
+                    currentUserEmail={previewStaffEmail}
+                    notes={currentShiftMonth?.notes || ''}
+                    closedDays={currentShiftMonth?.closed_days || []}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-slate-400">
+                    職員を選択してプレビューを表示します
+                  </div>
+                )}
               </div>
               <div className="pt-4 border-t">
                 <h3 className="text-base font-bold text-slate-800 mb-3">⚠️ 警告・確認事項</h3>
