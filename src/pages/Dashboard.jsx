@@ -120,6 +120,19 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  const { data: shiftMonth = null } = useQuery({
+    queryKey: ['current-shift-month'],
+    queryFn: async () => {
+      const now = new Date();
+      const shiftMonths = await base44.entities.ShiftMonth.filter({
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+      });
+      return shiftMonths.length > 0 ? shiftMonths[0] : null;
+    },
+    enabled: !!user,
+  });
+
   const clockInMutation = useMutation({
     mutationFn: async () => {
       const now = format(new Date(), 'HH:mm');
