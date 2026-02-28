@@ -1059,6 +1059,7 @@ export default function AdminPanel() {
       gender: staff.gender || 'other',
       role: staff.role,
       approval_status: staff.approval_status || 'pending',
+      qualifications: staff.qualifications || [],
     });
     setStaffDialogOpen(true);
   };
