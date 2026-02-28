@@ -297,21 +297,21 @@ export default function ShiftMonthGrid({
       })}
 
       {/* シフト編集ダイアログ */}
-      {editingEntry && (
-        <ShiftEditorDialog
-          entry={editingEntry}
-          isOpen={!!editingEntry}
-          onClose={() => setEditingEntry(null)}
-          onSave={(data) => {
-            // 更新ロジック（AdminShiftTabで実装）
-            setEditingEntry(null);
-          }}
-          onDelete={() => {
-            onRemoveEntry(editingEntry);
-            setEditingEntry(null);
-          }}
-        />
-      )}
+       {editingEntry && (
+         <ShiftEditorDialog
+           entry={editingEntry}
+           isOpen={!!editingEntry}
+           onClose={() => setEditingEntry(null)}
+           onSave={(data) => {
+             onUpdateEntry(editingEntry.id, data);
+             setEditingEntry(null);
+           }}
+           onDelete={() => {
+             onRemoveEntry(editingEntry);
+             setEditingEntry(null);
+           }}
+         />
+       )}
     </div>
   );
 }
