@@ -257,6 +257,11 @@ export default function AdminShiftTab({ user }) {
                 提出{(currentShiftMonth.request_submission_enabled ?? true) ? '可能' : '不可'}
               </button>
             )}
+            {currentShiftMonth && (
+              <Button size="sm" variant="outline" onClick={handleOpenNotesDialog}>
+                <FileText className="w-3.5 h-3.5 mr-1" />特記事項
+              </Button>
+            )}
             {!isPublished && currentShiftMonth && (
               <Button size="sm" className="bg-indigo-600" onClick={() => publishMutation.mutate()}>
                 <Send className="w-3.5 h-3.5 mr-1" />シフト公開
