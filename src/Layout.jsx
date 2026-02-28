@@ -26,7 +26,7 @@ import NotificationBell from './components/notifications/NotificationBell';
 
 const navigation = [
   { name: 'ホーム', href: 'Home', icon: Home },
-  { name: 'シフト', href: 'Shifts', icon: Calendar },
+  { name: '単発', href: 'Shifts', icon: Calendar },
   { name: '勤怠', href: 'Attendance', icon: Clock },
   { name: '応募履歴', href: 'MyApplications', icon: FileText },
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
