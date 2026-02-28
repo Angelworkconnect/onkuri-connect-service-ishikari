@@ -29,7 +29,7 @@ export default function AdminShiftTab({ user }) {
 
   const { data: allStaff = [] } = useQuery({
     queryKey: ['shift-staff'],
-    queryFn: () => base44.entities.Staff.filter({ approval_status: 'approved' }),
+    queryFn: () => base44.entities.Staff.list(),
     enabled: !!user,
   });
 
