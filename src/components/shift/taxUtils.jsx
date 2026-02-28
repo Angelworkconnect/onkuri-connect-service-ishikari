@@ -98,6 +98,11 @@ export function canPlaceStaff(staff, date, currentMonthEntries, attendanceRecord
     return { canPlace: false, warnings: ['固定休日です'] };
   }
 
+  // カスタム休み日チェック
+  if (staff.custom_off_dates?.includes(date)) {
+    return { canPlace: false, warnings: ['カスタム休み日です'] };
+  }
+
   // 月労働時間チェック
   if (staff.monthly_hour_limit) {
     const monthEntries = currentMonthEntries.filter(e => e.staff_id === staff.id);
