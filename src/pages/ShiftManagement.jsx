@@ -345,7 +345,12 @@ function AdminView({ year, month, days, allStaff, entries, requests, requirement
 
           {/* 扶養管理 */}
           <TabsContent value="fuyou">
-            <FuyouDashboard allStaff={allStaff} getStaffSafety={getStaffSafety} />
+            <FuyouDashboard
+              allStaff={allStaff} getStaffSafety={getStaffSafety}
+              entries={entries} requirements={requirements}
+              year={year} month={month}
+              onRemoveEntry={onRemoveEntry} onDropStaff={onDropStaff}
+            />
           </TabsContent>
         </Tabs>
       )}
