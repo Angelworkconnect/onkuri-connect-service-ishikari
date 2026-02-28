@@ -109,7 +109,7 @@ export default function ShiftMonthGrid({
     const date = dateStr(day);
     const dayEntries = getDayEntries(day);
     const alreadyIds = new Set(dayEntries.map(e => e.staff_id));
-    // 希望休チェック（showOffRequests が false の場合のみ除外）
+    // 希望休チェック（showOffRequests が false の場合のみ除外、ただし AM_OFF/PM_OFF は常に表示対象）
     const offEmails = !showOffRequests ? new Set(requests.filter(r => r.date === date && r.request_type === 'OFF').map(r => r.staff_email)) : new Set();
     return staff.filter(s => {
       if (alreadyIds.has(s.id)) return false;
