@@ -113,6 +113,27 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
         })}
       </div>
 
+      {/* タップ削除確認モーダル */}
+      {confirmDay && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setConfirmDay(null)}>
+          <div className="bg-white rounded-2xl p-5 w-72 shadow-xl" onClick={e => e.stopPropagation()}>
+            <p className="text-center font-bold text-slate-800 mb-1">{month}/{confirmDay} の希望休</p>
+            <p className="text-center text-sm text-slate-500 mb-4">
+              「{REQUEST_TYPES[getRequest(confirmDay)?.request_type]?.label}」を取り消しますか？
+            </p>
+            <button
+              className="w-full py-3 rounded-xl bg-red-50 border-2 border-red-200 text-red-700 font-medium mb-2"
+              onClick={confirmRemove}
+            >
+              取り消す
+            </button>
+            <button className="w-full py-2 text-slate-400 text-sm" onClick={() => setConfirmDay(null)}>
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 長押しメニュー */}
       {longPressDate && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setLongPressDate(null)}>
