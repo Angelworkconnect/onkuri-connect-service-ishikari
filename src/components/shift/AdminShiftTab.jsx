@@ -289,6 +289,54 @@ export default function AdminShiftTab({ user }) {
             </Card>
           </TabsContent>
 
+          <TabsContent value="requests">
+            <Card className="p-4 border-0 shadow-lg">
+              <h2 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-orange-600" />希望休一覧
+                <span className="text-xs text-slate-400 font-normal">({requests.length}件)</span>
+              </h2>
+              {requests.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-8">希望休の申請がありません</p>
+              ) : (
+                <div className="space-y-2">
+                  {requests.map((req) => {
+                    const requestDate = new Date(req.date);
+                    const dow = ['日','月','火','水','木','金','土'][requestDate.getDay()];
+                    const typeLabel = {
+                      'OFF': '全日',
+                      'AM_OFF': '午前',
+                      'PM_OFF': '午後',
+                      'PREFER_WORK': '希望勤務'
+                    }[req.request_type];
+                    const typeBgColor = {
+                      'OFF': 'bg-red-100 text-red-800',
+                      'AM_OFF': 'bg-amber-100 text-amber-800',
+                      'PM_OFF': 'bg-blue-100 text-blue-800',
+                      'PREFER_WORK': 'bg-green-100 text-green-800'
+                    }[req.request_type];
+                    return (
+                      <div key={req.id} className="flex items-center justify-between bg-white rounded-lg p-3 border border-slate-200">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-slate-800">{req.staff_name}</span>
+                            <span className="text-xs text-slate-500">({req.staff_email})</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-slate-600">{req.date} ({dow})</span>
+                            <Badge className={`text-xs ${typeBgColor}`}>{typeLabel}</Badge>
+                          </div>
+                          {req.reason && (
+                            <div className="text-xs text-slate-500 mt-1">理由: {req.reason}</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
           <TabsContent value="ai">
             <Card className="p-4 sm:p-6 border-0 shadow-lg">
               <h2 className="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
