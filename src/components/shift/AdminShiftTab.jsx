@@ -264,8 +264,13 @@ export default function AdminShiftTab({ user }) {
               </Button>
             )}
             {!isPublished && currentShiftMonth && (
-              <Button size="sm" className="bg-indigo-600" onClick={() => publishMutation.mutate()}>
+              <Button size="sm" className="bg-indigo-600" onClick={() => setPublishConfirmOpen(true)}>
                 <Send className="w-3.5 h-3.5 mr-1" />シフト公開
+              </Button>
+            )}
+            {isPublished && currentShiftMonth && (
+              <Button size="sm" variant="outline" onClick={() => publishMutation.mutate({ id: currentShiftMonth.id, data: { status: 'DRAFT' } })}>
+                <ChevronLeft className="w-3.5 h-3.5 mr-1" />下書きに戻す
               </Button>
             )}
           </div>
