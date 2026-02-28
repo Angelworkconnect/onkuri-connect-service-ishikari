@@ -19,6 +19,7 @@ import FuyouOptimizeButton from './FuyouOptimizeButton';
 import StaffTaxBadge from './StaffTaxBadge';
 import ShiftLegend from './ShiftLegend';
 import StaffOffDaysPanel from './StaffOffDaysPanel';
+import PublicShiftCalendar from './PublicShiftCalendar';
 import {
   canPlaceStaff, calcYearlyIncomePrediction, calcSafetyScore,
   getAnnualLimit, getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
