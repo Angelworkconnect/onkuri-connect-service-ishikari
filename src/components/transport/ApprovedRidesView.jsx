@@ -220,11 +220,11 @@ function WeekdayView({ rides, onEdit, onDelete }) {
             }
           >
             {dayRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => (
-              <div key={r.id} className="px-4 py-3 hover:bg-slate-50 flex items-center justify-between">
+              <div key={r.id} className={`px-4 py-3 flex items-center justify-between ${tripInfo(r.tripType).border}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="font-medium text-sm">{r.date}</span>
-                    <Badge className="bg-blue-100 text-blue-700 text-xs">{tripLabel(r.tripType)}</Badge>
+                    {tripBadge(r.tripType)}
                     {r.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
                   </div>
                   <p className="text-sm text-slate-600">{r.vehicleName} / {r.driverName}</p>
