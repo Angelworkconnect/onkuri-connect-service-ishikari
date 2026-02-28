@@ -14,6 +14,7 @@ const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 export default function ShiftRequestCalendar({ year, month, requests, onAdd, onRemove, isLocked }) {
   const [longPressDate, setLongPressDate] = useState(null);
   const [lpTimer, setLpTimer] = useState(null);
+  const [confirmDay, setConfirmDay] = useState(null); // タップ確認用
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDow = new Date(year, month - 1, 1).getDay();
