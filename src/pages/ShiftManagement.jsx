@@ -20,6 +20,8 @@ import {
   canPlaceStaff, calcYearlyIncomePrediction, calcSafetyScore,
   getAnnualLimit, getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
 } from '../components/shift/taxUtils';
+import ShiftWarningPanel from '../components/shift/ShiftWarningPanel';
+import FuyouOptimizeButton from '../components/shift/FuyouOptimizeButton';
 
 export default function ShiftManagement() {
   const [user, setUser] = useState(null);
