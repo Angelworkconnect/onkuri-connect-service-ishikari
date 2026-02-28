@@ -326,21 +326,6 @@ export default function Dashboard() {
 
           {/* Right Column */}
           <div className="space-y-6">
-            {/* Shift Request Deadline */}
-            {shiftMonth && shiftMonth.request_deadline && (
-              <Card className="border-0 shadow-sm p-6 bg-gradient-to-br from-orange-50 to-amber-50">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500">希望休の締切</p>
-                    <p className="text-lg font-bold text-orange-700">毎月 {shiftMonth.request_deadline}</p>
-                  </div>
-                </div>
-              </Card>
-            )}
-
             {/* Info Section */}
             <InfoSection />
 
