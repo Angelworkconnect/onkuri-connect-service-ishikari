@@ -570,6 +570,52 @@ export default function AdminShiftTab({ user }) {
           </DialogContent>
           </Dialog>
 
+          {/* プレビュー職員詳細シート */}
+          <Sheet open={previewSheetOpen} onOpenChange={setPreviewSheetOpen}>
+            <SheetContent side="right" className="w-full sm:w-96">
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">
+                    {previewSheetStaff?.full_name?.[0]}
+                  </div>
+                  {previewSheetStaff?.full_name}
+                </SheetTitle>
+              </SheetHeader>
+              <div className="space-y-4 mt-6">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold mb-1">メールアドレス</p>
+                  <p className="text-sm text-slate-800">{previewSheetStaff?.email}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold mb-1">職位</p>
+                  <p className="text-sm text-slate-800">{previewSheetStaff?.role || '---'}</p>
+                </div>
+                {previewSheetStaff?.hourly_wage && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-semibold mb-1">時給</p>
+                    <p className="text-sm text-slate-800">¥{previewSheetStaff.hourly_wage.toLocaleString()}</p>
+                  </div>
+                )}
+                {previewSheetStaff?.tax_mode && previewSheetStaff.tax_mode !== 'FULL' && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-semibold mb-1">税制モード</p>
+                    <Badge className="bg-purple-100 text-purple-700">{previewSheetStaff.tax_mode}</Badge>
+                  </div>
+                )}
+                {previewSheetStaff?.skill_tags && previewSheetStaff.skill_tags.length > 0 && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-semibold mb-2">スキル</p>
+                    <div className="flex flex-wrap gap-1">
+                      {previewSheetStaff.skill_tags.map((tag, i) => (
+                        <Badge key={i} className="bg-blue-100 text-blue-700 text-xs">{tag}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+
           {/* 特記事項編集ダイアログ */}
           <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
           <DialogContent className="max-w-2xl">
