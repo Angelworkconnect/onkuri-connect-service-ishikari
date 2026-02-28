@@ -51,7 +51,7 @@ export default function StaffOffDaysPanel({ staff, onUpdate }) {
           </div>
           <div className="flex gap-2 flex-wrap">
             {DOW.map((d, i) => {
-              const isOff = (staff.hard_off_days || []).includes(i);
+              const isOff = (localStaff.hard_off_days || []).includes(i);
               return (
                 <button
                   key={i}
