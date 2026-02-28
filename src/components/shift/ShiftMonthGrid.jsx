@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StaffPiece from './StaffPiece';
+import ShiftEditorDialog from './ShiftEditorDialog';
+import { Edit2 } from 'lucide-react';
+import { SHIFT_PATTERNS, getShiftPattern, getShiftColor, getShiftLabel } from './shiftPatterns';
 import { canPlaceStaff } from './taxUtils';
 
 // 介護系加算資格
