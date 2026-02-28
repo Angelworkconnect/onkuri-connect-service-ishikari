@@ -155,7 +155,10 @@ export default function AdminShiftTab({ user }) {
       published_at: new Date().toISOString(),
       published_by: user.email,
     }),
-    onSuccess: () => queryClient.invalidateQueries(['shift-months']),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shift-months'] });
+      queryClient.refetchQueries({ queryKey: ['shift-months'] });
+    },
   });
 
   const handleDropStaff = async (staff, date) => {
