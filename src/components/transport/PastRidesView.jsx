@@ -20,10 +20,10 @@ const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
 function RideCard({ ride }) {
   return (
-    <div className="px-4 py-3 hover:bg-slate-50 flex items-center justify-between">
+    <div className={`px-4 py-3 flex items-center justify-between ${tripInfo(ride.tripType).border}`}>
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-          <Badge className="bg-blue-50 text-blue-700 text-xs border border-blue-100">{tripLabel(ride.tripType)}</Badge>
+          {tripBadge(ride.tripType)}
           {statusBadge(ride.status)}
           {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️</Badge>}
         </div>
