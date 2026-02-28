@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { SHIFT_PATTERNS, getShiftPattern } from './shiftPatterns';
 
-export default function PublicShiftCalendar({ entries, requirements, year, month, currentUserEmail, notes, closedDays = [] }) {
+export default function PublicShiftCalendar({ entries, requirements, year, month, currentUserEmail, notes, closedDays = [], staff = [] }) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay = new Date(year, month - 1, 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -11,13 +11,16 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
   const userEntries = entries.filter(e => e.staff_email === currentUserEmail);
   const dateToEntry = {};
   userEntries.forEach(e => {
-    if (!dateToEntry[e.date]) dateToEntry[e.date] = [];
-    dateToEntry[e.date].push({
-      staff_name: e.staff_name,
-      start_time: e.start_time,
-      end_time: e.end_time,
-      shift_type: e.shift_type
-    });
+    const staffMember = staff.find(s => s.email === e.staff_email);
+    if (staffMember && staffMember.display_in_shift_calendar !== false) {
+      if (!dateToEntry[e.date]) dateToEntry[e.date] = [];
+      dateToEntry[e.date].push({
+        staff_name: e.staff_name,
+        start_time: e.start_time,
+        end_time: e.end_time,
+        shift_type: e.shift_type
+      });
+    }
   });
 
   const getEntryColor = (patternId) => {
