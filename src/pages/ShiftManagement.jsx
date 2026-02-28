@@ -268,13 +268,18 @@ function AdminView({ year, month, days, allStaff, entries, requests, requirement
 
           {/* シフト表 */}
           <TabsContent value="grid">
-            <Card className="p-3 sm:p-4 border-0 shadow-lg">
+            <Card className="p-3 sm:p-4 border-0 shadow-lg space-y-3">
               <HeatmapRow days={days} year={year} month={month} entries={entries} requirements={requirements} />
-              <div className="mt-3 flex gap-3 text-xs text-slate-500 mb-3">
+              <div className="flex gap-3 text-xs text-slate-500">
                 <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-200 rounded inline-block" />充足</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-200 rounded inline-block" />注意</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-300 rounded inline-block" />不足</span>
+                <span className="text-indigo-500 ml-auto text-[11px]">🔵 不足日タップで補充候補を表示</span>
               </div>
+              <ShiftWarningPanel
+                entries={entries} staff={allStaff} requirements={requirements}
+                year={year} month={month}
+              />
               <ShiftMonthGrid
                 year={year} month={month}
                 entries={entries} requirements={requirements}
