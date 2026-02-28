@@ -157,7 +157,9 @@ export default function AdminShiftTab({ user }) {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shift-months'] });
+      queryClient.invalidateQueries({ queryKey: ['shift-entries', year, month] });
       queryClient.refetchQueries({ queryKey: ['shift-months'] });
+      queryClient.refetchQueries({ queryKey: ['shift-entries', year, month] });
     },
   });
 
