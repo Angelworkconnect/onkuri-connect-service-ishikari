@@ -58,10 +58,12 @@ export default function ShiftMonthGrid({
 }) {
   const [dragOver, setDragOver] = useState(null);
   const [draggingStaff, setDraggingStaff] = useState(null);
-  const [quickFillDay, setQuickFillDay] = useState(null); // ワンタップ不足補充
+  const [quickFillDay, setQuickFillDay] = useState(null);
   const [editingReqDay, setEditingReqDay] = useState(null);
   const [editingReqValue, setEditingReqValue] = useState('');
-  const [showOffRequests, setShowOffRequests] = useState(false); // 希望休者表示フラグ
+  const [showOffRequests, setShowOffRequests] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [selectedPattern, setSelectedPattern] = useState(null);
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
