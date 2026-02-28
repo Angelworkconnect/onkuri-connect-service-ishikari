@@ -54,7 +54,7 @@ const SHIFT_TYPE_COLORS = {
 
 export default function ShiftMonthGrid({
   year, month, entries, requirements, staff, requests,
-  onDropStaff, onRemoveEntry, isPublished, onUpdateRequirement,
+  onDropStaff, onRemoveEntry, isPublished, onUpdateRequirement, closedDays = [],
 }) {
   const [dragOver, setDragOver] = useState(null);
   const [draggingStaff, setDraggingStaff] = useState(null);
@@ -90,14 +90,22 @@ export default function ShiftMonthGrid({
     short: 'border-red-300 bg-red-50',
   };
 
-  const handleDragOver = (e, day) => { e.preventDefault(); setDragOver(day); };
+  const isClosedDay = (day) => {
+    const dow = new Date(year, month - 1, day).getDay();
+    return closedDays.includes(dow);
+  };
+
+  const handleDragOver = (e, day) => {
+    if (!isClosedDay(day)) { e.preventDefault(); setDragOver(day); }
+  };
   const handleDrop = (e, day) => {
     e.preventDefault(); setDragOver(null);
-    if (draggingStaff) { onDropStaff(draggingStaff, dateStr(day)); setDraggingStaff(null); }
+    if (draggingStaff && !isClosedDay(day)) { onDropStaff(draggingStaff, dateStr(day)); setDraggingStaff(null); }
   };
 
   // ワンタップ不足補充: 不足日クリックで候補スタッフ表示
   const getQuickFillCandidates = (day) => {
+    if (isClosedDay(day)) return [];
     const date = dateStr(day);
     const dayEntries = getDayEntries(day);
     const alreadyIds = new Set(dayEntries.map(e => e.staff_id));
@@ -128,7 +136,7 @@ export default function ShiftMonthGrid({
   };
 
   const handleDayCellClick = (day) => {
-    if (isPublished) return;
+    if (isPublished || isClosedDay(day)) return;
     const status = getDayStatus(day);
     if (status === 'short' || status === 'warn') {
       setQuickFillDay(day === quickFillDay ? null : day);
@@ -159,7 +167,7 @@ export default function ShiftMonthGrid({
               return (
                 <div key={day} className="relative">
                   <div
-                    className={`min-h-20 rounded-lg border-2 p-1 transition-all ${statusStyles[status]} ${dragOver === day ? 'ring-2 ring-indigo-400 scale-105' : ''} ${status !== 'ok' && !isPublished ? 'cursor-pointer' : ''}`}
+                    className={`min-h-20 rounded-lg border-2 p-1 transition-all ${isClosedDay(day) ? 'bg-slate-200 opacity-50 border-slate-300' : statusStyles[status]} ${dragOver === day ? 'ring-2 ring-indigo-400 scale-105' : ''} ${status !== 'ok' && !isPublished && !isClosedDay(day) ? 'cursor-pointer' : ''}`}
                     onDragOver={(e) => handleDragOver(e, day)}
                     onDragLeave={() => setDragOver(null)}
                     onDrop={(e) => handleDrop(e, day)}
