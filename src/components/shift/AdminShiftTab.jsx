@@ -178,13 +178,22 @@ export default function AdminShiftTab({ user }) {
             <span className="text-sm text-slate-400">{entries.length}件</span>
             {currentShiftMonth && (
               <div className="flex items-center gap-1.5">
-                <Label className="text-xs text-slate-500 whitespace-nowrap">締切日:</Label>
+                <Label className="text-xs text-slate-500 whitespace-nowrap">毎月締切日:</Label>
                 <Input
-                  type="date"
-                  className="h-7 text-xs w-36"
-                  value={currentShiftMonth.request_deadline || ''}
-                  onChange={(e) => updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: e.target.value } })}
+                  type="number"
+                  min="1"
+                  max="31"
+                  className="h-7 text-xs w-16"
+                  placeholder="15"
+                  value={currentShiftMonth.request_deadline ? String(currentShiftMonth.request_deadline).replace(/\D/g, '') : ''}
+                  onChange={(e) => {
+                    const day = parseInt(e.target.value, 10);
+                    if (!isNaN(day) && day >= 1 && day <= 31) {
+                      updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                    }
+                  }}
                 />
+                <span className="text-xs text-slate-400">日</span>
               </div>
             )}
             {currentShiftMonth && (
