@@ -83,8 +83,11 @@ export default function MyShift() {
     if (month === 12) { setMonth(1); setYear(y => y + 1); } else setMonth(m => m + 1);
   };
 
-  // 締切チェック（毎月15日 23:59）
-  const isDeadlinePassed = new Date() > new Date(year, month - 2, 15, 23, 59);
+  // 締切チェック: ShiftMonthに設定された締切日を優先、なければ毎月15日
+  const deadlineDate = currentShiftMonth?.request_deadline
+    ? new Date(currentShiftMonth.request_deadline + 'T23:59:59')
+    : new Date(year, month - 2, 15, 23, 59);
+  const isDeadlinePassed = new Date() > deadlineDate;
 
   // 今月シフト
   const myEntries = entries.filter(e => e.staff_email === user?.email);
