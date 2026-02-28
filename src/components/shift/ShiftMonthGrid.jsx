@@ -57,6 +57,7 @@ export default function ShiftMonthGrid({
   const [quickFillDay, setQuickFillDay] = useState(null); // ワンタップ不足補充
   const [editingReqDay, setEditingReqDay] = useState(null);
   const [editingReqValue, setEditingReqValue] = useState('');
+  const [showOffRequests, setShowOffRequests] = useState(false); // 希望休者表示フラグ
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
