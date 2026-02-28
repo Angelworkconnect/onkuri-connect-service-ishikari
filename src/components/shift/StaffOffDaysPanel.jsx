@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,10 @@ const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 export default function StaffOffDaysPanel({ staff, onUpdate }) {
   const [customDateInput, setCustomDateInput] = useState('');
   const [localStaff, setLocalStaff] = useState(staff);
+
+  useEffect(() => {
+    setLocalStaff(staff);
+  }, [staff]);
 
   const handleToggleDow = (dow) => {
     const current = localStaff.hard_off_days || [];
