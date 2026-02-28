@@ -308,6 +308,28 @@ export default function AdminShiftTab({ user }) {
               </button>
             )}
             {currentShiftMonth && (
+              <button
+                onClick={() => {
+                  const dowLabels = ['日', '月', '火', '水', '木', '金', '土'];
+                  const newClosedDays = [...(currentShiftMonth.closed_days || [])];
+                  const dowToToggle = parseInt(prompt(`定休日を設定します (0=日曜, 1=月曜, 2=火曜, 3=水曜, 4=木曜, 5=金曜, 6=土曜)\n現在の定休日: ${newClosedDays.map(d => dowLabels[d]).join(', ') || 'なし'}\n\n変更する曜日番号を入力してください:`));
+                  if (!isNaN(dowToToggle) && dowToToggle >= 0 && dowToToggle <= 6) {
+                    const idx = newClosedDays.indexOf(dowToToggle);
+                    if (idx >= 0) {
+                      newClosedDays.splice(idx, 1);
+                    } else {
+                      newClosedDays.push(dowToToggle);
+                    }
+                    updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { closed_days: newClosedDays } });
+                  }
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 transition-colors"
+                title="事業所全体の定休日を設定"
+              >
+                🏪 定休日設定
+              </button>
+            )}
+            {currentShiftMonth && (
               <Button size="sm" variant="outline" onClick={handleOpenNotesDialog}>
                 <FileText className="w-3.5 h-3.5 mr-1" />特記事項
               </Button>
