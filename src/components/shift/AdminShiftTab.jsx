@@ -90,7 +90,7 @@ export default function AdminShiftTab({ user }) {
 
   const createMonthMutation = useMutation({
     mutationFn: () => base44.entities.ShiftMonth.create({ year, month, status: 'DRAFT' }),
-    onSuccess: () => queryClient.invalidateQueries(['shift-months']),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shift-months'] }),
   });
 
   const createEntryMutation = useMutation({
