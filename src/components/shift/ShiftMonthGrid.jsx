@@ -126,9 +126,27 @@ export default function ShiftMonthGrid({
                       <span className={`text-[11px] font-bold ${dow === 0 ? 'text-red-600' : dow === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
                         {day}<span className="text-[9px] ml-0.5 opacity-60">{DOW[dow]}</span>
                       </span>
-                      <span className={`text-[9px] font-bold ${status === 'ok' ? 'text-green-600' : status === 'warn' ? 'text-yellow-600' : 'text-red-600'}`}>
-                        {dayEntries.length}/{req}
-                      </span>
+                      {editingReqDay === day ? (
+                        <input
+                          type="number"
+                          className="w-10 text-[10px] border border-indigo-400 rounded px-0.5 text-center font-bold bg-white z-10"
+                          value={editingReqValue}
+                          min={0}
+                          autoFocus
+                          onChange={e => setEditingReqValue(e.target.value)}
+                          onBlur={() => handleReqSave(day)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleReqSave(day); if (e.key === 'Escape') setEditingReqDay(null); }}
+                          onClick={e => e.stopPropagation()}
+                        />
+                      ) : (
+                        <span
+                          className={`text-[9px] font-bold cursor-pointer px-0.5 rounded hover:bg-white/70 ${status === 'ok' ? 'text-green-600' : status === 'warn' ? 'text-yellow-600' : 'text-red-600'}`}
+                          title="クリックで必要人数を変更"
+                          onClick={(e) => handleReqClick(e, day)}
+                        >
+                          {dayEntries.length}/{req}
+                        </span>
+                      )}
                     </div>
 
                     <div className="space-y-0.5">
