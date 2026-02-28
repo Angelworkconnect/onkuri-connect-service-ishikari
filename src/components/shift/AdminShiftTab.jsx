@@ -470,9 +470,14 @@ export default function AdminShiftTab({ user }) {
                     staff={selectedStaff}
                     onUpdate={(updated) => setSelectedStaff(updated)}
                   />
+                  <div className="text-xs text-slate-500 mb-2">
+                    選択後、「保存」ボタンを押してください
+                  </div>
                   <Button 
                     className="w-full bg-rose-600 hover:bg-rose-700"
-                    onClick={() => updateStaffOffDaysMutation.mutate(selectedStaff)}
+                    onClick={() => {
+                      updateStaffOffDaysMutation.mutate(selectedStaff);
+                    }}
                     disabled={updateStaffOffDaysMutation.isPending}
                   >
                     {updateStaffOffDaysMutation.isPending ? '保存中...' : '休み設定を保存'}
