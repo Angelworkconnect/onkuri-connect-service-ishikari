@@ -21,20 +21,24 @@ export default function StaffOffDaysPanel({ staff, onUpdate }) {
 
   const handleAddCustomDate = () => {
     if (!customDateInput) return;
-    const current = staff.custom_off_dates || [];
+    const current = localStaff.custom_off_dates || [];
     if (!current.includes(customDateInput)) {
-      onUpdate({ ...staff, custom_off_dates: [...current, customDateInput] });
+      const updated = { ...localStaff, custom_off_dates: [...current, customDateInput] };
+      setLocalStaff(updated);
+      onUpdate(updated);
       setCustomDateInput('');
     }
   };
 
   const handleRemoveCustomDate = (date) => {
-    const current = staff.custom_off_dates || [];
-    onUpdate({ ...staff, custom_off_dates: current.filter(d => d !== date) });
+    const current = localStaff.custom_off_dates || [];
+    const updated = { ...localStaff, custom_off_dates: current.filter(d => d !== date) };
+    setLocalStaff(updated);
+    onUpdate(updated);
   };
 
-  const currentDowOffDays = (staff.hard_off_days || []).map(dow => DOW[dow]).join('・') || 'なし';
-  const currentCustomCount = (staff.custom_off_dates || []).length;
+  const currentDowOffDays = (localStaff.hard_off_days || []).map(dow => DOW[dow]).join('・') || 'なし';
+  const currentCustomCount = (localStaff.custom_off_dates || []).length;
 
   return (
     <Card className="p-3 border-0 shadow-sm bg-white">
