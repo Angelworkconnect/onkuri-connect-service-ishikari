@@ -54,7 +54,7 @@ const SHIFT_TYPE_COLORS = {
 
 export default function ShiftMonthGrid({
   year, month, entries, requirements, staff, requests,
-  onDropStaff, onRemoveEntry, isPublished, onUpdateRequirement, closedDays = [],
+  onDropStaff, onRemoveEntry, onUpdateEntry, isPublished, onUpdateRequirement, closedDays = [],
 }) {
   const [dragOver, setDragOver] = useState(null);
   const [draggingStaff, setDraggingStaff] = useState(null);
