@@ -109,16 +109,10 @@ export default function ShiftMonthGrid({
     const date = dateStr(day);
     const dayEntries = getDayEntries(day);
     const alreadyIds = new Set(dayEntries.map(e => e.staff_id));
-    // この月全体で既に追加されているスタッフを除外
-    const addedInMonthIds = new Set(entries.filter(e => {
-      const entryDate = new Date(e.date);
-      return entryDate.getFullYear() === year && entryDate.getMonth() === month - 1;
-    }).map(e => e.staff_id));
     // 希望休チェック（showOffRequests が false の場合のみ除外）
     const offEmails = !showOffRequests ? new Set(requests.filter(r => r.date === date && r.request_type === 'OFF').map(r => r.staff_email)) : new Set();
     return staff.filter(s => {
       if (alreadyIds.has(s.id)) return false;
-      if (addedInMonthIds.has(s.id)) return false;
       if (offEmails.has(s.email)) return false;
       const { canPlace } = canPlaceStaff(s, date, entries, []);
       return canPlace;
