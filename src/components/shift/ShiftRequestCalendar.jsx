@@ -31,8 +31,7 @@ export default function ShiftRequestCalendar({ year, month, requests, onAdd, onR
       // 登録済み → 削除確認モーダル表示
       setConfirmDay(day);
     } else {
-      // 未登録 → 上限チェック後 OFF 登録
-      if (requests.length >= MAX_REQUESTS) return;
+      // 未登録 → 即時 OFF 登録
       const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       onAdd(date, 'OFF');
     }
