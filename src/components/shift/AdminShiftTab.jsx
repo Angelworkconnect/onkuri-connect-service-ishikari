@@ -124,6 +124,17 @@ export default function AdminShiftTab({ user }) {
     onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
   });
 
+  const updateStaffOffDaysMutation = useMutation({
+    mutationFn: (staffData) => base44.entities.Staff.update(staffData.id, {
+      hard_off_days: staffData.hard_off_days,
+      custom_off_dates: staffData.custom_off_dates,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['shift-staff']);
+      setSelectedStaff(null);
+    },
+  });
+
   const publishMutation = useMutation({
     mutationFn: () => base44.entities.ShiftMonth.update(currentShiftMonth.id, {
       status: 'PUBLISHED',
