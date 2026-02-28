@@ -753,6 +753,7 @@ export default function AdminPanel() {
       gender: 'other',
       role: 'temporary',
       approval_status: 'pending',
+      qualifications: [],
     });
     setEditingStaff(null);
   };
