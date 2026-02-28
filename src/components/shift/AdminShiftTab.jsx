@@ -35,6 +35,8 @@ export default function AdminShiftTab({ user }) {
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [previewStaffEmail, setPreviewStaffEmail] = useState('');
+  const [previewSheetOpen, setPreviewSheetOpen] = useState(false);
+  const [previewSheetStaff, setPreviewSheetStaff] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: allStaff = [] } = useQuery({
@@ -345,21 +347,29 @@ export default function AdminShiftTab({ user }) {
           <TabsContent value="preview">
             <Card className="p-4 border-0 shadow-lg space-y-4">
               <div>
-                <h2 className="text-base font-bold text-slate-800 mb-3">👁️ 職員ビュー プレビュー</h2>
-                <div className="mb-4 flex items-center gap-3">
-                  <label className="text-sm font-semibold text-slate-600">職員を選択:</label>
-                  <select 
-                    value={previewStaffEmail}
-                    onChange={(e) => setPreviewStaffEmail(e.target.value)}
-                    className="px-3 py-1.5 text-sm border border-slate-300 rounded-lg bg-white"
-                  >
-                    <option value="">-- 選択してください --</option>
-                    {allStaff.map(s => (
-                      <option key={s.id} value={s.email}>{s.full_name} ({s.email})</option>
-                    ))}
-                  </select>
+                <h2 className="text-base font-bold text-slate-800 mb-4">👁️ 職員ビュー プレビュー</h2>
+                <p className="text-sm text-slate-600 mb-4">職員をクリックして詳細を確認</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-6">
+                  {allStaff.map(staff => (
+                    <button
+                      key={staff.id}
+                      onClick={() => {
+                        setPreviewSheetStaff(staff);
+                        setPreviewStaffEmail(staff.email);
+                        setPreviewSheetOpen(true);
+                      }}
+                      className={`p-3 rounded-lg border-2 transition-all text-center ${
+                        previewStaffEmail === staff.email
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-slate-200 bg-white hover:border-indigo-300'
+                      }`}
+                    >
+                      <div className="text-sm font-semibold text-slate-800 truncate">{staff.full_name}</div>
+                      <div className="text-xs text-slate-500 mt-1 truncate">{staff.email}</div>
+                    </button>
+                  ))}
                 </div>
-                {previewStaffEmail ? (
+                {previewStaffEmail && (
                   <PublicShiftCalendar
                     entries={entries}
                     requirements={requirements}
@@ -369,10 +379,6 @@ export default function AdminShiftTab({ user }) {
                     notes={currentShiftMonth?.notes || ''}
                     closedDays={currentShiftMonth?.closed_days || []}
                   />
-                ) : (
-                  <div className="text-center py-8 text-slate-400">
-                    職員を選択してプレビューを表示します
-                  </div>
                 )}
               </div>
               <div className="pt-4 border-t">
