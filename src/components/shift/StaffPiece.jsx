@@ -2,7 +2,25 @@ import React from 'react';
 import StaffTaxBadge from './StaffTaxBadge';
 import { getPieceColor, TAX_MODE_LABELS } from './taxUtils';
 
-// 有資格者かどうか（無資格・空配列以外）
+// 介護系の加算が取れる資格のみレインボー対象（運転免許系は除外）
+const CARE_QUALIFICATIONS = [
+  '介護福祉士', '社会福祉士', '精神保健福祉士', '看護師', '准看護師',
+  '理学療法士', 'PT', '作業療法士', 'OT', '言語聴覚士', 'ST',
+  'ケアマネージャー', '介護支援専門員',
+  'ホームヘルパー1級', 'ホームヘルパー2級', 'ホームヘルパー3級',
+  '初任者研修', '実務者研修', '生活援助従事者研修',
+  '喀痰吸引等研修', '認知症介護基礎研修', '認知症介護実践者研修',
+  '福祉用具専門相談員', '相談支援専門員',
+  '保育士', '社会福祉主事',
+];
+
+// 介護系の加算取れる資格があるかチェック
+function hasCareQualification(staff) {
+  if (!staff.qualifications || staff.qualifications.length === 0) return false;
+  return staff.qualifications.some(q => q && CARE_QUALIFICATIONS.some(cq => q.includes(cq)));
+}
+
+// 有資格者かどうか（無資格・空配列以外、運転免許含む全資格）
 function hasQualification(staff) {
   if (!staff.qualifications || staff.qualifications.length === 0) return false;
   const filtered = staff.qualifications.filter(q => q && q !== '無資格');
