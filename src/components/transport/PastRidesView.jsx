@@ -117,10 +117,10 @@ function VehicleView({ rides }) {
         return (
           <CollapsibleGroup key={vname} title={`${vname}　${totalKm.toFixed(1)}km`} count={vRides.length}>
             {vRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => (
-              <div key={r.id} className="px-4 py-3 hover:bg-slate-50">
+              <div key={r.id} className={`px-4 py-3 ${tripInfo(r.tripType).border}`}>
                 <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                   <span className="text-sm font-medium">{r.date}</span>
-                  <Badge className="bg-blue-50 text-blue-700 text-xs border border-blue-100">{tripLabel(r.tripType)}</Badge>
+                  {tripBadge(r.tripType)}
                   {statusBadge(r.status)}
                 </div>
                 <p className="text-xs text-slate-500">{r.driverName}{r.distanceKm ? ` | ${r.distanceKm.toFixed(1)}km` : ''}</p>
