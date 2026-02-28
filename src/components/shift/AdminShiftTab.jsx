@@ -580,35 +580,27 @@ export default function AdminShiftTab({ user }) {
               </SheetHeader>
               <div className="space-y-4 mt-6">
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold mb-1">メールアドレス</p>
-                  <p className="text-sm text-slate-800">{previewSheetStaff?.email}</p>
+                  <p className="text-xs text-slate-500 font-semibold mb-3">シフト予定</p>
+                  <div className="space-y-2">
+                    {entries
+                      .filter(e => e.staff_id === previewSheetStaff?.id)
+                      .sort((a, b) => new Date(a.date) - new Date(b.date))
+                      .map((entry) => {
+                        const d = new Date(entry.date);
+                        const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+                        const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
+                        return (
+                          <div key={entry.id} className="p-2 rounded-lg bg-indigo-50 border border-indigo-200">
+                            <div className="font-medium text-indigo-900 text-sm">{dateStr} ({dayLabels[d.getDay()]})</div>
+                            <div className="text-xs text-indigo-700 mt-1">{entry.start_time}～{entry.end_time}</div>
+                          </div>
+                        );
+                      })}
+                    {entries.filter(e => e.staff_id === previewSheetStaff?.id).length === 0 && (
+                      <p className="text-sm text-slate-400 text-center py-4">シフトなし</p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-semibold mb-1">職位</p>
-                  <p className="text-sm text-slate-800">{previewSheetStaff?.role || '---'}</p>
-                </div>
-                {previewSheetStaff?.hourly_wage && (
-                  <div>
-                    <p className="text-xs text-slate-500 font-semibold mb-1">時給</p>
-                    <p className="text-sm text-slate-800">¥{previewSheetStaff.hourly_wage.toLocaleString()}</p>
-                  </div>
-                )}
-                {previewSheetStaff?.tax_mode && previewSheetStaff.tax_mode !== 'FULL' && (
-                  <div>
-                    <p className="text-xs text-slate-500 font-semibold mb-1">税制モード</p>
-                    <Badge className="bg-purple-100 text-purple-700">{previewSheetStaff.tax_mode}</Badge>
-                  </div>
-                )}
-                {previewSheetStaff?.skill_tags && previewSheetStaff.skill_tags.length > 0 && (
-                  <div>
-                    <p className="text-xs text-slate-500 font-semibold mb-2">スキル</p>
-                    <div className="flex flex-wrap gap-1">
-                      {previewSheetStaff.skill_tags.map((tag, i) => (
-                        <Badge key={i} className="bg-blue-100 text-blue-700 text-xs">{tag}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </SheetContent>
           </Sheet>
