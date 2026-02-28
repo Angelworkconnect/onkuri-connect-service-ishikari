@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, ChevronRight, Sparkles, Users, Calendar, Send, Heart, Settings, Bell, Clock } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { ChevronLeft, ChevronRight, Sparkles, Users, Calendar, Send, Heart, Settings, Bell, Clock, FileText } from 'lucide-react';
 import ShiftMonthGrid from './ShiftMonthGrid';
 import StaffPiece from './StaffPiece';
 import AIShiftGenerator from './AIShiftGenerator';
@@ -16,6 +17,7 @@ import HeatmapRow from './HeatmapRow';
 import ShiftWarningPanel from './ShiftWarningPanel';
 import FuyouOptimizeButton from './FuyouOptimizeButton';
 import StaffTaxBadge from './StaffTaxBadge';
+import ShiftLegend from './ShiftLegend';
 import {
   canPlaceStaff, calcYearlyIncomePrediction, calcSafetyScore,
   getAnnualLimit, getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
