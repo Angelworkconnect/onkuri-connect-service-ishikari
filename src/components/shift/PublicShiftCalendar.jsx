@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { SHIFT_PATTERNS, getShiftPattern } from './shiftPatterns';
 
-export default function PublicShiftCalendar({ entries, requirements, year, month, currentUserEmail, notes }) {
+export default function PublicShiftCalendar({ entries, requirements, year, month, currentUserEmail, notes, closedDays = [] }) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay = new Date(year, month - 1, 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -64,6 +64,7 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
             {days.map((day) => {
               const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
               const dayOfWeek = new Date(year, month - 1, day).getDay();
+              const isClosedDay = closedDays.includes(dayOfWeek);
               const userShifts = dateToPattern[dateStr] || [];
               const req = requirements.find(r => r.date === dateStr);
 
@@ -71,6 +72,7 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
                 <div
                   key={day}
                   className={`p-3 rounded-lg border-2 min-h-[140px] ${
+                    isClosedDay ? 'border-slate-300 bg-slate-200 opacity-50' :
                     dayOfWeek === 0 ? 'border-red-300 bg-red-50' :
                     dayOfWeek === 6 ? 'border-blue-300 bg-blue-50' :
                     'border-slate-200 bg-white'
