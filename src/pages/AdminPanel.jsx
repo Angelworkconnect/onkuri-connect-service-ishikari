@@ -357,7 +357,7 @@ export default function AdminPanel() {
   const updateStaffMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Staff.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-staff']);
+      queryClient.invalidateQueries({ queryKey: ['admin-staff'] });
       setStaffDialogOpen(false);
       resetStaffForm();
     },
