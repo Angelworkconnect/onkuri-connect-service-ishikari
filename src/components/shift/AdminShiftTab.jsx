@@ -184,17 +184,33 @@ export default function AdminShiftTab({ user }) {
                   type="text"
                   className="h-7 text-xs w-24"
                   placeholder="15または15日"
-                  value={currentShiftMonth.request_deadline || ''}
+                  value={deadlineInput || currentShiftMonth.request_deadline || ''}
                   onChange={(e) => {
-                    const input = e.target.value.trim();
-                    if (!input) return;
-                    
-                    const numStr = input.replace(/\D/g, '');
-                    if (numStr) {
-                      const day = parseInt(numStr, 10);
-                      if (day >= 1 && day <= 31) {
-                        updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                    const input = e.target.value;
+                    setDeadlineInput(input);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const numStr = deadlineInput.replace(/\D/g, '');
+                      if (numStr) {
+                        const day = parseInt(numStr, 10);
+                        if (day >= 1 && day <= 31) {
+                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                          setDeadlineInput('');
+                        }
                       }
+                    }
+                  }}
+                  onBlur={() => {
+                    if (deadlineInput) {
+                      const numStr = deadlineInput.replace(/\D/g, '');
+                      if (numStr) {
+                        const day = parseInt(numStr, 10);
+                        if (day >= 1 && day <= 31) {
+                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                        }
+                      }
+                      setDeadlineInput('');
                     }
                   }}
                 />
