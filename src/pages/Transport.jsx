@@ -343,26 +343,8 @@ export default function Transport() {
         )}
 
         {/* 過去の記録 */}
-        {!mode && myRides.filter(r => r.date !== today).length > 0 && (
-          <div>
-            <h2 className="text-sm font-bold text-slate-600 mb-2">過去の記録</h2>
-            <div className="space-y-2">
-              {myRides.filter(r => r.date !== today).slice(0, 10).map(ride => (
-                <Card key={ride.id} className="p-3 border-0 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-slate-500 mr-2">{ride.date}</span>
-                      <span className="text-sm font-medium">{tripLabel(ride.tripType)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {ride.distanceKm && <span className="text-xs text-slate-500">{ride.distanceKm.toFixed(1)}km</span>}
-                      {statusBadge(ride.status)}
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+        {!mode && (
+          <PastRidesView rides={myRides.filter(r => r.date !== today)} />
         )}
 
         {/* 運行詳細ダイアログ */}
