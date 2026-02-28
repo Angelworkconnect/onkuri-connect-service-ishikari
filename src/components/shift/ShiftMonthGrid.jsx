@@ -193,20 +193,36 @@ export default function ShiftMonthGrid({
                     </div>
 
                     <div className="space-y-0.5">
-                      {dayEntries.map((entry, i) => (
-                        <div
-                          key={i}
-                          className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group ${SHIFT_TYPE_COLORS[entry.shift_type] || 'bg-slate-100 text-slate-600'}`}
-                        >
-                          <span className="truncate font-medium">{entry.staff_name?.split(' ').pop() || entry.staff_name}</span>
-                          {!isPublished && (
-                            <button
-                              className="opacity-0 group-hover:opacity-100 text-red-500 ml-0.5 leading-none"
-                              onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }}
-                            >×</button>
-                          )}
-                        </div>
-                      ))}
+                      {dayEntries.map((entry, i) => {
+                        const pattern = getShiftPattern(parseInt(entry.shift_type));
+                        return (
+                          <div
+                            key={i}
+                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold ${pattern?.color || 'bg-slate-100 text-slate-600'}`}
+                          >
+                            <div className="truncate flex-1">
+                              <div className="text-[9px]">{entry.staff_name?.split(' ').pop() || entry.staff_name}</div>
+                              {pattern && <div className="text-[8px] opacity-80">{pattern.startTime}～{pattern.endTime}</div>}
+                            </div>
+                            {!isPublished && (
+                              <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 ml-1">
+                                <button
+                                  className="text-blue-600 hover:text-blue-800"
+                                  onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}
+                                  title="編集"
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </button>
+                                <button
+                                  className="text-red-500 hover:text-red-700"
+                                  onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }}
+                                  title="削除"
+                                >×</button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
 
                     {status === 'short' && !isPublished && (
