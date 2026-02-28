@@ -25,6 +25,7 @@ export default function AdminShiftTab({ user }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2);
+  const [deadlineInput, setDeadlineInput] = useState('');
   const queryClient = useQueryClient();
 
   const { data: allStaff = [] } = useQuery({
