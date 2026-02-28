@@ -227,6 +227,19 @@ export default function MyShift() {
             isLocked={isLocked}
             closedDays={closedDays}
           />
+          {!isLocked && myRequests.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-slate-100">
+              <Button
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                onClick={() => {
+                  queryClient.invalidateQueries(['my-shift-requests']);
+                  alert('希望休を提出しました。');
+                }}
+              >
+                希望休を提出する（{myRequests.length}日）
+              </Button>
+            </div>
+          )}
         </Card>
 
         {/* 自分のシフト確認 */}
