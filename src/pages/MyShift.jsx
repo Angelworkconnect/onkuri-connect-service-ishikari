@@ -145,7 +145,7 @@ export default function MyShift() {
 
   // display_in_shift_calendar が false のスタッフを除外
   const visibleEntries = entries.filter(e => {
-    const staff = allStaff.find(s => s.email === e.staff_email);
+    const staff = allStaffData.find(s => s.email === e.staff_email);
     return staff?.display_in_shift_calendar !== false;
   });
 
