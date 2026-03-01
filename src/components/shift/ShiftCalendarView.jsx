@@ -41,9 +41,6 @@ function buildCalendarDays(year, month) {
 }
 
 export default function ShiftCalendarView({ year, month, entries, isAdmin, staff = [] }) {
-  // staff_id -> gender のマップを作成
-  const staffGenderMap = {};
-  staff.forEach(s => { staffGenderMap[s.id] = s.gender; });
   const { cells } = buildCalendarDays(year, month);
 
   // staff の休み情報をまとめたマップ: date -> [staffName, ...]
