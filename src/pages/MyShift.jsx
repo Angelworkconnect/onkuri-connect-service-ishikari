@@ -343,11 +343,11 @@ export default function MyShift() {
                   <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
                 )
               ) : (
-                entries.length > 0 ? (
+                visibleEntries.length > 0 ? (
                   <ShiftCalendarView
                     year={year}
                     month={month}
-                    entries={entries}
+                    entries={visibleEntries}
                     isAdmin={true}
                     staff={[]}
                   />
