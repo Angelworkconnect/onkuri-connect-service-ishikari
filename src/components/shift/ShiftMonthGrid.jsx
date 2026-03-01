@@ -230,19 +230,11 @@ export default function ShiftMonthGrid({
 
                     <div className="space-y-0.5">
                       {dayEntries.map((entry, i) => {
-                        const shiftColorMap = {
-                          FULL: 'bg-indigo-100 text-indigo-800',
-                          AM: 'bg-sky-100 text-sky-800',
-                          PM: 'bg-violet-100 text-violet-800',
-                          NIGHT: 'bg-slate-200 text-slate-800',
-                          TRANSPORT: 'bg-green-100 text-green-800',
-                          OTHER: 'bg-amber-100 text-amber-800',
-                        };
-                        const colorClass = shiftColorMap[entry.shift_type] || 'bg-slate-100 text-slate-600';
+                        const staffColor = getStaffColor(entry.staff_id);
                         return (
                           <div
                             key={i}
-                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold ${colorClass}`}
+                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold border ${staffColor.bg} ${staffColor.text} ${staffColor.border}`}
                           >
                             <div className="truncate flex-1">
                               <div className="text-[9px]">{entry.staff_name?.split(' ').pop() || entry.staff_name}</div>
