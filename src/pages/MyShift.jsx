@@ -146,12 +146,7 @@ export default function MyShift() {
     limit = getAnnualLimit(myStaff);
   }
 
-  // 認証チェック（少し待ってから判定してスマホでの誤リダイレクトを防ぐ）
-  const [authChecked, setAuthChecked] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setAuthChecked(true), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+
 
   if (!user) {
     if (authChecked) {
