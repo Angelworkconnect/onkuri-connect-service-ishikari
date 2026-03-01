@@ -290,11 +290,10 @@ export default function AdminPanel() {
     });
   }, []);
 
-  // リアルタイム更新
+  // リアルタイム更新（レート制限を避けるため最小限に絞る）
   useEffect(() => {
-    const map = { Shift: 'admin-shifts', ShiftApplication: 'admin-applications', Announcement: 'admin-announcements', Attendance: 'admin-attendance', Staff: 'admin-staff', TipRecord: 'admin-tips', Payout: 'admin-payouts', BenefitApplication: 'admin-benefit-apps' };
-    const unsubs = Object.entries(map).map(([e, k]) => base44.entities[e].subscribe(() => queryClient.invalidateQueries([k])));
-    return () => unsubs.forEach(fn => fn());
+    const unsub = base44.entities.Staff.subscribe(() => queryClient.invalidateQueries(['admin-staff']));
+    return () => unsub();
   }, [queryClient]);
 
   const { data: shifts = [] } = useQuery({ queryKey: ['admin-shifts'], queryFn: () => base44.entities.Shift.list('-date') });
