@@ -292,13 +292,13 @@ export default function MyShift() {
           ) : (
             <>
               {isAdmin && (
-                <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-fit mb-3">
+                <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-full sm:w-fit mb-3">
                   <button
-                    className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                    className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
                     onClick={() => setShiftView('mine')}
                   >自分のシフト</button>
                   <button
-                    className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                    className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
                     onClick={() => setShiftView('all')}
                   >全体カレンダー</button>
                 </div>
