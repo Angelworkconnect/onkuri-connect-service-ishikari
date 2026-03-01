@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import html2canvas from 'npm:html2canvas@1.4.1';
 import { jsPDF } from 'npm:jspdf@4.0.0';
 
 Deno.serve(async (req) => {
@@ -12,6 +13,92 @@ Deno.serve(async (req) => {
 
     const { year, month, staffEmail, staffName, entries, notes } = await req.json();
 
+    // Filter entries
+    const staffEntries = entries
+      .filter(e => e.staff_email === staffEmail)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Create calendar HTML
+    const firstDate = new Date(year, month - 1, 1);
+    const lastDate = new Date(year, month, 0);
+    const firstDow = firstDate.getDay();
+    const daysInMonth = lastDate.getDate();
+
+    const dowLabels = ['日', '月', '火', '水', '木', '金', '土'];
+    
+    // Build calendar grid
+    let calendarHtml = '<table style="width:100%; border-collapse: collapse;">';
+    
+    // Header row
+    calendarHtml += '<tr>';
+    dowLabels.forEach(dow => {
+      calendarHtml += `<th style="border: 1px solid #333; padding: 4px; text-align: center; background: #2D4A6F; color: white; font-weight: bold;">${dow}</th>`;
+    });
+    calendarHtml += '</tr>';
+
+    // Calendar rows
+    let dayNum = 1;
+    for (let week = 0; week < 6; week++) {
+      if (dayNum > daysInMonth) break;
+      calendarHtml += '<tr>';
+      
+      for (let dow = 0; dow < 7; dow++) {
+        if (week === 0 && dow < firstDow) {
+          calendarHtml += '<td style="border: 1px solid #ddd; padding: 8px; height: 60px; background: #f5f5f5;"></td>';
+        } else if (dayNum <= daysInMonth) {
+          const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+          const dayShifts = staffEntries.filter(e => e.date === dateStr);
+          
+          let cellContent = `<div style="font-weight: bold; margin-bottom: 4px;">${dayNum}</div>`;
+          dayShifts.slice(0, 2).forEach(shift => {
+            cellContent += `<div style="font-size: 10px; margin: 2px 0;">${shift.start_time}〜${shift.end_time}</div>`;
+          });
+          
+          calendarHtml += `<td style="border: 1px solid #ddd; padding: 8px; height: 60px; vertical-align: top; font-size: 12px;">${cellContent}</td>`;
+          dayNum++;
+        } else {
+          calendarHtml += '<td style="border: 1px solid #ddd; padding: 8px; height: 60px;"></td>';
+        }
+      }
+      
+      calendarHtml += '</tr>';
+    }
+    calendarHtml += '</table>';
+
+    // Build HTML document
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: 'Arial', sans-serif; margin: 20px; }
+          h1 { text-align: center; font-size: 24px; margin-bottom: 10px; }
+          h2 { font-size: 16px; margin-top: 15px; margin-bottom: 10px; }
+          .notes { background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 3px solid #2D4A6F; }
+          table { margin-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>${year}年${month}月 シフト予定</h1>
+        <h2>${staffName}様</h2>
+        ${notes ? `<div class="notes"><strong>特記事項:</strong><div>${notes.replace(/\n/g, '<br>')}</div></div>` : ''}
+        <h2>シフトカレンダー</h2>
+        ${staffEntries.length === 0 ? '<p>シフトはありません</p>' : calendarHtml}
+      </body>
+      </html>
+    `;
+
+    // Convert HTML to canvas
+    const canvas = await html2canvas(new JSDOM(html).window.document.body, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    // Create PDF from canvas
+    const imgData = canvas.toDataURL('image/png');
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -20,110 +107,19 @@ Deno.serve(async (req) => {
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    let yPos = 15;
+    const imgWidth = pageWidth - 10;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    // Title
-    doc.setFontSize(20);
-    doc.text(`${year}年${month}月 シフト予定`, pageWidth / 2, yPos, { align: 'center' });
-    yPos += 15;
+    let yPos = 5;
+    let remainingHeight = imgHeight;
 
-    // Staff Name
-    doc.setFontSize(14);
-    doc.text(`${staffName}様`, 15, yPos);
-    yPos += 10;
+    doc.addImage(imgData, 'PNG', 5, yPos, imgWidth, imgHeight);
 
-    // Notes
-    if (notes && notes.trim()) {
-      doc.setFontSize(10);
-      doc.text('特記事項', 15, yPos);
-      yPos += 6;
-
-      doc.setFontSize(9);
-      const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
-      doc.text(splitNotes, 15, yPos);
-      yPos += splitNotes.length * 5 + 5;
-    }
-
-    // Filter entries
-    const staffEntries = entries
-      .filter(e => e.staff_email === staffEmail)
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (staffEntries.length === 0) {
-      doc.setFontSize(10);
-      doc.text('シフトはありません', 15, yPos);
-    } else {
-      // Create calendar
-      const firstDate = new Date(year, month - 1, 1);
-      const lastDate = new Date(year, month, 0);
-      const firstDow = firstDate.getDay();
-      const daysInMonth = lastDate.getDate();
-
-      doc.setFontSize(10);
-      doc.text('シフトカレンダー', 15, yPos);
-      yPos += 8;
-
-      // Days of week headers
-      const dowLabels = ['日', '月', '火', '水', '木', '金', '土'];
-      const cellSize = 28;
-      const headerHeight = 6;
-
-      doc.setFillColor(45, 74, 111);
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
-
-      let xPos = 15;
-      dowLabels.forEach((dow, i) => {
-        doc.rect(xPos, yPos, cellSize, headerHeight, 'F');
-        doc.text(dow, xPos + cellSize / 2, yPos + 4, { align: 'center' });
-        xPos += cellSize;
-      });
-
-      yPos += headerHeight;
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(8);
-
-      // Calendar cells
-      let dayNum = 1;
-
-      for (let week = 0; week < 6; week++) {
-        if (dayNum > daysInMonth) break;
-
-        for (let dow = 0; dow < 7; dow++) {
-          xPos = 15 + dow * cellSize;
-          const cellHeight = 20;
-
-          // Draw cell border
-          doc.rect(xPos, yPos, cellSize, cellHeight);
-
-          if (week === 0 && dow < firstDow) {
-            // Empty cell before month starts
-          } else if (dayNum <= daysInMonth) {
-            // Draw day number
-            doc.setFont(undefined, 'bold');
-            doc.text(String(dayNum), xPos + 2, yPos + 4);
-            doc.setFont(undefined, 'normal');
-
-            // Draw shifts for this day
-            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-            const dayShifts = staffEntries.filter(e => e.date === dateStr);
-
-            let shiftY = yPos + 7;
-            dayShifts.forEach((shift, idx) => {
-              if (idx < 2) {
-                const shiftText = `${shift.start_time}〜${shift.end_time}`;
-                doc.setFontSize(7);
-                doc.text(shiftText, xPos + 2, shiftY, { maxWidth: cellSize - 4 });
-                shiftY += 4;
-              }
-            });
-
-            dayNum++;
-          }
-        }
-
-        yPos += cellHeight;
-      }
+    // Add additional pages if needed
+    while (remainingHeight > pageHeight - 5) {
+      doc.addPage();
+      remainingHeight -= pageHeight;
+      doc.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
     }
 
     const pdfBytes = doc.output('arraybuffer');
