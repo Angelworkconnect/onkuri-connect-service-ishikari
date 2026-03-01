@@ -81,12 +81,16 @@ export default function MyShift() {
     if (month === 12) { setMonth(1); setYear(y => y + 1); } else setMonth(m => m + 1);
   };
 
-  // 締切チェック: ShiftMonthに設定された締切日を優先、なければ毎月15日
+  // 締切チェック: 当月シフトの希望休締切は「前月の指定日」
+  // request_deadlineは「YYYY-MM-DD」形式のみ有効、それ以外は前月15日をデフォルト
   const deadlineStr = currentShiftMonth?.request_deadline;
   const isValidDate = deadlineStr && /^\d{4}-\d{2}-\d{2}$/.test(deadlineStr);
+  // 前月の同日付を締切とする（例: 3月シフト → 前月(2月)の指定日）
+  const prevMonthYear = month === 1 ? year - 1 : year;
+  const prevMonth = month === 1 ? 12 : month - 1;
   const deadlineDate = isValidDate
     ? new Date(deadlineStr + 'T23:59:59')
-    : new Date(year, month - 2, 15, 23, 59);
+    : new Date(prevMonthYear, prevMonth - 1, 15, 23, 59);
   const isDeadlinePassed = new Date() > deadlineDate;
 
   // 提出可否: 管理者が明示的にfalseにした場合は提出不可
