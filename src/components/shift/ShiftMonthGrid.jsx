@@ -210,6 +210,9 @@ export default function ShiftMonthGrid({
                     {(entry.start_time || entry.end_time) && (
                       <span className="text-[11px] opacity-75">{entry.start_time}～{entry.end_time}</span>
                     )}
+                    {entry.notes && (
+                      <span className="text-[10px] opacity-60 italic truncate text-slate-600">📝 {entry.notes}</span>
+                    )}
                   </div>
                   {!isPublished && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 ml-1 shrink-0" onClick={(e) => e.stopPropagation()}>
