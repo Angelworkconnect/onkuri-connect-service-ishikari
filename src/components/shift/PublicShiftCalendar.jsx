@@ -17,17 +17,14 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
   const dateToEntry = {};
   displayEntries.forEach(e => {
     if (!dateToEntry[e.date]) dateToEntry[e.date] = [];
-    dateToEntry[e.date].push({
-      staff_name: e.staff_name,
-      start_time: e.start_time,
-      end_time: e.end_time,
-      shift_type: e.shift_type
-    });
+    dateToEntry[e.date].push(e);
   });
 
-  const getEntryColor = (patternId) => {
-    const pattern = getShiftPattern(parseInt(patternId));
-    return pattern?.color || 'bg-gray-100 text-gray-900';
+  const getEntryColor = (entry) => {
+    const match = SHIFT_PATTERNS.find(p =>
+      p.startTime === entry.start_time && p.endTime === entry.end_time
+    );
+    return match ? { color: match.color, border: match.borderColor } : { color: 'bg-gray-100 text-gray-900', border: 'border-gray-300' };
   };
 
   return (
