@@ -3,6 +3,34 @@ import { Badge } from '@/components/ui/badge';
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
+const STAFF_COLORS = [
+  { bg: 'bg-red-100',    text: 'text-red-800' },
+  { bg: 'bg-orange-100', text: 'text-orange-800' },
+  { bg: 'bg-amber-100',  text: 'text-amber-800' },
+  { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  { bg: 'bg-lime-100',   text: 'text-lime-800' },
+  { bg: 'bg-green-100',  text: 'text-green-800' },
+  { bg: 'bg-teal-100',   text: 'text-teal-800' },
+  { bg: 'bg-cyan-100',   text: 'text-cyan-800' },
+  { bg: 'bg-sky-100',    text: 'text-sky-800' },
+  { bg: 'bg-blue-100',   text: 'text-blue-800' },
+  { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+  { bg: 'bg-violet-100', text: 'text-violet-800' },
+  { bg: 'bg-purple-100', text: 'text-purple-800' },
+  { bg: 'bg-fuchsia-100',text: 'text-fuchsia-800' },
+  { bg: 'bg-pink-100',   text: 'text-pink-800' },
+  { bg: 'bg-rose-100',   text: 'text-rose-800' },
+];
+
+function getStaffColor(staffId) {
+  if (!staffId) return STAFF_COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < staffId.length; i++) {
+    hash = (hash * 31 + staffId.charCodeAt(i)) >>> 0;
+  }
+  return STAFF_COLORS[hash % STAFF_COLORS.length];
+}
+
 // 1ヶ月分のカレンダーセルを生成
 function buildCalendarDays(year, month) {
   const firstDay = new Date(year, month - 1, 1).getDay();
