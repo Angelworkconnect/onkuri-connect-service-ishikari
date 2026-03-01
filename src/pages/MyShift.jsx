@@ -289,33 +289,47 @@ export default function MyShift() {
           </div>
           {!isPublished ? (
             <p className="text-sm text-amber-600 text-center py-3">シフトは現在準備中です。公開後にここで確認できます。</p>
-          ) : isPublished ? (
-            isAdmin ? (
-              entries.length > 0 ? (
-                <ShiftCalendarView
-                  year={year}
-                  month={month}
-                  entries={entries}
-                  isAdmin={true}
-                  staff={[]}
-                />
+          ) : (
+            <>
+              {isAdmin && (
+                <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-fit mb-3">
+                  <button
+                    className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                    onClick={() => setShiftView('mine')}
+                  >自分のシフト</button>
+                  <button
+                    className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                    onClick={() => setShiftView('all')}
+                  >全体カレンダー</button>
+                </div>
+              )}
+              {shiftView === 'mine' ? (
+                myEntries.length > 0 ? (
+                  <ShiftCalendarView
+                    year={year}
+                    month={month}
+                    entries={myEntries}
+                    isAdmin={isAdmin}
+                    staff={myStaff ? [myStaff] : []}
+                  />
+                ) : (
+                  <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
+                )
               ) : (
-                <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
-              )
-            ) : (
-              myEntries.length > 0 ? (
-                <ShiftCalendarView
-                  year={year}
-                  month={month}
-                  entries={myEntries}
-                  isAdmin={false}
-                  staff={myStaff ? [myStaff] : []}
-                />
-              ) : (
-                <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
-              )
-            )
-          ) : null}
+                entries.length > 0 ? (
+                  <ShiftCalendarView
+                    year={year}
+                    month={month}
+                    entries={entries}
+                    isAdmin={true}
+                    staff={[]}
+                  />
+                ) : (
+                  <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
+                )
+              )}
+            </>
+          )}
         </Card>
       </div>
     </div>
