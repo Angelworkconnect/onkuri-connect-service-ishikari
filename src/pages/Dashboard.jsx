@@ -218,6 +218,21 @@ export default function Dashboard() {
     staleTime: 60000,
   });
 
+  const { data: allShiftEntries = [] } = useQuery({
+    queryKey: ['dashboard-all-shift-entries', currentShiftMonth?.id],
+    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
+    enabled: !!currentShiftMonth && !!user && shiftView === 'all',
+    staleTime: 60000,
+  });
+
+  const updateWageMutation = useMutation({
+    mutationFn: (data) => base44.entities.Staff.update(myStaff.id, data),
+    onSuccess: (updated) => {
+      setMyStaff(updated);
+      setShowWageEdit(false);
+    },
+  });
+
 
 
   const clockInMutation = useMutation({
