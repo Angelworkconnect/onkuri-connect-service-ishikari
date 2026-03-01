@@ -272,6 +272,7 @@ export default function MyShift() {
               month={month}
               entries={isAdmin ? entries : myEntries}
               isAdmin={isAdmin}
+              staff={isAdmin ? [] : (myStaff ? [myStaff] : [])}
             />
           )}
         </Card>
