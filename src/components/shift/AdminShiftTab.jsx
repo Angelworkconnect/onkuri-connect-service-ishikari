@@ -177,10 +177,17 @@ export default function AdminShiftTab({ user }) {
       hard_off_days: staffData.hard_off_days,
       custom_off_dates: staffData.custom_off_dates,
     }),
+    onMutate: async (staffData) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-staff'] });
+      const prev = queryClient.getQueryData(['shift-staff']) || [];
+      queryClient.setQueryData(['shift-staff'], prev.map(s => s.id === staffData.id ? { ...s, ...staffData } : s));
+      return { prev };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shift-staff'] });
-      queryClient.refetchQueries({ queryKey: ['shift-staff'] });
-      setSelectedStaff(null);
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-staff'], ctx.prev);
     },
   });
 
