@@ -112,19 +112,11 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
                   </div>
                   <div className="space-y-0.5">
                    {dayEntries.map((e, i) => {
-                     const shiftColorMap = {
-                       FULL: 'bg-indigo-100 text-indigo-800',
-                       AM: 'bg-sky-100 text-sky-800',
-                       PM: 'bg-violet-100 text-violet-800',
-                       NIGHT: 'bg-slate-200 text-slate-800',
-                       TRANSPORT: 'bg-green-100 text-green-800',
-                       OTHER: 'bg-amber-100 text-amber-800',
-                     };
-                     const colorClass = shiftColorMap[e.shift_type] || 'bg-indigo-100 text-indigo-800';
+                     const sc = getStaffColor(e.staff_id);
                      return (
                        <div
                          key={i}
-                         className={`rounded px-1 py-0.5 leading-tight ${colorClass}`}
+                         className={`rounded px-1 py-0.5 leading-tight ${sc.bg} ${sc.text}`}
                          style={{ fontSize: '10px' }}
                        >
                          {isAdmin && (
