@@ -591,26 +591,35 @@ export default function AdminShiftTab({ user }) {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {allStaff.map(s => (
-                    <button
-                      key={s.id}
-                      onClick={() => setSelectedStaff(s)}
-                      className="text-left p-3 bg-white rounded-lg border border-slate-200 hover:border-rose-400 hover:bg-rose-50 transition-colors"
-                    >
-                      <div className="text-sm font-medium text-slate-800 truncate">{s.full_name}</div>
-                      <div className="text-[11px] text-slate-500 mt-1">
-                        {(s.hard_off_days || []).length > 0 && (
-                          <div>固定休: {['日','月','火','水','木','金','土'].filter((_, i) => (s.hard_off_days || []).includes(i)).join('・')}</div>
-                        )}
-                        {(s.custom_off_dates || []).length > 0 && (
-                          <div>カスタム: {(s.custom_off_dates || []).length}件</div>
-                        )}
-                        {(s.hard_off_days || []).length === 0 && (s.custom_off_dates || []).length === 0 && (
-                          <div className="text-slate-400">設定なし</div>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                  {allStaff.map(s => {
+                    const hardCount = (s.hard_off_days || []).length;
+                    const customCount = (s.custom_off_dates || []).length;
+                    const hasAny = hardCount > 0 || customCount > 0;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setSelectedStaff(s)}
+                        className={`text-left p-3 bg-white rounded-lg border-2 hover:border-rose-400 hover:bg-rose-50 transition-colors ${hasAny ? 'border-rose-300' : 'border-slate-200'}`}
+                      >
+                        <div className="text-sm font-medium text-slate-800 truncate">{s.full_name}</div>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {hardCount > 0 && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-orange-100 text-orange-700">
+                              🗓 固定{hardCount}曜
+                            </span>
+                          )}
+                          {customCount > 0 && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700">
+                              📅 カスタム{customCount}件
+                            </span>
+                          )}
+                          {!hasAny && (
+                            <span className="text-[10px] text-slate-400">設定なし</span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </Card>
