@@ -248,15 +248,22 @@ export default function MyShift() {
         </Card>
 
         {/* 自分のシフト確認 */}
-        {isPublished && myEntries.length > 0 && (
-          <Card className="p-4 border-0 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-slate-800">{month}月のシフト確定</h3>
-              <Badge className="bg-green-100 text-green-700">公開済み</Badge>
-            </div>
+        <Card className="p-4 border-0 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-bold text-slate-800">{month}月のシフト確定</h3>
+            {isPublished
+              ? <Badge className="bg-green-100 text-green-700">公開済み</Badge>
+              : <Badge className="bg-amber-100 text-amber-700">準備中</Badge>
+            }
+          </div>
+          {!isPublished ? (
+            <p className="text-sm text-amber-600 text-center py-3">シフトは現在準備中です。公開後にここで確認できます。</p>
+          ) : myEntries.length === 0 ? (
+            <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
+          ) : (
             <div className="space-y-1.5">
-              {myEntries.sort((a, b) => a.date.localeCompare(b.date)).map((entry, i) => {
-                const d = new Date(entry.date);
+              {[...myEntries].sort((a, b) => a.date.localeCompare(b.date)).map((entry, i) => {
+                const d = new Date(entry.date + 'T00:00:00');
                 const dow = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
                 const isWeekend = d.getDay() === 0 || d.getDay() === 6;
                 return (
@@ -270,20 +277,8 @@ export default function MyShift() {
                 );
               })}
             </div>
-          </Card>
-        )}
-
-        {isPublished && myEntries.length === 0 && (
-          <Card className="p-6 border-0 shadow-sm text-center">
-            <p className="text-slate-400">この月のシフトはまだ割り当てられていません</p>
-          </Card>
-        )}
-
-        {!isPublished && (
-          <Card className="p-4 border-0 shadow-sm text-center bg-amber-50 border-amber-200">
-            <p className="text-sm text-amber-700">シフトは現在準備中です。公開後にここで確認できます。</p>
-          </Card>
-        )}
+          )}
+        </Card>
       </div>
     </div>
   );
