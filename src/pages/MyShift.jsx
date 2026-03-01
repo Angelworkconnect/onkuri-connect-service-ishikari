@@ -37,7 +37,7 @@ export default function MyShift() {
 
   const { data: shiftMonths = [] } = useQuery({
     queryKey: ['shift-months'],
-    queryFn: () => base44.entities.ShiftMonth.list('-created_date', 100),
+    queryFn: () => base44.entities.ShiftMonth.list('-created_date', 200),
     enabled: !!user,
   });
   const currentShiftMonth = shiftMonths.find(sm => Number(sm.year) === year && Number(sm.month) === month);
