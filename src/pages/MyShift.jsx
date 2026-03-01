@@ -280,17 +280,33 @@ export default function MyShift() {
           </div>
           {!isPublished ? (
             <p className="text-sm text-amber-600 text-center py-3">シフトは現在準備中です。公開後にここで確認できます。</p>
-          ) : (isAdmin ? entries.length === 0 : myEntries.length === 0) ? (
-            <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
-          ) : (
-            <ShiftCalendarView
-              year={year}
-              month={month}
-              entries={isAdmin ? entries : myEntries}
-              isAdmin={isAdmin}
-              staff={isAdmin ? [] : (myStaff ? [myStaff] : [])}
-            />
-          )}
+          ) : isPublished ? (
+            isAdmin ? (
+              entries.length > 0 ? (
+                <ShiftCalendarView
+                  year={year}
+                  month={month}
+                  entries={entries}
+                  isAdmin={true}
+                  staff={[]}
+                />
+              ) : (
+                <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
+              )
+            ) : (
+              myEntries.length > 0 ? (
+                <ShiftCalendarView
+                  year={year}
+                  month={month}
+                  entries={myEntries}
+                  isAdmin={false}
+                  staff={myStaff ? [myStaff] : []}
+                />
+              ) : (
+                <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
+              )
+            )
+          ) : null}
         </Card>
       </div>
     </div>
