@@ -249,7 +249,8 @@ export default function Dashboard() {
     queryKey: ['dashboard-shift-entries', user?.email, currentYear, currentMonth],
     queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id, staff_email: user.email }),
     enabled: !!currentShiftMonth && !!user,
-    staleTime: 60000,
+    staleTime: 0,
+    refetchInterval: 5000,
   });
 
   const { data: allShiftEntries = [] } = useQuery({
@@ -264,7 +265,8 @@ export default function Dashboard() {
       return entries.filter(e => visibleStaffEmails.has(e.staff_email));
     },
     enabled: !!currentShiftMonth && !!user,
-    staleTime: 60000,
+    staleTime: 0,
+    refetchInterval: 5000,
   });
 
   const updateWageMutation = useMutation({
