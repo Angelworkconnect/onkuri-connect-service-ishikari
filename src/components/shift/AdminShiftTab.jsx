@@ -45,26 +45,30 @@ export default function AdminShiftTab({ user }) {
     queryKey: ['shift-staff'],
     queryFn: () => base44.entities.Staff.list(),
     enabled: !!user,
+    staleTime: 60000,
   });
 
   const { data: shiftMonths = [] } = useQuery({
     queryKey: ['shift-months'],
     queryFn: () => base44.entities.ShiftMonth.list('-year'),
     enabled: !!user,
+    staleTime: 30000,
   });
 
   const currentShiftMonth = shiftMonths.find(sm => sm.year === year && sm.month === month);
 
-  const { data: entries = [] } = useQuery({
+  const { data: entries = [], refetch: refetchEntries } = useQuery({
     queryKey: ['shift-entries', year, month],
     queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth?.id }),
     enabled: !!currentShiftMonth,
+    staleTime: 0,
   });
 
   const { data: requests = [] } = useQuery({
     queryKey: ['shift-requests', year, month],
     queryFn: () => base44.entities.ShiftRequest.filter({ year, month }),
     enabled: !!user,
+    staleTime: 30000,
   });
 
   const { data: requirements = [] } = useQuery({
@@ -73,12 +77,14 @@ export default function AdminShiftTab({ user }) {
       ? base44.entities.DayRequirement.filter({ shift_month_id: currentShiftMonth.id })
       : [],
     enabled: !!currentShiftMonth,
+    staleTime: 10000,
   });
 
   const { data: allAttendance = [] } = useQuery({
     queryKey: ['shift-attendance-year', user?.email, year],
     queryFn: () => base44.entities.Attendance.filter({ user_email: user.email }),
     enabled: !!user,
+    staleTime: 120000,
   });
 
   const updateMonthMutation = useMutation({
