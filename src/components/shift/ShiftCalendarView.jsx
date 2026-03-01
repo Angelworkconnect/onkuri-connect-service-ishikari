@@ -83,21 +83,45 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
                     {day}
                   </div>
                   <div className="space-y-0.5">
-                    {dayEntries.map((e, i) => (
-                      <div
-                        key={i}
-                        className="rounded px-1 py-0.5 bg-indigo-100 text-indigo-800 leading-tight"
-                        style={{ fontSize: '10px' }}
-                      >
-                        {isAdmin && (
-                          <div className="font-medium truncate">{e.staff_name}</div>
-                        )}
-                        {e.start_time && e.end_time
-                          ? <div>{e.start_time}〜{e.end_time}</div>
-                          : <div>シフトあり</div>
-                        }
-                      </div>
-                    ))}
+                   {dayEntries.map((e, i) => {
+                     const shiftColorMap = {
+                       FULL: 'bg-indigo-100 text-indigo-800',
+                       AM: 'bg-sky-100 text-sky-800',
+                       PM: 'bg-violet-100 text-violet-800',
+                       NIGHT: 'bg-slate-200 text-slate-800',
+                       TRANSPORT: 'bg-green-100 text-green-800',
+                       OTHER: 'bg-amber-100 text-amber-800',
+                     };
+                     const colorClass = shiftColorMap[e.shift_type] || 'bg-indigo-100 text-indigo-800';
+                     return (
+                       <div
+                         key={i}
+                         className={`rounded px-1 py-0.5 leading-tight ${colorClass}`}
+                         style={{ fontSize: '10px' }}
+                       >
+                         {isAdmin && (
+                           <div className="font-medium truncate">{e.staff_name}</div>
+                         )}
+                         {e.start_time && e.end_time
+                           ? <div>{e.start_time}〜{e.end_time}</div>
+                           : <div>シフトあり</div>
+                         }
+                       </div>
+                     );
+                   })}
+                   {/* 休み表示 */}
+                   {isAdmin && (offDayMap[day] || []).length > 0 && (
+                     <div className="mt-0.5 space-y-0.5">
+                       {(offDayMap[day] || []).map((name, i) => (
+                         <div key={i} className="rounded px-1 py-0.5 bg-red-100 text-red-700 leading-tight" style={{ fontSize: '9px' }}>
+                           🚫 {name}
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                   {!isAdmin && (offDayMap[day] || []).length > 0 && (
+                     <div className="text-[9px] text-red-400 mt-0.5">🚫 {offDayMap[day].length}名休み</div>
+                   )}
                   </div>
                 </>
               )}
