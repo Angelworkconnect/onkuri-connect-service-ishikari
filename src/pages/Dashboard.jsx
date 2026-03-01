@@ -222,7 +222,7 @@ export default function Dashboard() {
   const { data: allShiftEntries = [] } = useQuery({
     queryKey: ['dashboard-all-shift-entries', currentShiftMonth?.id],
     queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
-    enabled: !!currentShiftMonth && !!user && shiftView === 'all',
+    enabled: !!currentShiftMonth && !!user,
     staleTime: 60000,
   });
 
