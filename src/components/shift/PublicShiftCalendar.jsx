@@ -89,12 +89,15 @@ export default function PublicShiftCalendar({ entries, requirements, year, month
 
                    {dayEntries.length > 0 ? (
                      <div className="space-y-1.5">
-                       {dayEntries.map((entry, idx) => (
-                         <div key={idx} className="p-2 rounded text-xs bg-indigo-100 border border-indigo-300">
-                           <div className="font-semibold text-indigo-900">{entry.staff_name}</div>
-                           <div className="text-indigo-700 text-[11px] mt-0.5">{entry.start_time}～{entry.end_time}</div>
-                         </div>
-                       ))}
+                       {dayEntries.map((entry, idx) => {
+                         const { color, border } = getEntryColor(entry);
+                         return (
+                           <div key={idx} className={`p-2 rounded text-xs border ${color} ${border}`}>
+                             <div className="font-semibold">{entry.staff_name}</div>
+                             <div className="text-[11px] mt-0.5">{entry.start_time}～{entry.end_time}</div>
+                           </div>
+                         );
+                       })}
                      </div>
                    ) : (
                      <div className="text-center text-xs text-slate-400 py-6">休</div>
