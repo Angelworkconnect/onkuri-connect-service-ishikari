@@ -97,6 +97,11 @@ function DashboardShiftCalendar({ year, month, entries }) {
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [myStaff, setMyStaff] = useState(null);
+  const [shiftView, setShiftView] = useState('mine'); // 'mine' | 'all'
+  const [showWageEdit, setShowWageEdit] = useState(false);
+  const [wageInput, setWageInput] = useState('');
+  const [monthlySalaryInput, setMonthlySalaryInput] = useState('');
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
