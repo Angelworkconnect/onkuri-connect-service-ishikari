@@ -45,6 +45,12 @@ export default function MyShift() {
     queryFn: () => base44.entities.Staff.filter({ email: user.email }),
     enabled: !!user,
   });
+
+  const { data: allStaffData = [] } = useQuery({
+    queryKey: ['all-staff'],
+    queryFn: () => base44.entities.Staff.list('-created_date', 500),
+    enabled: !!user,
+  });
   const myStaff = allStaff[0] || null;
 
   const { data: shiftMonths = [], isLoading: shiftMonthsLoading } = useQuery({
