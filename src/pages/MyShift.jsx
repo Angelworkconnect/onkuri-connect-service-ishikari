@@ -52,6 +52,7 @@ export default function MyShift() {
     queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
     enabled: !!currentShiftMonth && !!user,
     staleTime: 0,
+    refetchInterval: 10000,
   });
 
   const { data: myRequests = [] } = useQuery({
