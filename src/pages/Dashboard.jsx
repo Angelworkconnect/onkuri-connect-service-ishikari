@@ -112,12 +112,31 @@ export default function Dashboard() {
     queryKey: ['monthly-attendance', user?.email],
     queryFn: async () => {
       if (!user) return [];
-      const startOfMonth = format(new Date(), 'yyyy-MM-01');
-      return base44.entities.Attendance.filter({
-        user_email: user.email,
-      });
+      return base44.entities.Attendance.filter({ user_email: user.email });
     },
     enabled: !!user,
+  });
+
+  const now2 = new Date();
+  const currentYear = now2.getFullYear();
+  const currentMonth = now2.getMonth() + 1;
+
+  const { data: shiftMonths = [] } = useQuery({
+    queryKey: ['dashboard-shift-months'],
+    queryFn: () => base44.entities.ShiftMonth.list('-created_date', 50),
+    enabled: !!user,
+    staleTime: 60000,
+  });
+
+  const currentShiftMonth = shiftMonths.find(
+    sm => Number(sm.year) === currentYear && Number(sm.month) === currentMonth && sm.status === 'PUBLISHED'
+  );
+
+  const { data: myShiftEntries = [] } = useQuery({
+    queryKey: ['dashboard-shift-entries', user?.email, currentYear, currentMonth],
+    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id, staff_email: user.email }),
+    enabled: !!currentShiftMonth && !!user,
+    staleTime: 60000,
   });
 
 
