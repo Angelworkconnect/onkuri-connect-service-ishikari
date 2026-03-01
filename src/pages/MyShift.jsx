@@ -107,6 +107,9 @@ export default function MyShift() {
   const myEntries = user ? entries.filter(e => e.staff_email === user.email) : [];
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
 
+  // 管理者判定
+  const isAdmin = user?.role === 'admin';
+
 
 
   // 勤務時間計算
