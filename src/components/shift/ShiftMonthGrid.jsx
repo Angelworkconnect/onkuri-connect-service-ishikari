@@ -44,50 +44,14 @@ function getCandidateStyle(staff) {
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
-// 性別ごとの個人カラーパレット
-const FEMALE_COLORS = [
-  { bg: 'bg-pink-200',    text: 'text-pink-900',    border: 'border-pink-400' },
-  { bg: 'bg-rose-200',    text: 'text-rose-900',    border: 'border-rose-400' },
-  { bg: 'bg-fuchsia-200', text: 'text-fuchsia-900', border: 'border-fuchsia-400' },
-  { bg: 'bg-red-200',     text: 'text-red-900',     border: 'border-red-400' },
-  { bg: 'bg-orange-200',  text: 'text-orange-900',  border: 'border-orange-400' },
-  { bg: 'bg-amber-200',   text: 'text-amber-900',   border: 'border-amber-400' },
-  { bg: 'bg-purple-200',  text: 'text-purple-900',  border: 'border-purple-400' },
-  { bg: 'bg-violet-200',  text: 'text-violet-900',  border: 'border-violet-400' },
-];
-
-const MALE_COLORS = [
-  { bg: 'bg-sky-200',     text: 'text-sky-900',     border: 'border-sky-400' },
-  { bg: 'bg-blue-200',    text: 'text-blue-900',    border: 'border-blue-400' },
-  { bg: 'bg-indigo-200',  text: 'text-indigo-900',  border: 'border-indigo-400' },
-  { bg: 'bg-cyan-200',    text: 'text-cyan-900',    border: 'border-cyan-400' },
-  { bg: 'bg-teal-200',    text: 'text-teal-900',    border: 'border-teal-400' },
-  { bg: 'bg-green-200',   text: 'text-green-900',   border: 'border-green-400' },
-  { bg: 'bg-emerald-200', text: 'text-emerald-900', border: 'border-emerald-400' },
-  { bg: 'bg-lime-200',    text: 'text-lime-900',    border: 'border-lime-400' },
-];
-
-const OTHER_COLORS = [
-  { bg: 'bg-slate-200',   text: 'text-slate-900',   border: 'border-slate-400' },
-  { bg: 'bg-gray-200',    text: 'text-gray-900',    border: 'border-gray-400' },
-  { bg: 'bg-zinc-200',    text: 'text-zinc-900',    border: 'border-zinc-400' },
-  { bg: 'bg-yellow-200',  text: 'text-yellow-900',  border: 'border-yellow-400' },
-];
-
-function staffIdHash(staffId) {
-  if (!staffId) return 0;
-  let hash = 0;
-  for (let i = 0; i < staffId.length; i++) {
-    hash = (hash * 31 + staffId.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function getStaffColor(staffId, gender) {
-  const hash = staffIdHash(staffId);
-  if (gender === 'female') return FEMALE_COLORS[hash % FEMALE_COLORS.length];
-  if (gender === 'male')   return MALE_COLORS[hash % MALE_COLORS.length];
-  return OTHER_COLORS[hash % OTHER_COLORS.length];
+// シフトパターンIDからカラーを取得
+function getShiftEntryColor(entry) {
+  const pattern = SHIFT_PATTERNS.find(p => {
+    if (entry.shift_pattern_id) return p.id === entry.shift_pattern_id;
+    return p.startTime === entry.start_time && p.endTime === entry.end_time;
+  });
+  if (pattern) return { bg: pattern.color.split(' ')[0], text: pattern.color.split(' ')[1], border: pattern.borderColor };
+  return { bg: 'bg-slate-100', text: 'text-slate-800', border: 'border-slate-300' };
 }
 const SHIFT_TYPE_COLORS = {
   FULL: 'bg-indigo-100 text-indigo-700',
