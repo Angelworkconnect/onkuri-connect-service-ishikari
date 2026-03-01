@@ -221,7 +221,15 @@ export default function Dashboard() {
 
   const { data: allShiftEntries = [] } = useQuery({
     queryKey: ['dashboard-all-shift-entries', currentShiftMonth?.id],
-    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
+    queryFn: async () => {
+      const entries = await base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id });
+      // display_in_shift_calendar が true のスタッフのシフトのみを取得
+      const allStaffData = await base44.entities.Staff.list('-created_date', 500);
+      const visibleStaffEmails = new Set(allStaffData
+        .filter(s => s.display_in_shift_calendar !== false)
+        .map(s => s.email));
+      return entries.filter(e => visibleStaffEmails.has(e.staff_email));
+    },
     enabled: !!currentShiftMonth && !!user,
     staleTime: 60000,
   });
