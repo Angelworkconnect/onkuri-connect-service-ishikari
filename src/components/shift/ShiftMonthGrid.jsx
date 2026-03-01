@@ -201,23 +201,26 @@ export default function ShiftMonthGrid({
             {dayEntries.map((entry, i) => {
               const sc = getShiftEntryColor(entry);
               return (
-                <div
-                  key={i}
-                  className={`text-xs px-2 py-1 rounded flex items-center justify-between group border ${sc.bg} ${sc.text} ${sc.border}`}
-                >
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-semibold truncate text-xs">{entry.staff_name}</span>
-                    {(entry.start_time || entry.end_time) && (
-                      <span className="text-[11px] opacity-75">{entry.start_time}～{entry.end_time}</span>
-                    )}
-                    {entry.notes && (
-                      <span className="text-[10px] opacity-60 italic truncate text-slate-600">📝 {entry.notes}</span>
+                <div key={i}>
+                  <div
+                    className={`text-xs px-2 py-1 rounded flex items-center justify-between group border ${sc.bg} ${sc.text} ${sc.border}`}
+                  >
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="font-semibold truncate text-xs">{entry.staff_name}</span>
+                      {(entry.start_time || entry.end_time) && (
+                        <span className="text-[11px] opacity-75">{entry.start_time}～{entry.end_time}</span>
+                      )}
+                    </div>
+                    {!isPublished && (
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 ml-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button className="text-blue-600 hover:text-blue-800" onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}><Edit2 className="w-3.5 h-3.5" /></button>
+                        <button className="text-red-500 hover:text-red-700 font-bold" onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }} type="button">×</button>
+                      </div>
                     )}
                   </div>
-                  {!isPublished && (
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 ml-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <button className="text-blue-600 hover:text-blue-800" onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}><Edit2 className="w-3.5 h-3.5" /></button>
-                      <button className="text-red-500 hover:text-red-700 font-bold" onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }} type="button">×</button>
+                  {entry.notes && (
+                    <div className="text-[10px] px-2 py-0.5 text-slate-600 bg-slate-50 rounded border-l-2 border-slate-300 italic ml-0.5">
+                      📝 {entry.notes}
                     </div>
                   )}
                 </div>
