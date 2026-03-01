@@ -350,6 +350,39 @@ export default function MyShift() {
             </>
           )}
         </Card>
+
+        {/* 給与設定ダイアログ */}
+        <Dialog open={showWageEdit} onOpenChange={setShowWageEdit}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>時給設定</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="space-y-1">
+                <Label>時給（円）</Label>
+                <Input
+                  type="number"
+                  placeholder="例: 1100"
+                  value={wageInput}
+                  onChange={e => setWageInput(e.target.value)}
+                />
+                <p className="text-xs text-slate-400">推定月収に反映されます</p>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <Button variant="outline" className="flex-1" onClick={() => setShowWageEdit(false)}>キャンセル</Button>
+                <Button
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  onClick={() => {
+                    updateWageMutation.mutate({ hourly_wage: Number(wageInput) });
+                  }}
+                  disabled={updateWageMutation.isPending}
+                >
+                  保存
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
