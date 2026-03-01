@@ -107,11 +107,7 @@ export default function MyShift() {
   const myEntries = user ? entries.filter(e => e.staff_email === user.email) : [];
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
 
-  // デバッグ
-  console.log('[MyShift] user.email:', user?.email);
-  console.log('[MyShift] currentShiftMonth:', currentShiftMonth?.id, currentShiftMonth?.year, currentShiftMonth?.month);
-  console.log('[MyShift] entries total:', entries.length, 'myEntries:', myEntries.length);
-  if (entries.length > 0) console.log('[MyShift] sample entry staff_email:', entries[0].staff_email);
+
 
   // 勤務時間計算
   const monthHours = myEntries.reduce((sum, e) => {
