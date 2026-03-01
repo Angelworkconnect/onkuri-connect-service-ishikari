@@ -310,38 +310,53 @@ function AdminView({ year, month, days, allStaff, entries, requests, requirement
 
           {/* 職員駒 */}
           <TabsContent value="staff">
-            <Card className="p-4 border-0 shadow-lg">
-              <h2 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                職員駒リスト
-                <span className="text-xs text-slate-400 font-normal">カレンダーにドラッグして配置</span>
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {allStaff.map(staff => {
-                  const safety = getStaffSafety(staff);
-                  const monthEntries = entries.filter(e => e.staff_id === staff.id);
-                  const { canPlace, warnings } = canPlaceStaff(staff, new Date().toISOString().split('T')[0], entries, []);
-                  return (
-                    <StaffPiece
-                      key={staff.id}
-                      staff={staff}
-                      safetyScore={safety.score}
-                      canPlace={canPlace}
-                      warnings={warnings}
-                      draggable={true}
-                      onDragStart={(e) => {
-                        e.dataTransfer.setData('staff_id', staff.id);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-              <div className="mt-4 flex gap-3 text-xs">
-                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-100 border-2 border-blue-400 rounded inline-block" />余裕</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-100 border-2 border-yellow-400 rounded inline-block" />注意</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-100 border-2 border-red-400 rounded inline-block" />配置不可</span>
-              </div>
-            </Card>
+            <div className="space-y-4">
+              <Card className="p-4 border-0 shadow-lg">
+                <h2 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  職員駒リスト
+                  <span className="text-xs text-slate-400 font-normal">カレンダーにドラッグして配置</span>
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {allStaff.map(staff => {
+                    const safety = getStaffSafety(staff);
+                    const monthEntries = entries.filter(e => e.staff_id === staff.id);
+                    const { canPlace, warnings } = canPlaceStaff(staff, new Date().toISOString().split('T')[0], entries, []);
+                    return (
+                      <StaffPiece
+                        key={staff.id}
+                        staff={staff}
+                        safetyScore={safety.score}
+                        canPlace={canPlace}
+                        warnings={warnings}
+                        draggable={true}
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('staff_id', staff.id);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="mt-4 flex gap-3 text-xs">
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-100 border-2 border-blue-400 rounded inline-block" />余裕</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-100 border-2 border-yellow-400 rounded inline-block" />注意</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-100 border-2 border-red-400 rounded inline-block" />配置不可</span>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-0 shadow-lg">
+                <h3 className="text-base font-bold text-slate-800 mb-3">カレンダーで補充</h3>
+                <ShiftMonthGrid
+                  year={year} month={month}
+                  entries={entries} requirements={requirements}
+                  staff={allStaff} requests={requests}
+                  onDropStaff={onDropStaff}
+                  onRemoveEntry={onRemoveEntry}
+                  isPublished={isPublished}
+                  closedDays={currentShiftMonth?.closed_days || []}
+                />
+              </Card>
+            </div>
           </TabsContent>
 
           {/* 扶養管理 */}
