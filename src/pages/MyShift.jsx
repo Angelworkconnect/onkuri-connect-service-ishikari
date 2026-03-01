@@ -148,10 +148,7 @@ export default function MyShift() {
 
 
 
-  if (!user) {
-    if (authChecked) {
-      base44.auth.redirectToLogin();
-    }
+  if (!user || !authChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-slate-400">読み込み中...</div>
