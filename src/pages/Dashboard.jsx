@@ -13,6 +13,7 @@ import {
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import StatsCard from "@/components/dashboard/StatsCard";
+import PublicShiftCalendar from "@/components/shift/PublicShiftCalendar";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ClockInOut from "@/components/attendance/ClockInOut";
