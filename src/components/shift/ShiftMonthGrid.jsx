@@ -247,7 +247,8 @@ export default function ShiftMonthGrid({
 
                     <div className="space-y-0.5">
                       {dayEntries.map((entry, i) => {
-                        const staffColor = getStaffColor(entry.staff_id);
+                        const staffMember = staff.find(s => s.id === entry.staff_id);
+                        const staffColor = getStaffColor(entry.staff_id, staffMember?.gender);
                         return (
                           <div
                             key={i}
