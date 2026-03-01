@@ -23,9 +23,6 @@ Deno.serve(async (req) => {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPos = 15;
 
-    // Set default font
-    doc.setFont('helvetica');
-
     // Header
     doc.setFontSize(16);
     doc.text(`${year}年${month}月 シフト予定`, pageWidth / 2, yPos, { align: 'center' });
@@ -39,11 +36,9 @@ Deno.serve(async (req) => {
     // Notes if exists
     if (notes && notes.trim()) {
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
       doc.text('特記事項', 15, yPos);
       yPos += 5;
 
-      doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
       const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
       doc.text(splitNotes, 15, yPos);
@@ -52,7 +47,6 @@ Deno.serve(async (req) => {
 
     // Shift Entries title
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
     doc.text('シフト予定一覧', 15, yPos);
     yPos += 7;
 
@@ -71,7 +65,6 @@ Deno.serve(async (req) => {
       const rowHeight = 6;
       
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
       doc.setFillColor(45, 74, 111);
       doc.setTextColor(255, 255, 255);
 
@@ -86,7 +79,6 @@ Deno.serve(async (req) => {
 
       yPos += rowHeight;
       doc.setTextColor(0, 0, 0);
-      doc.setFont('helvetica', 'normal');
 
       // Table rows
       staffEntries.forEach((entry, idx) => {
@@ -96,7 +88,6 @@ Deno.serve(async (req) => {
 
           // Redraw headers
           doc.setFontSize(8);
-          doc.setFont('helvetica', 'bold');
           doc.setFillColor(45, 74, 111);
           doc.setTextColor(255, 255, 255);
 
@@ -109,7 +100,6 @@ Deno.serve(async (req) => {
 
           yPos += rowHeight;
           doc.setTextColor(0, 0, 0);
-          doc.setFont('helvetica', 'normal');
           doc.setFontSize(8);
         }
 
