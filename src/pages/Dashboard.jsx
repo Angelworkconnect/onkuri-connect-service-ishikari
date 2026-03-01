@@ -114,6 +114,8 @@ export default function Dashboard() {
         u.full_name = staff.full_name;
         u.approval_status = staff.approval_status || 'pending';
         u.staff_role = staff.role;
+        u.employment_type = staff.employment_type || 'part_time';
+        setMyStaff(staff);
         
         // 管理者の場合はroleもadminに設定
         if (staff.role === 'admin') {
