@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { jsPDF } from 'npm:jspdf@4.0.0';
+import html2canvas from 'npm:html2canvas@1.4.1';
+import jsPDF from 'npm:jspdf@2.5.1';
 
 Deno.serve(async (req) => {
   try {
@@ -12,43 +13,48 @@ Deno.serve(async (req) => {
 
     const { year, month, staffEmail, staffName, entries, notes } = await req.json();
 
-    // Create PDF
-    const doc = new jsPDF('p', 'mm', 'a4');
+    const doc = new jsPDF.jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    let yPosition = 10;
+    let yPos = 15;
+
+    // Set default font
+    doc.setFont('helvetica');
 
     // Header
-    doc.setFontSize(18);
-    doc.setFont(undefined, 'bold');
-    doc.text(`${year}年${month}月 シフト予定`, pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 12;
+    doc.setFontSize(16);
+    doc.text(`${year}年${month}月 シフト予定`, pageWidth / 2, yPos, { align: 'center' });
+    yPos += 12;
 
     // Staff Name
-    doc.setFontSize(14);
-    doc.setFont(undefined, 'bold');
-    doc.text(`${staffName}様`, 15, yPosition);
-    yPosition += 10;
+    doc.setFontSize(12);
+    doc.text(`${staffName}様`, 15, yPos);
+    yPos += 8;
 
     // Notes if exists
     if (notes && notes.trim()) {
-      doc.setFontSize(10);
-      doc.setFont(undefined, 'bold');
-      doc.text('特記事項', 15, yPosition);
-      yPosition += 6;
-
       doc.setFontSize(9);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'bold');
+      doc.text('特記事項', 15, yPos);
+      yPos += 5;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
       const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
-      doc.text(splitNotes, 15, yPosition);
-      yPosition += splitNotes.length * 5 + 4;
+      doc.text(splitNotes, 15, yPos);
+      yPos += splitNotes.length * 3.5 + 3;
     }
 
-    // Shift Entries
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'bold');
-    doc.text('シフト予定一覧', 15, yPosition);
-    yPosition += 8;
+    // Shift Entries title
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('シフト予定一覧', 15, yPos);
+    yPos += 7;
 
     // Filter entries for this staff
     const staffEntries = entries
@@ -56,91 +62,98 @@ Deno.serve(async (req) => {
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (staffEntries.length === 0) {
-      doc.setFontSize(9);
-      doc.setFont(undefined, 'normal');
-      doc.text('シフトはありません', 15, yPosition);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('シフトはありません', 15, yPos);
     } else {
-      // Table headers
-      const headers = ['日付', '曜日', '開始時刻', '終了時刻', 'シフト種別', '備考'];
-      const colWidths = [25, 15, 20, 20, 25, 40];
-      const headerHeight = 8;
-
-      doc.setFontSize(9);
-      doc.setFont(undefined, 'bold');
+      // Table configuration
+      const colWidths = [20, 12, 18, 18, 18, 50];
+      const rowHeight = 6;
+      
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
       doc.setFillColor(45, 74, 111);
       doc.setTextColor(255, 255, 255);
 
+      // Table headers
+      const headers = ['日付', '曜日', '開始', '終了', '種別', '備考'];
       let xPos = 15;
       headers.forEach((header, i) => {
-        doc.rect(xPos, yPosition - headerHeight + 1, colWidths[i], headerHeight, 'F');
-        doc.text(header, xPos + 2, yPosition - 2, { maxWidth: colWidths[i] - 4 });
+        doc.rect(xPos, yPos - 4, colWidths[i], rowHeight, 'F');
+        doc.text(header, xPos + 1, yPos - 1);
         xPos += colWidths[i];
       });
 
-      yPosition += 2;
+      yPos += rowHeight;
       doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'normal');
 
       // Table rows
       staffEntries.forEach((entry, idx) => {
-        const date = new Date(entry.date + 'T00:00:00');
-        const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
-        const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-        const dayStr = dayLabels[date.getDay()];
-
-        const rowHeight = 8;
-        yPosition += rowHeight;
-
-        // Check if we need a new page
-        if (yPosition > pageHeight - 15) {
+        if (yPos + rowHeight > pageHeight - 10) {
           doc.addPage();
-          yPosition = 15;
+          yPos = 15;
 
-          // Redraw headers on new page
-          doc.setFontSize(9);
-          doc.setFont(undefined, 'bold');
+          // Redraw headers
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
           doc.setFillColor(45, 74, 111);
           doc.setTextColor(255, 255, 255);
 
           xPos = 15;
           headers.forEach((header, i) => {
-            doc.rect(xPos, yPosition - headerHeight + 1, colWidths[i], headerHeight, 'F');
-            doc.text(header, xPos + 2, yPosition - 2, { maxWidth: colWidths[i] - 4 });
+            doc.rect(xPos, yPos - 4, colWidths[i], rowHeight, 'F');
+            doc.text(header, xPos + 1, yPos - 1);
             xPos += colWidths[i];
           });
 
-          yPosition += 2;
+          yPos += rowHeight;
           doc.setTextColor(0, 0, 0);
-          doc.setFont(undefined, 'normal');
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
         }
 
-        // Draw row background
+        const date = new Date(entry.date + 'T00:00:00');
+        const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
+        const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+        const dayStr = dayLabels[date.getDay()];
+
+        // Alternate row colors
         if (idx % 2 === 0) {
-          doc.setFillColor(240, 240, 240);
-          doc.rect(15, yPosition - rowHeight + 1, pageWidth - 30, rowHeight, 'F');
+          doc.setFillColor(245, 245, 245);
+          xPos = 15;
+          colWidths.forEach(width => {
+            doc.rect(xPos, yPos - 4, width, rowHeight, 'F');
+            xPos += width;
+          });
         }
 
-        // Draw cell borders
+        // Row borders
         xPos = 15;
         colWidths.forEach(width => {
-          doc.rect(xPos, yPosition - rowHeight + 1, width, rowHeight);
+          doc.rect(xPos, yPos - 4, width, rowHeight);
           xPos += width;
         });
 
-        // Draw content
+        // Row data
         xPos = 15;
-        const rowData = [dateStr, dayStr, entry.start_time, entry.end_time, entry.shift_type, entry.notes || ''];
+        const rowData = [
+          dateStr,
+          dayStr,
+          entry.start_time || '',
+          entry.end_time || '',
+          entry.shift_type || '',
+          entry.notes || ''
+        ];
+
         rowData.forEach((text, i) => {
-          doc.text(String(text), xPos + 2, yPosition - 2, { maxWidth: colWidths[i] - 4 });
+          doc.text(String(text).substring(0, 10), xPos + 1, yPos - 1);
           xPos += colWidths[i];
         });
+
+        yPos += rowHeight;
       });
     }
-
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(`Generated: ${new Date().toLocaleString('ja-JP')}`, 15, pageHeight - 5);
 
     const pdfBytes = doc.output('arraybuffer');
 
@@ -148,11 +161,14 @@ Deno.serve(async (req) => {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename=shift-preview-${year}-${String(month).padStart(2, '0')}-${staffName}.pdf`
+        'Content-Disposition': `attachment; filename=shift-${year}-${month}.pdf`
       }
     });
   } catch (error) {
-    console.error('Error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('[PDF Generation Error]', error);
+    return Response.json({ 
+      error: error.message || 'PDF generation failed',
+      details: error.toString()
+    }, { status: 500 });
   }
 });
