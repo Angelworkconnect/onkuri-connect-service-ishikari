@@ -102,17 +102,45 @@ export default function AdminShiftTab({ user }) {
 
   const createEntryMutation = useMutation({
     mutationFn: (data) => base44.entities.ShiftEntry.create({ ...data, shift_month_id: currentShiftMonth.id }),
-    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+    onMutate: async (newEntry) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      const optimistic = { ...newEntry, id: 'temp-' + Date.now(), shift_month_id: currentShiftMonth.id };
+      queryClient.setQueryData(['shift-entries', year, month], [...prev, optimistic]);
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const deleteEntryMutation = useMutation({
     mutationFn: (id) => base44.entities.ShiftEntry.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      queryClient.setQueryData(['shift-entries', year, month], prev.filter(e => e.id !== id));
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const updateEntryMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.ShiftEntry.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shift-entries', year, month] }),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      queryClient.setQueryData(['shift-entries', year, month], prev.map(e => e.id === id ? { ...e, ...data } : e));
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const bulkCreateMutation = useMutation({
