@@ -266,7 +266,11 @@ export default function AdminShiftTab({ user }) {
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
-                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                          // 前月のYYYY-MM-DD形式で保存
+                          const prevY = month === 1 ? year - 1 : year;
+                          const prevM = month === 1 ? 12 : month - 1;
+                          const dateStr = `${prevY}-${String(prevM).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: dateStr } });
                         }
                       }
                     }
@@ -282,7 +286,11 @@ export default function AdminShiftTab({ user }) {
                       if (numStr) {
                         const day = parseInt(numStr, 10);
                         if (day >= 1 && day <= 31) {
-                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: `${day}日` } });
+                          // 前月のYYYY-MM-DD形式で保存
+                          const prevY = month === 1 ? year - 1 : year;
+                          const prevM = month === 1 ? 12 : month - 1;
+                          const dateStr = `${prevY}-${String(prevM).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                          updateMonthMutation.mutate({ id: currentShiftMonth.id, data: { request_deadline: dateStr } });
                         }
                       }
                     }
