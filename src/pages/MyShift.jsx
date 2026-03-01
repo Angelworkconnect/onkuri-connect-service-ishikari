@@ -20,6 +20,7 @@ export default function MyShift() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const queryClient = useQueryClient();
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(async u => {
@@ -27,8 +28,10 @@ export default function MyShift() {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) u.full_name = staffList[0].full_name;
       setUser(u);
+      setAuthChecked(true);
     }).catch(() => {
       // ネットワークエラーなどの場合はログインを強制せず静かに失敗
+      setAuthChecked(true);
     });
   }, []);
 
