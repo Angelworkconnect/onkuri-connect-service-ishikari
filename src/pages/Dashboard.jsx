@@ -23,6 +23,75 @@ import TipBenefitSection from "@/components/dashboard/TipBenefitSection";
 import DiceGameCard from "@/components/dashboard/DiceGameCard";
 import HelpCallSection from "@/components/dashboard/HelpCallSection";
 
+const DOW = ['日', '月', '火', '水', '木', '金', '土'];
+
+function DashboardShiftCalendar({ year, month, entries }) {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDow = new Date(year, month - 1, 1).getDay();
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  const entryMap = {};
+  entries.forEach(e => {
+    const d = new Date(e.date + 'T00:00:00').getDate();
+    if (!entryMap[d]) entryMap[d] = [];
+    entryMap[d].push(e);
+  });
+
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  return (
+    <div>
+      {/* 曜日ヘッダー */}
+      <div className="grid grid-cols-7 mb-1">
+        {DOW.map((d, i) => (
+          <div key={d} className={`text-center text-xs font-bold py-1 ${i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-slate-400'}`}>{d}</div>
+        ))}
+      </div>
+      {/* カレンダーグリッド */}
+      <div className="grid grid-cols-7 gap-px bg-slate-100 border border-slate-100 rounded-xl overflow-hidden">
+        {cells.map((day, idx) => {
+          const dow = idx % 7;
+          const isSun = dow === 0;
+          const isSat = dow === 6;
+          const dayEntries = day ? (entryMap[day] || []) : [];
+          const hasShift = dayEntries.length > 0;
+          const dateStr = day ? `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}` : '';
+          const isToday = dateStr === today;
+
+          return (
+            <div
+              key={idx}
+              className={`min-h-[52px] p-1 flex flex-col items-center
+                ${!day ? 'bg-slate-50' : isSun ? 'bg-red-50' : isSat ? 'bg-blue-50' : hasShift ? 'bg-indigo-50' : 'bg-white'}`}
+            >
+              {day && (
+                <>
+                  <div className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold mb-0.5
+                    ${isToday ? 'bg-indigo-600 text-white' : isSun ? 'text-red-500' : isSat ? 'text-blue-500' : hasShift ? 'text-indigo-700' : 'text-slate-400'}`}>
+                    {day}
+                  </div>
+                  {dayEntries.map((e, i) => (
+                    <div key={i} className="w-full text-center bg-indigo-500 text-white rounded px-0.5 py-0.5 leading-tight mb-0.5" style={{ fontSize: '9px' }}>
+                      {e.start_time && e.end_time ? `${e.start_time}〜${e.end_time}` : '勤務'}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {/* 凡例 */}
+      <div className="flex items-center gap-3 mt-3 text-xs text-slate-400">
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-indigo-500 inline-block"></span>勤務あり</span>
+        <span className="flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-indigo-600 inline-flex items-center justify-center text-white" style={{fontSize:'8px'}}>今</span>今日</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
