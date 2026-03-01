@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 
 // スマホキャッシュ対策：アプリバージョン管理
-const APP_BUILD_VERSION = "2026-03-01-no-fulltime-income";
+const APP_BUILD_VERSION = "2026-03-01-hard-cache-clear-v1";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +76,15 @@ export default function Layout({ children, currentPageName }) {
                 console.log('[Cache] Deleting:', name);
                 caches.delete(name);
               });
+            });
+          }
+          
+          // IndexedDB もクリア
+          if ('indexedDB' in window) {
+            const dbs = await indexedDB.databases();
+            dbs.forEach(db => {
+              console.log('[IndexedDB] Deleting:', db.name);
+              indexedDB.deleteDatabase(db.name);
             });
           }
           
