@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 
 // スマホキャッシュ対策：アプリバージョン管理
-const APP_BUILD_VERSION = "2026-03-01-calendar-notes-v3";
+const APP_BUILD_VERSION = "2026-03-01-calendar-notes-v4";
 import {
   DropdownMenu,
   DropdownMenuContent,
