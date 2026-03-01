@@ -50,6 +50,8 @@ export default function MyShift() {
     queryKey: ['all-staff'],
     queryFn: () => base44.entities.Staff.list('-created_date', 500),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: 10000,
   });
   const myStaff = allStaff[0] || null;
 
