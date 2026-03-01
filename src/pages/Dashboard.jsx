@@ -307,6 +307,40 @@ export default function Dashboard() {
               />
             </div>
 
+            {/* 今月のシフト */}
+            {currentShiftMonth && (
+              <Card className="border-0 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                  <h2 className="text-base font-medium text-slate-800 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-indigo-500" />
+                    {currentMonth}月のシフト
+                  </h2>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">公開済み</span>
+                </div>
+                <div className="p-4">
+                  {myShiftEntries.length > 0 ? (
+                    <div className="space-y-1.5">
+                      {myShiftEntries.sort((a, b) => a.date.localeCompare(b.date)).map((entry, i) => {
+                        const d = new Date(entry.date);
+                        const dow = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
+                        const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                        return (
+                          <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${isWeekend ? 'bg-blue-50' : 'bg-slate-50'}`}>
+                            <span className={`text-sm font-bold w-20 ${d.getDay() === 0 ? 'text-red-600' : d.getDay() === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
+                              {currentMonth}/{d.getDate()}({dow})
+                            </span>
+                            <span className="text-sm text-slate-600">{entry.start_time}〜{entry.end_time}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
+                  )}
+                </div>
+              </Card>
+            )}
+
             {/* Dice Game */}
             <DiceGameCard user={user} />
 
