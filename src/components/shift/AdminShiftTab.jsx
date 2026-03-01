@@ -198,34 +198,15 @@ export default function AdminShiftTab({ user }) {
     },
   });
 
-  const handleDropStaff = async (staff, date) => {
+  const handleDropStaff = (staff, date) => {
     if (!currentShiftMonth) return;
     const already = entries.some(e => e.date === date && e.staff_id === staff.id);
     if (already) return;
-    
-    // シートが開いている場合は、補充後に即座に表示を更新
-    if (previewSheetOpen && previewSheetStaff?.id === staff.id) {
-      createEntryMutation.mutate({
-        date, staff_id: staff.id, staff_email: staff.email,
-        staff_name: staff.full_name, start_time: '09:00', end_time: '18:00',
-        shift_type: 'FULL', auto_generated: false,
-      }, {
-        onSuccess: () => {
-          // シートのデータを更新するため、previewSheetStaffを即座に更新
-          queryClient.invalidateQueries(['shift-entries', year, month]);
-          // 少し待ってからクエリ結果を反映させる
-          setTimeout(() => {
-            queryClient.refetchQueries(['shift-entries', year, month]);
-          }, 50);
-        }
-      });
-    } else {
-      createEntryMutation.mutate({
-        date, staff_id: staff.id, staff_email: staff.email,
-        staff_name: staff.full_name, start_time: '09:00', end_time: '18:00',
-        shift_type: 'FULL', auto_generated: false,
-      });
-    }
+    createEntryMutation.mutate({
+      date, staff_id: staff.id, staff_email: staff.email,
+      staff_name: staff.full_name, start_time: '09:00', end_time: '18:00',
+      shift_type: 'FULL', auto_generated: false,
+    });
   };
 
   const handleAIGenerate = async (newEntries) => {
