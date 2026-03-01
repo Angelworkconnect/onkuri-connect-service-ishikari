@@ -120,7 +120,6 @@ export default function ShiftMonthGrid({
   };
 
   const handleReqClick = (e, day) => {
-    if (isPublished) return;
     e.stopPropagation();
     const req = getDayRequirement(day);
     setEditingReqDay(day);
