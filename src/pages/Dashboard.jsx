@@ -490,12 +490,12 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* 推定収入 */}
-                {myStaff && (
+                {/* 推定収入（パート・アルバイト のみ） */}
+                {myStaff && !isFullTime && (
                   <div className="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
                     <div>
                       <span className="text-xs text-indigo-600 font-medium">
-                        {isFullTime ? '今月の月給' : `推定月収（${myShiftEntries.length}日 × 時給）`}
+                        推定月収（{myShiftEntries.length}日 × 時給）
                       </span>
                       <span className="ml-2 text-base font-bold text-indigo-700">
                         {estimatedIncome || '未設定'}
@@ -505,7 +505,6 @@ export default function Dashboard() {
                       className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 border border-indigo-200 rounded-md px-2 py-1"
                       onClick={() => {
                         setWageInput(String(myStaff.hourly_wage || ''));
-                        setMonthlySalaryInput(String(myStaff.monthly_salary || ''));
                         setShowWageEdit(true);
                       }}
                     >
