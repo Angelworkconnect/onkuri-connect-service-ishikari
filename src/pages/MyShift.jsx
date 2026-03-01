@@ -264,47 +264,15 @@ export default function MyShift() {
           </div>
           {!isPublished ? (
             <p className="text-sm text-amber-600 text-center py-3">シフトは現在準備中です。公開後にここで確認できます。</p>
-          ) : entries.length === 0 ? (
-            <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
-          ) : isAdmin ? (
-            // 管理者：全スタッフ分を日付順で表示
-            <div className="space-y-1.5">
-              {[...entries].sort((a, b) => a.date.localeCompare(b.date) || (a.staff_name || '').localeCompare(b.staff_name || '')).map((entry, i) => {
-                const d = new Date(entry.date + 'T00:00:00');
-                const dow = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
-                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                return (
-                  <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${isWeekend ? 'bg-blue-50' : 'bg-slate-50'}`}>
-                    <span className={`text-sm font-bold w-16 shrink-0 ${d.getDay() === 0 ? 'text-red-600' : d.getDay() === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
-                      {month}/{d.getDate()}({dow})
-                    </span>
-                    <span className="text-sm font-medium text-slate-700 w-20 shrink-0 truncate">{entry.staff_name}</span>
-                    <span className="text-sm text-slate-500">{entry.start_time}〜{entry.end_time}</span>
-                    {entry.auto_generated && <Badge className="text-[10px] bg-purple-100 text-purple-600 ml-auto">AI</Badge>}
-                  </div>
-                );
-              })}
-            </div>
-          ) : myEntries.length === 0 ? (
+          ) : (isAdmin ? entries.length === 0 : myEntries.length === 0) ? (
             <p className="text-slate-400 text-center py-3 text-sm">この月のシフトはまだ割り当てられていません</p>
           ) : (
-            // 一般スタッフ：自分のシフトのみ
-            <div className="space-y-1.5">
-              {[...myEntries].sort((a, b) => a.date.localeCompare(b.date)).map((entry, i) => {
-                const d = new Date(entry.date + 'T00:00:00');
-                const dow = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
-                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                return (
-                  <div key={i} className={`flex items-center gap-3 p-2 rounded-lg ${isWeekend ? 'bg-blue-50' : 'bg-slate-50'}`}>
-                    <span className={`text-sm font-bold w-16 ${d.getDay() === 0 ? 'text-red-600' : d.getDay() === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
-                      {month}/{d.getDate()}({dow})
-                    </span>
-                    <span className="text-sm text-slate-600">{entry.start_time}〜{entry.end_time}</span>
-                    {entry.auto_generated && <Badge className="text-[10px] bg-purple-100 text-purple-600 ml-auto">AI</Badge>}
-                  </div>
-                );
-              })}
-            </div>
+            <ShiftCalendarView
+              year={year}
+              month={month}
+              entries={isAdmin ? entries : myEntries}
+              isAdmin={isAdmin}
+            />
           )}
         </Card>
       </div>
