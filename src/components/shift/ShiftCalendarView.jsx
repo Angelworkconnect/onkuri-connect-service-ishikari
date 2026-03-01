@@ -148,6 +148,38 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
           );
         })}
       </div>
+
+      {/* 特記事項一覧（表の下） */}
+      {entries.some(e => e.notes) && (
+        <div className="mt-6 pt-4 border-t border-slate-200">
+          <h4 className="text-sm font-bold text-slate-700 mb-3">📝 特記事項</h4>
+          <div className="space-y-2">
+            {Object.entries(
+              entries.reduce((acc, e) => {
+                if (e.notes) {
+                  const dateStr = e.date;
+                  if (!acc[dateStr]) acc[dateStr] = [];
+                  acc[dateStr].push(e);
+                }
+                return acc;
+              }, {})
+            ).sort((a, b) => new Date(a[0]) - new Date(b[0])).map(([date, dayEntries]) => (
+              <div key={date} className="bg-yellow-50 rounded-lg p-3 border-l-4 border-yellow-400">
+                <p className="text-xs font-semibold text-slate-700 mb-1">
+                  {new Date(date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' })}
+                </p>
+                <div className="text-sm text-slate-700 space-y-1">
+                  {dayEntries.map((e, i) => (
+                    <div key={i} className="text-xs">
+                      <span className="font-medium">{e.staff_name}:</span> {e.notes}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
