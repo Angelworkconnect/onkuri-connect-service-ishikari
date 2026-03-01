@@ -472,16 +472,18 @@ export default function Dashboard() {
                 )}
 
                 <div className="p-4">
-                  {shiftView === 'mine' ? (
-                    myShiftEntries.length > 0 ? (
-                      <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={myShiftEntries} />
-                    ) : (
-                      <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
-                    )
-                  ) : (
-                    <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={allShiftEntries} showAllStaff />
-                  )}
-                </div>
+                   {shiftView === 'mine' ? (
+                     myShiftEntries.length > 0 ? (
+                       <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={myShiftEntries} />
+                     ) : (
+                       <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
+                     )
+                   ) : allShiftEntries.length > 0 ? (
+                     <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={allShiftEntries} showAllStaff={true} />
+                   ) : (
+                     <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
+                   )}
+                 </div>
               </Card>
             )}
 
