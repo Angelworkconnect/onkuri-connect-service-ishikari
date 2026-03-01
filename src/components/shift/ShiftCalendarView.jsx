@@ -115,7 +115,7 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
                   </div>
                   <div className="space-y-0.5">
                    {dayEntries.map((e, i) => {
-                     const sc = getStaffColor(e.staff_id);
+                     const sc = getStaffColor(e.staff_id, staffGenderMap[e.staff_id]);
                      return (
                        <div
                          key={i}
