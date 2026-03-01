@@ -49,7 +49,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     // スマホキャッシュ対策：バージョンチェックと強制更新
-    const checkAndUpdateVersion = () => {
+    const checkAndUpdateVersion = async () => {
       try {
         const savedVersion = localStorage.getItem('app_build_version');
         
@@ -80,12 +80,16 @@ export default function Layout({ children, currentPageName }) {
           }
           
           // IndexedDB もクリア
-          if ('indexedDB' in window) {
-            const dbs = await indexedDB.databases();
-            dbs.forEach(db => {
-              console.log('[IndexedDB] Deleting:', db.name);
-              indexedDB.deleteDatabase(db.name);
-            });
+          if ('indexedDB' in window && 'databases' in indexedDB) {
+            try {
+              const dbs = await indexedDB.databases();
+              dbs.forEach(db => {
+                console.log('[IndexedDB] Deleting:', db.name);
+                indexedDB.deleteDatabase(db.name);
+              });
+            } catch (e) {
+              console.log('[IndexedDB] Clear error:', e);
+            }
           }
           
           // 旧バージョンから移行の場合は強制リロード
@@ -102,7 +106,7 @@ export default function Layout({ children, currentPageName }) {
       }
     };
     
-    checkAndUpdateVersion();
+    checkAndUpdateVersion().catch(e => console.error('[Version Check Error]', e));
 
     base44.auth.me().then(async (u) => {
       if (u) {
