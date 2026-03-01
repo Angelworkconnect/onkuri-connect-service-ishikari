@@ -434,44 +434,9 @@ export default function AdminShiftTab({ user }) {
 
           <TabsContent value="preview">
             <Card className="p-4 border-0 shadow-lg space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-base font-bold text-slate-800">👁️ 職員ビュー プレビュー</h2>
-                  <p className="text-sm text-slate-600 mt-1">職員をクリックして詳細を確認</p>
-                </div>
-                {previewStaffEmail && previewSheetStaff && (
-                  <Button
-                    onClick={async () => {
-                      try {
-                        const response = await base44.functions.invoke('generateShiftPreviewPdf', {
-                          year,
-                          month,
-                          staffEmail: previewStaffEmail,
-                          staffName: previewSheetStaff.full_name,
-                          entries,
-                          notes: currentShiftMonth?.notes || '',
-                        });
-                        const blob = new Blob([response.data], { type: 'application/pdf' });
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `shift-preview-${year}-${String(month).padStart(2, '0')}-${previewSheetStaff.full_name}.pdf`;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        a.remove();
-                      } catch (error) {
-                        console.error('PDF生成エラー:', error);
-                        alert('PDF生成に失敗しました');
-                      }
-                    }}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                    size="sm"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF保存
-                  </Button>
-                )}
+              <div className="mb-4">
+                <h2 className="text-base font-bold text-slate-800">👁️ 職員ビュー プレビュー</h2>
+                <p className="text-sm text-slate-600 mt-1">職員をクリックして詳細を確認</p>
               </div>
               <div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
