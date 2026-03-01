@@ -205,10 +205,10 @@ export default function ShiftMonthGrid({
                   key={i}
                   className={`text-xs px-2 py-1 rounded flex items-center justify-between group border ${sc.bg} ${sc.text} ${sc.border}`}
                 >
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="font-semibold truncate">{entry.staff_name}</span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="font-semibold truncate text-xs">{entry.staff_name}</span>
                     {(entry.start_time || entry.end_time) && (
-                      <span className="text-[11px] opacity-75 shrink-0">{entry.start_time}～{entry.end_time}</span>
+                      <span className="text-[11px] opacity-75">{entry.start_time}～{entry.end_time}</span>
                     )}
                   </div>
                   {!isPublished && (
