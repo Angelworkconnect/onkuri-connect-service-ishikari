@@ -297,8 +297,8 @@ export default function ShiftMonthGrid({
       </div>
 
       {/* シフト編集ダイアログ */}
-       {editingEntry && (
-         <ShiftEditorDialog
+      {editingEntry && (
+        <ShiftEditorDialog
            entry={editingEntry}
            isOpen={!!editingEntry}
            onClose={() => setEditingEntry(null)}
