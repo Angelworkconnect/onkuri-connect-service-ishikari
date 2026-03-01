@@ -43,9 +43,9 @@ export default function MyShift() {
   });
   const currentShiftMonth = shiftMonths.find(sm => Number(sm.year) === year && Number(sm.month) === month);
 
-  const { data: entries = [], isLoading: entriesLoading } = useQuery({
+  const { data: entries = [] } = useQuery({
     queryKey: ['shift-entries', currentShiftMonth?.id],
-    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id, staff_email: user.email }),
+    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
     enabled: !!currentShiftMonth && !!user,
     staleTime: 0,
   });
