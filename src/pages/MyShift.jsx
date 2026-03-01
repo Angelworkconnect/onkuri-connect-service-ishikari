@@ -35,17 +35,19 @@ export default function MyShift() {
   });
   const myStaff = allStaff[0] || null;
 
-  const { data: shiftMonths = [] } = useQuery({
+  const { data: shiftMonths = [], isLoading: shiftMonthsLoading } = useQuery({
     queryKey: ['shift-months'],
     queryFn: () => base44.entities.ShiftMonth.list('-created_date', 200),
     enabled: !!user,
+    staleTime: 0,
   });
   const currentShiftMonth = shiftMonths.find(sm => Number(sm.year) === year && Number(sm.month) === month);
 
-  const { data: entries = [] } = useQuery({
-    queryKey: ['shift-entries', year, month],
-    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth?.id }),
-    enabled: !!currentShiftMonth,
+  const { data: entries = [], isLoading: entriesLoading } = useQuery({
+    queryKey: ['shift-entries', currentShiftMonth?.id],
+    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id, staff_email: user.email }),
+    enabled: !!currentShiftMonth && !!user,
+    staleTime: 0,
   });
 
   const { data: myRequests = [] } = useQuery({
