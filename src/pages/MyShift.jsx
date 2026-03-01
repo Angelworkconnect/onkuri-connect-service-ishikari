@@ -137,6 +137,12 @@ export default function MyShift() {
   const myEntries = user ? entries.filter(e => e.staff_email === user.email) : [];
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
 
+  // display_in_shift_calendar が false のスタッフを除外
+  const visibleEntries = entries.filter(e => {
+    const staff = allStaff.find(s => s.email === e.staff_email);
+    return staff?.display_in_shift_calendar !== false;
+  });
+
   // 管理者判定
   const isAdmin = user?.role === 'admin';
 
