@@ -299,19 +299,19 @@ export default function ShiftMonthGrid({
       {/* シフト編集ダイアログ */}
       {editingEntry && (
         <ShiftEditorDialog
-           entry={editingEntry}
-           isOpen={!!editingEntry}
-           onClose={() => setEditingEntry(null)}
-           onSave={(data) => {
-             onUpdateEntry(editingEntry.id, data);
-             setEditingEntry(null);
-           }}
-           onDelete={() => {
-             onRemoveEntry(editingEntry);
-             setEditingEntry(null);
-           }}
-         />
-       )}
+          entry={editingEntry}
+          isOpen={!!editingEntry}
+          onClose={() => setEditingEntry(null)}
+          onSave={(data) => {
+            onUpdateEntry(editingEntry.id, data);
+            setEditingEntry(null);
+          }}
+          onDelete={() => {
+            onRemoveEntry(editingEntry);
+            setEditingEntry(null);
+          }}
+        />
+      )}
     </div>
   );
 }
