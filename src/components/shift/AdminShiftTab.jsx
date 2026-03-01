@@ -30,6 +30,7 @@ export default function AdminShiftTab({ user }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2);
+  // deadline表示: YYYY-MM-DD形式で保存、入力はDD（日のみ）で受け付け前月の日付に変換
   const [deadlineInput, setDeadlineInput] = useState('');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
