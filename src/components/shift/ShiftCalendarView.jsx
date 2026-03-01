@@ -13,8 +13,34 @@ function buildCalendarDays(year, month) {
   return { cells, firstDay };
 }
 
-export default function ShiftCalendarView({ year, month, entries, isAdmin }) {
+export default function ShiftCalendarView({ year, month, entries, isAdmin, staff = [] }) {
   const { cells } = buildCalendarDays(year, month);
+
+  // staff の休み情報をまとめたマップ: date -> [staffName, ...]
+  const offDayMap = {};
+  staff.forEach(s => {
+    // hard_off_days (曜日)
+    (s.hard_off_days || []).forEach(dow => {
+      const daysInMonth = new Date(year, month, 0).getDate();
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(year, month - 1, d);
+        if (date.getDay() === dow) {
+          const key = d;
+          if (!offDayMap[key]) offDayMap[key] = [];
+          offDayMap[key].push(s.full_name);
+        }
+      }
+    });
+    // custom_off_dates
+    (s.custom_off_dates || []).forEach(dateStr => {
+      const d = new Date(dateStr + 'T00:00:00');
+      if (d.getFullYear() === year && d.getMonth() + 1 === month) {
+        const key = d.getDate();
+        if (!offDayMap[key]) offDayMap[key] = [];
+        if (!offDayMap[key].includes(s.full_name)) offDayMap[key].push(s.full_name);
+      }
+    });
+  });
 
   // 日付 → エントリのマップ
   const entryMap = {};
