@@ -14,11 +14,9 @@ import {
 export default function MyShift() {
   const [user, setUser] = useState(null);
   const now = new Date();
-  // デフォルト: 翌月（提出期間想定）
-  const defaultMonth = now.getMonth() + 2 > 12 ? 1 : now.getMonth() + 2;
-  const defaultYear = now.getMonth() + 2 > 12 ? now.getFullYear() + 1 : now.getFullYear();
-  const [year, setYear] = useState(defaultYear);
-  const [month, setMonth] = useState(defaultMonth);
+  // デフォルト: 当月（シフト確認優先）
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
   const queryClient = useQueryClient();
 
   useEffect(() => {
