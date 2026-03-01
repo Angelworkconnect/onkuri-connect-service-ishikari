@@ -310,18 +310,18 @@ export default function MyShift() {
             <p className="text-sm text-amber-600 text-center py-3">シフトは現在準備中です。公開後にここで確認できます。</p>
           ) : (
             <>
-              {isAdmin && (
-                <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-full sm:w-fit mb-3">
-                  <button
-                    className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
-                    onClick={() => setShiftView('mine')}
-                  >自分のシフト</button>
+              <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-full sm:w-fit mb-3">
+                <button
+                  className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                  onClick={() => setShiftView('mine')}
+                >自分のシフト</button>
+                {isAdmin && (
                   <button
                     className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
                     onClick={() => setShiftView('all')}
                   >全体カレンダー</button>
-                </div>
-              )}
+                )}
+              </div>
               {shiftView === 'mine' ? (
                 myEntries.length > 0 ? (
                   <ShiftCalendarView
