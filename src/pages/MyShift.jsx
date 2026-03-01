@@ -134,11 +134,23 @@ export default function MyShift() {
     limit = getAnnualLimit(myStaff);
   }
 
-  if (!user) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-slate-400">読み込み中...</div>
-    </div>
-  );
+  // 認証チェック（少し待ってから判定してスマホでの誤リダイレクトを防ぐ）
+  const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setAuthChecked(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!user) {
+    if (authChecked) {
+      base44.auth.redirectToLogin();
+    }
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-slate-400">読み込み中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
