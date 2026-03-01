@@ -14,6 +14,7 @@ import {
 
 export default function MyShift() {
   const [user, setUser] = useState(null);
+  const [shiftView, setShiftView] = useState('mine'); // 'mine' | 'all'
   const now = new Date();
   // デフォルト: 当月（シフト確認優先）
   const [year, setYear] = useState(now.getFullYear());
