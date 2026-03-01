@@ -105,11 +105,13 @@ export default function MyShift() {
   });
 
   const updateWageMutation = useMutation({
-    mutationFn: (data) => base44.entities.Staff.update(myStaff.id, data),
-    onSuccess: (updated) => {
-      queryClient.invalidateQueries({ queryKey: ['myshift-staff', user?.email] });
-      setShowWageEdit(false);
-    },
+   mutationFn: (data) => base44.entities.Staff.update(myStaff.id, data),
+   onSuccess: (updated) => {
+     queryClient.invalidateQueries({ queryKey: ['myshift-staff', user?.email] });
+     queryClient.invalidateQueries({ queryKey: ['all-staff'] });
+     queryClient.invalidateQueries({ queryKey: ['shift-entries'] });
+     setShowWageEdit(false);
+   },
   });
 
   const prevMonth = () => {
