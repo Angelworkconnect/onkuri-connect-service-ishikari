@@ -210,7 +210,7 @@ export default function MyShift() {
             <p className="text-xs text-slate-400 mb-1">希望休</p>
             <p className="text-xl font-bold text-orange-500">{myRequests.length}日</p>
           </Card>
-          {myStaff?.employment_type !== 'full_time' && (
+          {myStaff?.employment_type === 'part_time' && (
             myStaff?.tax_mode && myStaff.tax_mode !== 'FULL' ? (
               <Card className="p-3 border-0 shadow-sm text-center">
                 <p className="text-xs text-slate-400 mb-1">扶養安全度</p>
