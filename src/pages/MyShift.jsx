@@ -82,8 +82,10 @@ export default function MyShift() {
   };
 
   // 締切チェック: ShiftMonthに設定された締切日を優先、なければ毎月15日
-  const deadlineDate = currentShiftMonth?.request_deadline
-    ? new Date(currentShiftMonth.request_deadline + 'T23:59:59')
+  const deadlineStr = currentShiftMonth?.request_deadline;
+  const isValidDate = deadlineStr && /^\d{4}-\d{2}-\d{2}$/.test(deadlineStr);
+  const deadlineDate = isValidDate
+    ? new Date(deadlineStr + 'T23:59:59')
     : new Date(year, month - 2, 15, 23, 59);
   const isDeadlinePassed = new Date() > deadlineDate;
 
