@@ -76,7 +76,8 @@ function DashboardShiftCalendar({ year, month, entries, showAllStaff = false }) 
                     {day}
                   </div>
                   {dayEntries.map((e, i) => (
-                    <div key={i} className="w-full text-center bg-indigo-500 text-white rounded px-0.5 py-0.5 leading-tight mb-0.5" style={{ fontSize: '9px' }}>
+                    <div key={i} className="w-full bg-indigo-500 text-white rounded px-0.5 py-0.5 leading-tight mb-0.5 text-center" style={{ fontSize: '9px' }}>
+                      {showAllStaff && e.staff_name && <div className="font-semibold truncate">{e.staff_name}</div>}
                       {e.start_time && e.end_time ? `${e.start_time}〜${e.end_time}` : '勤務'}
                     </div>
                   ))}
