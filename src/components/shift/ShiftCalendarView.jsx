@@ -113,18 +113,24 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
                    {dayEntries.map((e, i) => {
                      const sc = getShiftEntryColor(e);
                      return (
-                       <div
-                         key={i}
-                         className={`rounded px-1 py-0.5 leading-tight ${sc.bg} ${sc.text}`}
-                         style={{ fontSize: '10px' }}
-                       >
-                         {isAdmin && (
-                           <div className="font-medium truncate">{e.staff_name}</div>
+                       <div key={i}>
+                         <div
+                           className={`rounded px-1 py-0.5 leading-tight ${sc.bg} ${sc.text}`}
+                           style={{ fontSize: '10px' }}
+                         >
+                           {isAdmin && (
+                             <div className="font-medium truncate">{e.staff_name}</div>
+                           )}
+                           {e.start_time && e.end_time
+                             ? <div>{e.start_time}〜{e.end_time}</div>
+                             : <div>シフトあり</div>
+                           }
+                         </div>
+                         {e.notes && (
+                           <div className="text-[9px] px-0.5 py-0.5 text-slate-700 bg-yellow-50 rounded border-l border-yellow-300 italic">
+                             📝 {e.notes}
+                           </div>
                          )}
-                         {e.start_time && e.end_time
-                           ? <div>{e.start_time}〜{e.end_time}</div>
-                           : <div>シフトあり</div>
-                         }
                        </div>
                      );
                    })}
