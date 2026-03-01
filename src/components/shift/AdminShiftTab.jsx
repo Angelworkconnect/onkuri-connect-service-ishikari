@@ -183,8 +183,12 @@ export default function AdminShiftTab({ user }) {
       queryClient.setQueryData(['shift-staff'], prev.map(s => s.id === staffData.id ? { ...s, ...staffData } : s));
       return { prev };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shift-staff'] });
+    onSuccess: (result, staffData) => {
+      // キャッシュを最新データで更新
+      const prev = queryClient.getQueryData(['shift-staff']) || [];
+      queryClient.setQueryData(['shift-staff'], prev.map(s => s.id === staffData.id ? { ...s, ...staffData } : s));
+      // 選択中のスタッフ状態も更新
+      setSelectedStaff(prev => prev ? { ...prev, ...staffData } : null);
     },
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(['shift-staff'], ctx.prev);
