@@ -103,8 +103,8 @@ export default function MyShift() {
   // 定休曜日
   const closedDays = currentShiftMonth?.closed_days || [];
 
-  // 今月シフト（API側でstaff_emailフィルタ済み）
-  const myEntries = entries;
+  // 今月シフト
+  const myEntries = user ? entries.filter(e => e.staff_email === user.email) : [];
   const isPublished = currentShiftMonth?.status === 'PUBLISHED';
 
   // 勤務時間計算
