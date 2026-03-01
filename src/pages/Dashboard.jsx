@@ -425,29 +425,114 @@ export default function Dashboard() {
             {/* 今月のシフト */}
             {currentShiftMonth && (
               <Card className="border-0 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                  <h2 className="text-base font-medium text-slate-800 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-indigo-500" />
-                    {currentYear}年{currentMonth}月のシフト確定
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">{myShiftEntries.length}日</span>
+                <div className="p-4 border-b border-slate-100">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-base font-medium text-slate-800 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-indigo-500" />
+                      {currentYear}年{currentMonth}月のシフト確定
+                    </h2>
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">公開済み</span>
                   </div>
+                  {/* タブ切り替え */}
+                  <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 w-fit">
+                    <button
+                      className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                      onClick={() => setShiftView('mine')}
+                    >自分のシフト</button>
+                    <button
+                      className={`text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
+                      onClick={() => setShiftView('all')}
+                    >全体カレンダー</button>
+                  </div>
                 </div>
+
+                {/* 推定収入 */}
+                {myStaff && (
+                  <div className="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-indigo-600 font-medium">
+                        {isFullTime ? '今月の月給' : `推定月収（${myShiftEntries.length}日 × 時給）`}
+                      </span>
+                      <span className="ml-2 text-base font-bold text-indigo-700">
+                        {estimatedIncome || '未設定'}
+                      </span>
+                    </div>
+                    <button
+                      className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 border border-indigo-200 rounded-md px-2 py-1"
+                      onClick={() => {
+                        setWageInput(String(myStaff.hourly_wage || ''));
+                        setMonthlySalaryInput(String(myStaff.monthly_salary || ''));
+                        setShowWageEdit(true);
+                      }}
+                    >
+                      <Pencil className="w-3 h-3" />編集
+                    </button>
+                  </div>
+                )}
+
                 <div className="p-4">
-                  {myShiftEntries.length > 0 ? (
-                    <DashboardShiftCalendar
-                      year={currentYear}
-                      month={currentMonth}
-                      entries={myShiftEntries}
-                    />
+                  {shiftView === 'mine' ? (
+                    myShiftEntries.length > 0 ? (
+                      <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={myShiftEntries} />
+                    ) : (
+                      <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
+                    )
                   ) : (
-                    <p className="text-sm text-slate-400 text-center py-4">この月のシフトはまだ割り当てられていません</p>
+                    <DashboardShiftCalendar year={currentYear} month={currentMonth} entries={allShiftEntries} showAllStaff />
                   )}
                 </div>
               </Card>
             )}
+
+            {/* 給与設定ダイアログ */}
+            <Dialog open={showWageEdit} onOpenChange={setShowWageEdit}>
+              <DialogContent className="max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>給与設定</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-2">
+                  {isFullTime ? (
+                    <div className="space-y-1">
+                      <Label>月給（円）</Label>
+                      <Input
+                        type="number"
+                        placeholder="例: 250000"
+                        value={monthlySalaryInput}
+                        onChange={e => setMonthlySalaryInput(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-400">正社員の月給を設定します</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <Label>時給（円）</Label>
+                      <Input
+                        type="number"
+                        placeholder="例: 1100"
+                        value={wageInput}
+                        onChange={e => setWageInput(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-400">パート・アルバイトの時給を設定します。推定月収に反映されます。</p>
+                    </div>
+                  )}
+                  <div className="flex gap-2 pt-1">
+                    <Button variant="outline" className="flex-1" onClick={() => setShowWageEdit(false)}>キャンセル</Button>
+                    <Button
+                      className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                      onClick={() => {
+                        if (isFullTime) {
+                          updateWageMutation.mutate({ monthly_salary: Number(monthlySalaryInput) });
+                        } else {
+                          updateWageMutation.mutate({ hourly_wage: Number(wageInput) });
+                        }
+                      }}
+                      disabled={updateWageMutation.isPending}
+                    >
+                      保存
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Dice Game */}
             <DiceGameCard user={user} />
