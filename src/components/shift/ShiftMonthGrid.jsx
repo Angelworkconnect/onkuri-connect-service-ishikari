@@ -211,12 +211,11 @@ export default function ShiftMonthGrid({
 
                     <div className="space-y-0.5">
                       {dayEntries.map((entry, i) => {
-                        const staffMember = staff.find(s => s.id === entry.staff_id);
-                        const staffColor = getStaffColor(entry.staff_id, staffMember?.gender);
+                        const sc = getShiftEntryColor(entry);
                         return (
                           <div
                             key={i}
-                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold border ${staffColor.bg} ${staffColor.text} ${staffColor.border}`}
+                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold border ${sc.bg} ${sc.text} ${sc.border}`}
                           >
                             <div className="truncate flex-1">
                               <div className="text-[9px]">{entry.staff_name?.split(' ').pop() || entry.staff_name}</div>
