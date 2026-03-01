@@ -3,32 +3,31 @@ import { Badge } from '@/components/ui/badge';
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
-const STAFF_COLORS = [
-  { bg: 'bg-red-100',    text: 'text-red-800' },
-  { bg: 'bg-orange-100', text: 'text-orange-800' },
-  { bg: 'bg-amber-100',  text: 'text-amber-800' },
-  { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  { bg: 'bg-lime-100',   text: 'text-lime-800' },
-  { bg: 'bg-green-100',  text: 'text-green-800' },
-  { bg: 'bg-teal-100',   text: 'text-teal-800' },
-  { bg: 'bg-cyan-100',   text: 'text-cyan-800' },
-  { bg: 'bg-sky-100',    text: 'text-sky-800' },
-  { bg: 'bg-blue-100',   text: 'text-blue-800' },
-  { bg: 'bg-indigo-100', text: 'text-indigo-800' },
-  { bg: 'bg-violet-100', text: 'text-violet-800' },
-  { bg: 'bg-purple-100', text: 'text-purple-800' },
-  { bg: 'bg-fuchsia-100',text: 'text-fuchsia-800' },
-  { bg: 'bg-pink-100',   text: 'text-pink-800' },
-  { bg: 'bg-rose-100',   text: 'text-rose-800' },
+// シフト時刻→色マップ（shiftPatternsの18種と対応）
+const SHIFT_PATTERN_COLORS = [
+  { startTime: '08:00', endTime: '17:00', bg: 'bg-blue-100',     text: 'text-blue-900' },
+  { startTime: '08:30', endTime: '17:30', bg: 'bg-indigo-100',   text: 'text-indigo-900' },
+  { startTime: '08:30', endTime: '17:00', bg: 'bg-cyan-100',     text: 'text-cyan-900' },
+  { startTime: '08:30', endTime: '16:00', bg: 'bg-teal-100',     text: 'text-teal-900' },
+  { startTime: '08:30', endTime: '16:30', bg: 'bg-emerald-100',  text: 'text-emerald-900' },
+  { startTime: '09:00', endTime: '17:30', bg: 'bg-green-100',    text: 'text-green-900' },
+  { startTime: '09:00', endTime: '16:00', bg: 'bg-lime-100',     text: 'text-lime-900' },
+  { startTime: '09:00', endTime: '16:30', bg: 'bg-yellow-100',   text: 'text-yellow-900' },
+  { startTime: '09:00', endTime: '17:00', bg: 'bg-amber-100',    text: 'text-amber-900' },
+  { startTime: '08:30', endTime: '13:00', bg: 'bg-orange-100',   text: 'text-orange-900' },
+  { startTime: '09:00', endTime: '13:00', bg: 'bg-red-100',      text: 'text-red-900' },
+  { startTime: '09:15', endTime: '13:15', bg: 'bg-rose-100',     text: 'text-rose-900' },
+  { startTime: '12:30', endTime: '17:00', bg: 'bg-pink-100',     text: 'text-pink-900' },
+  { startTime: '09:30', endTime: '17:00', bg: 'bg-fuchsia-100',  text: 'text-fuchsia-900' },
+  { startTime: '09:30', endTime: '14:00', bg: 'bg-purple-100',   text: 'text-purple-900' },
+  { startTime: '09:15', endTime: '12:30', bg: 'bg-violet-100',   text: 'text-violet-900' },
+  { startTime: '09:30', endTime: '12:30', bg: 'bg-slate-100',    text: 'text-slate-900' },
+  { startTime: '09:00', endTime: '14:00', bg: 'bg-gray-200',     text: 'text-gray-900' },
 ];
 
-function getStaffColor(staffId) {
-  if (!staffId) return STAFF_COLORS[0];
-  let hash = 0;
-  for (let i = 0; i < staffId.length; i++) {
-    hash = (hash * 31 + staffId.charCodeAt(i)) >>> 0;
-  }
-  return STAFF_COLORS[hash % STAFF_COLORS.length];
+function getShiftEntryColor(e) {
+  const match = SHIFT_PATTERN_COLORS.find(p => p.startTime === e.start_time && p.endTime === e.end_time);
+  return match || { bg: 'bg-slate-100', text: 'text-slate-800' };
 }
 
 // 1ヶ月分のカレンダーセルを生成
