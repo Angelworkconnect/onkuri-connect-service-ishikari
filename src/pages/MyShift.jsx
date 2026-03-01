@@ -315,7 +315,7 @@ export default function MyShift() {
                   className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'mine' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
                   onClick={() => setShiftView('mine')}
                 >自分のシフト</button>
-                {isAdmin && (
+                {myStaff && ['admin', 'full_time', 'part_time'].includes(myStaff.role) && (
                   <button
                     className={`flex-1 sm:flex-none text-xs px-3 py-1 rounded-md font-medium transition-all ${shiftView === 'all' ? 'bg-white shadow text-indigo-700' : 'text-slate-500'}`}
                     onClick={() => setShiftView('all')}
