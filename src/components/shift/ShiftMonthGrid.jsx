@@ -152,158 +152,149 @@ export default function ShiftMonthGrid({
     }
   };
 
-  return (
-    <div className="overflow-x-auto">
-      {Array.from({ length: Math.ceil((new Date(year, month - 1, 1).getDay() + daysInMonth) / 7) }, (_, weekIdx) => {
-        const startDow = new Date(year, month - 1, 1).getDay();
-        const weekDays = Array.from({ length: 7 }, (_, d) => {
-          const day = weekIdx * 7 + d - startDow + 1;
-          return day >= 1 && day <= daysInMonth ? day : null;
-        });
+  // モバイル：縦リスト、PC：7列グリッド
+  const DayCell = ({ day, dow }) => {
+    const status = getDayStatus(day);
+    const dayEntries = getDayEntries(day);
+    const req = getDayRequirement(day);
+    const isQuickFillOpen = quickFillDay === day;
+    const candidates = isQuickFillOpen ? getQuickFillCandidates(day) : [];
 
-        return (
-          <div key={weekIdx} className="grid grid-cols-7 gap-1 mb-1">
-            {weekDays.map((day, di) => {
-              if (!day) return <div key={`e-${di}`} className="h-20 rounded-lg bg-slate-50 opacity-30" />;
-              const dow = di;
-              const status = getDayStatus(day);
-              const dayEntries = getDayEntries(day);
-              const req = getDayRequirement(day);
-              const isWeekend = dow === 0 || dow === 6;
-              const isQuickFillOpen = quickFillDay === day;
-              const candidates = isQuickFillOpen ? getQuickFillCandidates(day) : [];
+    return (
+      <div className="relative">
+        <div
+          className={`rounded-lg border-2 p-2 transition-all ${isClosedDay(day) ? 'bg-slate-200 opacity-50 border-slate-300' : statusStyles[status]} ${dragOver === day ? 'ring-2 ring-indigo-400' : ''} ${status !== 'ok' && !isPublished && !isClosedDay(day) ? 'cursor-pointer' : ''}`}
+          onDragOver={(e) => handleDragOver(e, day)}
+          onDragLeave={() => setDragOver(null)}
+          onDrop={(e) => handleDrop(e, day)}
+          onClick={() => handleDayCellClick(day)}
+        >
+          {/* ヘッダー行 */}
+          <div className="flex items-center justify-between mb-1">
+            <span className={`font-bold text-sm ${dow === 0 ? 'text-red-600' : dow === 6 ? 'text-blue-600' : 'text-slate-700'}`}>
+              {day}<span className="text-xs ml-1 opacity-60">{DOW[dow]}</span>
+            </span>
+            {editingReqDay === day ? (
+              <input
+                type="number"
+                className="w-12 text-xs border border-indigo-400 rounded px-1 text-center font-bold bg-white z-10"
+                value={editingReqValue}
+                min={0}
+                autoFocus
+                onChange={e => setEditingReqValue(e.target.value)}
+                onBlur={() => handleReqSave(day)}
+                onKeyDown={e => { if (e.key === 'Enter') handleReqSave(day); if (e.key === 'Escape') setEditingReqDay(null); }}
+                onClick={e => e.stopPropagation()}
+              />
+            ) : (
+              <span
+                className={`text-xs font-bold cursor-pointer px-1 py-0.5 rounded hover:bg-white/70 ${status === 'ok' ? 'text-green-600' : status === 'warn' ? 'text-yellow-600' : 'text-red-600'}`}
+                onClick={(e) => handleReqClick(e, day)}
+              >
+                {dayEntries.length}/{req}人
+              </span>
+            )}
+          </div>
 
+          {/* シフトエントリ一覧 */}
+          <div className="space-y-1">
+            {dayEntries.map((entry, i) => {
+              const sc = getShiftEntryColor(entry);
               return (
-                <div key={day} className="relative">
-                  <div
-                    className={`min-h-20 rounded-lg border-2 p-1 transition-all ${isClosedDay(day) ? 'bg-slate-200 opacity-50 border-slate-300' : statusStyles[status]} ${dragOver === day ? 'ring-2 ring-indigo-400 scale-105' : ''} ${status !== 'ok' && !isPublished && !isClosedDay(day) ? 'cursor-pointer' : ''}`}
-                    onDragOver={(e) => handleDragOver(e, day)}
-                    onDragLeave={() => setDragOver(null)}
-                    onDrop={(e) => handleDrop(e, day)}
-                    onClick={() => handleDayCellClick(day)}
-                  >
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className={`text-[11px] font-bold ${dow === 0 ? 'text-red-600' : dow === 6 ? 'text-blue-600' : 'text-slate-600'}`}>
-                        {day}<span className="text-[9px] ml-0.5 opacity-60">{DOW[dow]}</span>
-                      </span>
-                      {editingReqDay === day ? (
-                        <input
-                          type="number"
-                          className="w-10 text-[10px] border border-indigo-400 rounded px-0.5 text-center font-bold bg-white z-10"
-                          value={editingReqValue}
-                          min={0}
-                          autoFocus
-                          onChange={e => setEditingReqValue(e.target.value)}
-                          onBlur={() => handleReqSave(day)}
-                          onKeyDown={e => { if (e.key === 'Enter') handleReqSave(day); if (e.key === 'Escape') setEditingReqDay(null); }}
-                          onClick={e => e.stopPropagation()}
-                        />
-                      ) : (
-                        <span
-                          className={`text-[9px] font-bold cursor-pointer px-0.5 rounded hover:bg-white/70 ${status === 'ok' ? 'text-green-600' : status === 'warn' ? 'text-yellow-600' : 'text-red-600'}`}
-                          title="クリックで必要人数を変更"
-                          onClick={(e) => handleReqClick(e, day)}
-                        >
-                          {dayEntries.length}/{req}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-0.5">
-                      {dayEntries.map((entry, i) => {
-                        const sc = getShiftEntryColor(entry);
-                        return (
-                          <div
-                            key={i}
-                            className={`text-[10px] px-1 py-0.5 rounded flex items-center justify-between group font-bold border ${sc.bg} ${sc.text} ${sc.border}`}
-                          >
-                            <div className="truncate flex-1">
-                              <div className="text-[9px]">{entry.staff_name?.split(' ').pop() || entry.staff_name}</div>
-                              {(entry.start_time || entry.end_time) && <div className="text-[8px] opacity-80">{entry.start_time}～{entry.end_time}</div>}
-                            </div>
-                            {!isPublished && (
-                              <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 ml-1" onClick={(e) => e.stopPropagation()}>
-                                <button
-                                  className="text-blue-600 hover:text-blue-800"
-                                  onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}
-                                  title="編集"
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                </button>
-                                <button
-                                  className="text-red-500 hover:text-red-700"
-                                  onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }}
-                                  title="削除"
-                                  type="button"
-                                >×</button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {status === 'short' && !isPublished && (
-                      <div className="text-[9px] text-red-400 text-center mt-1 font-bold">
-                        {isQuickFillOpen ? '▲ 閉じる' : '+ 補充'}
-                      </div>
-                    )}
-                    {status === 'warn' && !isPublished && dayEntries.length < req && (
-                      <div className="text-[9px] text-yellow-500 text-center mt-1">+ 追加</div>
+                <div
+                  key={i}
+                  className={`text-xs px-2 py-1 rounded flex items-center justify-between group border ${sc.bg} ${sc.text} ${sc.border}`}
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="font-semibold truncate">{entry.staff_name}</span>
+                    {(entry.start_time || entry.end_time) && (
+                      <span className="text-[11px] opacity-75 shrink-0">{entry.start_time}～{entry.end_time}</span>
                     )}
                   </div>
-
-                  {/* ワンタップ補充パネル */}
-                  {isQuickFillOpen && (
-                    <div
-                      className="absolute top-full left-0 z-50 bg-white border-2 border-indigo-300 rounded-xl shadow-2xl p-2 min-w-[140px] mt-0.5"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-[10px] font-bold text-indigo-700">{month}/{day} に入れる人</p>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={showOffRequests}
-                            onChange={(e) => setShowOffRequests(e.target.checked)}
-                            className="w-3 h-3"
-                          />
-                          <span className="text-[9px] text-slate-600">希望休も表示</span>
-                        </label>
-                      </div>
-                      {candidates.length === 0 ? (
-                        <p className="text-[10px] text-slate-400">候補なし</p>
-                      ) : (
-                        <div className="space-y-1 max-h-60 overflow-y-auto">
-                          {candidates.map(s => {
-                            const { className, style, label } = getCandidateStyle(s);
-                            return (
-                              <button
-                                key={s.id}
-                                className={className}
-                                style={style}
-                                onClick={() => { onDropStaff(s, dateStr(day)); setQuickFillDay(null); }}
-                              >
-                                {label}{s.full_name}
-                              </button>
-                            );
-                          })}
-                          <div className="flex gap-2 flex-wrap mt-1 pt-1 border-t border-slate-100">
-                            <span className="flex items-center gap-0.5 text-[9px] text-pink-600">●女性</span>
-                            <span className="flex items-center gap-0.5 text-[9px] text-sky-600">●男性</span>
-                            <span className="flex items-center gap-0.5 text-[9px] text-purple-600">🌈資格者</span>
-                          </div>
-                        </div>
-                      )}
-                      <button className="text-[10px] text-slate-400 mt-1 w-full text-center" onClick={() => setQuickFillDay(null)}>閉じる</button>
+                  {!isPublished && (
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 ml-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button className="text-blue-600 hover:text-blue-800" onClick={(e) => { e.stopPropagation(); setEditingEntry(entry); }}><Edit2 className="w-3.5 h-3.5" /></button>
+                      <button className="text-red-500 hover:text-red-700 font-bold" onClick={(e) => { e.stopPropagation(); onRemoveEntry(entry); }} type="button">×</button>
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-        );
-      })}
+
+          {status === 'short' && !isPublished && !isClosedDay(day) && (
+            <div className="text-xs text-red-500 text-center mt-1.5 font-bold">{isQuickFillOpen ? '▲ 閉じる' : '＋ 補充'}</div>
+          )}
+          {status === 'warn' && !isPublished && dayEntries.length < req && (
+            <div className="text-xs text-yellow-500 text-center mt-1.5">＋ 追加</div>
+          )}
+        </div>
+
+        {/* 補充パネル */}
+        {isQuickFillOpen && (
+          <div className="absolute top-full left-0 z-50 bg-white border-2 border-indigo-300 rounded-xl shadow-2xl p-3 w-56 mt-1" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-indigo-700">{month}/{day} 補充候補</p>
+              <label className="flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" checked={showOffRequests} onChange={(e) => setShowOffRequests(e.target.checked)} className="w-3 h-3" />
+                <span className="text-[10px] text-slate-600">希望休も表示</span>
+              </label>
+            </div>
+            {candidates.length === 0 ? (
+              <p className="text-xs text-slate-400">候補なし</p>
+            ) : (
+              <div className="space-y-1 max-h-60 overflow-y-auto">
+                {candidates.map(s => {
+                  const { className, style, label } = getCandidateStyle(s);
+                  return (
+                    <button key={s.id} className={className} style={style} onClick={() => { onDropStaff(s, dateStr(day)); setQuickFillDay(null); }}>
+                      {label}{s.full_name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <button className="text-xs text-slate-400 mt-2 w-full text-center border-t pt-1" onClick={() => setQuickFillDay(null)}>閉じる</button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* スマホ: 縦リスト */}
+      <div className="md:hidden space-y-2">
+        {days.map(day => {
+          const dow = new Date(year, month - 1, day).getDay();
+          return <DayCell key={day} day={day} dow={dow} />;
+        })}
+      </div>
+
+      {/* PC: 7列グリッド */}
+      <div className="hidden md:block overflow-x-auto">
+        {/* 曜日ヘッダー */}
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {DOW.map((d, i) => (
+            <div key={d} className={`text-center text-xs font-bold py-1 ${i === 0 ? 'text-red-600' : i === 6 ? 'text-blue-600' : 'text-slate-500'}`}>{d}</div>
+          ))}
+        </div>
+        {Array.from({ length: Math.ceil((new Date(year, month - 1, 1).getDay() + daysInMonth) / 7) }, (_, weekIdx) => {
+          const startDow = new Date(year, month - 1, 1).getDay();
+          const weekDays = Array.from({ length: 7 }, (_, d) => {
+            const day = weekIdx * 7 + d - startDow + 1;
+            return day >= 1 && day <= daysInMonth ? { day, dow: d } : null;
+          });
+          return (
+            <div key={weekIdx} className="grid grid-cols-7 gap-1 mb-1">
+              {weekDays.map((cell, di) => {
+                if (!cell) return <div key={`e-${di}`} className="min-h-20 rounded-lg bg-slate-50 opacity-30" />;
+                return <DayCell key={cell.day} day={cell.day} dow={cell.dow} />;
+              })}
+            </div>
+          );
+        })}
+      </div>
 
       {/* シフト編集ダイアログ */}
        {editingEntry && (
