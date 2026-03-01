@@ -568,36 +568,45 @@ export default function AdminShiftTab({ user }) {
                   </div>
                   <StaffOffDaysPanel
                     staff={selectedStaff}
-                    onUpdate={(updated) => setSelectedStaff(updated)}
+                    onUpdate={(updated) => {
+                      setSelectedStaff(updated);
+                      // 即座にキャッシュを更新して一覧にも反映
+                      const prev = queryClient.getQueryData(['shift-staff']) || [];
+                      queryClient.setQueryData(['shift-staff'], prev.map(s => s.id === updated.id ? { ...s, ...updated } : s));
+                    }}
                   />
                   <div className="text-xs text-slate-500 mb-2">
                     選択後、「保存」ボタンを押してください
                   </div>
                   <Button 
                     className="w-full bg-rose-600 hover:bg-rose-700"
-                    onClick={() => {
-                      updateStaffOffDaysMutation.mutate(selectedStaff);
-                    }}
+                    onClick={() => updateStaffOffDaysMutation.mutate(selectedStaff)}
                     disabled={updateStaffOffDaysMutation.isPending}
                   >
                     {updateStaffOffDaysMutation.isPending ? '保存中...' : '休み設定を保存'}
                   </Button>
+                  {updateStaffOffDaysMutation.isSuccess && (
+                    <p className="text-xs text-green-600 text-center">✅ 保存しました</p>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {allStaff.map(staff => (
+                  {allStaff.map(s => (
                     <button
-                      key={staff.id}
-                      onClick={() => setSelectedStaff(staff)}
+                      key={s.id}
+                      onClick={() => setSelectedStaff(s)}
                       className="text-left p-3 bg-white rounded-lg border border-slate-200 hover:border-rose-400 hover:bg-rose-50 transition-colors"
                     >
-                      <div className="text-sm font-medium text-slate-800 truncate">{staff.full_name}</div>
+                      <div className="text-sm font-medium text-slate-800 truncate">{s.full_name}</div>
                       <div className="text-[11px] text-slate-500 mt-1">
-                        {(staff.hard_off_days || []).length > 0 && (
-                          <div>固定休: {['日','月','火','水','木','金','土'].filter((_, i) => (staff.hard_off_days || []).includes(i)).join('・')}</div>
+                        {(s.hard_off_days || []).length > 0 && (
+                          <div>固定休: {['日','月','火','水','木','金','土'].filter((_, i) => (s.hard_off_days || []).includes(i)).join('・')}</div>
                         )}
-                        {(staff.custom_off_dates || []).length > 0 && (
-                          <div>カスタム: {(staff.custom_off_dates || []).length}件</div>
+                        {(s.custom_off_dates || []).length > 0 && (
+                          <div>カスタム: {(s.custom_off_dates || []).length}件</div>
+                        )}
+                        {(s.hard_off_days || []).length === 0 && (s.custom_off_dates || []).length === 0 && (
+                          <div className="text-slate-400">設定なし</div>
                         )}
                       </div>
                     </button>
