@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Heart, Calendar } from 'lucide-react';
 import ShiftRequestCalendar from '../components/shift/ShiftRequestCalendar';
+import ShiftCalendarView from '../components/shift/ShiftCalendarView';
 import {
   calcYearlyIncomePrediction, calcSafetyScore, getAnnualLimit,
   getSafetyColor, getSafetyBgColor, TAX_MODE_LABELS
