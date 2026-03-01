@@ -8,10 +8,13 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Calendar, Clock, Users, FileText, 
-  ChevronRight, Bell, CheckCircle2, Megaphone
+  ChevronRight, Bell, CheckCircle2, Megaphone, Pencil, X
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import StatsCard from "@/components/dashboard/StatsCard";
 import PublicShiftCalendar from "@/components/shift/PublicShiftCalendar";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
