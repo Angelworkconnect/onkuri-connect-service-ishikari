@@ -95,13 +95,13 @@ function DashboardShiftCalendar({ year, month, entries, showAllStaff = false }) 
       </div>
 
       {/* 特記事項一覧 */}
-      {entries.some(e => e.notes) && (
+      {entries.some(e => e.notes && String(e.notes).trim()) && (
         <div className="mt-6 pt-4 border-t border-slate-200">
           <h4 className="text-sm font-bold text-slate-700 mb-3">📝 特記事項</h4>
           <div className="space-y-2">
             {Object.entries(
               entries.reduce((acc, e) => {
-                if (e.notes) {
+                if (e.notes && String(e.notes).trim()) {
                   const dateStr = e.date;
                   if (!acc[dateStr]) acc[dateStr] = [];
                   acc[dateStr].push(e);
