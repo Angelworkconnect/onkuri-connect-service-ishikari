@@ -44,33 +44,50 @@ function getCandidateStyle(staff) {
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
-// スタッフIDから固定カラーを生成
-const STAFF_COLORS = [
-  { bg: 'bg-red-100',    text: 'text-red-800',    border: 'border-red-300' },
-  { bg: 'bg-orange-100', text: 'text-orange-800',  border: 'border-orange-300' },
-  { bg: 'bg-amber-100',  text: 'text-amber-800',   border: 'border-amber-300' },
-  { bg: 'bg-yellow-100', text: 'text-yellow-800',  border: 'border-yellow-300' },
-  { bg: 'bg-lime-100',   text: 'text-lime-800',    border: 'border-lime-300' },
-  { bg: 'bg-green-100',  text: 'text-green-800',   border: 'border-green-300' },
-  { bg: 'bg-teal-100',   text: 'text-teal-800',    border: 'border-teal-300' },
-  { bg: 'bg-cyan-100',   text: 'text-cyan-800',    border: 'border-cyan-300' },
-  { bg: 'bg-sky-100',    text: 'text-sky-800',     border: 'border-sky-300' },
-  { bg: 'bg-blue-100',   text: 'text-blue-800',    border: 'border-blue-300' },
-  { bg: 'bg-indigo-100', text: 'text-indigo-800',  border: 'border-indigo-300' },
-  { bg: 'bg-violet-100', text: 'text-violet-800',  border: 'border-violet-300' },
-  { bg: 'bg-purple-100', text: 'text-purple-800',  border: 'border-purple-300' },
-  { bg: 'bg-fuchsia-100',text: 'text-fuchsia-800', border: 'border-fuchsia-300' },
-  { bg: 'bg-pink-100',   text: 'text-pink-800',    border: 'border-pink-300' },
-  { bg: 'bg-rose-100',   text: 'text-rose-800',    border: 'border-rose-300' },
+// 性別ごとの個人カラーパレット
+const FEMALE_COLORS = [
+  { bg: 'bg-pink-200',    text: 'text-pink-900',    border: 'border-pink-400' },
+  { bg: 'bg-rose-200',    text: 'text-rose-900',    border: 'border-rose-400' },
+  { bg: 'bg-fuchsia-200', text: 'text-fuchsia-900', border: 'border-fuchsia-400' },
+  { bg: 'bg-red-200',     text: 'text-red-900',     border: 'border-red-400' },
+  { bg: 'bg-orange-200',  text: 'text-orange-900',  border: 'border-orange-400' },
+  { bg: 'bg-amber-200',   text: 'text-amber-900',   border: 'border-amber-400' },
+  { bg: 'bg-purple-200',  text: 'text-purple-900',  border: 'border-purple-400' },
+  { bg: 'bg-violet-200',  text: 'text-violet-900',  border: 'border-violet-400' },
 ];
 
-function getStaffColor(staffId) {
-  if (!staffId) return STAFF_COLORS[0];
+const MALE_COLORS = [
+  { bg: 'bg-sky-200',     text: 'text-sky-900',     border: 'border-sky-400' },
+  { bg: 'bg-blue-200',    text: 'text-blue-900',    border: 'border-blue-400' },
+  { bg: 'bg-indigo-200',  text: 'text-indigo-900',  border: 'border-indigo-400' },
+  { bg: 'bg-cyan-200',    text: 'text-cyan-900',    border: 'border-cyan-400' },
+  { bg: 'bg-teal-200',    text: 'text-teal-900',    border: 'border-teal-400' },
+  { bg: 'bg-green-200',   text: 'text-green-900',   border: 'border-green-400' },
+  { bg: 'bg-emerald-200', text: 'text-emerald-900', border: 'border-emerald-400' },
+  { bg: 'bg-lime-200',    text: 'text-lime-900',    border: 'border-lime-400' },
+];
+
+const OTHER_COLORS = [
+  { bg: 'bg-slate-200',   text: 'text-slate-900',   border: 'border-slate-400' },
+  { bg: 'bg-gray-200',    text: 'text-gray-900',    border: 'border-gray-400' },
+  { bg: 'bg-zinc-200',    text: 'text-zinc-900',    border: 'border-zinc-400' },
+  { bg: 'bg-yellow-200',  text: 'text-yellow-900',  border: 'border-yellow-400' },
+];
+
+function staffIdHash(staffId) {
+  if (!staffId) return 0;
   let hash = 0;
   for (let i = 0; i < staffId.length; i++) {
     hash = (hash * 31 + staffId.charCodeAt(i)) >>> 0;
   }
-  return STAFF_COLORS[hash % STAFF_COLORS.length];
+  return hash;
+}
+
+function getStaffColor(staffId, gender) {
+  const hash = staffIdHash(staffId);
+  if (gender === 'female') return FEMALE_COLORS[hash % FEMALE_COLORS.length];
+  if (gender === 'male')   return MALE_COLORS[hash % MALE_COLORS.length];
+  return OTHER_COLORS[hash % OTHER_COLORS.length];
 }
 const SHIFT_TYPE_COLORS = {
   FULL: 'bg-indigo-100 text-indigo-700',
