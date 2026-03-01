@@ -286,6 +286,27 @@ export default function Dashboard() {
     return totalMinutes > 0 ? `${hours}時間${mins > 0 ? mins + '分' : ''}` : '0時間';
   };
 
+  // 推定月収計算
+  const calcEstimatedIncome = () => {
+    if (!myStaff) return null;
+    const isFullTime = myStaff.employment_type === 'full_time';
+    if (isFullTime) {
+      return myStaff.monthly_salary ? `¥${myStaff.monthly_salary.toLocaleString()}` : null;
+    }
+    // パート・時給制: シフトエントリの合計時間 × 時給
+    const wage = myStaff.hourly_wage;
+    if (!wage) return null;
+    const totalHours = myShiftEntries.reduce((sum, e) => {
+      if (!e.start_time || !e.end_time) return sum + 8;
+      const [sH, sM] = e.start_time.split(':').map(Number);
+      const [eH, eM] = e.end_time.split(':').map(Number);
+      return sum + ((eH * 60 + eM) - (sH * 60 + sM)) / 60;
+    }, 0);
+    return `¥${Math.round(totalHours * wage).toLocaleString()}`;
+  };
+  const estimatedIncome = calcEstimatedIncome();
+  const isFullTime = myStaff?.employment_type === 'full_time';
+
   // 出勤可否の判定（単発スタッフ以外は常に可能、単発は本日の承認済みシフトが必要）
   const canClockIn = user?.staff_role === 'temporary' 
     ? (todayApprovedShifts && todayApprovedShifts.length > 0)
