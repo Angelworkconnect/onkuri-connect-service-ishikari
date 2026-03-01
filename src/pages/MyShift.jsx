@@ -209,7 +209,18 @@ export default function MyShift() {
           ) : (
             <Card className="p-3 border-0 shadow-sm text-center">
               <p className="text-xs text-slate-400 mb-1">推定月収</p>
-              <p className="text-lg font-bold text-slate-700">¥{Math.round(monthHours * ((myStaff?.hourly_wage || 1000))).toLocaleString()}</p>
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-lg font-bold text-slate-700">¥{Math.round(monthHours * (Number(wageInput) || myStaff?.hourly_wage || 1000)).toLocaleString()}</p>
+                <button
+                  className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 border border-indigo-200 rounded px-2 py-1"
+                  onClick={() => {
+                    setWageInput(String(myStaff?.hourly_wage || ''));
+                    setShowWageEdit(true);
+                  }}
+                >
+                  <Pencil className="w-3 h-3" />時給編集
+                </button>
+              </div>
             </Card>
           )}
         </div>
