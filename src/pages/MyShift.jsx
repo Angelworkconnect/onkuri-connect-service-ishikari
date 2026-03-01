@@ -50,7 +50,15 @@ export default function MyShift() {
 
   const { data: entries = [] } = useQuery({
     queryKey: ['shift-entries', currentShiftMonth?.id],
-    queryFn: () => base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id }),
+    queryFn: async () => {
+      const allEntries = await base44.entities.ShiftEntry.filter({ shift_month_id: currentShiftMonth.id });
+      // display_in_shift_calendar が true のスタッフのシフトのみを取得
+      const allStaffData = await base44.entities.Staff.list('-created_date', 500);
+      const visibleStaffEmails = new Set(allStaffData
+        .filter(s => s.display_in_shift_calendar !== false)
+        .map(s => s.email));
+      return allEntries.filter(e => visibleStaffEmails.has(e.staff_email));
+    },
     enabled: !!currentShiftMonth && !!user,
     staleTime: 0,
     refetchInterval: 10000,
