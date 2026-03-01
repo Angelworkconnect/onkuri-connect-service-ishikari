@@ -47,13 +47,13 @@ function DashboardShiftCalendar({ year, month, entries, showAllStaff = false }) 
   return (
     <div>
       {/* 曜日ヘッダー */}
-      <div className="grid grid-cols-7 mb-1">
+      <div className="grid grid-cols-7 mb-0.5">
         {DOW.map((d, i) => (
           <div key={d} className={`text-center text-xs font-bold py-1 ${i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-slate-400'}`}>{d}</div>
         ))}
       </div>
       {/* カレンダーグリッド */}
-      <div className="grid grid-cols-7 gap-px bg-slate-100 border border-slate-100 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 gap-0 border border-slate-200 rounded-lg overflow-hidden">
         {cells.map((day, idx) => {
           const dow = idx % 7;
           const isSun = dow === 0;
@@ -66,7 +66,8 @@ function DashboardShiftCalendar({ year, month, entries, showAllStaff = false }) 
           return (
             <div
               key={idx}
-              className={`min-h-[52px] p-1 flex flex-col items-center
+              className={`min-h-[52px] p-1 flex flex-col items-center border-r border-b border-slate-200 last:border-r-0
+                ${idx % 7 === 6 ? 'border-r-0' : 'border-r'} ${Math.floor(idx / 7) === Math.ceil((firstDow + daysInMonth) / 7) - 1 ? 'border-b-0' : 'border-b'}
                 ${!day ? 'bg-slate-50' : isSun ? 'bg-red-50' : isSat ? 'bg-blue-50' : hasShift ? 'bg-indigo-50' : 'bg-white'}`}
             >
               {day && (
@@ -92,6 +93,38 @@ function DashboardShiftCalendar({ year, month, entries, showAllStaff = false }) 
         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-indigo-500 inline-block"></span>勤務あり</span>
         <span className="flex items-center gap-1"><span className="w-5 h-5 rounded-full bg-indigo-600 inline-flex items-center justify-center text-white" style={{fontSize:'8px'}}>今</span>今日</span>
       </div>
+
+      {/* 特記事項一覧 */}
+      {entries.some(e => e.notes) && (
+        <div className="mt-6 pt-4 border-t border-slate-200">
+          <h4 className="text-sm font-bold text-slate-700 mb-3">📝 特記事項</h4>
+          <div className="space-y-2">
+            {Object.entries(
+              entries.reduce((acc, e) => {
+                if (e.notes) {
+                  const dateStr = e.date;
+                  if (!acc[dateStr]) acc[dateStr] = [];
+                  acc[dateStr].push(e);
+                }
+                return acc;
+              }, {})
+            ).sort((a, b) => new Date(a[0]) - new Date(b[0])).map(([date, dayEntries]) => (
+              <div key={date} className="bg-yellow-50 rounded-lg p-3 border-l-4 border-yellow-400">
+                <p className="text-xs font-semibold text-slate-700 mb-1">
+                  {new Date(date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' })}
+                </p>
+                <div className="text-sm text-slate-700 space-y-1">
+                  {dayEntries.map((e, i) => (
+                    <div key={i} className="text-xs">
+                      {showAllStaff && e.staff_name && <span className="font-medium">{e.staff_name}: </span>}{e.notes}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
