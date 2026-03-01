@@ -26,7 +26,9 @@ export default function MyShift() {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       if (staffList.length > 0) u.full_name = staffList[0].full_name;
       setUser(u);
-    }).catch(() => base44.auth.redirectToLogin());
+    }).catch(() => {
+      // ネットワークエラーなどの場合はログインを強制せず静かに失敗
+    });
   }, []);
 
   const { data: allStaff = [] } = useQuery({
