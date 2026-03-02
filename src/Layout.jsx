@@ -111,8 +111,9 @@ export default function Layout({ children, currentPageName }) {
     checkAndUpdateVersion().catch(e => console.error('[Version Check Error]', e));
 
     base44.entities.SiteSettings.list().then(settings => {
-      if (settings.length > 0 && settings[0].office_name) {
-        setOfficeName(settings[0].office_name);
+      if (settings.length > 0) {
+        if (settings[0].office_name) setOfficeName(settings[0].office_name);
+        if (settings[0].logo_char) setLogoChar(settings[0].logo_char);
       }
     }).catch(() => {});
 
