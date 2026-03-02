@@ -48,6 +48,7 @@ import BenefitsTabInline from '../components/admin/BenefitsTabInline';
 import MessagesTab from '../components/admin/MessagesTab';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab';
 import AdminDialogs from '../components/admin/AdminDialogs';
+import AnalyticsTab from '../components/analytics/AnalyticsTab';
 import { format } from "date-fns";
 import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
