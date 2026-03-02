@@ -330,6 +330,7 @@ export default function AdminPanel() {
     if (siteSettings && siteSettings.id) {
       setSettingsForm({
         office_name: siteSettings.office_name || '',
+        logo_char: siteSettings.logo_char || '',
         hero_title: siteSettings.hero_title || '',
         hero_subtitle: siteSettings.hero_subtitle || '',
         hero_description: siteSettings.hero_description || '',
