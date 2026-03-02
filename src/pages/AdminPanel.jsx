@@ -1182,6 +1182,7 @@ export default function AdminPanel() {
                 { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
                 { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
                 { value: 'transport', icon: Truck, label: '送迎管理' },
+                { value: 'analytics', icon: Brain, label: 'Analytics' },
               ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
                   key={value}
