@@ -328,6 +328,7 @@ export default function AdminPanel() {
   useEffect(() => {
     if (siteSettings && siteSettings.id) {
       setSettingsForm({
+        office_name: siteSettings.office_name || '',
         hero_title: siteSettings.hero_title || '',
         hero_subtitle: siteSettings.hero_subtitle || '',
         hero_description: siteSettings.hero_description || '',
