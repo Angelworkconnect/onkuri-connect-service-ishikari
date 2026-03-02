@@ -224,6 +224,7 @@ export default function AdminPanel() {
 
   const [settingsForm, setSettingsForm] = useState({
     office_name: '',
+    logo_char: '',
     hero_title: '',
     hero_subtitle: '',
     hero_description: '',
