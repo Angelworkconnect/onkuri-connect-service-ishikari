@@ -1199,6 +1199,15 @@ export default function AdminPanel() {
                 </div>
                 <div className="p-6 space-y-6 max-w-2xl">
                   <div>
+                    <Label>事業所名</Label>
+                    <Input
+                      value={settingsForm.office_name}
+                      onChange={(e) => setSettingsForm({...settingsForm, office_name: e.target.value})}
+                      placeholder="おんくりの輪"
+                    />
+                    <p className="text-xs text-slate-400 mt-1">ヘッダーやタイトルなどに表示される事業所名</p>
+                  </div>
+                  <div>
                     <Label>ヒーロータイトル</Label>
                     <Textarea 
                       value={settingsForm.hero_title}
