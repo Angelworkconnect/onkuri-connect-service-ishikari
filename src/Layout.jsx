@@ -152,7 +152,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] flex items-center justify-center">
-                <span className="text-white font-medium text-sm">{officeName?.[0] || '輪'}</span>
+                <span className="text-white font-medium text-sm">{logoChar || officeName?.[0] || '輪'}</span>
               </div>
               <span className="text-lg font-medium text-slate-800 hidden sm:block">{officeName || 'おんくりの輪'}</span>
             </Link>
