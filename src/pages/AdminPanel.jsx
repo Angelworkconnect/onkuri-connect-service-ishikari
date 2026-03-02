@@ -38,6 +38,7 @@ import {
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import QRCodeManager from '../components/admin/QRCodeManager';
+import SiteSettingsTab from '../components/admin/SiteSettingsTab';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import StaffListTabComponent from '../components/admin/StaffListTab';
