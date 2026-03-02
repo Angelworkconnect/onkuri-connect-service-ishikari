@@ -223,6 +223,7 @@ export default function AdminPanel() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
   const [settingsForm, setSettingsForm] = useState({
+    office_name: '',
     hero_title: '',
     hero_subtitle: '',
     hero_description: '',
