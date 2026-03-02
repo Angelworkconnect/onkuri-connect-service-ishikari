@@ -60,8 +60,7 @@ export default function Home() {
       const allVisible = await base44.entities.Shift.filter({ is_visible: true }, '-date', 10);
       return allVisible.filter(s => s.status === 'open' || s.status === 'filled').slice(0, 3);
     },
-    refetchInterval: 3000,
-    staleTime: 0,
+    staleTime: 60000,
   });
 
   const { data: allShifts = [] } = useQuery({
@@ -70,8 +69,7 @@ export default function Home() {
       const allVisible = await base44.entities.Shift.filter({ is_visible: true });
       return allVisible.filter(s => s.status === 'open' || s.status === 'filled');
     },
-    refetchInterval: 3000,
-    staleTime: 0,
+    staleTime: 60000,
   });
 
   const { data: allStaff = [] } = useQuery({
