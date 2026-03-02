@@ -47,6 +47,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [officeName, setOfficeName] = useState('');
+  const [logoChar, setLogoChar] = useState('');
 
   useEffect(() => {
     // スマホキャッシュ対策：バージョンチェックと強制更新
