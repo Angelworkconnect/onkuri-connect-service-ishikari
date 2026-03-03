@@ -405,13 +405,13 @@ export default function HelpCallSection({ user }) {
                       </AnimatePresence>
 
                       {/* Action Button */}
-                      <div className="mt-4">
+                      <div className="mt-4 space-y-2">
                         {responded ? (
                           <div className="flex items-center justify-center gap-2 py-2 px-3 sm:px-4 bg-green-50 text-green-700 rounded-lg">
                             <Sparkles className="w-4 h-4 flex-shrink-0" />
                             <span className="font-medium text-sm sm:text-base">挙手済み (+10pt獲得)</span>
                           </div>
-                        ) : !isAchieved ? (
+                        ) : approvedResponders.length < request.required_count ? (
                           <Button
                             onClick={() => handleRespond(request)}
                             className="w-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-500 hover:via-orange-500 hover:to-red-500 text-white font-bold text-base sm:text-lg py-4 sm:py-6 shadow-xl hover:scale-105 transition-all duration-200"
@@ -425,7 +425,12 @@ export default function HelpCallSection({ user }) {
                             </motion.div>
                             <span>✋ 挙手する！（+10pt）</span>
                           </Button>
-                        ) : null}
+                        ) : (
+                          <div className="flex items-center justify-center gap-2 py-2 px-3 sm:px-4 bg-green-50 text-green-700 rounded-lg">
+                            <Sparkles className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium text-sm sm:text-base">必要人数に達しました ✓</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Card>
