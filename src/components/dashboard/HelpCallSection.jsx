@@ -45,8 +45,8 @@ export default function HelpCallSection({ user }) {
   const { data: helpRequests = [] } = useQuery({
     queryKey: ['help-requests'],
     queryFn: () => base44.entities.HelpRequest.filter({ status: 'open' }, '-created_date'),
-    refetchInterval: 5000,
-    staleTime: 0,
+    staleTime: 10000,
+    refetchInterval: 20000,
   });
 
   const { data: myResponses = [] } = useQuery({
