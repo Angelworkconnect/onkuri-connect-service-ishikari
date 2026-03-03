@@ -368,6 +368,16 @@ export default function ClientManagementTab() {
                     />
                   </div>
                   <div>
+                    <Label>ふりがな</Label>
+                    <Input
+                      value={form.furigana}
+                      onChange={(e) => setForm((f) => ({ ...f, furigana: e.target.value }))}
+                      placeholder="やまだ はなこ"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
                     <Label>ID</Label>
                     <Input
                       value={form.clientCode}
@@ -375,8 +385,6 @@ export default function ClientManagementTab() {
                       placeholder="例: C001"
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>性別</Label>
                     <Select value={form.gender} onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}>
@@ -390,7 +398,27 @@ export default function ClientManagementTab() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                   <div><Label>電話</Label><Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
+                  <div>
+                    <Label>要介護度</Label>
+                    <Select value={form.careLevel} onValueChange={(v) => setForm((f) => ({ ...f, careLevel: v }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">要介護認定なし</SelectItem>
+                        <SelectItem value="support_1">要支援1</SelectItem>
+                        <SelectItem value="support_2">要支援2</SelectItem>
+                        <SelectItem value="care_1">要介護1</SelectItem>
+                        <SelectItem value="care_2">要介護2</SelectItem>
+                        <SelectItem value="care_3">要介護3</SelectItem>
+                        <SelectItem value="care_4">要介護4</SelectItem>
+                        <SelectItem value="care_5">要介護5</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div><Label>住所</Label><Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
                 </div>
