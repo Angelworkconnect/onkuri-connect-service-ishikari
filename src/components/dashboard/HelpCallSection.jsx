@@ -55,6 +55,13 @@ export default function HelpCallSection({ user }) {
     enabled: !!user,
   });
 
+  const { data: allApprovedResponses = [] } = useQuery({
+    queryKey: ['all-approved-responses'],
+    queryFn: () => base44.entities.HelpResponse.filter({ status: 'approved' }, '-created_date'),
+    refetchInterval: 5000,
+    staleTime: 0,
+  });
+
   const getMyResponseForRequest = (requestId) => {
     return myResponses.find(r => r.help_request_id === requestId);
   };
