@@ -500,7 +500,17 @@ export default function HelpCallSection({ user }) {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRequestDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setRequestDialogOpen(false);
+              setFormData({
+                title: '',
+                description: '',
+                date: '',
+                time: '',
+                location: '',
+                urgency: 'medium',
+              });
+            }}>
               キャンセル
             </Button>
             <Button
