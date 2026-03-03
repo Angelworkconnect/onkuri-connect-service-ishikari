@@ -60,7 +60,11 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         const filtered = allClients.filter(c => {
           if (c.isActive === false) return false;
           if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
-          return c.daysOfWeek.includes(dayOfWeek);
+          // daysOfWeek内が数値または文字列として保存されている可能性に対応
+          return c.daysOfWeek.some(d => {
+            const dayNum = typeof d === 'string' ? parseInt(d, 10) : d;
+            return dayNum === dayOfWeek;
+          });
         });
         
         setClients(filtered);
