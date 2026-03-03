@@ -48,16 +48,15 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   useEffect(() => {
     (async () => {
       try {
-        const [year, month, day] = selectedDate.split('-').map(Number);
-        const dateObj = new Date(year, month - 1, day);
-        const dayOfWeek = dateObj.getDay();
+        // 日付を確実に解析（タイムゾーン考慮）
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const dayOfWeek = dateObj.getDay(); // 0=日, 1=月, ..., 6=土
 
         const allClients = await base44.entities.Client.list('name');
         const filtered = allClients.filter(c => {
-          const active = c.isActive !== false;
-          const hasDays = c.daysOfWeek && Array.isArray(c.daysOfWeek) && c.daysOfWeek.length > 0;
-          const hasDay = hasDays && c.daysOfWeek.includes(dayOfWeek);
-          return active && hasDay;
+          if (c.isActive === false) return false;
+          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return false;
+          return c.daysOfWeek.includes(dayOfWeek);
         });
         setClients(filtered);
         
@@ -70,7 +69,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         setClients([]);
       }
     })();
-  }, [isEditing, editingRide, selectedDate, form.tripType]);
+  }, [selectedDate, isEditing, editingRide]);
 
   const applyTemplate = (t) => {
     setForm(f => ({
