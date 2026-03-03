@@ -455,7 +455,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                        </div>
                        <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
                      </div>
-                  <div className="grid grid-cols-2 gap-2 ml-7">
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-xs text-slate-500">乗車時刻</label>
                       <Input type="time" value={p.boardTime} onChange={e => updatePassenger(i, 'boardTime', e.target.value)} className="text-xs" />
@@ -465,13 +465,14 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                       <Input type="time" value={p.alightTime} onChange={e => updatePassenger(i, 'alightTime', e.target.value)} className="text-xs" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-7">
+                  <div className="flex items-center gap-2">
                     <Switch checked={p.seatBeltChecked} onCheckedChange={v => updatePassenger(i, 'seatBeltChecked', v)} />
                     <span className="text-xs text-slate-600">シートベルト確認済み</span>
                   </div>
-                </div>
-              ))}
-            </div>
+                  </div>
+                  ))
+                  )}
+                  </div>
 
             <div className="flex gap-2 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>← 戻る</Button>
