@@ -12,19 +12,24 @@ Deno.serve(async (req) => {
     const allClients = await base44.entities.Client.list('-created_date', 1000);
 
     // CSV生成
-    const headers = ['ID', 'クライアントID', '名前', '性別', '電話', '住所', '車椅子', '備考', '利用曜日', 'ステータス', '登録日'];
+    const headers = ['名前', '性別', '電話', '住所', '朝送迎', '帰送迎', '車椅子', '週回数', '利用曜日', '緊急連絡先名', '緊急連絡先電話', 'アレルギー', '服用薬・病歴', '特別対応', '備考', 'ステータス'];
     const rows = allClients.map(c => [
-      c.id,
-      c.client_id || '-',
       c.name,
       c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : 'その他',
       c.phone || '-',
       c.address || '-',
+      c.pickupRequired ? 'はい' : 'いいえ',
+      c.dropoffRequired ? 'はい' : 'いいえ',
       c.wheelchairRequired ? 'はい' : 'いいえ',
-      c.notes || '-',
+      c.frequencyPerWeek || 1,
       c.daysOfWeek?.length > 0 ? c.daysOfWeek.join(',') : '-',
+      c.emergencyContactName || '-',
+      c.emergencyContactPhone || '-',
+      c.allergies || '-',
+      c.medicationInfo || '-',
+      c.specialNeeds || '-',
+      c.notes || '-',
       c.isActive ? '有効' : '無効',
-      c.created_date ? new Date(c.created_date).toLocaleDateString('ja-JP') : '-',
     ]);
 
     const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
