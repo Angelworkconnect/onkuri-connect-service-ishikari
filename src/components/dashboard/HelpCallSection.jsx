@@ -260,19 +260,28 @@ export default function HelpCallSection({ user }) {
                     {isAchieved && (
                       <div className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-500 px-4 py-4 rounded-t-xl">
                         <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
-                          <span className="text-3xl">🎉</span>
-                          <span className="text-3xl">⭐</span>
-                          <span className="text-3xl">🎉</span>
+                          {approvedResponders.map((_, idx) => (
+                            <span key={idx} className="text-3xl animate-bounce" style={{ animationDelay: `${idx * 0.1}s` }}>
+                              {idx % 3 === 0 ? '🎉' : idx % 3 === 1 ? '⭐' : '✨'}
+                            </span>
+                          ))}
                         </div>
-                        <p className="text-white font-bold text-center text-base sm:text-lg mb-2">
-                          {isApproved
-                            ? '✨ 達成されました！ ✨'
-                            : '✨ 助っ人さん現れる！✨'}
+                        <p className="text-white font-bold text-center text-base sm:text-lg mb-3">
+                          ✨ 助っ人さん現れる！✨
                         </p>
-                        <p className="text-white font-bold text-center text-lg sm:text-xl">
-                          {request.approved_responder_name} さん
-                        </p>
-                        <p className="text-white text-center text-sm sm:text-base mt-2 opacity-95">
+                        <div className="bg-white/20 rounded-lg p-3 mb-2">
+                          <div className="flex flex-wrap gap-2 justify-center items-center">
+                            {approvedResponders.map((responder, idx) => (
+                              <div key={responder.id} className="text-center">
+                                <p className="text-white font-bold text-lg">
+                                  {responder.responder_name} さん
+                                </p>
+                                {idx < approvedResponders.length - 1 && <span className="text-white mx-2">×</span>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-white text-center text-sm sm:text-base opacity-95 font-medium">
                           助け合いの精神をありがとうございます！
                         </p>
                       </div>
