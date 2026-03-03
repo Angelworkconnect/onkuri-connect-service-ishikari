@@ -250,14 +250,23 @@ export default function HelpCallSection({ user }) {
                 >
                   <Card className={`border-0 shadow-md hover:shadow-lg transition-shadow ${isAchieved ? 'ring-2 ring-green-400' : ''}`}>
                     {isAchieved && (
-                      <div className="bg-gradient-to-r from-green-400 to-emerald-500 px-4 py-3 rounded-t-xl flex items-center gap-2">
-                        <span className="text-2xl">🎉</span>
-                        <p className="text-white font-bold text-sm sm:text-base">
+                      <div className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-500 px-4 py-4 rounded-t-xl">
+                        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
+                          <span className="text-3xl">🎉</span>
+                          <span className="text-3xl">⭐</span>
+                          <span className="text-3xl">🎉</span>
+                        </div>
+                        <p className="text-white font-bold text-center text-base sm:text-lg mb-2">
                           {isApproved
-                            ? '助っ人さん表れる！達成されました。ありがとうございます。'
-                            : `${request.approved_responder_name} さんが助っ人として承認されました！ありがとうございます。`}
+                            ? '✨ 達成されました！ ✨'
+                            : '✨ 助っ人さん現れる！✨'}
                         </p>
-                        <span className="text-2xl">🎉</span>
+                        <p className="text-white font-bold text-center text-lg sm:text-xl">
+                          {request.approved_responder_name} さん
+                        </p>
+                        <p className="text-white text-center text-sm sm:text-base mt-2 opacity-95">
+                          助け合いの精神をありがとうございます！
+                        </p>
                       </div>
                     )}
                     <div className="p-4 sm:p-5">
