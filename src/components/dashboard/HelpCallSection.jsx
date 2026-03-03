@@ -53,6 +53,8 @@ export default function HelpCallSection({ user }) {
     queryKey: ['my-help-responses', user?.email],
     queryFn: () => user ? base44.entities.HelpResponse.filter({ responder_email: user.email }, '-created_date') : [],
     enabled: !!user,
+    staleTime: 10000,
+    refetchInterval: 15000,
   });
 
   const { data: allApprovedResponses = [] } = useQuery({
