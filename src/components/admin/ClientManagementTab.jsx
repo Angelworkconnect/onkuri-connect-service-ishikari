@@ -231,6 +231,7 @@ export default function ClientManagementTab() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
+                  <TableHead>利用者ID</TableHead>
                   <TableHead>名前</TableHead>
                   <TableHead>性別</TableHead>
                   <TableHead>電話</TableHead>
@@ -243,6 +244,7 @@ export default function ClientManagementTab() {
               <TableBody>
                 {sortedClients.map((client) => (
                   <TableRow key={client.id}>
+                    <TableCell className="text-sm text-slate-600">{client.clientCode || '-'}</TableCell>
                     <TableCell className="font-medium">{client.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
