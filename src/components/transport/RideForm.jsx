@@ -81,7 +81,7 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         setClients([]);
       }
     })();
-  }, [selectedDate, isEditing, editingRide]);
+  }, [selectedDate, form.tripType, isEditing, editingRide]);
 
   const applyTemplate = (t) => {
     setForm(f => ({
