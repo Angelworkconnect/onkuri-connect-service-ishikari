@@ -1823,6 +1823,11 @@ export default function AdminPanel() {
             <AdminShiftTabComp user={user} />
           </TabsContent>
 
+          {/* Clients Tab */}
+          <TabsContent value="clients">
+            <ClientManagementTab />
+          </TabsContent>
+
           {/* Analytics Tab */}
           <TabsContent value="analytics">
             <AnalyticsTab />

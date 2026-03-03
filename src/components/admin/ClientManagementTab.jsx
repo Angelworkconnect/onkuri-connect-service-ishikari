@@ -35,14 +35,21 @@ export default function ClientManagementTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [form, setForm] = useState({
-    client_id: '',
     name: '',
     gender: 'other',
     phone: '',
     address: '',
-    wheelchairRequired: false,
-    notes: '',
     daysOfWeek: [],
+    wheelchairRequired: false,
+    pickupRequired: false,
+    dropoffRequired: false,
+    frequencyPerWeek: 1,
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    specialNeeds: '',
+    medicationInfo: '',
+    allergies: '',
+    notes: '',
     isActive: true,
   });
   const [viewMode, setViewMode] = useState('table'); // table or by-day
@@ -243,7 +250,7 @@ export default function ClientManagementTab() {
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(client)}>
-                          <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteMutation.mutate(client.id); }}>
                           <Trash2 className="w-4 h-4 text-red-500" />
