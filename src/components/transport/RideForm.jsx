@@ -57,53 +57,11 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         const dayOfWeek = dateObj.getUTCDay();
 
         const allClients = await base44.entities.Client.list('name');
-        
-        console.log('📅 選択日付:', selectedDate, '曜日:', dayOfWeek);
-        console.log('📊 全クライアント数:', allClients.length);
-        
         const filtered = allClients.filter(c => {
-          if (c.isActive === false) {
-            console.log(`❌ ${c.name}: 無効化されている`);
-            return false;
-          }
-          
-          // daysOfWeekが未設定の場合はすべての曜日で利用可能
-          if (!c.daysOfWeek) {
-            console.log(`✅ ${c.name}: daysOfWeek未設定 → 全曜日対応`);
-            return true;
-          }
-          
-          // 配列の場合の処理
-          if (Array.isArray(c.daysOfWeek)) {
-            if (c.daysOfWeek.length === 0) {
-              console.log(`✅ ${c.name}: daysOfWeek空配列 → 全曜日対応`);
-              return true;
-            }
-            const match = c.daysOfWeek.some(d => {
-              const dayNum = typeof d === 'string' ? parseInt(d, 10) : d;
-              return !isNaN(dayNum) && dayNum === dayOfWeek;
-            });
-            console.log(`${match ? '✅' : '❌'} ${c.name}: daysOfWeek=${JSON.stringify(c.daysOfWeek)} (対象曜日:${dayOfWeek})`);
-            return match;
-          }
-          
-          // 配列ではない場合（文字列など）
-          if (typeof c.daysOfWeek === 'string') {
-            if (c.daysOfWeek === '') {
-              console.log(`✅ ${c.name}: daysOfWeek空文字列 → 全曜日対応`);
-              return true;
-            }
-            const match = c.daysOfWeek.includes(String(dayOfWeek));
-            console.log(`${match ? '✅' : '❌'} ${c.name}: daysOfWeek="${c.daysOfWeek}" (対象曜日:${dayOfWeek})`);
-            return match;
-          }
-          
-          // 上記以外はフォールバック：表示する
-          console.log(`⚠️ ${c.name}: daysOfWeek=${JSON.stringify(c.daysOfWeek)} (型:${typeof c.daysOfWeek}) → 表示`);
-          return true;
+          if (c.isActive === false) return false;
+          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
+          return c.daysOfWeek.includes(dayOfWeek);
         });
-        
-        console.log('🎯 フィルタ後:', filtered.length, '名');
         setClients(filtered);
         
         if (isEditing && editingRide.id) {
