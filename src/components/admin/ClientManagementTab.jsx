@@ -126,10 +126,12 @@ export default function ClientManagementTab() {
     setEditingClient(client);
     setForm({
       name: client.name || '',
+      furigana: client.furigana || '',
       clientCode: client.clientCode || '',
       gender: client.gender || 'other',
       phone: client.phone || '',
       address: client.address || '',
+      careLevel: client.careLevel || 'none',
       daysOfWeek: client.daysOfWeek || [],
       wheelchairRequired: client.wheelchairRequired || false,
       pickupRequired: client.pickupRequired || false,
