@@ -28,6 +28,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Edit, Trash2, Download } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -85,30 +89,45 @@ export default function ClientManagementTab() {
 
   const resetForm = () => {
     setForm({
-      client_id: '',
       name: '',
       gender: 'other',
       phone: '',
       address: '',
-      wheelchairRequired: false,
-      notes: '',
       daysOfWeek: [],
+      wheelchairRequired: false,
+      pickupRequired: false,
+      dropoffRequired: false,
+      frequencyPerWeek: 1,
+      emergencyContactName: '',
+      emergencyContactPhone: '',
+      specialNeeds: '',
+      medicationInfo: '',
+      allergies: '',
+      notes: '',
       isActive: true,
     });
     setEditingClient(null);
+    setDialogOpen(false);
   };
 
   const handleEdit = (client) => {
     setEditingClient(client);
     setForm({
-      client_id: client.client_id || '',
       name: client.name || '',
       gender: client.gender || 'other',
       phone: client.phone || '',
       address: client.address || '',
-      wheelchairRequired: client.wheelchairRequired || false,
-      notes: client.notes || '',
       daysOfWeek: client.daysOfWeek || [],
+      wheelchairRequired: client.wheelchairRequired || false,
+      pickupRequired: client.pickupRequired || false,
+      dropoffRequired: client.dropoffRequired || false,
+      frequencyPerWeek: client.frequencyPerWeek || 1,
+      emergencyContactName: client.emergencyContactName || '',
+      emergencyContactPhone: client.emergencyContactPhone || '',
+      specialNeeds: client.specialNeeds || '',
+      medicationInfo: client.medicationInfo || '',
+      allergies: client.allergies || '',
+      notes: client.notes || '',
       isActive: client.isActive !== false,
     });
     setDialogOpen(true);
@@ -313,110 +332,158 @@ export default function ClientManagementTab() {
 
       {/* ダイアログ */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingClient ? 'クライアント編集' : '新規クライアント'}</DialogTitle>
+            <DialogTitle>{editingClient ? '利用者編集' : '新規利用者登録'}</DialogTitle>
+            <p className="text-xs text-slate-500 mt-1">詳細な情報を設定できます</p>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-xs font-medium text-slate-600">クライアントID</label>
-              <Input
-                placeholder="例: CLI001"
-                value={form.client_id}
-                onChange={(e) => setForm({ ...form, client_id: e.target.value })}
-                className="mt-1"
-              />
+          <div className="space-y-4 py-2">
+            {/* 基本情報 */}
+            <div className="space-y-3 pb-4 border-b">
+              <h3 className="font-semibold text-sm">基本情報</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>名前 *</Label>
+                  <Input
+                    value={form.name}
+                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="山田 花子"
+                  />
+                </div>
+                <div>
+                  <Label>性別</Label>
+                  <Select value={form.gender} onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">男性</SelectItem>
+                      <SelectItem value="female">女性</SelectItem>
+                      <SelectItem value="other">その他</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div><Label>電話</Label><Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
+              <div><Label>住所</Label><Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
             </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">名前 *</label>
-              <Input
-                placeholder="利用者名"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">性別</label>
-              <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">男性</SelectItem>
-                  <SelectItem value="female">女性</SelectItem>
-                  <SelectItem value="other">その他</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">電話</label>
-              <Input
-                placeholder="09x-xxxx-xxxx"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">住所</label>
-              <Input
-                placeholder="住所"
-                value={form.address}
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">利用曜日</label>
-              <div className="flex gap-1 mt-1 flex-wrap">
-                {DOW.map((day, i) => (
-                  <button
-                    key={i}
-                    onClick={() => toggleDayOfWeek(i)}
-                    className={`w-8 h-8 rounded text-xs font-bold border transition-colors ${
-                      form.daysOfWeek.includes(i)
-                        ? 'bg-indigo-500 text-white border-indigo-500'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
-                    }`}
-                  >
-                    {day}
-                  </button>
-                ))}
+
+            {/* 利用情報 */}
+            <div className="space-y-3 pb-4 border-b">
+              <h3 className="font-semibold text-sm">利用情報</h3>
+              <div>
+                <Label className="mb-2 block">利用曜日（複数選択可）</Label>
+                <div className="grid grid-cols-7 gap-2">
+                  {DOW.map((label, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        const days = form.daysOfWeek.includes(idx)
+                          ? form.daysOfWeek.filter((d) => d !== idx)
+                          : [...form.daysOfWeek, idx];
+                        setForm((f) => ({ ...f, daysOfWeek: days }));
+                      }}
+                      className={`py-2 rounded border-2 text-sm font-bold transition-all ${
+                        form.daysOfWeek.includes(idx)
+                          ? 'border-[#2D4A6F] bg-[#2D4A6F]/10 text-[#2D4A6F]'
+                          : 'border-slate-300 text-slate-600'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>週の通所回数</Label>
+                <Select value={form.frequencyPerWeek.toString()} onValueChange={(v) => setForm((f) => ({ ...f, frequencyPerWeek: parseInt(v) }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                      <SelectItem key={n} value={n.toString()}>{n}回</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">備考</label>
-              <Input
-                placeholder="備考など"
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className="mt-1"
-              />
+
+            {/* 送迎・対応情報 */}
+            <div className="space-y-3 pb-4 border-b">
+              <h3 className="font-semibold text-sm">送迎・対応</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.pickupRequired} onCheckedChange={(v) => setForm((f) => ({ ...f, pickupRequired: v }))} />
+                  <Label>朝の送迎（迎え）が必要</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.dropoffRequired} onCheckedChange={(v) => setForm((f) => ({ ...f, dropoffRequired: v }))} />
+                  <Label>帰宅の送迎（送り）が必要</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={form.wheelchairRequired} onCheckedChange={(v) => setForm((f) => ({ ...f, wheelchairRequired: v }))} />
+                  <Label>車椅子使用</Label>
+                </div>
+              </div>
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.wheelchairRequired}
-                onChange={(e) => setForm({ ...form, wheelchairRequired: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <span className="text-xs font-medium text-slate-600">車椅子使用</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.isActive}
-                onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <span className="text-xs font-medium text-slate-600">有効</span>
-            </label>
+
+            {/* 健康・緊急連絡先情報 */}
+            <div className="space-y-3 pb-4 border-b">
+              <h3 className="font-semibold text-sm">健康・緊急連絡先</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>緊急連絡先名</Label>
+                  <Input value={form.emergencyContactName} onChange={(e) => setForm((f) => ({ ...f, emergencyContactName: e.target.value }))} placeholder="山田 太郎" />
+                </div>
+                <div>
+                  <Label>緊急連絡先電話</Label>
+                  <Input value={form.emergencyContactPhone} onChange={(e) => setForm((f) => ({ ...f, emergencyContactPhone: e.target.value }))} placeholder="090-9999-9999" />
+                </div>
+              </div>
+              <div>
+                <Label>アレルギー情報</Label>
+                <Input value={form.allergies} onChange={(e) => setForm((f) => ({ ...f, allergies: e.target.value }))} placeholder="例: 卵、エビ、パイナップル" />
+              </div>
+              <div>
+                <Label>服用中の薬・病歴等</Label>
+                <Textarea value={form.medicationInfo} onChange={(e) => setForm((f) => ({ ...f, medicationInfo: e.target.value }))} placeholder="高血圧の薬を毎朝服用..." className="h-16" />
+              </div>
+            </div>
+
+            {/* 特別対応・備考 */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm">特別対応・備考</h3>
+              <div>
+                <Label>特別な対応が必要な内容</Label>
+                <Textarea value={form.specialNeeds} onChange={(e) => setForm((f) => ({ ...f, specialNeeds: e.target.value }))} placeholder="例: 言語が日本語のみ、聴覚障害あり..." className="h-16" />
+              </div>
+              <div>
+                <Label>その他備考</Label>
+                <Textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder="その他の重要な情報..." className="h-16" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={form.isActive} onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))} />
+                <Label>有効</Label>
+              </div>
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>キャンセル</Button>
-            <Button onClick={handleSubmit} className="bg-[#2D4A6F]" disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingClient ? '更新' : '作成'}
+            <Button variant="outline" onClick={resetForm}>
+              キャンセル
+            </Button>
+            <Button
+              className="bg-[#2D4A6F]"
+              disabled={!form.name}
+              onClick={() => {
+                if (editingClient) {
+                  updateMutation.mutate({ id: editingClient.id, data: form });
+                } else {
+                  createMutation.mutate(form);
+                }
+              }}
+            >
+              {editingClient ? '更新' : '登録'}
             </Button>
           </DialogFooter>
         </DialogContent>
