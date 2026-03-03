@@ -45,6 +45,7 @@ export default function ClientManagementTab() {
     daysOfWeek: [],
     isActive: true,
   });
+  const [viewMode, setViewMode] = useState('table'); // table or by-day
   const queryClient = useQueryClient();
 
   const { data: allClients = [] } = useQuery({
