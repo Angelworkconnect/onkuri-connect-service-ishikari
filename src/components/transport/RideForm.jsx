@@ -402,68 +402,59 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         {/* Step 2: 乗客 */}
          {step === 2 && (
            <>
-             <div className="flex items-center justify-between">
-               <p className="text-sm font-bold text-slate-700">乗車利用者（{passengers.length}名）</p>
-               <button type="button" onClick={addPassenger} className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline">
-                 <Plus className="w-3 h-3" />手動追加
-               </button>
-             </div>
-
-             {clients.length > 0 && (
-             <div>
-             <p className="text-xs font-bold text-slate-500 mb-2">本日の利用者一覧（タップで追加）</p>
-             <div className="flex flex-wrap gap-2 mb-3">
-               {(() => {
-                 const currentPassengerNames = new Set(passengers.map(p => p.clientName).filter(n => n.trim()));
-                 const bookedInThisTrip = new Set();
-                 todayRides.forEach(ride => {
-                   if (ride.id !== editingRide?.id && ride.tripType === form.tripType && (ride.status === 'SUBMITTED' || ride.status === 'APPROVED')) {
-                     const ridePassengers = ridePassengersMap[ride.id] || [];
-                     ridePassengers.forEach(p => bookedInThisTrip.add(p.clientName));
-                   }
-                 });
-                 return clients.filter(c => !currentPassengerNames.has(c.name) && !bookedInThisTrip.has(c.name)).map(c => {
-                   const bgColor = c.gender === 'male' ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100' : c.gender === 'female' ? 'bg-pink-50 border-pink-300 text-pink-700 hover:bg-pink-100' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100';
-                   return (
-                     <button key={c.id} onClick={() => addClientPassenger(c.name)} className={`text-xs px-3 py-1.5 rounded-lg border-2 font-medium transition-all ${bgColor}`}>
-                       {c.wheelchairRequired ? '♿ ' : ''}{c.name}
-                     </button>
-                   );
-                 });
-               })()}
-             </div>
-             </div>
-             )}
-
-             {passengers.length === 0 && (
-               <div className="text-center py-6 text-slate-400 text-sm">
-                 <p>{clients.length > 0 ? '上記から利用者を選択するか' : ''}乗客を追加してください</p>
-                 <button type="button" onClick={addPassenger} className="mt-2 text-blue-500 text-xs underline">＋ 追加する</button>
+             {clients.length > 0 ? (
+               <>
+                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700 font-medium">
+                   ℹ️ 本日は {clients.length} 名の利用者が登録されています
+                 </div>
+                 <div>
+                   <p className="text-xs font-bold text-slate-500 mb-2">利用者を選択（複数回利用の場合は追加可能）</p>
+                   <div className="flex flex-wrap gap-2">
+                     {(() => {
+                       const currentPassengerNames = new Set(passengers.map(p => p.clientName).filter(n => n.trim()));
+                       const bookedInThisTrip = new Set();
+                       todayRides.forEach(ride => {
+                         if (ride.id !== editingRide?.id && ride.tripType === form.tripType && (ride.status === 'SUBMITTED' || ride.status === 'APPROVED')) {
+                           const ridePassengers = ridePassengersMap[ride.id] || [];
+                           ridePassengers.forEach(p => bookedInThisTrip.add(p.clientName));
+                         }
+                       });
+                       return clients.filter(c => !bookedInThisTrip.has(c.name)).map(c => {
+                         const bgColor = c.gender === 'male' ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100' : c.gender === 'female' ? 'bg-pink-50 border-pink-300 text-pink-700 hover:bg-pink-100' : 'bg-slate-50 border-slate-300 text-slate-700 hover:bg-slate-100';
+                         const isAdded = currentPassengerNames.has(c.name);
+                         return (
+                           <button key={c.id} onClick={() => addClientPassenger(c.name)} className={`text-xs px-3 py-1.5 rounded-lg border-2 font-medium transition-all ${isAdded ? 'opacity-50' : ''} ${bgColor}`}>
+                             {c.wheelchairRequired ? '♿ ' : ''}{c.name} {isAdded ? '✓' : ''}
+                           </button>
+                         );
+                       });
+                     })()}
+                   </div>
+                 </div>
+               </>
+             ) : (
+               <div className="text-center py-6 text-slate-400 text-sm bg-slate-50 rounded-xl border border-slate-200">
+                 <p>📋 本日の利用者が登録されていません</p>
+                 <p className="text-xs mt-1">クライアント管理で利用曜日を設定してください</p>
                </div>
              )}
 
             <div className="space-y-3">
-              {passengers.map((p, i) => (
-                <div key={i} className="bg-slate-50 rounded-xl p-3 space-y-2 border border-slate-100">
-                  <div className="flex gap-2 items-center">
-                     <span className="text-slate-400 text-xs font-bold w-5">{i+1}</span>
-                     <div className="flex-1">
-                       <Input 
-                         placeholder="利用者名 *" 
-                         value={p.clientName} 
-                         onChange={e => {
-                           const newName = e.target.value;
-                           const isDuplicate = passengers.some((passenger, idx) => idx !== i && passenger.clientName === newName && newName.trim());
-                           if (isDuplicate) {
-                             return;
-                           }
-                           updatePassenger(i, 'clientName', newName);
-                         }} 
-                         className="flex-1" 
-                       />
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-slate-600">追加済み利用者（{passengers.length}名）</p>
+              </div>
+              {passengers.length === 0 ? (
+                <p className="text-xs text-slate-400 text-center py-3">まだ利用者が追加されていません</p>
+              ) : (
+                passengers.map((p, i) => (
+                  <div key={i} className="bg-slate-50 rounded-xl p-3 space-y-2 border border-slate-100">
+                    <div className="flex gap-2 items-center">
+                       <span className="text-slate-400 text-xs font-bold w-5">{i+1}</span>
+                       <div className="flex-1">
+                         <p className="text-sm font-medium text-slate-700">{p.clientName}</p>
+                       </div>
+                       <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
                      </div>
-                     <button type="button" onClick={() => removePassenger(i)} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
-                   </div>
                   <div className="grid grid-cols-2 gap-2 ml-7">
                     <div>
                       <label className="text-xs text-slate-500">乗車時刻</label>
