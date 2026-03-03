@@ -70,7 +70,7 @@ export default function ClientManagementTab() {
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Client.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-clients']);
+      queryClient.invalidateQueries({ queryKey: ['admin-clients'] });
       setDialogOpen(false);
       resetForm();
     },
@@ -79,7 +79,7 @@ export default function ClientManagementTab() {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Client.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['admin-clients']);
+      queryClient.invalidateQueries({ queryKey: ['admin-clients'] });
       setDialogOpen(false);
       resetForm();
     },
@@ -87,7 +87,7 @@ export default function ClientManagementTab() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Client.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['admin-clients']),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-clients'] }),
   });
 
   const resetForm = () => {
