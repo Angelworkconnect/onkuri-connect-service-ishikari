@@ -59,12 +59,28 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         const allClients = await base44.entities.Client.list('name');
         const filtered = allClients.filter(c => {
           if (c.isActive === false) return false;
-          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
-          // daysOfWeek内が数値または文字列として保存されている可能性に対応
-          return c.daysOfWeek.some(d => {
-            const dayNum = typeof d === 'string' ? parseInt(d, 10) : d;
-            return dayNum === dayOfWeek;
-          });
+          
+          // daysOfWeekが未設定の場合はすべての曜日で利用可能
+          if (!c.daysOfWeek) return true;
+          
+          // 配列の場合の処理
+          if (Array.isArray(c.daysOfWeek)) {
+            if (c.daysOfWeek.length === 0) return true; // 空配列=全曜日対応
+            return c.daysOfWeek.some(d => {
+              const dayNum = typeof d === 'string' ? parseInt(d, 10) : d;
+              return !isNaN(dayNum) && dayNum === dayOfWeek;
+            });
+          }
+          
+          // 配列ではない場合（文字列など）
+          if (typeof c.daysOfWeek === 'string') {
+            if (c.daysOfWeek === '') return true;
+            // "1,2,3" または "123" 形式に対応
+            return c.daysOfWeek.includes(String(dayOfWeek));
+          }
+          
+          // 上記以外はフォールバック：表示する
+          return true;
         });
         
         setClients(filtered);
