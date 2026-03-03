@@ -61,6 +61,9 @@ export default function ClientManagementTab() {
   const { data: allClients = [] } = useQuery({
     queryKey: ['admin-clients'],
     queryFn: () => base44.entities.Client.list('-created_date', 500),
+    staleTime: 30000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const sortedClients = [...allClients].sort((a, b) => 
