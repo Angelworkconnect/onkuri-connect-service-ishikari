@@ -90,6 +90,7 @@ export default function HelpCallSection({ user }) {
         time: '',
         location: '',
         urgency: 'medium',
+        required_count: 1,
       });
     },
   });
