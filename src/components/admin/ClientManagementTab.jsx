@@ -39,6 +39,7 @@ export default function ClientManagementTab() {
   const [editingClient, setEditingClient] = useState(null);
   const [form, setForm] = useState({
     name: '',
+    clientCode: '',
     gender: 'other',
     phone: '',
     address: '',
@@ -96,6 +97,7 @@ export default function ClientManagementTab() {
   const resetForm = () => {
     setForm({
       name: '',
+      clientCode: '',
       gender: 'other',
       phone: '',
       address: '',
@@ -120,6 +122,7 @@ export default function ClientManagementTab() {
     setEditingClient(client);
     setForm({
       name: client.name || '',
+      clientCode: client.clientCode || '',
       gender: client.gender || 'other',
       phone: client.phone || '',
       address: client.address || '',
@@ -349,27 +352,36 @@ export default function ClientManagementTab() {
               <h3 className="font-semibold text-sm">基本情報</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>名前 *</Label>
-                  <Input
-                    value={form.name}
-                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                    placeholder="山田 花子"
-                  />
+                    <Label>名前 *</Label>
+                    <Input
+                      value={form.name}
+                      onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                      placeholder="山田 花子"
+                    />
+                  </div>
+                  <div>
+                    <Label>ID</Label>
+                    <Input
+                      value={form.clientCode}
+                      onChange={(e) => setForm((f) => ({ ...f, clientCode: e.target.value }))}
+                      placeholder="例: C001"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label>性別</Label>
-                  <Select value={form.gender} onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">男性</SelectItem>
-                      <SelectItem value="female">女性</SelectItem>
-                      <SelectItem value="other">その他</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>性別</Label>
+                    <Select value={form.gender} onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">男性</SelectItem>
+                        <SelectItem value="female">女性</SelectItem>
+                        <SelectItem value="other">その他</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
               <div><Label>電話</Label><Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
               <div><Label>住所</Label><Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
             </div>
