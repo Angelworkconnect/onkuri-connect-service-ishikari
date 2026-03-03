@@ -105,26 +105,36 @@ export default function TransportAdmin() {
     queryKey: ['ta-vehicles'],
     queryFn: () => base44.entities.Vehicle.list('name'),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: staff = [] } = useQuery({
     queryKey: ['ta-staff'],
     queryFn: () => base44.entities.Staff.filter({ approval_status: 'approved' }),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: templates = [] } = useQuery({
     queryKey: ['ta-templates'],
     queryFn: () => base44.entities.RouteTemplate.list('name'),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: preChecks = [] } = useQuery({
     queryKey: ['ta-prechecks'],
     queryFn: () => base44.entities.VehiclePreCheck.list('-date', 50),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: driverChecks = [] } = useQuery({
     queryKey: ['ta-driverchecks'],
     queryFn: () => base44.entities.DriverDailyCheck.list('-date', 50),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
 
 
