@@ -136,6 +136,7 @@ export default function Dashboard() {
   const [showWageEdit, setShowWageEdit] = useState(false);
   const [wageInput, setWageInput] = useState('');
   const [monthlySalaryInput, setMonthlySalaryInput] = useState('');
+  const [logoChar, setLogoChar] = useState('');
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
