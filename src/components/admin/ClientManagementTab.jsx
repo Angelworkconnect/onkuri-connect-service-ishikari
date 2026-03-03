@@ -39,10 +39,12 @@ export default function ClientManagementTab() {
   const [editingClient, setEditingClient] = useState(null);
   const [form, setForm] = useState({
     name: '',
+    furigana: '',
     clientCode: '',
     gender: 'other',
     phone: '',
     address: '',
+    careLevel: 'none',
     daysOfWeek: [],
     wheelchairRequired: false,
     pickupRequired: false,
