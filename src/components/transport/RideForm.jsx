@@ -48,14 +48,14 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   useEffect(() => {
     (async () => {
       try {
-        // 日付を確実に解析（タイムゾーン考慮）
         const dateObj = new Date(selectedDate + 'T00:00:00');
-        const dayOfWeek = dateObj.getDay(); // 0=日, 1=月, ..., 6=土
+        const dayOfWeek = dateObj.getDay();
 
         const allClients = await base44.entities.Client.list('name');
         const filtered = allClients.filter(c => {
           if (c.isActive === false) return false;
-          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return false;
+          // daysOfWeekが未設定または空配列の場合は全曜日で利用可能
+          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
           return c.daysOfWeek.includes(dayOfWeek);
         });
         setClients(filtered);
