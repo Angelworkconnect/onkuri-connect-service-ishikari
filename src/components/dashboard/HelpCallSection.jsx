@@ -270,16 +270,14 @@ export default function HelpCallSection({ user }) {
                           ✨ 助っ人さん現れる！✨
                         </p>
                         <div className="bg-white/20 rounded-lg p-3 mb-2">
-                          <div className="flex flex-wrap gap-2 justify-center items-center">
+                          <p className="text-white font-bold text-center text-base sm:text-lg">
                             {approvedResponders.map((responder, idx) => (
-                              <div key={responder.id} className="text-center">
-                                <p className="text-white font-bold text-lg">
-                                  {responder.responder_name} さん
-                                </p>
-                                {idx < approvedResponders.length - 1 && <span className="text-white mx-2">×</span>}
-                              </div>
+                              <span key={responder.id}>
+                                {idx > 0 && <span className="mx-2">・</span>}
+                                {responder.responder_name}さん
+                              </span>
                             ))}
-                          </div>
+                          </p>
                         </div>
                         <p className="text-white text-center text-sm sm:text-base opacity-95 font-medium">
                           助け合いの精神をありがとうございます！
