@@ -60,7 +60,15 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         const filtered = allClients.filter(c => {
           if (c.isActive === false) return false;
           if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
-          return c.daysOfWeek.includes(dayOfWeek);
+          
+          // 曜日マッチング
+          const dayMatches = c.daysOfWeek.includes(dayOfWeek);
+          if (!dayMatches) return false;
+          
+          // 便種別に応じた送迎必要性をチェック
+          if (form.tripType === 'PICKUP') return c.pickupRequired === true;
+          if (form.tripType === 'DROPOFF') return c.dropoffRequired === true;
+          return true;
         });
         setClients(filtered);
         
