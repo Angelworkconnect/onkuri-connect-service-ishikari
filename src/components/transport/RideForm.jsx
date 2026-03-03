@@ -45,33 +45,28 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
 
   const selectedDate = form.date;
 
-  // クライアントフィルタリング関数
-  const filterClients = (allClients, selectedDate, tripType) => {
-    const parts = selectedDate.split('-');
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1;
-    const day = parseInt(parts[2]);
-    const dateObj = new Date(Date.UTC(year, month, day));
-    const dayOfWeek = dateObj.getUTCDay();
-
-    return allClients.filter(c => {
-      if (c.isActive === false) return false;
-      if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
-      
-      const dayMatches = c.daysOfWeek.includes(dayOfWeek);
-      if (!dayMatches) return false;
-      
-      if (tripType === 'PICKUP') return c.pickupRequired === true;
-      if (tripType === 'DROPOFF') return c.dropoffRequired === true;
-      return true;
-    });
-  };
-
   useEffect(() => {
     (async () => {
       try {
+        const parts = selectedDate.split('-');
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1;
+        const day = parseInt(parts[2]);
+        const dateObj = new Date(Date.UTC(year, month, day));
+        const dayOfWeek = dateObj.getUTCDay();
+
         const allClients = await base44.entities.Client.list('name');
-        const filtered = filterClients(allClients, selectedDate, form.tripType);
+        const filtered = allClients.filter(c => {
+          if (c.isActive === false) return false;
+          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
+          
+          const dayMatches = c.daysOfWeek.includes(dayOfWeek);
+          if (!dayMatches) return false;
+          
+          if (form.tripType === 'PICKUP') return c.pickupRequired === true;
+          if (form.tripType === 'DROPOFF') return c.dropoffRequired === true;
+          return true;
+        });
         setClients(filtered);
         
         if (isEditing && editingRide.id) {
@@ -84,22 +79,6 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
       }
     })();
   }, [selectedDate, form.tripType, isEditing, editingRide]);
-
-  // クライアント更新時のリアルタイム購読
-  useEffect(() => {
-    const unsubscribe = base44.entities.Client.subscribe((event) => {
-      (async () => {
-        try {
-          const allClients = await base44.entities.Client.list('name');
-          const filtered = filterClients(allClients, selectedDate, form.tripType);
-          setClients(filtered);
-        } catch (error) {
-          console.error('Failed to update clients:', error);
-        }
-      })();
-    });
-    return unsubscribe;
-  }, [selectedDate, form.tripType]);
 
   const applyTemplate = (t) => {
     setForm(f => ({
