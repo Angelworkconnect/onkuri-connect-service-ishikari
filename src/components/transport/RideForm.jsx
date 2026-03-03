@@ -470,9 +470,9 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
                     <span className="text-xs text-slate-600">シートベルト確認済み</span>
                   </div>
                   </div>
-                  ))
-                  )}
-                  </div>
+                ))
+              )}
+            </div>
 
             <div className="flex gap-2 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>← 戻る</Button>
