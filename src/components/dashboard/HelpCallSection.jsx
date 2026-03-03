@@ -283,9 +283,16 @@ export default function HelpCallSection({ user }) {
                             ))}
                           </p>
                         </div>
-                        <p className="text-white text-center text-sm sm:text-base opacity-95 font-medium">
-                          助け合いの精神をありがとうございます！
-                        </p>
+                        {approvedResponders.length < request.required_count && (
+                          <p className="text-white text-center text-sm opacity-90 font-medium mt-2">
+                            あと {request.required_count - approvedResponders.length} 名さらに募集中...
+                          </p>
+                        )}
+                        {approvedResponders.length >= request.required_count && (
+                          <p className="text-white text-center text-sm sm:text-base opacity-95 font-medium">
+                            助け合いの精神をありがとうございます！
+                          </p>
+                        )}
                       </div>
                     )}
                     <div className="p-4 sm:p-5">
