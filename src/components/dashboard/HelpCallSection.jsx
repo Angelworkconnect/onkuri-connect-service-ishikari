@@ -240,13 +240,14 @@ export default function HelpCallSection({ user }) {
         <div className="space-y-4">
           <AnimatePresence>
             {helpRequests.map((request) => {
-              const urgency = urgencyConfig[request.urgency] || urgencyConfig.medium;
-              const isExpanded = expandedRequests[request.id];
-              const responded = hasResponded(request.id);
-              const myResponse = getMyResponseForRequest(request.id);
-              const isApproved = myResponse?.status === 'approved';
-              // 承認済み助っ人がいる場合は全員に達成バナーを表示
-              const isAchieved = !!request.approved_responder_name;
+               const urgency = urgencyConfig[request.urgency] || urgencyConfig.medium;
+               const isExpanded = expandedRequests[request.id];
+               const responded = hasResponded(request.id);
+               const myResponse = getMyResponseForRequest(request.id);
+               const isApproved = myResponse?.status === 'approved';
+               // 承認済み助っ人が複数いる場合は全員表示
+               const approvedResponders = allApprovedResponses.filter(r => r.help_request_id === request.id);
+               const isAchieved = approvedResponders.length > 0;
 
               return (
                 <motion.div
