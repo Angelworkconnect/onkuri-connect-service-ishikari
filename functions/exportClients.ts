@@ -12,18 +12,20 @@ Deno.serve(async (req) => {
     const allClients = await base44.entities.Client.list('-created_date', 1000);
 
     // CSV生成
-    const headers = ['利用者ID', 'name', 'gender', 'phone', 'address', 'pickupRequired', 'dropoffRequired', 'wheelchairRequired', 'frequencyPerWeek', 'daysOfWeek', 'emergencyContactName', 'emergencyContactPhone', 'allergies', 'medicationInfo', 'specialNeeds', 'notes', 'isActive'];
+    const headers = ['利用者ID', '名前', 'ふりがな', '性別', '電話', '住所', '要介護度', '朝の送迎', '帰宅の送迎', '車椅子使用', '週の通所回数', '利用曜日', '緊急連絡先名', '緊急連絡先電話', 'アレルギー', '服用中の薬・病歴', '特別対応', '備考', 'ステータス'];
     const rows = allClients.map(c => [
       c.clientCode || '-',
       c.name,
+      c.furigana || '-',
       c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : 'その他',
       c.phone || '-',
       c.address || '-',
+      c.careLevel === 'none' ? '要介護認定なし' : c.careLevel === 'support_1' ? '要支援1' : c.careLevel === 'support_2' ? '要支援2' : c.careLevel === 'care_1' ? '要介護1' : c.careLevel === 'care_2' ? '要介護2' : c.careLevel === 'care_3' ? '要介護3' : c.careLevel === 'care_4' ? '要介護4' : c.careLevel === 'care_5' ? '要介護5' : '-',
       c.pickupRequired ? 'はい' : 'いいえ',
       c.dropoffRequired ? 'はい' : 'いいえ',
       c.wheelchairRequired ? 'はい' : 'いいえ',
       c.frequencyPerWeek || 1,
-      c.daysOfWeek?.length > 0 ? c.daysOfWeek.join(',') : '-',
+      c.daysOfWeek?.length > 0 ? c.daysOfWeek.map(d => ['日', '月', '火', '水', '木', '金', '土'][d]).join(',') : '-',
       c.emergencyContactName || '-',
       c.emergencyContactPhone || '-',
       c.allergies || '-',
