@@ -382,9 +382,10 @@ export default function ClientManagementTab() {
                       </SelectContent>
                     </Select>
                   </div>
-              <div><Label>電話</Label><Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
-              <div><Label>住所</Label><Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
-            </div>
+                  <div><Label>電話</Label><Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
+                </div>
+                <div><Label>住所</Label><Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
+                </div>
 
             {/* 利用情報 */}
             <div className="space-y-3 pb-4 border-b">
