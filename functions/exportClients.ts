@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     const allClients = await base44.entities.Client.list('-created_date', 1000);
 
     // CSV生成
-    const headers = ['名前', '性別', '電話', '住所', '朝送迎', '帰送迎', '車椅子', '週回数', '利用曜日', '緊急連絡先名', '緊急連絡先電話', 'アレルギー', '服用薬・病歴', '特別対応', '備考', 'ステータス'];
+    const headers = ['name', 'gender', 'phone', 'address', 'pickupRequired', 'dropoffRequired', 'wheelchairRequired', 'frequencyPerWeek', 'daysOfWeek', 'emergencyContactName', 'emergencyContactPhone', 'allergies', 'medicationInfo', 'specialNeeds', 'notes', 'isActive'];
     const rows = allClients.map(c => [
       c.name,
       c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : 'その他',
