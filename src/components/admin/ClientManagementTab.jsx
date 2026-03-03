@@ -151,11 +151,14 @@ export default function ClientManagementTab() {
       {/* ヘッダー */}
       <Card className="border-0 shadow-lg p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center flex-wrap">
-          <h2 className="text-lg font-medium">クライアント管理</h2>
+          <div>
+            <h2 className="text-lg font-medium">クライアント管理</h2>
+            <p className="text-xs text-slate-500 mt-1">登録利用者を曜日別に管理</p>
+          </div>
           <div className="flex gap-2 flex-wrap">
             <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="bg-[#2D4A6F]">
               <Plus className="w-4 h-4 mr-2" />
-              新規クライアント
+              新規利用者
             </Button>
             <Button onClick={handleExport} variant="outline">
               <Download className="w-4 h-4 mr-2" />
@@ -164,6 +167,26 @@ export default function ClientManagementTab() {
           </div>
         </div>
       </Card>
+
+      {/* ビューモード切り替え */}
+      <div className="flex gap-2">
+        <Button 
+          size="sm"
+          variant={viewMode === 'table' ? 'default' : 'outline'}
+          onClick={() => setViewMode('table')}
+          className={viewMode === 'table' ? 'bg-[#2D4A6F]' : ''}
+        >
+          📋 一覧表示
+        </Button>
+        <Button 
+          size="sm"
+          variant={viewMode === 'by-day' ? 'default' : 'outline'}
+          onClick={() => setViewMode('by-day')}
+          className={viewMode === 'by-day' ? 'bg-[#2D4A6F]' : ''}
+        >
+          📅 曜日別表示
+        </Button>
+      </div>
 
       {/* テーブル */}
       <Card className="border-0 shadow-lg overflow-hidden">
