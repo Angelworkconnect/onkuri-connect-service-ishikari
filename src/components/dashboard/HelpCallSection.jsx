@@ -486,19 +486,34 @@ export default function HelpCallSection({ user }) {
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">緊急度</label>
-              <Select value={formData.urgency} onValueChange={(v) => setFormData({ ...formData, urgency: v })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">低</SelectItem>
-                  <SelectItem value="medium">中</SelectItem>
-                  <SelectItem value="high">高</SelectItem>
-                  <SelectItem value="urgent">緊急</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">必要人数</label>
+                <Select value={formData.required_count.toString()} onValueChange={(v) => setFormData({ ...formData, required_count: parseInt(v) })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <SelectItem key={n} value={n.toString()}>{n}名</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">緊急度</label>
+                <Select value={formData.urgency} onValueChange={(v) => setFormData({ ...formData, urgency: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">低</SelectItem>
+                    <SelectItem value="medium">中</SelectItem>
+                    <SelectItem value="high">高</SelectItem>
+                    <SelectItem value="urgent">緊急</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <DialogFooter>
