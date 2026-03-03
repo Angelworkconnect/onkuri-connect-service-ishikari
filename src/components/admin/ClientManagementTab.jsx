@@ -31,7 +31,6 @@ import { Plus, Edit, Trash2, Download } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
 
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
