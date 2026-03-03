@@ -35,6 +35,7 @@ export default function HelpRequestManager({ user, allStaff }) {
     time: '',
     location: '',
     urgency: 'medium',
+    required_count: 1,
     status: 'open',
     admin_notes: '',
   });
@@ -235,6 +236,7 @@ export default function HelpRequestManager({ user, allStaff }) {
       time: '',
       location: '',
       urgency: 'medium',
+      required_count: 1,
       status: 'open',
       admin_notes: '',
     });
@@ -250,6 +252,7 @@ export default function HelpRequestManager({ user, allStaff }) {
       time: request.time || '',
       location: request.location || '',
       urgency: request.urgency,
+      required_count: request.required_count || 1,
       status: request.status,
       admin_notes: request.admin_notes || '',
     });
@@ -417,17 +420,29 @@ export default function HelpRequestManager({ user, allStaff }) {
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">緊急度</label>
-              <Select value={formData.urgency} onValueChange={(v) => setFormData({ ...formData, urgency: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">低</SelectItem>
-                  <SelectItem value="medium">中</SelectItem>
-                  <SelectItem value="high">高</SelectItem>
-                  <SelectItem value="urgent">緊急</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">緊急度</label>
+                <Select value={formData.urgency} onValueChange={(v) => setFormData({ ...formData, urgency: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">低</SelectItem>
+                    <SelectItem value="medium">中</SelectItem>
+                    <SelectItem value="high">高</SelectItem>
+                    <SelectItem value="urgent">緊急</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">必要人数</label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={formData.required_count}
+                  onChange={(e) => setFormData({ ...formData, required_count: parseInt(e.target.value) || 1 })}
+                />
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium">ステータス</label>
