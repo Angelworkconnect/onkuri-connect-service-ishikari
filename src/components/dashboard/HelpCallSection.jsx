@@ -130,8 +130,8 @@ export default function HelpCallSection({ user }) {
 
   const handleUpdateRequest = () => {
     if (!editingRequest) return;
-    const { id, title, description, date, time, location, urgency } = editingRequest;
-    updateRequestMutation.mutate({ id, data: { title, description, date, time, location, urgency } });
+    const { id, title, description, date, time, location, urgency, required_count } = editingRequest;
+    updateRequestMutation.mutate({ id, data: { title, description, date, time, location, urgency, required_count } });
   };
 
   const respondMutation = useMutation({
