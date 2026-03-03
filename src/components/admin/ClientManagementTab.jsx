@@ -99,10 +99,12 @@ export default function ClientManagementTab() {
   const resetForm = () => {
     setForm({
       name: '',
+      furigana: '',
       clientCode: '',
       gender: 'other',
       phone: '',
       address: '',
+      careLevel: 'none',
       daysOfWeek: [],
       wheelchairRequired: false,
       pickupRequired: false,
