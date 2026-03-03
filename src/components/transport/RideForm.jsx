@@ -57,16 +57,41 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
 
         const allClients = await base44.entities.Client.list('name');
         const filtered = allClients.filter(c => {
-          if (c.isActive === false) return false;
-          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) return true;
+          if (c.isActive === false) {
+            console.log(`[Filter] ${c.name} - 無効`);
+            return false;
+          }
           
+          // daysOfWeekが未設定の場合、常に表示
+          if (!c.daysOfWeek || !Array.isArray(c.daysOfWeek) || c.daysOfWeek.length === 0) {
+            console.log(`[Filter] ${c.name} - 曜日未設定（常に表示）`);
+            return true;
+          }
+          
+          // 曜日チェック
           const dayMatches = c.daysOfWeek.includes(dayOfWeek);
-          if (!dayMatches) return false;
+          if (!dayMatches) {
+            console.log(`[Filter] ${c.name} - 曜日不一致（設定: ${c.daysOfWeek}, 今日: ${dayOfWeek}）`);
+            return false;
+          }
           
-          if (form.tripType === 'PICKUP') return c.pickupRequired === true;
-          if (form.tripType === 'DROPOFF') return c.dropoffRequired === true;
+          // 便種別に応じた送迎チェック
+          if (form.tripType === 'PICKUP') {
+            const result = c.pickupRequired === true;
+            console.log(`[Filter] ${c.name} - 朝便フィルタ (pickupRequired: ${c.pickupRequired}) → ${result}`);
+            return result;
+          }
+          
+          if (form.tripType === 'DROPOFF') {
+            const result = c.dropoffRequired === true;
+            console.log(`[Filter] ${c.name} - 帰便フィルタ (dropoffRequired: ${c.dropoffRequired}) → ${result}`);
+            return result;
+          }
+          
+          console.log(`[Filter] ${c.name} - その他便`);
           return true;
         });
+        console.log(`[Filter結果] 対象: ${filtered.map(c => c.name).join(', ')}`);
         setClients(filtered);
         
         if (isEditing && editingRide.id) {
