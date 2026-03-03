@@ -63,6 +63,10 @@ export default function ClientManagementTab() {
     queryFn: () => base44.entities.Client.list('-created_date', 500),
   });
 
+  const sortedClients = [...allClients].sort((a, b) => 
+    a.name.localeCompare(b.name, 'ja')
+  );
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Client.create(data),
     onSuccess: () => {
@@ -231,7 +235,7 @@ export default function ClientManagementTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {allClients.map((client) => (
+                {sortedClients.map((client) => (
                   <TableRow key={client.id}>
                     <TableCell className="font-medium">{client.name}</TableCell>
                     <TableCell>
@@ -283,9 +287,9 @@ export default function ClientManagementTab() {
         </Card>
       ) : (
         // 曜日別表示
-        <div className="space-y-4">
-          {DOW.map((dayLabel, dayIdx) => {
-            const dayClients = allClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayIdx));
+         <div className="space-y-4">
+           {DOW.map((dayLabel, dayIdx) => {
+             const dayClients = sortedClients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayIdx));
             return (
               <Card key={dayIdx} className="border-0 shadow-lg overflow-hidden">
                 <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
