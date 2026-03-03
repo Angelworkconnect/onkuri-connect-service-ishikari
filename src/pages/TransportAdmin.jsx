@@ -37,9 +37,7 @@ export default function TransportAdmin() {
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', tripType: 'PICKUP', defaultVehicleId: '', defaultVehicleName: '', defaultPassengerNames: [], isActive: true });
   const [passengerInput, setPassengerInput] = useState('');
-  const [clientDialog, setClientDialog] = useState(false);
-  const [editingClient, setEditingClient] = useState(null);
-  const [clientForm, setClientForm] = useState({ name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
+
   const [editingRide, setEditingRide] = useState(null);
   const [editingPreCheck, setEditingPreCheck] = useState(null);
   const [editingDriverCheck, setEditingDriverCheck] = useState(null);
@@ -72,11 +70,10 @@ export default function TransportAdmin() {
   // リアルタイム更新：各マスタの変更を即時反映
   useEffect(() => {
     const unsubVehicle = base44.entities.Vehicle.subscribe(() => queryClient.invalidateQueries(['ta-vehicles']));
-    const unsubClient = base44.entities.Client.subscribe(() => queryClient.invalidateQueries(['ta-clients']));
     const unsubTemplate = base44.entities.RouteTemplate.subscribe(() => queryClient.invalidateQueries(['ta-templates']));
     const unsubPreCheck = base44.entities.VehiclePreCheck.subscribe(() => queryClient.invalidateQueries(['ta-prechecks']));
     const unsubDriverCheck = base44.entities.DriverDailyCheck.subscribe(() => queryClient.invalidateQueries(['ta-driverchecks']));
-    return () => { unsubVehicle(); unsubClient(); unsubTemplate(); unsubPreCheck(); unsubDriverCheck(); };
+    return () => { unsubVehicle(); unsubTemplate(); unsubPreCheck(); unsubDriverCheck(); };
   }, [queryClient]);
 
   const { data: submittedRides = [] } = useQuery({
@@ -123,11 +120,7 @@ export default function TransportAdmin() {
     queryFn: () => base44.entities.DriverDailyCheck.list('-date', 50),
     enabled: !!user,
   });
-  const { data: clients = [] } = useQuery({
-    queryKey: ['ta-clients'],
-    queryFn: () => base44.entities.Client.list('name'),
-    enabled: !!user,
-  });
+
 
   const approveMutation = useMutation({
     mutationFn: async (ride) => {
@@ -196,17 +189,7 @@ export default function TransportAdmin() {
     onSuccess: () => queryClient.invalidateQueries(['ta-templates']),
   });
 
-  const saveClientMutation = useMutation({
-    mutationFn: (data) => editingClient
-      ? base44.entities.Client.update(editingClient.id, data)
-      : base44.entities.Client.create(data),
-    onSuccess: () => { queryClient.invalidateQueries(['ta-clients']); setClientDialog(false); },
-  });
 
-  const deleteClientMutation = useMutation({
-    mutationFn: (id) => base44.entities.Client.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['ta-clients']),
-  });
 
   const deleteRideMutation = useMutation({
     mutationFn: (id) => base44.entities.Ride.delete(id),
@@ -279,13 +262,7 @@ export default function TransportAdmin() {
     setTemplateDialog(true);
   };
 
-  const openClientDialog = (c = null) => {
-    setEditingClient(c);
-    setClientForm(c ? { name: c.name, phone: c.phone || '', address: c.address || '', gender: c.gender || '', wheelchairRequired: c.wheelchairRequired || false, notes: c.notes || '', daysOfWeek: c.daysOfWeek || [], isActive: c.isActive !== false } : { name: '', phone: '', address: '', gender: '', wheelchairRequired: false, notes: '', daysOfWeek: [], isActive: true });
-    setClientDialog(true);
-  };
 
-  const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
 
   if (!user) return <div className="min-h-screen flex items-center justify-center text-slate-400">読み込み中...</div>;
 
@@ -320,7 +297,6 @@ export default function TransportAdmin() {
               { value: 'approval', label: `承認 (${submittedRides.length})` },
               { value: 'checks', label: '点検記録' },
               { value: 'vehicles', label: '車両管理' },
-              { value: 'clients', label: '利用者管理' },
               { value: 'templates', label: 'テンプレ' },
               { value: 'export', label: 'PDF出力' },
             ].map(({ value, label }) => (
@@ -536,94 +512,6 @@ export default function TransportAdmin() {
             </Card>
           </TabsContent>
 
-          {/* 利用者管理タブ */}
-          <TabsContent value="clients">
-            <div className="space-y-4">
-              {/* 本日の利用者一覧 */}
-              {(() => {
-                const todayDayOfWeek = new Date().getDay();
-                const todayClients = clients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(todayDayOfWeek));
-                return (
-                  <Card className="border-0 shadow bg-gradient-to-br from-green-50 to-emerald-50">
-                    <div className="p-4 border-b border-green-200">
-                      <h2 className="font-bold text-lg">本日の利用者（{todayClients.length}名）</h2>
-                    </div>
-                    {todayClients.length === 0 ? (
-                      <div className="p-8 text-center text-slate-400">
-                        <p className="text-sm">本日の利用予定者はいません</p>
-                      </div>
-                    ) : (
-                      <div className="divide-y">
-                        {todayClients.map(c => (
-                          <div key={c.id} className="p-4 hover:bg-white/50 flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm ${c.gender === 'male' ? 'bg-blue-500' : c.gender === 'female' ? 'bg-pink-500' : 'bg-slate-500'}`}>
-                                  {c.gender === 'male' ? '♂' : c.gender === 'female' ? '♀' : '?'}
-                                </div>
-                                <div>
-                                  <span className="font-medium">{c.name}</span>
-                                  {c.wheelchairRequired && <Badge className="ml-2 bg-purple-100 text-purple-700 text-xs">♿</Badge>}
-                                </div>
-                              </div>
-                              {c.phone && <p className="text-xs text-slate-500 mt-1 ml-13">{c.phone}</p>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })()}
-
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-lg">利用者一覧（曜日別）</h2>
-                <Button className="bg-[#2D4A6F]" onClick={() => openClientDialog()}>
-                  <Plus className="w-4 h-4 mr-1" />新規利用者
-                </Button>
-              </div>
-              {dayLabels.map((dayLabel, dayIdx) => {
-                const dayClients = clients.filter(c => c.isActive !== false && c.daysOfWeek && c.daysOfWeek.includes(dayIdx));
-                return (
-                  <Card key={dayIdx} className="border-0 shadow">
-                    <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
-                      <h3 className="font-bold text-base">{['日', '月', '火', '水', '木', '金', '土'][dayIdx]}曜日（{dayClients.length}名）</h3>
-                    </div>
-                    {dayClients.length === 0 ? (
-                      <div className="p-8 text-center text-slate-400">
-                        <p className="text-sm">利用者がいません</p>
-                      </div>
-                    ) : (
-                      <div className="divide-y">
-                        {dayClients.map(c => (
-                          <div key={c.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium">{c.name}</span>
-                                {c.wheelchairRequired && <Badge className="bg-purple-100 text-purple-700 text-xs">♿</Badge>}
-                                <Badge className={c.isActive !== false ? 'bg-green-100 text-green-700 text-xs' : 'bg-slate-100 text-slate-500 text-xs'}>{c.isActive !== false ? '有効' : '無効'}</Badge>
-                              </div>
-                              <p className="text-sm text-slate-600">
-                                {c.gender === 'male' ? '男性' : c.gender === 'female' ? '女性' : c.gender === 'other' ? 'その他' : ''}
-                                {c.gender && c.phone && ' / '}
-                                {c.phone}
-                              </p>
-                              {c.notes && <p className="text-xs text-slate-500 mt-1">📝 {c.notes}</p>}
-                            </div>
-                            <div className="flex gap-2 ml-4">
-                              <Button variant="ghost" size="icon" onClick={() => openClientDialog(c)}><Edit className="w-4 h-4" /></Button>
-                              <Button variant="ghost" size="icon" onClick={() => { if (confirm('削除しますか？')) deleteClientMutation.mutate(c.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
           {/* テンプレタブ */}
           <TabsContent value="templates">
             <Card className="border-0 shadow">
@@ -821,47 +709,7 @@ export default function TransportAdmin() {
         </DialogContent>
       </Dialog>
 
-      {/* 利用者ダイアログ */}
-      <Dialog open={clientDialog} onOpenChange={setClientDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{editingClient ? '利用者編集' : '新規利用者登録'}</DialogTitle></DialogHeader>
-          <div className="space-y-3 py-2">
-            <div><Label>名前 *</Label><Input value={clientForm.name} onChange={e => setClientForm(f => ({ ...f, name: e.target.value }))} placeholder="山田 花子" /></div>
-            <div>
-              <Label>性別</Label>
-              <Select value={clientForm.gender} onValueChange={v => setClientForm(f => ({ ...f, gender: v }))}>
-                <SelectTrigger><SelectValue placeholder="選択" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">男性</SelectItem>
-                  <SelectItem value="female">女性</SelectItem>
-                  <SelectItem value="other">その他</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div><Label>電話</Label><Input value={clientForm.phone} onChange={e => setClientForm(f => ({ ...f, phone: e.target.value }))} placeholder="090-1234-5678" /></div>
-            <div><Label>住所</Label><Input value={clientForm.address} onChange={e => setClientForm(f => ({ ...f, address: e.target.value }))} placeholder="札幌市北区..." /></div>
-            <div>
-              <Label className="mb-2 block">利用曜日（複数選択可）</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {dayLabels.map((label, idx) => (
-                  <button key={idx} onClick={() => { const days = clientForm.daysOfWeek.includes(idx) ? clientForm.daysOfWeek.filter(d => d !== idx) : [...clientForm.daysOfWeek, idx]; setClientForm(f => ({ ...f, daysOfWeek: days })); }} className={`py-2 rounded border-2 text-sm font-bold transition-all ${clientForm.daysOfWeek.includes(idx) ? 'border-[#2D4A6F] bg-[#2D4A6F]/10 text-[#2D4A6F]' : 'border-slate-300 text-slate-600'}`}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-2"><Switch checked={clientForm.wheelchairRequired} onCheckedChange={v => setClientForm(f => ({ ...f, wheelchairRequired: v }))} /><Label>車椅子使用</Label></div>
-            <div><Label>備考</Label><Textarea value={clientForm.notes} onChange={e => setClientForm(f => ({ ...f, notes: e.target.value }))} placeholder="特別な対応など" className="h-20" /></div>
-            <div className="flex items-center gap-2"><Switch checked={clientForm.isActive} onCheckedChange={v => setClientForm(f => ({ ...f, isActive: v }))} /><Label>有効</Label></div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setClientDialog(false)}>キャンセル</Button>
-            <Button className="bg-[#2D4A6F]" disabled={!clientForm.name} onClick={() => saveClientMutation.mutate(clientForm)}>
-              {editingClient ? '更新' : '登録'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
 
       {/* 点検編集ダイアログ */}
       <Dialog open={!!editingPreCheck} onOpenChange={() => setEditingPreCheck(null)}>

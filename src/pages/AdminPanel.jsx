@@ -1184,8 +1184,7 @@ export default function AdminPanel() {
                 { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
                 { value: 'transport', icon: Truck, label: '送迎管理' },
                 { value: 'clients', icon: Users, label: 'クライアント' },
-                { value: 'analytics', icon: Brain, label: 'Analytics' },
-              ].map(({ value, icon: Icon, label }) => (
+                ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
                   key={value}
                   value={value}
@@ -1822,11 +1821,6 @@ export default function AdminPanel() {
           {/* Shift AI Tab */}
           <TabsContent value="shift_ai">
             <AdminShiftTabComp user={user} />
-          </TabsContent>
-
-          {/* Clients Tab */}
-          <TabsContent value="clients">
-            <ClientManagementTab />
           </TabsContent>
 
           {/* Analytics Tab */}
