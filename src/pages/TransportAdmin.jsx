@@ -80,6 +80,8 @@ export default function TransportAdmin() {
     queryKey: ['ta-submitted'],
     queryFn: () => base44.entities.Ride.filter({ status: 'SUBMITTED' }),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: draftRides = [] } = useQuery({
     queryKey: ['ta-draft'],
@@ -89,11 +91,15 @@ export default function TransportAdmin() {
       return [...draft, ...rejected].sort((a, b) => b.updated_date.localeCompare(a.updated_date));
     },
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: approvedRides = [] } = useQuery({
     queryKey: ['ta-approved'],
     queryFn: () => base44.entities.Ride.filter({ status: 'APPROVED' }),
     enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
   });
   const { data: vehicles = [] } = useQuery({
     queryKey: ['ta-vehicles'],
