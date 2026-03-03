@@ -58,8 +58,8 @@ export default function HelpCallSection({ user }) {
   const { data: allApprovedResponses = [] } = useQuery({
     queryKey: ['all-approved-responses'],
     queryFn: () => base44.entities.HelpResponse.filter({ status: 'approved' }, '-created_date'),
-    refetchInterval: 5000,
-    staleTime: 0,
+    staleTime: 30000,
+    refetchInterval: false,
   });
 
   const getMyResponseForRequest = (requestId) => {
