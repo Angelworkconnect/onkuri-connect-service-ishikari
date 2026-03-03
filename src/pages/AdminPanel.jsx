@@ -49,6 +49,7 @@ import MessagesTab from '../components/admin/MessagesTab';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab';
 import AdminDialogs from '../components/admin/AdminDialogs';
 import AnalyticsTab from '../components/analytics/AnalyticsTab';
+import ClientManagementTab from '../components/admin/ClientManagementTab';
 import { format } from "date-fns";
 import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
@@ -1182,6 +1183,7 @@ export default function AdminPanel() {
                 { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
                 { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
                 { value: 'transport', icon: Truck, label: '送迎管理' },
+                { value: 'clients', icon: Users, label: 'クライアント' },
                 { value: 'analytics', icon: Brain, label: 'Analytics' },
               ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
@@ -1820,6 +1822,11 @@ export default function AdminPanel() {
           {/* Shift AI Tab */}
           <TabsContent value="shift_ai">
             <AdminShiftTabComp user={user} />
+          </TabsContent>
+
+          {/* Clients Tab */}
+          <TabsContent value="clients">
+            <ClientManagementTab />
           </TabsContent>
 
           {/* Analytics Tab */}
