@@ -104,6 +104,21 @@ export default function SiteSettingsTab({ settingsForm, setSettingsForm, onSave,
             </div>
           </div>
 
+          <div className="space-y-4 p-4 bg-[#FF6B6B]/5 rounded-lg">
+            <h3 className="font-medium text-sm text-slate-800">ヘルプコール設定</h3>
+            <div>
+              <Label>デフォルト必要人数</Label>
+              <Input
+                type="number"
+                min="1"
+                max="10"
+                value={settingsForm.help_call_default_required_count || 1}
+                onChange={(e) => setSettingsForm({...settingsForm, help_call_default_required_count: parseInt(e.target.value) || 1})}
+              />
+              <p className="text-xs text-slate-400 mt-1">新しいヘルプコール作成時のデフォルト必要人数</p>
+            </div>
+          </div>
+
           <div className="space-y-4 p-4 bg-[#E8A4B8]/5 rounded-lg">
             <h3 className="font-medium text-sm text-slate-800">サンクス制度セクション</h3>
             <div>

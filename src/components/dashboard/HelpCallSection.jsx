@@ -28,6 +28,7 @@ export default function HelpCallSection({ user }) {
   const [expandedRequests, setExpandedRequests] = useState({});
   const queryClient = useQueryClient();
 
+  const [settings, setSettings] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -37,6 +38,15 @@ export default function HelpCallSection({ user }) {
     urgency: 'medium',
     required_count: 1,
   });
+
+  useEffect(() => {
+    base44.entities.SiteSettings.list().then(s => {
+      if (s.length > 0) {
+        setSettings(s[0]);
+        setFormData(prev => ({ ...prev, required_count: s[0].help_call_default_required_count || 1 }));
+      }
+    });
+  }, []);
 
   const [responseMessage, setResponseMessage] = useState('');
   const [myResponsesDialogOpen, setMyResponsesDialogOpen] = useState(false);
