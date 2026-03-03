@@ -117,11 +117,6 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   };
 
   const addClientPassenger = (clientName) => {
-    const alreadyAdded = passengers.some(p => p.clientName === clientName);
-    if (alreadyAdded) {
-      alert(`${clientName}さんは既に追加されています`);
-      return;
-    }
     setPassengersByTrip(prev => ({
       ...prev,
       [form.tripType]: [...passengers, { clientName, boardTime: '', alightTime: '', seatBeltChecked: true, note: '', order: passengers.length }]
