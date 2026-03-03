@@ -423,6 +423,13 @@ export default function Dashboard() {
       {/* Header */}
       <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
         <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="flex items-center gap-3 mb-3 md:hidden">
+            {logoChar && (
+              <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                <span className="text-white font-medium text-lg">{logoChar}</span>
+              </div>
+            )}
+          </div>
           <p className="text-white/70 mb-1">
             {format(new Date(), 'yyyy年M月d日')}
           </p>
