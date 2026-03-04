@@ -400,6 +400,7 @@ export default function TransportAdmin() {
           <ApprovedRidesView
             rides={approvedRides}
             deletedRideIds={deletedRideIds}
+            passengers={passengers}
             onEdit={setEditingRide}
             onDelete={(id) => { if (confirm('削除しますか？')) deleteRideMutation.mutate(id); }}
           />
