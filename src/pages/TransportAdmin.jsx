@@ -386,12 +386,13 @@ export default function TransportAdmin() {
                         <p className="text-xs text-slate-400">{ride.startTime} ～ {ride.endTime} / {(ride.distanceKm || 0).toFixed(1)}km</p>
                       </div>
                       <div className="flex gap-2 ml-4">
-                        <Button size="sm" variant="ghost" onClick={() => setEditingRide(ride)}><Edit className="w-4 h-4" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>確認・承認</Button>
+                         <Button size="sm" variant="ghost" onClick={() => setEditingRide(ride)}><Edit className="w-4 h-4" /></Button>
+                         <Button size="sm" variant="ghost" onClick={() => { if (confirm('削除しますか？')) deleteRideMutation.mutate(ride.id); }}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>確認・承認</Button>
+                       </div>
                       </div>
-                    </div>
-                  })}
+                      );
+                      })}
                 </div>
               )}
             </Card>
