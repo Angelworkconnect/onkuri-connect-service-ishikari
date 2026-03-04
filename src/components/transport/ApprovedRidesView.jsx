@@ -56,7 +56,7 @@ function CollapsibleSection({ title, count, badge, children, defaultOpen = false
 }
 
 // ── 日別ビュー ──────────────────────────────────────────
-function DailyView({ rides, onEdit, onDelete }) {
+function DailyView({ rides, passengers, onEdit, onDelete }) {
   const grouped = useMemo(() => {
     const map = {};
     rides.forEach(r => {
@@ -82,7 +82,7 @@ function DailyView({ rides, onEdit, onDelete }) {
             badge={<span className="text-xs text-slate-500 ml-1">計 {totalKm.toFixed(1)}km</span>}
           >
             {dayRides.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).map(r => (
-              <RideRow key={r.id} ride={r} onEdit={onEdit} onDelete={onDelete} />
+              <RideRow key={r.id} ride={r} passengers={passengers} onEdit={onEdit} onDelete={onDelete} />
             ))}
           </CollapsibleSection>
         );
