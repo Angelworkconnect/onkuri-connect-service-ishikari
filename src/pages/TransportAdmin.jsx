@@ -371,7 +371,9 @@ export default function TransportAdmin() {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {submittedRides.filter(r => !deletedRideIds.includes(r.id)).sort((a, b) => b.date.localeCompare(a.date)).map(ride => (
+                  {submittedRides.filter(r => !deletedRideIds.includes(r.id)).sort((a, b) => b.date.localeCompare(a.date)).map(ride => {
+                    const ridePassengers = passengers.filter(p => p.rideId === ride.id).map(p => p.clientName).join('、');
+                    return (
                     <div key={ride.id} className="p-4 hover:bg-slate-50 flex items-center justify-between border-b last:border-0">
                       <div className="flex-1 cursor-pointer" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>
                         <div className="flex items-center gap-2 mb-1">
@@ -380,6 +382,7 @@ export default function TransportAdmin() {
                           {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
                         </div>
                         <p className="text-sm text-slate-600">{ride.vehicleName} / {ride.driverName}</p>
+                        {ridePassengers && <p className="text-xs text-slate-500">👥 {ridePassengers}</p>}
                         <p className="text-xs text-slate-400">{ride.startTime} ～ {ride.endTime} / {(ride.distanceKm || 0).toFixed(1)}km</p>
                       </div>
                       <div className="flex gap-2 ml-4">
