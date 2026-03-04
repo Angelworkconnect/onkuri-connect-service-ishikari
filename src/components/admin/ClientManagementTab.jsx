@@ -523,7 +523,8 @@ export default function ClientManagementTab() {
               </div>
             </div>
           </div>
-          <DialogFooter>
+          </div>
+          <DialogFooter className="pt-2 border-t">
             <Button variant="outline" onClick={resetForm}>
               キャンセル
             </Button>
