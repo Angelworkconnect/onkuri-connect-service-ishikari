@@ -300,16 +300,16 @@ export default function ApprovedRidesView({ rides, deletedRideIds, passengers = 
           </TabsList>
 
           <TabsContent value="daily">
-            <DailyView rides={filtered} onEdit={onEdit} onDelete={onDelete} />
+            <DailyView rides={filtered} passengers={passengers} onEdit={onEdit} onDelete={onDelete} />
           </TabsContent>
           <TabsContent value="person">
-            <PersonView rides={filtered} onEdit={onEdit} onDelete={onDelete} />
+            <PersonView rides={filtered} passengers={passengers} onEdit={onEdit} onDelete={onDelete} />
           </TabsContent>
           <TabsContent value="vehicle">
-            <VehicleView rides={filtered} onEdit={onEdit} onDelete={onDelete} />
+            <VehicleView rides={filtered} passengers={passengers} onEdit={onEdit} onDelete={onDelete} />
           </TabsContent>
           <TabsContent value="weekday">
-            <WeekdayView rides={filtered} onEdit={onEdit} onDelete={onDelete} />
+            <WeekdayView rides={filtered} passengers={passengers} onEdit={onEdit} onDelete={onDelete} />
           </TabsContent>
         </Tabs>
       </div>
