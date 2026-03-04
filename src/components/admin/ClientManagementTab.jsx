@@ -349,12 +349,12 @@ export default function ClientManagementTab() {
 
       {/* ダイアログ */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl flex flex-col" style={{ maxHeight: '90dvh' }}>
           <DialogHeader>
             <DialogTitle>{editingClient ? '利用者編集' : '新規利用者登録'}</DialogTitle>
             <p className="text-xs text-slate-500 mt-1">詳細な情報を設定できます</p>
           </DialogHeader>
-          <div className="space-y-4 py-2">
+          <div className="flex-1 overflow-y-auto space-y-4 py-2">
             {/* 基本情報 */}
             <div className="space-y-3 pb-4 border-b">
               <h3 className="font-semibold text-sm">基本情報</h3>
