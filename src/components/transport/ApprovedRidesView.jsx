@@ -14,7 +14,8 @@ const tripInfo = (t) => TRIP[t] || TRIP.OTHER;
 const tripBadge = (t) => <Badge className={`text-xs ${tripInfo(t).badge}`}>{tripInfo(t).label}</Badge>;
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
-function RideRow({ ride, onEdit, onDelete }) {
+function RideRow({ ride, passengers, onEdit, onDelete }) {
+  const ridePassengers = passengers.filter(p => p.rideId === ride.id).map(p => p.clientName).join('、');
   return (
     <div className={`px-4 py-3 flex items-center justify-between ${tripInfo(ride.tripType).border}`}>
       <div className="flex-1 min-w-0">
@@ -23,6 +24,7 @@ function RideRow({ ride, onEdit, onDelete }) {
           {ride.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
         </div>
         <p className="text-sm text-slate-700">{ride.vehicleName} / {ride.driverName}</p>
+        {ridePassengers && <p className="text-xs text-slate-500">👥 {ridePassengers}</p>}
         <p className="text-xs text-slate-400">{ride.startTime}～{ride.endTime} | {(ride.distanceKm || 0).toFixed(1)}km</p>
       </div>
       <div className="flex gap-1 ml-3 shrink-0">
