@@ -157,11 +157,9 @@ export default function TransportAdmin() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['ta-submitted']);
-      queryClient.invalidateQueries(['ta-approved']);
+      queryClient.invalidateQueries({ queryKey: ['ta-submitted'] });
+      queryClient.invalidateQueries({ queryKey: ['ta-approved'] });
       setDetailRide(null);
-      // 承認ダイアログを自動的に閉じる
-      document.querySelector('[role="dialog"]')?.close?.();
     },
   });
 
