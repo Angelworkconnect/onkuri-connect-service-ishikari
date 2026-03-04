@@ -136,6 +136,13 @@ export default function TransportAdmin() {
     staleTime: 0,
     refetchInterval: false,
   });
+  const { data: passengers = [] } = useQuery({
+    queryKey: ['ta-passengers'],
+    queryFn: () => base44.entities.RidePassenger.list('-created_date', 500),
+    enabled: !!user,
+    staleTime: 0,
+    refetchInterval: false,
+  });
 
 
   const approveMutation = useMutation({
