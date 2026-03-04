@@ -198,7 +198,7 @@ function VehicleView({ rides, passengers, onEdit, onDelete }) {
 }
 
 // ── 曜日別ビュー ──────────────────────────────────────────
-function WeekdayView({ rides, onEdit, onDelete }) {
+function WeekdayView({ rides, passengers, onEdit, onDelete }) {
   const grouped = useMemo(() => {
     const map = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
     rides.forEach(r => {
@@ -229,7 +229,9 @@ function WeekdayView({ rides, onEdit, onDelete }) {
               </>
             }
           >
-            {dayRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => (
+            {dayRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => {
+              const ridePassengers = passengers.filter(p => p.rideId === r.id).map(p => p.clientName).join('、');
+              return (
               <div key={r.id} className={`px-4 py-3 flex items-center justify-between ${tripInfo(r.tripType).border}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
@@ -238,6 +240,7 @@ function WeekdayView({ rides, onEdit, onDelete }) {
                     {r.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
                   </div>
                   <p className="text-sm text-slate-600">{r.vehicleName} / {r.driverName}</p>
+                  {ridePassengers && <p className="text-xs text-slate-500">👥 {ridePassengers}</p>}
                   <p className="text-xs text-slate-400">{r.startTime}～{r.endTime} | {(r.distanceKm || 0).toFixed(1)}km</p>
                 </div>
                 <div className="flex gap-1 ml-3 shrink-0">
@@ -245,7 +248,8 @@ function WeekdayView({ rides, onEdit, onDelete }) {
                   <Button size="sm" variant="ghost" onClick={() => onDelete(r.id)}><Trash2 className="w-3.5 h-3.5 text-red-500" /></Button>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </CollapsibleSection>
         );
       })}
