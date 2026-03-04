@@ -251,9 +251,11 @@ function EmptyState() {
   );
 }
 
-export default function ApprovedRidesView({ rides, deletedRideIds, onEdit, onDelete }) {
+export default function ApprovedRidesView({ rides, deletedRideIds, passengers = [], onEdit, onDelete }) {
   const filtered = rides.filter(r => !deletedRideIds.includes(r.id));
   const totalKm = filtered.reduce((s, r) => s + (r.distanceKm || 0), 0);
+  
+  const getPassengers = (rideId) => passengers.filter(p => p.rideId === rideId).map(p => p.clientName).join('、');
 
   return (
     <Card className="border-0 shadow mt-4">
