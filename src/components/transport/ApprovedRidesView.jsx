@@ -92,7 +92,7 @@ function DailyView({ rides, passengers, onEdit, onDelete }) {
 }
 
 // ── 人別ビュー ──────────────────────────────────────────
-function PersonView({ rides, onEdit, onDelete }) {
+function PersonView({ rides, passengers, onEdit, onDelete }) {
   const grouped = useMemo(() => {
     const map = {};
     rides.forEach(r => {
@@ -116,7 +116,9 @@ function PersonView({ rides, onEdit, onDelete }) {
             count={personRides.length}
             badge={<span className="text-xs text-slate-500 ml-1">計 {totalKm.toFixed(1)}km</span>}
           >
-            {personRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => (
+            {personRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => {
+              const ridePassengers = passengers.filter(p => p.rideId === r.id).map(p => p.clientName).join('、');
+              return (
               <div key={r.id} className={`px-4 py-3 flex items-center justify-between ${tripInfo(r.tripType).border}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
@@ -125,6 +127,7 @@ function PersonView({ rides, onEdit, onDelete }) {
                     {r.abnormality !== 'NONE' && <Badge className="bg-red-100 text-red-700 text-xs">⚠️ 異常</Badge>}
                   </div>
                   <p className="text-sm text-slate-600">{r.vehicleName}</p>
+                  {ridePassengers && <p className="text-xs text-slate-500">👥 {ridePassengers}</p>}
                   <p className="text-xs text-slate-400">{r.startTime}～{r.endTime} | {(r.distanceKm || 0).toFixed(1)}km</p>
                 </div>
                 <div className="flex gap-1 ml-3 shrink-0">
@@ -132,7 +135,8 @@ function PersonView({ rides, onEdit, onDelete }) {
                   <Button size="sm" variant="ghost" onClick={() => onDelete(r.id)}><Trash2 className="w-3.5 h-3.5 text-red-500" /></Button>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </CollapsibleSection>
         );
       })}
