@@ -391,7 +391,6 @@ export default function TransportAdmin() {
                         <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => { setDetailRide(ride); setAdminNote(ride.adminNote || ''); }}>確認・承認</Button>
                       </div>
                     </div>
-                    );
                   })}
                 </div>
               )}
