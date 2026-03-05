@@ -243,30 +243,88 @@ export default function TransportAdmin() {
     queryClient.invalidateQueries(['ta-approved']);
   };
 
-  const handleExportPDF = async (exportType) => {
-    setExporting(true);
-    try {
-      const response = await base44.functions.invoke('generateTransportPdf', {
-        dateFrom: exportFrom,
-        dateTo: exportTo,
-        vehicleId: exportVehicle || undefined,
-        driverEmail: exportDriver || undefined,
-        tripType: exportTripType || undefined,
-        exportType,
-      });
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `transport-${exportFrom}-${exportTo}.pdf`;
-      document.body.appendChild(a); a.click();
-      URL.revokeObjectURL(url); a.remove();
-      const logs = await base44.entities.TransportExportLog.list('-created_date', 20);
-      setExportLogs(logs);
-    } catch (e) {
-      alert('PDF出力に失敗しました: ' + e.message);
-    }
-    setExporting(false);
+  const getFilteredRides = () => {
+    let result = approvedRides.filter(r => r.date >= exportFrom && r.date <= exportTo);
+    if (exportVehicle) result = result.filter(r => r.vehicleId === exportVehicle);
+    if (exportDriver) result = result.filter(r => r.driverEmail === exportDriver);
+    if (exportTripType) result = result.filter(r => r.tripType === exportTripType);
+    return result.sort((a, b) => a.date.localeCompare(b.date) || (a.startTime || '').localeCompare(b.startTime || ''));
+  };
+
+  const handleExportHTML = () => {
+    const rides = getFilteredRides();
+    const tripLabelFn = (t) => t === 'PICKUP' ? '朝便（迎え）' : t === 'DROPOFF' ? '帰便（送り）' : 'その他';
+    const now = new Date();
+    const jstStr = new Date(now.getTime() + 9*3600000).toISOString().replace('T',' ').substring(0,16);
+
+    const byDate = {};
+    rides.forEach(r => { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); });
+
+    const rows = Object.entries(byDate).sort().map(([date, dayRides]) => {
+      const dayKm = dayRides.reduce((s,r) => s+(r.distanceKm||0), 0);
+      const rideRows = dayRides.map(r => {
+        const pList = passengers.filter(p => p.rideId === r.id).map(p => p.clientName).join('、');
+        const abnBadge = r.abnormality !== 'NONE' ? `<span style="color:red;font-weight:bold;">⚠️${r.abnormality==='ACCIDENT'?'事故':'軽微異常'}</span>` : '';
+        return `
+          <tr>
+            <td>${r.date}</td>
+            <td>${tripLabelFn(r.tripType)}</td>
+            <td>${r.vehicleName||''}</td>
+            <td>${r.driverName||''}</td>
+            <td>${r.attendantName||''}</td>
+            <td>${r.startTime||''} ～ ${r.endTime||''}</td>
+            <td>${r.startOdometerKm||''}</td>
+            <td>${r.endOdometerKm||''}</td>
+            <td>${(r.distanceKm||0).toFixed(1)}</td>
+            <td>${pList}</td>
+            <td>${abnBadge}${r.abnormalityNote||''}</td>
+            <td>${r.approvedByName||''}</td>
+          </tr>`;
+      }).join('');
+      return `<tr style="background:#e8edf5;font-weight:bold;"><td colspan="12">📅 ${date}（${dayRides.length}便 / ${dayKm.toFixed(1)}km）</td></tr>${rideRows}`;
+    }).join('');
+
+    const totalKm = rides.reduce((s,r) => s+(r.distanceKm||0), 0);
+    const html = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>送迎記録 ${exportFrom}〜${exportTo}</title>
+    <style>body{font-family:sans-serif;font-size:12px;padding:20px;}h1{color:#2D4A6F;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;}th{background:#2D4A6F;color:white;}tr:hover{background:#f5f7fa;}.summary{background:#f0f4ff;padding:10px;border-radius:6px;margin:10px 0;}.footer{margin-top:20px;font-size:10px;color:#888;}</style>
+    </head><body>
+    <h1>送迎管理記録</h1>
+    <div class="summary">期間: ${exportFrom} ～ ${exportTo} ／ 総運行数: ${rides.length}件 ／ 総走行距離: ${totalKm.toFixed(1)} km</div>
+    <table><thead><tr><th>日付</th><th>便種</th><th>車両</th><th>運転者</th><th>同乗者</th><th>時刻</th><th>開始km</th><th>終了km</th><th>走行km</th><th>利用者</th><th>異常</th><th>承認者</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="footer">出力日時: ${jstStr} ／ 出力者: ${user?.full_name || user?.email}</div>
+    </body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `transport-${exportFrom}-${exportTo}.html`;
+    document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove();
+  };
+
+  const handleExportCSV = () => {
+    const rides = getFilteredRides();
+    const tripLabelFn = (t) => t === 'PICKUP' ? '朝便（迎え）' : t === 'DROPOFF' ? '帰便（送り）' : 'その他';
+    const esc = (v) => `"${String(v||'').replace(/"/g,'""')}"`;
+    const header = ['日付','便種','車両','運転者','同乗者','出発時刻','到着時刻','開始メーター(km)','終了メーター(km)','走行距離(km)','利用者','異常','異常内容','承認者','承認日時'];
+    const csvRows = rides.map(r => {
+      const pList = passengers.filter(p => p.rideId === r.id).map(p => p.clientName).join('・');
+      const approvedAt = r.approvedAtUtcMs ? new Date(r.approvedAtUtcMs + 9*3600000).toISOString().substring(0,16).replace('T',' ') : '';
+      return [
+        r.date, tripLabelFn(r.tripType), r.vehicleName, r.driverName, r.attendantName||'',
+        r.startTime||'', r.endTime||'', r.startOdometerKm||'', r.endOdometerKm||'',
+        (r.distanceKm||0).toFixed(1), pList,
+        r.abnormality==='NONE'?'なし':r.abnormality==='MINOR'?'軽微':r.abnormality==='ACCIDENT'?'事故':'',
+        r.abnormalityNote||'', r.approvedByName||'', approvedAt
+      ].map(esc).join(',');
+    });
+    const bom = '\uFEFF';
+    const csv = bom + [header.map(esc).join(','), ...csvRows].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `transport-${exportFrom}-${exportTo}.csv`;
+    document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove();
   };
 
   const openVehicleDialog = (v = null) => {
