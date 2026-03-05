@@ -29,7 +29,6 @@ export default function TransportAdmin() {
   const [exportDriver, setExportDriver] = useState('');
   const [exportTripType, setExportTripType] = useState('');
   const [exporting, setExporting] = useState(false);
-  const [exportLogs, setExportLogs] = useState([]);
   const [vehicleDialog, setVehicleDialog] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [vehicleForm, setVehicleForm] = useState({ name: '', plateNumber: '', model: '', capacityRegular: '', capacityWithWheelchair: '', wheelchairAccessible: false, isActive: true });
