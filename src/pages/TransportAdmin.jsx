@@ -51,9 +51,7 @@ export default function TransportAdmin() {
         alert('管理者権限が必要です'); window.location.href = '/';
       }
       setUser(u);
-      const logs = await base44.entities.TransportExportLog.list('-created_date', 20);
-      setExportLogs(logs);
-    }).catch(() => base44.auth.redirectToLogin());
+      }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
   // リアルタイム更新：Rideの変更を即時反映
