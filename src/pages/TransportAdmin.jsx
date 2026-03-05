@@ -15,6 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import RideForm from '../components/transport/RideForm';
 import ApprovedRidesView from '../components/transport/ApprovedRidesView';
+import PreCheckForm from '../components/transport/PreCheckForm';
+import DriverCheckForm from '../components/transport/DriverCheckForm';
 
 const today = new Date().toISOString().split('T')[0];
 const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
