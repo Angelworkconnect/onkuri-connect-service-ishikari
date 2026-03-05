@@ -376,7 +376,7 @@ export default function TransportAdmin() {
               { value: 'checks', label: '点検記録' },
               { value: 'vehicles', label: '車両管理' },
               { value: 'templates', label: 'テンプレ' },
-              { value: 'export', label: 'PDF出力' },
+              { value: 'export', label: 'データ出力' },
             ].map(({ value, label }) => (
               <TabsTrigger key={value} value={value} className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-sm">{label}</TabsTrigger>
             ))}
