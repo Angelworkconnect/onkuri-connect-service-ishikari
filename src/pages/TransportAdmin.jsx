@@ -628,11 +628,11 @@ export default function TransportAdmin() {
             </Card>
           </TabsContent>
 
-          {/* PDF出力タブ */}
+          {/* データ出力タブ */}
           <TabsContent value="export">
             <div className="space-y-4">
               <Card className="border-0 shadow p-6">
-                <h2 className="font-bold mb-4 flex items-center gap-2"><Download className="w-5 h-5" />PDF出力（監査対応）</h2>
+                <h2 className="font-bold mb-4 flex items-center gap-2"><Download className="w-5 h-5" />データ出力（HTML / CSV）</h2>
                 <div className="grid grid-cols-2 gap-4 max-w-lg">
                   <div>
                     <Label>開始日 *</Label>
@@ -664,44 +664,28 @@ export default function TransportAdmin() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div>
+                    <Label>運転者フィルタ</Label>
+                    <Select value={exportDriver || 'all'} onValueChange={v => setExportDriver(v === 'all' ? '' : v)}>
+                      <SelectTrigger><SelectValue placeholder="全運転者" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">全運転者</SelectItem>
+                        {staff.map(s => <SelectItem key={s.id} value={s.email}>{s.full_name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex gap-3 mt-6">
-                  <Button className="bg-[#2D4A6F] hover:bg-[#1E3A5F]" disabled={exporting} onClick={() => handleExportPDF('PDF_DAILY')}>
+                <div className="flex gap-3 mt-6 flex-wrap">
+                  <Button className="bg-[#2D4A6F] hover:bg-[#1E3A5F]" onClick={handleExportHTML}>
                     <Download className="w-4 h-4 mr-2" />
-                    {exporting ? '生成中...' : '日別PDF出力'}
+                    HTML出力
                   </Button>
-                  <Button variant="outline" disabled={exporting} onClick={() => handleExportPDF('PDF_MONTHLY')}>
+                  <Button variant="outline" onClick={handleExportCSV}>
                     <Download className="w-4 h-4 mr-2" />
-                    月別PDF出力
+                    CSV出力
                   </Button>
                 </div>
-                <p className="text-xs text-slate-500 mt-3">※ 承認済み（APPROVED）の記録のみ出力されます。出力者・日時がPDFに記載されます。</p>
-              </Card>
-
-              <Card className="border-0 shadow">
-                <div className="p-4 border-b font-bold">出力ログ（監査証跡）</div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>出力日時</TableHead>
-                        <TableHead>出力者</TableHead>
-                        <TableHead>種別</TableHead>
-                        <TableHead>期間</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {exportLogs.map(log => (
-                        <TableRow key={log.id}>
-                          <TableCell className="text-xs">{log.createdAtUtcMs ? new Date(log.createdAtUtcMs + 9*3600000).toISOString().replace('T', ' ').substring(0, 16) : '-'}</TableCell>
-                          <TableCell>{log.createdByName}</TableCell>
-                          <TableCell><Badge className="bg-blue-100 text-blue-700 text-xs">{log.exportType}</Badge></TableCell>
-                          <TableCell className="text-xs">{log.dateFrom} ～ {log.dateTo}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <p className="text-xs text-slate-500 mt-3">※ 承認済み（APPROVED）の記録のみ出力されます。</p>
               </Card>
             </div>
           </TabsContent>
