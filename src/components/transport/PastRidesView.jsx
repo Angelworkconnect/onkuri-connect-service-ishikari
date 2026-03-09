@@ -144,7 +144,7 @@ function VehicleView({ rides, passengersMap }) {
   );
 }
 
-function WeekdayView({ rides }) {
+function WeekdayView({ rides, passengersMap }) {
   const grouped = useMemo(() => {
     const map = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
     rides.forEach(r => { const d = new Date(r.date + 'T00:00:00'); map[d.getDay()].push(r); });
@@ -169,6 +169,7 @@ function WeekdayView({ rides }) {
                   {statusBadge(r.status)}
                 </div>
                 <p className="text-xs text-slate-500">{r.vehicleName} / {r.driverName}</p>
+                <PassengerLine passengers={passengersMap[r.id]} />
               </div>
             ))}
           </CollapsibleGroup>
