@@ -87,7 +87,7 @@ function DailyView({ rides, passengersMap }) {
   );
 }
 
-function PersonView({ rides }) {
+function PersonView({ rides, passengersMap }) {
   const grouped = useMemo(() => {
     const map = {};
     rides.forEach(r => { const k = r.driverName || '不明'; if (!map[k]) map[k] = []; map[k].push(r); });
@@ -98,15 +98,14 @@ function PersonView({ rides }) {
       {grouped.map(([name, personRides]) => (
         <CollapsibleGroup key={name} title={name} count={personRides.length}>
           {personRides.sort((a, b) => b.date.localeCompare(a.date)).map(r => (
-            <div key={r.id} className={`px-4 py-3 flex items-center justify-between ${tripInfo(r.tripType).border}`}>
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                  <span className="text-sm font-medium">{r.date}</span>
-                  {tripBadge(r.tripType)}
-                  {statusBadge(r.status)}
-                </div>
-                <p className="text-xs text-slate-500">{r.vehicleName}{r.distanceKm ? ` | ${r.distanceKm.toFixed(1)}km` : ''}</p>
+            <div key={r.id} className={`px-4 py-3 ${tripInfo(r.tripType).border}`}>
+              <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                <span className="text-sm font-medium">{r.date}</span>
+                {tripBadge(r.tripType)}
+                {statusBadge(r.status)}
               </div>
+              <p className="text-xs text-slate-500">{r.vehicleName}{r.distanceKm ? ` | ${r.distanceKm.toFixed(1)}km` : ''}</p>
+              <PassengerLine passengers={passengersMap[r.id]} />
             </div>
           ))}
         </CollapsibleGroup>
