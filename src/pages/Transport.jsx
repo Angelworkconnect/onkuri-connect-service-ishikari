@@ -43,7 +43,6 @@ export default function Transport() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const newToday = new Date().toISOString().split('T')[0];
       const currentToday = new Date(Date.now() + 9*3600000).toISOString().split('T')[0];
           setToday(prevToday => {
             if (prevToday !== currentToday) {
