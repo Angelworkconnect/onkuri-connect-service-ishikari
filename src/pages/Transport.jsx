@@ -332,6 +332,11 @@ export default function Transport() {
                              <Clock className="w-3 h-3 inline mr-1" />{ride.startTime}{ride.endTime ? ` ～ ${ride.endTime}` : ' (運行中)'}
                              {ride.distanceKm ? ` / ${ride.distanceKm.toFixed(1)}km` : ''}
                            </p>
+                         {passengers.length > 0 && (
+                           <p className="text-xs text-slate-500 mt-0.5">
+                             👥 {passengers.length}名：{passengers.map(p => p.clientName).join('、')}
+                           </p>
+                         )}
                          </div>
                          <Badge className="bg-blue-100 text-blue-700 ml-2 shrink-0">{passengers.length}名</Badge>
                        </div>
