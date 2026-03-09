@@ -114,7 +114,7 @@ function PersonView({ rides, passengersMap }) {
   );
 }
 
-function VehicleView({ rides }) {
+function VehicleView({ rides, passengersMap }) {
   const grouped = useMemo(() => {
     const map = {};
     rides.forEach(r => { const k = r.vehicleName || '不明'; if (!map[k]) map[k] = []; map[k].push(r); });
@@ -134,6 +134,7 @@ function VehicleView({ rides }) {
                   {statusBadge(r.status)}
                 </div>
                 <p className="text-xs text-slate-500">{r.driverName}{r.distanceKm ? ` | ${r.distanceKm.toFixed(1)}km` : ''}</p>
+                <PassengerLine passengers={passengersMap[r.id]} />
               </div>
             ))}
           </CollapsibleGroup>
