@@ -179,7 +179,7 @@ function WeekdayView({ rides, passengersMap }) {
   );
 }
 
-export default function PastRidesView({ rides }) {
+export default function PastRidesView({ rides, passengersMap = {} }) {
   if (rides.length === 0) return null;
 
   return (
@@ -200,10 +200,10 @@ export default function PastRidesView({ rides }) {
             <CalendarDays className="w-3.5 h-3.5 mr-1 hidden sm:inline" />曜日別
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="daily"><DailyView rides={rides} /></TabsContent>
-        <TabsContent value="person"><PersonView rides={rides} /></TabsContent>
-        <TabsContent value="vehicle"><VehicleView rides={rides} /></TabsContent>
-        <TabsContent value="weekday"><WeekdayView rides={rides} /></TabsContent>
+        <TabsContent value="daily"><DailyView rides={rides} passengersMap={passengersMap} /></TabsContent>
+        <TabsContent value="person"><PersonView rides={rides} passengersMap={passengersMap} /></TabsContent>
+        <TabsContent value="vehicle"><VehicleView rides={rides} passengersMap={passengersMap} /></TabsContent>
+        <TabsContent value="weekday"><WeekdayView rides={rides} passengersMap={passengersMap} /></TabsContent>
       </Tabs>
     </div>
   );
