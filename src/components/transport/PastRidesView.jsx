@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, User, Truck, CalendarDays, ChevronDown, ChevronRight, Clock } from 'lucide-react';
+import { Calendar, User, Truck, CalendarDays, ChevronDown, ChevronRight, Clock, Users } from 'lucide-react';
 
 const TRIP = {
   PICKUP:  { label: '🌅 朝便', badge: 'bg-orange-100 text-orange-700 border border-orange-200', border: 'border-l-4 border-orange-400 bg-orange-50/30' },
