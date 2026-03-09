@@ -736,6 +736,31 @@ export default function TransportAdmin() {
                 <div><span className="text-slate-500">走行距離</span><p className="font-bold text-blue-700">{(detailRide.distanceKm || 0).toFixed(1)} km</p></div>
                 <div><span className="text-slate-500">異常</span><p className={`font-medium ${detailRide.abnormality !== 'NONE' ? 'text-red-600' : 'text-green-600'}`}>{detailRide.abnormality === 'NONE' ? 'なし' : detailRide.abnormality === 'MINOR' ? '軽微' : '事故'}</p></div>
               </div>
+              {/* 乗客一覧 */}
+              {(() => {
+                const ridePassengers = passengers.filter(p => p.rideId === detailRide.id).sort((a, b) => (a.order || 0) - (b.order || 0));
+                return (
+                  <div className="bg-blue-50 p-3 rounded-xl">
+                    <p className="text-sm font-bold text-blue-800 mb-2">👥 乗客（{ridePassengers.length}名）</p>
+                    {ridePassengers.length === 0 ? (
+                      <p className="text-xs text-slate-500">乗客なし</p>
+                    ) : (
+                      <div className="space-y-1">
+                        {ridePassengers.map((p, i) => (
+                          <div key={i} className="text-xs bg-white rounded-lg px-3 py-1.5">
+                            <span className="font-medium">{p.clientName}</span>
+                            {(p.boardTime || p.alightTime) && (
+                              <span className="text-slate-500 ml-2">
+                                {p.boardTime && `乗: ${p.boardTime}`}{p.boardTime && p.alightTime && ' / '}{p.alightTime && `降: ${p.alightTime}`}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
               {detailRide.abnormalityNote && <div className="bg-red-50 p-3 rounded-xl text-red-700 text-sm"><strong>異常内容:</strong> {detailRide.abnormalityNote}</div>}
               <div>
                 <Label className="text-xs font-bold">管理者メモ（任意）</Label>
