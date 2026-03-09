@@ -365,7 +365,7 @@ export default function Transport() {
 
         {/* 過去の記録 */}
         {!mode && (
-          <PastRidesView rides={myRides.filter(r => r.date !== today)} />
+          <PastRidesView rides={pastRides} passengersMap={pastPassengersMap} />
         )}
 
         {/* 運行詳細ダイアログ */}
