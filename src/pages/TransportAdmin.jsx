@@ -162,10 +162,29 @@ export default function TransportAdmin() {
         createdAtUtc: Date.now(),
       });
     },
+    onMutate: (ride) => {
+      // 楽観的更新：承認待ちリストから即時除去し、承認済みに追加
+      queryClient.setQueryData(['ta-submitted'], (old = []) =>
+        old.filter(r => r.id !== ride.id)
+      );
+      const approvedRide = {
+        ...ride,
+        status: 'APPROVED',
+        approvedByEmail: user.email,
+        approvedByName: user.full_name,
+        approvedAtUtcMs: Date.now(),
+        adminNote,
+      };
+      queryClient.setQueryData(['ta-approved'], (old = []) => [approvedRide, ...old]);
+      setDetailRide(null);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ta-submitted'] });
       queryClient.invalidateQueries({ queryKey: ['ta-approved'] });
-      setDetailRide(null);
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['ta-submitted'] });
+      queryClient.invalidateQueries({ queryKey: ['ta-approved'] });
     },
   });
 
@@ -181,9 +200,22 @@ export default function TransportAdmin() {
         createdAtUtc: Date.now(),
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['ta-submitted']);
+    onMutate: (ride) => {
+      // 楽観的更新：承認待ちリストから即時除去し、下書きに追加
+      queryClient.setQueryData(['ta-submitted'], (old = []) =>
+        old.filter(r => r.id !== ride.id)
+      );
+      const draftRide = { ...ride, status: 'DRAFT', adminNote };
+      queryClient.setQueryData(['ta-draft'], (old = []) => [draftRide, ...old]);
       setDetailRide(null);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ta-submitted'] });
+      queryClient.invalidateQueries({ queryKey: ['ta-draft'] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['ta-submitted'] });
+      queryClient.invalidateQueries({ queryKey: ['ta-draft'] });
     },
   });
 
