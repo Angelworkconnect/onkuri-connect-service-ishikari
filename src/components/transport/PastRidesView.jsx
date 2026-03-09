@@ -67,7 +67,7 @@ function CollapsibleGroup({ title, count, children, defaultOpen = false }) {
   );
 }
 
-function DailyView({ rides }) {
+function DailyView({ rides, passengersMap }) {
   const grouped = useMemo(() => {
     const map = {};
     rides.forEach(r => { if (!map[r.date]) map[r.date] = []; map[r.date].push(r); });
@@ -79,7 +79,7 @@ function DailyView({ rides }) {
         const d = new Date(date + 'T00:00:00');
         return (
           <CollapsibleGroup key={date} title={`${date}（${DAY_LABELS[d.getDay()]}）`} count={dayRides.length}>
-            {dayRides.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).map(r => <RideCard key={r.id} ride={r} />)}
+            {dayRides.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || '')).map(r => <RideCard key={r.id} ride={r} passengers={passengersMap[r.id]} />)}
           </CollapsibleGroup>
         );
       })}
