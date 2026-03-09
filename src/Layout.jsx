@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
-
-// スマホキャッシュ対策：アプリバージョン管理
-const APP_BUILD_VERSION = "2026-03-09-cache-clear-v3";
 import {
   DropdownMenu,
   DropdownMenuContent,
