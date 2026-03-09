@@ -13,7 +13,6 @@ import DriverCheckForm from '../components/transport/DriverCheckForm';
 import { format } from 'date-fns';
 
 const tripLabel = (t) => t === 'PICKUP' ? '🌅 朝便' : t === 'DROPOFF' ? '🌇 帰便' : '🚐 その他';
-// v2
 const statusBadge = (s) => {
   if (s === 'APPROVED') return <Badge className="bg-green-100 text-green-700">承認済</Badge>;
   if (s === 'SUBMITTED') return <Badge className="bg-blue-100 text-blue-700">提出済</Badge>;
