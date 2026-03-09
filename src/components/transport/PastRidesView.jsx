@@ -18,7 +18,17 @@ const statusBadge = (s) => {
 };
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
-function RideCard({ ride }) {
+function PassengerLine({ passengers }) {
+  if (!passengers || passengers.length === 0) return null;
+  return (
+    <p className="text-xs text-blue-700 mt-0.5">
+      <Users className="w-3 h-3 inline mr-1" />
+      {passengers.length}名：{passengers.map(p => p.clientName).join('、')}
+    </p>
+  );
+}
+
+function RideCard({ ride, passengers }) {
   return (
     <div className={`px-4 py-3 flex items-center justify-between ${tripInfo(ride.tripType).border}`}>
       <div className="flex-1 min-w-0">
@@ -32,6 +42,7 @@ function RideCard({ ride }) {
           <Clock className="w-3 h-3 inline mr-1" />{ride.startTime}{ride.endTime ? `～${ride.endTime}` : ''}
           {ride.distanceKm ? ` | ${ride.distanceKm.toFixed(1)}km` : ''}
         </p>
+        <PassengerLine passengers={passengers} />
       </div>
     </div>
   );
