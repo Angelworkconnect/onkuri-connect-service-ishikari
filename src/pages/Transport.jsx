@@ -64,10 +64,25 @@ export default function Transport() {
     refetchInterval: 30000,
   });
 
-  const { data: myRides = [], refetch: refetchMyRides } = useQuery({
+  const { data: myRides = [] } = useQuery({
     queryKey: ['transport-my'],
     queryFn: () => base44.entities.Ride.list('-created_date', 20),
     enabled: !!user,
+  });
+
+  const pastRides = myRides.filter(r => r.date !== today);
+
+  const { data: pastPassengersMap = {} } = useQuery({
+    queryKey: ['transport-past-passengers-map', pastRides.map(r => r.id).join(',')],
+    queryFn: async () => {
+      const map = {};
+      for (const ride of pastRides) {
+        map[ride.id] = await base44.entities.RidePassenger.filter({ rideId: ride.id });
+      }
+      return map;
+    },
+    enabled: !!user && pastRides.length > 0,
+    staleTime: 120000,
   });
 
   // 即時削除用のローカルフィルタ
