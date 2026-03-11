@@ -146,7 +146,7 @@ export default function AttendanceApproval() {
         <TableHead>労働時間</TableHead>
         <TableHead>状態</TableHead>
         <TableHead>修正理由</TableHead>
-        <TableHead>操作</TableHead>
+        {isAdmin && <TableHead>操作</TableHead>}
       </TableRow>
     </TableHeader>
   );
