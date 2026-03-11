@@ -216,86 +216,114 @@ export default function AttendanceApproval() {
             )}
           </div>
 
-          {/* 日別タブ */}
-          <TabsContent value="daily">
-            {byDay.length === 0 ? (
-              <Card className="border-0 shadow-lg p-10 text-center text-slate-400">この月のデータはありません</Card>
-            ) : (
-              byDay.map(([date, records]) => (
-                <Card key={date} className="border-0 shadow-lg mb-4">
-                  <div className="px-6 py-3 border-b bg-slate-50 flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-[#2D4A6F]" />
-                    <span className="font-medium">{format(new Date(date), 'M月d日(E)', { locale: ja })}</span>
-                    <span className="text-slate-400 text-sm ml-2">{records.length}件</span>
-                    {records.some(r => r.status === 'completed') && (
-                      <Badge className="bg-yellow-100 text-yellow-700 text-xs ml-auto">承認待ちあり</Badge>
-                    )}
-                  </div>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeaders showName={true} />
-                      <TableBody>
-                        {records.map(r => <RecordRow key={r.id} record={r} showName={true} />)}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          {/* 月別タブ */}
-          <TabsContent value="monthly">
-            <Card className="border-0 shadow-lg">
-              <div className="px-6 py-4 border-b">
-                <h2 className="font-medium">{selectedMonth.replace('-', '年')}月 全勤怠一覧</h2>
-                <p className="text-sm text-slate-500 mt-1">{monthRecords.length}件</p>
-              </div>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeaders showName={true} />
-                  <TableBody>
-                    {monthRecords.length === 0 ? (
-                      <TableRow><TableCell colSpan={9} className="text-center text-slate-400 py-8">この月のデータはありません</TableCell></TableRow>
-                    ) : (
-                      monthRecords.map(r => <RecordRow key={r.id} record={r} showName={true} />)
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* 人別タブ */}
-          <TabsContent value="bystaff">
-            {byStaff.length === 0 ? (
-              <Card className="border-0 shadow-lg p-10 text-center text-slate-400">この月のデータはありません</Card>
-            ) : (
-              byStaff.map(({ name, email, records }) => {
-                const totalMins = records.reduce((sum, r) => sum + calculateWorkMinutes(r.clock_in, r.clock_out, r.break_minutes), 0);
-                const pendingCount = records.filter(r => r.status === 'completed').length;
-                return (
-                  <Card key={email} className="border-0 shadow-lg mb-4">
-                    <div className="px-6 py-3 border-b bg-slate-50 flex items-center gap-3">
-                      <User className="w-4 h-4 text-[#2D4A6F]" />
-                      <span className="font-medium">{name}</span>
-                      <span className="text-slate-400 text-sm">{records.length}日</span>
-                      <span className="text-slate-600 text-sm">合計: {formatMinutes(totalMins)}</span>
-                      {pendingCount > 0 && (
-                        <Badge className="bg-yellow-100 text-yellow-700 text-xs ml-auto">承認待ち {pendingCount}件</Badge>
+          {/* 管理者のみ: 日別タブ */}
+          {isAdmin && (
+            <TabsContent value="daily">
+              {byDay.length === 0 ? (
+                <Card className="border-0 shadow-lg p-10 text-center text-slate-400">この月のデータはありません</Card>
+              ) : (
+                byDay.map(([date, records]) => (
+                  <Card key={date} className="border-0 shadow-lg mb-4">
+                    <div className="px-6 py-3 border-b bg-slate-50 flex items-center gap-2">
+                      <CalendarDays className="w-4 h-4 text-[#2D4A6F]" />
+                      <span className="font-medium">{format(new Date(date), 'M月d日(E)', { locale: ja })}</span>
+                      <span className="text-slate-400 text-sm ml-2">{records.length}件</span>
+                      {records.some(r => r.status === 'completed') && (
+                        <Badge className="bg-yellow-100 text-yellow-700 text-xs ml-auto">承認待ちあり</Badge>
                       )}
                     </div>
                     <div className="overflow-x-auto">
                       <Table>
-                        <TableHeaders showName={false} />
+                        <TableHeaders showName={true} />
                         <TableBody>
-                          {records.map(r => <RecordRow key={r.id} record={r} showName={false} />)}
+                          {records.map(r => <RecordRow key={r.id} record={r} showName={true} />)}
                         </TableBody>
                       </Table>
                     </div>
                   </Card>
-                );
-              })
+                ))
+              )}
+            </TabsContent>
+          )}
+
+          {/* 管理者のみ: 月別タブ */}
+          {isAdmin && (
+            <TabsContent value="monthly">
+              <Card className="border-0 shadow-lg">
+                <div className="px-6 py-4 border-b">
+                  <h2 className="font-medium">{selectedMonth.replace('-', '年')}月 全勤怠一覧</h2>
+                  <p className="text-sm text-slate-500 mt-1">{monthRecords.length}件</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeaders showName={true} />
+                    <TableBody>
+                      {monthRecords.length === 0 ? (
+                        <TableRow><TableCell colSpan={9} className="text-center text-slate-400 py-8">この月のデータはありません</TableCell></TableRow>
+                      ) : (
+                        monthRecords.map(r => <RecordRow key={r.id} record={r} showName={true} />)
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </Card>
+            </TabsContent>
+          )}
+
+          {/* 管理者: 人別タブ / 一般: 自分のみ */}
+          <TabsContent value="bystaff">
+            {isAdmin ? (
+              byStaff.length === 0 ? (
+                <Card className="border-0 shadow-lg p-10 text-center text-slate-400">この月のデータはありません</Card>
+              ) : (
+                byStaff.map(({ name, email, records }) => {
+                  const totalMins = records.reduce((sum, r) => sum + calculateWorkMinutes(r.clock_in, r.clock_out, r.break_minutes), 0);
+                  const pendingCount = records.filter(r => r.status === 'completed').length;
+                  return (
+                    <Card key={email} className="border-0 shadow-lg mb-4">
+                      <div className="px-6 py-3 border-b bg-slate-50 flex items-center gap-3">
+                        <User className="w-4 h-4 text-[#2D4A6F]" />
+                        <span className="font-medium">{name}</span>
+                        <span className="text-slate-400 text-sm">{records.length}日</span>
+                        <span className="text-slate-600 text-sm">合計: {formatMinutes(totalMins)}</span>
+                        {pendingCount > 0 && (
+                          <Badge className="bg-yellow-100 text-yellow-700 text-xs ml-auto">承認待ち {pendingCount}件</Badge>
+                        )}
+                      </div>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeaders showName={false} />
+                          <TableBody>
+                            {records.map(r => <RecordRow key={r.id} record={r} showName={false} />)}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </Card>
+                  );
+                })
+              )
+            ) : (
+              /* 一般スタッフ: 自分のデータのみ */
+              <Card className="border-0 shadow-lg">
+                <div className="px-6 py-4 border-b bg-slate-50 flex items-center gap-3">
+                  <User className="w-4 h-4 text-[#2D4A6F]" />
+                  <span className="font-medium">{user?.full_name || user?.email}</span>
+                  <span className="text-slate-400 text-sm">{monthRecords.length}日</span>
+                  <span className="text-slate-600 text-sm">合計: {formatMinutes(monthRecords.reduce((sum, r) => sum + calculateWorkMinutes(r.clock_in, r.clock_out, r.break_minutes), 0))}</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeaders showName={false} />
+                    <TableBody>
+                      {monthRecords.length === 0 ? (
+                        <TableRow><TableCell colSpan={8} className="text-center text-slate-400 py-8">この月のデータはありません</TableCell></TableRow>
+                      ) : (
+                        monthRecords.map(r => <RecordRow key={r.id} record={r} showName={false} />)
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </Card>
             )}
           </TabsContent>
 
