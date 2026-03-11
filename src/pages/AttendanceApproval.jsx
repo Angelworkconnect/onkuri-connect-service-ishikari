@@ -33,6 +33,7 @@ const StatusBadge = ({ status }) => {
 export default function AttendanceApproval() {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const queryClient = useQueryClient();
@@ -43,6 +44,7 @@ export default function AttendanceApproval() {
       const admin = u.role === 'admin' || (staffList.length > 0 && staffList[0].role === 'admin');
       setIsAdmin(admin);
       setUser(u);
+      setAuthReady(true);
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
@@ -51,7 +53,7 @@ export default function AttendanceApproval() {
     queryFn: () => isAdmin
       ? base44.entities.Attendance.list('-date')
       : base44.entities.Attendance.filter({ user_email: user.email }, '-date'),
-    enabled: !!user,
+    enabled: authReady && !!user,
   });
 
   const { data: allStaff = [] } = useQuery({
