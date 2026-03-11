@@ -49,7 +49,6 @@
  */
 import AdminPanel from './pages/AdminPanel';
 import Attendance from './pages/Attendance';
-import AttendanceApproval from './pages/AttendanceApproval';
 import AttendanceClose from './pages/AttendanceClose';
 import BenefitManagement from './pages/BenefitManagement';
 import Benefits from './pages/Benefits';
@@ -78,7 +77,6 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "AdminPanel": AdminPanel,
     "Attendance": Attendance,
-    "AttendanceApproval": AttendanceApproval,
     "AttendanceClose": AttendanceClose,
     "BenefitManagement": BenefitManagement,
     "Benefits": Benefits,
