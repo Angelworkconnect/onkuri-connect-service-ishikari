@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CheckCircle, XCircle, Clock, Pencil, CalendarDays, Calendar, User, AlarmClock } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import { createPageUrl } from "@/utils";
 import AttendanceEditDialog from "@/components/attendance/AttendanceEditDialog";
 import OvertimeApprovalTab from "@/components/attendance/OvertimeApprovalTab";
 
