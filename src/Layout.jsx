@@ -160,51 +160,54 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
               {navigation.map((item) => {
                 const isActive = currentPageName === item.href;
                 return (
                   <Link key={item.name} to={createPageUrl(item.href)}>
                     <Button
                       variant="ghost"
-                      className={`${
+                      size="sm"
+                      className={`whitespace-nowrap ${
                         isActive 
                           ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
                           : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
                       }`}
                     >
-                      <item.icon className="w-4 h-4 mr-2" />
+                      <item.icon className="w-4 h-4 mr-1" />
                       {item.name}
                     </Button>
                   </Link>
                 );
               })}
-              {isAdmin && adminNavigation.map((item) => (
-                <Link key={item.name} to={createPageUrl(item.href)}>
+              {isAdmin && (
+                <Link to={createPageUrl('AttendanceApproval')}>
                   <Button
                     variant="ghost"
-                    className={`${
-                      currentPageName === item.href
+                    size="sm"
+                    className={`whitespace-nowrap ${
+                      currentPageName === 'AttendanceApproval'
                         ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
                         : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
                     }`}
                   >
-                    <item.icon className="w-4 h-4 mr-2" />
-                    {item.name}
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    勤怠承認
                   </Button>
                 </Link>
-              ))}
+              )}
               {isAdmin && (
                 <Link to={createPageUrl('AdminPanel')}>
                   <Button
                     variant="ghost"
-                    className={`${
+                    size="sm"
+                    className={`whitespace-nowrap ${
                       currentPageName === 'AdminPanel'
                         ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
                         : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
                     }`}
                   >
-                    <Settings className="w-4 h-4 mr-2" />
+                    <Settings className="w-4 h-4 mr-1" />
                     管理
                   </Button>
                 </Link>
