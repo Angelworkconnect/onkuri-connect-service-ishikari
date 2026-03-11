@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from "date-fns";
+import AttendanceStats from "@/components/attendance/AttendanceStats";
 
 const statusConfig = {
   working: { label: '勤務中', color: 'bg-[#7CB342]/10 text-[#7CB342]' },

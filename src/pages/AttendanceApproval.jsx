@@ -13,8 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Pencil } from "lucide-react";
 import { format } from "date-fns";
+import AttendanceEditDialog from "@/components/attendance/AttendanceEditDialog";
 
 export default function AttendanceApproval() {
   const [user, setUser] = useState(null);
