@@ -200,7 +200,7 @@ export default function AttendanceApproval() {
               onChange={e => setSelectedMonth(e.target.value)}
               className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm shadow-sm"
             />
-            {pendingRecords.length > 0 && (
+            {isAdmin && pendingRecords.length > 0 && (
               <Badge className="bg-yellow-100 text-yellow-700 text-sm px-3 py-1">
                 勤怠承認待ち {pendingRecords.length}件
               </Badge>
