@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Clock, CheckCircle, XCircle, ClipboardList } from "lucide-react";
+import { Plus, Clock, ClipboardList } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
