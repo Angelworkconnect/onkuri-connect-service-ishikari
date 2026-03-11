@@ -131,7 +131,7 @@ export default function AttendanceApproval() {
       <TableCell>{formatMinutes(calculateWorkMinutes(record.clock_in, record.clock_out, record.break_minutes))}</TableCell>
       <TableCell><StatusBadge status={record.status} /></TableCell>
       <TableCell className="max-w-xs truncate text-xs text-slate-500">{record.correction_reason || '-'}</TableCell>
-      <TableCell><ActionButtons record={record} /></TableCell>
+      {isAdmin && <TableCell><ActionButtons record={record} /></TableCell>}
     </TableRow>
   );
 
