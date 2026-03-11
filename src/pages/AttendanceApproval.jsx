@@ -290,10 +290,12 @@ export default function AttendanceApproval() {
             )}
           </TabsContent>
 
-          {/* 残業申請タブ */}
-          <TabsContent value="overtime">
-            <OvertimeApprovalTab adminEmail={user?.email} />
-          </TabsContent>
+          {/* 残業申請タブ（管理者のみ） */}
+          {isAdmin && (
+            <TabsContent value="overtime">
+              <OvertimeApprovalTab adminEmail={user?.email} />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
