@@ -68,7 +68,16 @@ export default function OvertimeRequestPage() {
     return `${Math.floor(mins / 60)}時間${mins % 60 ? mins % 60 + '分' : ''}`;
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center text-slate-400">読み込み中...</div>;
+  if (!user || staffRegistered === null) return <div className="min-h-screen flex items-center justify-center text-slate-400">読み込み中...</div>;
+
+  if (!staffRegistered) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center text-slate-500 space-y-2">
+        <p className="text-lg font-medium">スタッフ登録が必要です</p>
+        <p className="text-sm">管理者にスタッフ登録を依頼してください。</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
