@@ -21,6 +21,7 @@ const StatusBadge = ({ status }) => {
 export default function OvertimeRequestPage() {
   const [user, setUser] = useState(null);
   const [staffName, setStaffName] = useState('');
+  const [staffRegistered, setStaffRegistered] = useState(null); // null=loading, true/false
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ date: '', start_time: '', end_time: '', reason: '' });
   const queryClient = useQueryClient();
@@ -28,7 +29,12 @@ export default function OvertimeRequestPage() {
   useEffect(() => {
     base44.auth.me().then(async (u) => {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
-      if (staffList.length > 0) setStaffName(staffList[0].full_name);
+      if (staffList.length > 0) {
+        setStaffName(staffList[0].full_name);
+        setStaffRegistered(true);
+      } else {
+        setStaffRegistered(false);
+      }
       setUser(u);
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
