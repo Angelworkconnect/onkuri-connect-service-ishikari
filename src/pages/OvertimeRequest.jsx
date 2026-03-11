@@ -45,6 +45,15 @@ export default function OvertimeRequestPage() {
     enabled: !!user,
   });
 
+  // リアルタイム購読
+  useEffect(() => {
+    if (!user) return;
+    const unsub = base44.entities.OvertimeRequest.subscribe(() => {
+      queryClient.invalidateQueries(['overtime-mine', user.email]);
+    });
+    return unsub;
+  }, [user, queryClient]);
+
   const submitMutation = useMutation({
     mutationFn: () => base44.entities.OvertimeRequest.create({
       ...form,
