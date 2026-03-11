@@ -42,9 +42,11 @@ export default function AttendanceApproval() {
     base44.auth.me().then(async (u) => {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       const admin = u.role === 'admin' || (staffList.length > 0 && staffList[0].role === 'admin');
+      // isAdmin と user を同時に確定させてから authReady をセット
       setIsAdmin(admin);
       setUser(u);
-      setAuthReady(true);
+      // React のバッチ更新後に authReady を立てる
+      setTimeout(() => setAuthReady(true), 0);
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
