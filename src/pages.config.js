@@ -72,6 +72,7 @@ import Transport from './pages/Transport';
 import TransportAdmin from './pages/TransportAdmin';
 import VersionCheck from './pages/VersionCheck';
 import OvertimeRequest from './pages/OvertimeRequest';
+import AttendanceApproval from './pages/AttendanceApproval';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "TransportAdmin": TransportAdmin,
     "VersionCheck": VersionCheck,
     "OvertimeRequest": OvertimeRequest,
+    "AttendanceApproval": AttendanceApproval,
 }
 
 export const pagesConfig = {
