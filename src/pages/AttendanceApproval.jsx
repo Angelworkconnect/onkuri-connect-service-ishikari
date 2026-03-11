@@ -205,6 +205,7 @@ export default function AttendanceApproval() {
                       <TableHead>休憩</TableHead>
                       <TableHead>労働時間</TableHead>
                       <TableHead>月次締め</TableHead>
+                      <TableHead>操作</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -217,11 +218,24 @@ export default function AttendanceApproval() {
                         <TableCell>{record.break_minutes || 0}分</TableCell>
                         <TableCell>{calculateWorkHours(record.clock_in, record.clock_out, record.break_minutes)}</TableCell>
                         <TableCell>
-                          {record.month_closed ? (
-                            <Badge className="bg-slate-100 text-slate-600">締め済み</Badge>
-                          ) : (
-                            <Badge className="bg-blue-100 text-blue-600">未締め</Badge>
-                          )}
+                        {record.month_closed ? (
+                          <Badge className="bg-slate-100 text-slate-600">締め済み</Badge>
+                        ) : (
+                          <Badge className="bg-blue-100 text-blue-600">未締め</Badge>
+                        )}
+                        </TableCell>
+                        <TableCell>
+                        {!record.month_closed && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-[#2D4A6F] border-[#2D4A6F]/30 hover:bg-[#2D4A6F]/5"
+                            onClick={() => setEditRecord({ ...record, user_name: getStaffName(record.user_email) })}
+                          >
+                            <Pencil className="w-4 h-4 mr-1" />
+                            編集
+                          </Button>
+                        )}
                         </TableCell>
                       </TableRow>
                     ))}
