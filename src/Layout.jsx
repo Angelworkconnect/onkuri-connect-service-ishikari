@@ -38,6 +38,8 @@ const navigation = [
   { name: '勤怠承認', href: 'AttendanceApproval', icon: CheckCircle },
   ];
 
+  // デバッグ用：adminNavigationが正しく定義されていることを確認
+
 const settingsNavigation = [
   { name: '通知設定', href: 'NotificationSettings' },
 ];
