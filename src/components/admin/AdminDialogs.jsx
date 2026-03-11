@@ -13,6 +13,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Plus, Mail, Trash2, Sparkles, Send } from "lucide-react";
+import StaffTaxFields from './StaffTaxFields';
 
 const tipTypes = [
   { value: 'everyday_thanks', label: 'エブリデイサンクス' },
