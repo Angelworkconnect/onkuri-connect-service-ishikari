@@ -184,6 +184,15 @@ export default function Attendance() {
           </Card>
         )}
 
+        {/* 詳細統計・扶養ライン */}
+        <div className="mb-6">
+          <AttendanceStats
+            attendanceRecords={attendanceRecords}
+            currentMonth={currentMonth}
+            staff={staff}
+          />
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="bg-white border-0 shadow-lg p-6">
