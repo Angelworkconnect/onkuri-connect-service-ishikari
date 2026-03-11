@@ -92,6 +92,12 @@ export default function AttendanceApproval() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+      <AttendanceEditDialog
+        record={editRecord}
+        open={!!editRecord}
+        onClose={() => setEditRecord(null)}
+        onSaved={() => queryClient.invalidateQueries(['attendance-approval'])}
+      />
       <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <h1 className="text-3xl font-light mb-2">勤怠承認</h1>
