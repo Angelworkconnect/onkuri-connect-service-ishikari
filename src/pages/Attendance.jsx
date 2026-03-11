@@ -31,6 +31,7 @@ const statusConfig = {
 
 export default function Attendance() {
   const [user, setUser] = useState(null);
+  const [staff, setStaff] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [viewMode, setViewMode] = useState('calendar');
   const queryClient = useQueryClient();
@@ -42,6 +43,7 @@ export default function Attendance() {
       if (staffList.length > 0) {
         u.full_name = staffList[0].full_name;
         u.approval_status = staffList[0].approval_status || 'pending';
+        setStaff(staffList[0]);
       }
       setUser(u);
     }).catch(() => {
