@@ -32,6 +32,7 @@ const StatusBadge = ({ status }) => {
 
 export default function AttendanceApproval() {
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const queryClient = useQueryClient();
@@ -39,15 +40,17 @@ export default function AttendanceApproval() {
   useEffect(() => {
     base44.auth.me().then(async (u) => {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
-      const isAdmin = u.role === 'admin' || (staffList.length > 0 && staffList[0].role === 'admin');
-      if (!isAdmin) { alert('管理者のみアクセス可能です'); window.location.href = '/'; return; }
+      const admin = u.role === 'admin' || (staffList.length > 0 && staffList[0].role === 'admin');
+      setIsAdmin(admin);
       setUser(u);
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
   const { data: attendanceRecords = [] } = useQuery({
-    queryKey: ['attendance-approval'],
-    queryFn: () => base44.entities.Attendance.list('-date'),
+    queryKey: ['attendance-approval', user?.email, isAdmin],
+    queryFn: () => isAdmin
+      ? base44.entities.Attendance.list('-date')
+      : base44.entities.Attendance.filter({ user_email: user.email }, '-date'),
     enabled: !!user,
   });
 

@@ -49,6 +49,7 @@
  */
 import AdminPanel from './pages/AdminPanel';
 import Attendance from './pages/Attendance';
+import AttendanceApproval from './pages/AttendanceApproval';
 import AttendanceClose from './pages/AttendanceClose';
 import BenefitManagement from './pages/BenefitManagement';
 import Benefits from './pages/Benefits';
@@ -61,6 +62,7 @@ import MyApplications from './pages/MyApplications';
 import MyShift from './pages/MyShift';
 import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
+import OvertimeRequest from './pages/OvertimeRequest';
 import PayrollExport from './pages/PayrollExport';
 import ShiftManagement from './pages/ShiftManagement';
 import ShiftPublic from './pages/ShiftPublic';
@@ -71,14 +73,13 @@ import TipsHistory from './pages/TipsHistory';
 import Transport from './pages/Transport';
 import TransportAdmin from './pages/TransportAdmin';
 import VersionCheck from './pages/VersionCheck';
-import OvertimeRequest from './pages/OvertimeRequest';
-import AttendanceApproval from './pages/AttendanceApproval';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminPanel": AdminPanel,
     "Attendance": Attendance,
+    "AttendanceApproval": AttendanceApproval,
     "AttendanceClose": AttendanceClose,
     "BenefitManagement": BenefitManagement,
     "Benefits": Benefits,
@@ -91,6 +92,7 @@ export const PAGES = {
     "MyShift": MyShift,
     "NotificationSettings": NotificationSettings,
     "Notifications": Notifications,
+    "OvertimeRequest": OvertimeRequest,
     "PayrollExport": PayrollExport,
     "ShiftManagement": ShiftManagement,
     "ShiftPublic": ShiftPublic,
@@ -101,8 +103,6 @@ export const PAGES = {
     "Transport": Transport,
     "TransportAdmin": TransportAdmin,
     "VersionCheck": VersionCheck,
-    "OvertimeRequest": OvertimeRequest,
-    "AttendanceApproval": AttendanceApproval,
 }
 
 export const pagesConfig = {
