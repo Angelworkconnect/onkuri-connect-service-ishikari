@@ -189,6 +189,7 @@ export default function AdminDialogs({
                 <p className="text-xs text-indigo-600 mt-1">選択中: {(staffForm.qualifications || []).join('、')}</p>
               )}
             </div>
+            <StaffTaxFields form={staffForm} setForm={setStaffForm} />
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-3">
             {editingStaff && (
