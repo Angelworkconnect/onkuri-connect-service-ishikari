@@ -34,9 +34,7 @@ const navigation = [
   { name: '福利厚生', href: 'Benefits', icon: Gift },
   ];
 
-  const adminNavigation = [
-  { name: '勤怠承認', href: 'AttendanceApproval', icon: CheckCircle },
-  ];
+  const adminNavigation = [];
 
 const settingsNavigation = [
   { name: '通知設定', href: 'NotificationSettings' },
