@@ -19,6 +19,7 @@ import AttendanceEditDialog from "@/components/attendance/AttendanceEditDialog";
 
 export default function AttendanceApproval() {
   const [user, setUser] = useState(null);
+  const [editRecord, setEditRecord] = useState(null);
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
