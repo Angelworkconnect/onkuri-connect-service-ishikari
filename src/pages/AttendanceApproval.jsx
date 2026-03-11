@@ -103,10 +103,12 @@ export default function AttendanceApproval() {
 
   const ActionButtons = ({ record }) => (
     <div className="flex gap-1 flex-wrap">
-      <Button size="sm" variant="outline" className="text-[#2D4A6F] border-[#2D4A6F]/30" onClick={() => setEditRecord({ ...record, user_name: getStaffName(record.user_email) })}>
-        <Pencil className="w-3 h-3 mr-1" />編集
-      </Button>
-      {record.status === 'completed' && (
+      {isAdmin && (
+        <Button size="sm" variant="outline" className="text-[#2D4A6F] border-[#2D4A6F]/30" onClick={() => setEditRecord({ ...record, user_name: getStaffName(record.user_email) })}>
+          <Pencil className="w-3 h-3 mr-1" />編集
+        </Button>
+      )}
+      {isAdmin && record.status === 'completed' && (
         <>
           <Button size="sm" className="bg-[#7CB342] hover:bg-[#6BA232]" onClick={() => approveMutation.mutate(record.id)}>
             <CheckCircle className="w-3 h-3 mr-1" />承認
