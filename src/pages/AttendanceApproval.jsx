@@ -42,7 +42,10 @@ export default function AttendanceApproval() {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
       const staffRole = staffList.length > 0 ? staffList[0].role : null;
       const isAdmin = u.role === 'admin' || staffRole === 'admin';
-      console.log('[Auth Debug] email:', u.email, '| User.role:', u.role, '| Staff.role:', staffRole, '| isAdmin:', isAdmin);
+      if (!isAdmin) {
+        window.location.href = '/';
+        return;
+      }
       setAuthInfo({ user: u, isAdmin });
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
