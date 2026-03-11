@@ -1416,6 +1416,12 @@ export default function AdminPanel() {
                                 勤怠承認
                               </Button>
                             </Link>
+                            <Link to={createPageUrl('AttendanceClose')}>
+                              <Button className="bg-slate-700 hover:bg-slate-800">
+                                <Lock className="w-4 h-4 mr-2" />
+                                月次締め
+                              </Button>
+                            </Link>
                             <Button
                               onClick={() => {
                                 setEditingAttendance(null);
