@@ -1410,6 +1410,12 @@ export default function AdminPanel() {
                         <div className="flex flex-wrap justify-between items-center gap-3">
                           <h2 className="text-lg font-medium">勤怠管理</h2>
                           <div className="flex gap-2 flex-wrap">
+                            <Link to={createPageUrl('AttendanceApproval')}>
+                              <Button className="bg-amber-600 hover:bg-amber-700">
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                勤怠承認
+                              </Button>
+                            </Link>
                             <Button
                               onClick={() => {
                                 setEditingAttendance(null);
