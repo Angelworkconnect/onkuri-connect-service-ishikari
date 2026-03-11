@@ -181,14 +181,18 @@ export default function AttendanceApproval() {
       <div className="max-w-6xl mx-auto px-6 -mt-6">
         <Tabs defaultValue="daily" className="w-full">
           <TabsList className="bg-white shadow-lg p-1 mb-6 flex-wrap h-auto gap-1">
-            <TabsTrigger value="daily" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <CalendarDays className="w-4 h-4 mr-2" />日別
-            </TabsTrigger>
-            <TabsTrigger value="monthly" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <Calendar className="w-4 h-4 mr-2" />月別
-            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="daily" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+                <CalendarDays className="w-4 h-4 mr-2" />日別
+              </TabsTrigger>
+            )}
+            {isAdmin && (
+              <TabsTrigger value="monthly" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+                <Calendar className="w-4 h-4 mr-2" />月別
+              </TabsTrigger>
+            )}
             <TabsTrigger value="bystaff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <User className="w-4 h-4 mr-2" />人別
+              <User className="w-4 h-4 mr-2" />{isAdmin ? '人別' : '自分の勤怠'}
             </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="overtime" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
