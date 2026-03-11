@@ -43,7 +43,7 @@ export default function AttendanceApproval() {
       const staffRole = staffList.length > 0 ? staffList[0].role : null;
       const isAdmin = u.role === 'admin' || staffRole === 'admin';
       if (!isAdmin) {
-        window.location.href = '/';
+        window.location.href = createPageUrl('Home');
         return;
       }
       setAuthInfo({ user: u, isAdmin });
