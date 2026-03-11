@@ -178,6 +178,21 @@ export default function Layout({ children, currentPageName }) {
                   </Link>
                 );
               })}
+              {isAdmin && adminNavigation.map((item) => (
+                <Link key={item.name} to={createPageUrl(item.href)}>
+                  <Button
+                    variant="ghost"
+                    className={`${
+                      currentPageName === item.href
+                        ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
+                        : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.name}
+                  </Button>
+                </Link>
+              ))}
               {isAdmin && (
                 <Link to={createPageUrl('AdminPanel')}>
                   <Button
