@@ -29,6 +29,7 @@ const navigation = [
   { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
   { name: 'シフト', href: 'MyShift', icon: Calendar },
   { name: '送迎', href: 'Transport', icon: Truck },
+  { name: '残業申請', href: 'OvertimeRequest', icon: Clock },
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
   ];
