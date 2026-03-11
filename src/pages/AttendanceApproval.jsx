@@ -179,7 +179,7 @@ export default function AttendanceApproval() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 -mt-6">
-        <Tabs defaultValue="daily" className="w-full">
+        <Tabs defaultValue={isAdmin ? "daily" : "bystaff"} className="w-full">
           <TabsList className="bg-white shadow-lg p-1 mb-6 flex-wrap h-auto gap-1">
             {isAdmin && (
               <TabsTrigger value="daily" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
