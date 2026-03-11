@@ -49,11 +49,16 @@ export default function AttendanceApproval() {
   }, []);
 
   const { data: attendanceRecords = [] } = useQuery({
-    queryKey: ['attendance-approval', user?.email, isAdmin],
-    queryFn: () => isAdmin
-      ? base44.entities.Attendance.list('-date')
-      : base44.entities.Attendance.filter({ user_email: user.email }, '-date'),
+    queryKey: ['attendance-approval', user?.email, String(isAdmin)],
+    queryFn: async () => {
+      if (isAdmin) {
+        return base44.entities.Attendance.list('-date');
+      } else {
+        return base44.entities.Attendance.filter({ user_email: user.email }, '-date');
+      }
+    },
     enabled: authReady && !!user,
+    staleTime: 0,
   });
 
   const { data: allStaff = [] } = useQuery({
