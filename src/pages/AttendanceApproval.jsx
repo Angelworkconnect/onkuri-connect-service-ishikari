@@ -181,13 +181,15 @@ export default function AttendanceApproval() {
             <TabsTrigger value="bystaff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
               <User className="w-4 h-4 mr-2" />人別
             </TabsTrigger>
-            <TabsTrigger value="overtime" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
-              <AlarmClock className="w-4 h-4 mr-2" />
-              残業申請
-              {overtimePending.length > 0 && (
-                <span className="ml-1 bg-yellow-400 text-white text-xs rounded-full px-1.5">{overtimePending.length}</span>
-              )}
-            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="overtime" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white">
+                <AlarmClock className="w-4 h-4 mr-2" />
+                残業申請
+                {overtimePending.length > 0 && (
+                  <span className="ml-1 bg-yellow-400 text-white text-xs rounded-full px-1.5">{overtimePending.length}</span>
+                )}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* 月選択（勤怠タブ用） */}
