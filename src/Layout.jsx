@@ -179,22 +179,6 @@ export default function Layout({ children, currentPageName }) {
                 );
               })}
               {isAdmin && (
-                <Link to={createPageUrl('AttendanceApproval')}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`whitespace-nowrap ${
-                      currentPageName === 'AttendanceApproval'
-                        ? 'bg-[#2D4A6F]/5 text-[#2D4A6F]' 
-                        : 'text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50'
-                    }`}
-                  >
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                    勤怠承認
-                  </Button>
-                </Link>
-              )}
-              {isAdmin && (
                 <Link to={createPageUrl('AdminPanel')}>
                   <Button
                     variant="ghost"
