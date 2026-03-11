@@ -40,8 +40,9 @@ export default function AttendanceApproval() {
   useEffect(() => {
     base44.auth.me().then(async (u) => {
       const staffList = await base44.entities.Staff.filter({ email: u.email });
-      const isAdmin = u.role === 'admin' || (staffList.length > 0 && staffList[0].role === 'admin');
-      // 1つのステートにまとめて確定させる
+      const staffRole = staffList.length > 0 ? staffList[0].role : null;
+      const isAdmin = u.role === 'admin' || staffRole === 'admin';
+      console.log('[Auth Debug] email:', u.email, '| User.role:', u.role, '| Staff.role:', staffRole, '| isAdmin:', isAdmin);
       setAuthInfo({ user: u, isAdmin });
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
