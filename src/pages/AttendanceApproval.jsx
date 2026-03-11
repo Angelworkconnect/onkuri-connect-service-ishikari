@@ -159,7 +159,7 @@ export default function AttendanceApproval() {
     </TableHeader>
   );
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center"><div className="text-slate-400">読み込み中...</div></div>;
+  if (!authReady) return <div className="min-h-screen flex items-center justify-center"><div className="text-slate-400">読み込み中...</div></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
