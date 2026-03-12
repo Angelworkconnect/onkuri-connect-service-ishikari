@@ -176,7 +176,10 @@ export default function AttendanceApproval() {
         record={editRecord}
         open={!!editRecord}
         onClose={() => setEditRecord(null)}
-        onSaved={() => queryClient.invalidateQueries({ queryKey: ['attendance-approval'] })}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ['attendance-approval'] });
+          setEditRecord(null);
+        }}
       />
 
       <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
