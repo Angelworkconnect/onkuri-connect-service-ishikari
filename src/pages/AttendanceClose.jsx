@@ -140,6 +140,80 @@ export default function AttendanceClose() {
     closeMonthMutation.mutate({ yearMonth: selectedYearMonth });
   };
 
+  const calcWorkMinutes = (clockIn, clockOut, breakMins = 0) => {
+    if (!clockIn || !clockOut) return 0;
+    const [inH, inM] = clockIn.split(':').map(Number);
+    const [outH, outM] = clockOut.split(':').map(Number);
+    return Math.max(0, (outH * 60 + outM) - (inH * 60 + inM) - (breakMins || 0));
+  };
+
+  const getExportRecords = (yearMonth) => {
+    return attendanceRecords
+      .filter(r => r.date.startsWith(yearMonth))
+      .sort((a, b) => a.date.localeCompare(b.date) || (a.user_email || '').localeCompare(b.user_email || ''));
+  };
+
+  const handleExportCSV = () => {
+    const records = getExportRecords(exportMonth);
+    if (records.length === 0) { alert('対象データがありません'); return; }
+    setIsExporting(true);
+    const rows = [['氏名', '勤務日', '出勤', '退勤', '休憩(分)', '実労働時間(h)', '状態', '備考', '修正理由']];
+    records.forEach(r => {
+      const staff = allStaff.find(s => s.email === r.user_email);
+      const name = staff?.full_name || r.user_name || r.user_email;
+      const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+      rows.push([
+        name, r.date, r.clock_in || '', r.clock_out || '',
+        r.break_minutes || 0, (mins / 60).toFixed(2),
+        r.status === 'approved' ? '承認済' : r.status === 'completed' ? '承認待' : '勤務中',
+        r.notes || '', r.correction_reason || '',
+      ]);
+    });
+    const csv = '\uFEFF' + rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `勤怠_${exportMonth}.csv`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    setIsExporting(false);
+  };
+
+  const handleExportHTML = () => {
+    const records = getExportRecords(exportMonth);
+    if (records.length === 0) { alert('対象データがありません'); return; }
+    setIsExporting(true);
+
+    // スタッフ別にグループ化
+    const byStaff = {};
+    records.forEach(r => {
+      const staff = allStaff.find(s => s.email === r.user_email);
+      const name = staff?.full_name || r.user_name || r.user_email;
+      if (!byStaff[r.user_email]) byStaff[r.user_email] = { name, records: [] };
+      byStaff[r.user_email].records.push(r);
+    });
+
+    const staffSections = Object.values(byStaff).map(({ name, records: recs }) => {
+      const totalMins = recs.reduce((s, r) => s + calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes), 0);
+      const rows = recs.map(r => {
+        const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+        const statusLabel = r.status === 'approved' ? '承認済' : r.status === 'completed' ? '承認待' : '勤務中';
+        return `<tr><td>${r.date}</td><td>${r.clock_in||'-'}</td><td>${r.clock_out||'-'}</td><td>${r.break_minutes||0}分</td><td>${Math.floor(mins/60)}時間${mins%60}分</td><td>${statusLabel}</td><td>${r.notes||''}</td></tr>`;
+      }).join('');
+      return `<div class="staff-block"><h3>${name} <span class="total">合計: ${Math.floor(totalMins/60)}時間${totalMins%60}分 / ${recs.length}日</span></h3><table><thead><tr><th>日付</th><th>出勤</th><th>退勤</th><th>休憩</th><th>実働</th><th>状態</th><th>備考</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>勤怠レポート ${exportMonth}</title><style>body{font-family:'Hiragino Sans','Meiryo',sans-serif;padding:20px;color:#333}h1{color:#2D4A6F;border-bottom:2px solid #2D4A6F;padding-bottom:8px}.staff-block{margin-bottom:30px}h3{color:#2D4A6F;margin:16px 0 8px;font-size:16px}.total{font-size:13px;color:#666;font-weight:normal;margin-left:12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #ddd;padding:6px 10px;text-align:left}th{background:#f0f4f8;color:#2D4A6F}tr:nth-child(even){background:#f9fafb}.footer{margin-top:20px;font-size:12px;color:#999}</style></head><body><h1>勤怠レポート ${exportMonth}</h1><p>出力日時: ${format(new Date(), 'yyyy/MM/dd HH:mm')}</p>${staffSections}<div class="footer">このレポートは自動生成されました</div></body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `勤怠レポート_${exportMonth}.html`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    setIsExporting(false);
+  };
+
   // 月別集計
   const getMonthlyStats = (yearMonth) => {
     const records = attendanceRecords.filter(r => r.date.startsWith(yearMonth));
