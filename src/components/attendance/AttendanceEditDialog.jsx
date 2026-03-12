@@ -33,7 +33,8 @@ export default function AttendanceEditDialog({ record, open, onClose, onSaved })
         correction_reason: '',
       });
     }
-  }, [open, record?.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, record?.id, record?.notes, record?.clock_in, record?.clock_out, record?.break_minutes]);
 
   const calcWorkTime = () => {
     if (!form.clock_in || !form.clock_out) return null;
