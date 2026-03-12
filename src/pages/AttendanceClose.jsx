@@ -27,7 +27,7 @@ import { format } from "date-fns";
 export default function AttendanceClose() {
   const [user, setUser] = useState(null);
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
-  const [selectedYearMonth, setSelectedYearMonth] = useState('');
+  const [selectedYearMonth, setSelectedYearMonth] = useState(format(new Date(), 'yyyy-MM'));
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
