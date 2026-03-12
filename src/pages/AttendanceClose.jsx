@@ -27,8 +27,11 @@ import { ja } from "date-fns/locale";
 
 export default function AttendanceClose() {
   const [user, setUser] = useState(null);
+  const [allStaff, setAllStaff] = useState([]);
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [selectedYearMonth, setSelectedYearMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [exportMonth, setExportMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [isExporting, setIsExporting] = useState(false);
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
