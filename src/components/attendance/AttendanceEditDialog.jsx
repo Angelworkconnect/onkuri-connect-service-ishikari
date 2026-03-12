@@ -24,7 +24,7 @@ export default function AttendanceEditDialog({ record, open, onClose, onSaved })
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (record) {
+    if (open && record) {
       setForm({
         clock_in: record.clock_in || '',
         clock_out: record.clock_out || '',
@@ -33,7 +33,7 @@ export default function AttendanceEditDialog({ record, open, onClose, onSaved })
         correction_reason: '',
       });
     }
-  }, [record]);
+  }, [open, record?.id]);
 
   const calcWorkTime = () => {
     if (!form.clock_in || !form.clock_out) return null;
