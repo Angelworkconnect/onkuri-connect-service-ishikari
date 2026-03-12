@@ -30,11 +30,11 @@ export default function AttendanceEditDialog({ record, open, onClose, onSaved })
         clock_out: record.clock_out || '',
         break_minutes: record.break_minutes || 0,
         notes: record.notes || '',
-        correction_reason: '',
+        correction_reason: record.correction_reason || '',
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, record?.id, record?.notes, record?.clock_in, record?.clock_out, record?.break_minutes]);
+  }, [open, record?.id, record?.notes, record?.clock_in, record?.clock_out, record?.break_minutes, record?.correction_reason]);
 
   const calcWorkTime = () => {
     if (!form.clock_in || !form.clock_out) return null;
