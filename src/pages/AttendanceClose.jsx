@@ -133,7 +133,7 @@ export default function AttendanceClose() {
       return;
     }
     
-    if (!confirm(`${selectedYearMonth}の勤怠を締めますか？\n締め後は編集できなくなります。`)) {
+    if (!confirm(`${selectedYearMonth}の勤怠を締めますか？`)) {
       return;
     }
 
