@@ -50,14 +50,18 @@ export default function AttendanceEditDialog({ record, open, onClose, onSaved })
       return;
     }
     setSaving(true);
-    await base44.entities.Attendance.update(record.id, {
+    // 締め済みの場合はstatusを変えない（編集は許可するが締め状態を維持）
+    const updateData = {
       clock_in: form.clock_in,
       clock_out: form.clock_out,
       break_minutes: Number(form.break_minutes) || 0,
       notes: form.notes,
       correction_reason: form.correction_reason,
-      status: form.clock_out ? 'completed' : 'working',
-    });
+    };
+    if (!record.month_closed) {
+      updateData.status = form.clock_out ? 'completed' : 'working';
+    }
+    await base44.entities.Attendance.update(record.id, updateData);
     setSaving(false);
     onSaved();
     onClose();
