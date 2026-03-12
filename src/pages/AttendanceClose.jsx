@@ -45,8 +45,8 @@ export default function AttendanceClose() {
         return;
       }
       setUser(u);
-      const staffList = await base44.entities.Staff.list();
-      setAllStaff(staffList);
+      const allStaffData = await base44.entities.Staff.list();
+      setAllStaff(allStaffData);
     }).catch(() => {
       base44.auth.redirectToLogin();
     });
