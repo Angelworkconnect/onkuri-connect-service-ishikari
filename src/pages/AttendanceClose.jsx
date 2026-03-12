@@ -275,6 +275,44 @@ export default function AttendanceClose() {
           </div>
         </Card>
 
+        {/* CSV / HTML出力 */}
+        <Card className="border-0 shadow-lg p-6">
+          <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
+            <Download className="w-5 h-5 text-[#2D4A6F]" />
+            勤怠データ出力
+          </h2>
+          <p className="text-sm text-slate-500 mb-4">締め済み・未締め問わず出力できます。</p>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div>
+              <Label>対象年月</Label>
+              <Input
+                type="month"
+                value={exportMonth}
+                onChange={(e) => setExportMonth(e.target.value)}
+                className="w-44"
+              />
+            </div>
+            <Button
+              onClick={handleExportCSV}
+              variant="outline"
+              disabled={isExporting || !exportMonth}
+              className="border-[#2D4A6F] text-[#2D4A6F]"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              CSV出力
+            </Button>
+            <Button
+              onClick={handleExportHTML}
+              variant="outline"
+              disabled={isExporting || !exportMonth}
+              className="border-emerald-600 text-emerald-700"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              HTMLレポート出力
+            </Button>
+          </div>
+        </Card>
+
         {/* 月別状況 */}
         <Card className="border-0 shadow-lg">
           <div className="p-6 border-b">
