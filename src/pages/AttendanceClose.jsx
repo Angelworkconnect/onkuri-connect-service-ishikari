@@ -433,7 +433,7 @@ export default function AttendanceClose() {
             </p>
             <p className="text-sm text-slate-500 mt-2">
               ※承認済みの勤怠のみ締められます<br />
-              ※締め後は編集できなくなります
+              ※締め後も編集は可能です（締め状態は維持）
             </p>
             {selectedYearMonth && (
               <div className="mt-4 p-4 bg-slate-50 rounded-lg">
