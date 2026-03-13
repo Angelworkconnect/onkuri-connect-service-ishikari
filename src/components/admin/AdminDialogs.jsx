@@ -32,6 +32,7 @@ const categoryTypes = [
   { value: 'event', label: 'イベント' },
   { value: 'urgent', label: '緊急' },
   { value: 'thanks', label: 'サンクス' },
+  { value: 'trial', label: '体験' },
 ];
 
 export default function AdminDialogs({
