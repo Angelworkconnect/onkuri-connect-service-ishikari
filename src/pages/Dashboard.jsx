@@ -684,6 +684,9 @@ export default function Dashboard() {
                   <TabsTrigger value="urgent" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
                     緊急
                   </TabsTrigger>
+                  <TabsTrigger value="trial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent">
+                    体験
+                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="all" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
@@ -708,6 +711,19 @@ export default function Dashboard() {
                     <div className="text-center py-8 text-slate-400">
                       <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
                       <p className="text-sm">緊急のお知らせはありません</p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="trial" className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
+                  {announcements.filter(a => a.category === 'trial').length > 0 ? (
+                    announcements.filter(a => a.category === 'trial').map((announcement) => (
+                      <AnnouncementCard key={announcement.id} announcement={announcement} />
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-slate-400">
+                      <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">体験のお知らせはありません</p>
                     </div>
                   )}
                 </TabsContent>
