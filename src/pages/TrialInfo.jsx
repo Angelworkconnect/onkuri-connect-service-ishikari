@@ -156,6 +156,7 @@ export default function TrialInfo() {
       trial_bath_note: item.trial_bath_note || '',
       trial_allergy_has: item.trial_allergy_has || false,
       trial_allergy_note: item.trial_allergy_note || '',
+      trial_pickup_time: item.trial_pickup_time || '',
       trial_referral: item.trial_referral || '',
       trial_notes: item.trial_notes || '',
       trial_type: item.trial_type || 'trial',
