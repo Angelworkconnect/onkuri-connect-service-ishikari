@@ -254,6 +254,7 @@ export default function TrialInfo() {
                         <InfoRow label="要介護度" value={item.trial_care_level} />
                         <InfoRow label="住所" value={item.trial_address} />
                         <InfoRow label="紹介先" value={item.trial_referral} />
+                        <InfoRow label="迎え時間" value={item.trial_pickup_time} />
                         <InfoRow label="昼薬" value={item.trial_medication_has ? `有${item.trial_medication_note ? `（${item.trial_medication_note}）` : ''}` : '無'} />
                         <InfoRow label="入浴" value={item.trial_bath_has ? `有${item.trial_bath_note ? `（${item.trial_bath_note}）` : ''}` : '無'} />
                         <InfoRow label="アレルギー" value={item.trial_allergy_has ? `有${item.trial_allergy_note ? `（${item.trial_allergy_note}）` : ''}` : '無'} />
