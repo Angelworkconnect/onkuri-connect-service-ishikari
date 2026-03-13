@@ -407,6 +407,12 @@ export default function TrialInfo() {
               </div>
             </div>
 
+            {/* 迎え時間 */}
+            <div>
+              <Label>迎え時間</Label>
+              <Input type="time" value={form.trial_pickup_time} onChange={(e) => setForm({ ...form, trial_pickup_time: e.target.value })} />
+            </div>
+
             {/* 紹介先 */}
             <div>
               <Label>紹介先</Label>
