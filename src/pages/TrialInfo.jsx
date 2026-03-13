@@ -43,6 +43,7 @@ const emptyForm = {
   trial_bath_note: '',
   trial_allergy_has: false,
   trial_allergy_note: '',
+  trial_pickup_time: '',
   trial_referral: '',
   trial_notes: '',
   trial_type: 'trial',
