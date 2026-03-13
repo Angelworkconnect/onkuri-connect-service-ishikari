@@ -368,23 +368,45 @@ export default function Home() {
       {/* Announcements */}
       {announcements.length > 0 && (
         <section className="max-w-6xl mx-auto px-6 py-16">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-medium text-slate-800 mb-2">お知らせ</h2>
               <p className="text-slate-500">最新情報をチェック</p>
             </div>
           </div>
-          <div className="space-y-4">
-            {announcements.map((announcement) => (
-              <motion.div
-                key={announcement.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+          {/* Tabs */}
+          <div className="flex gap-1 mb-6 border-b border-slate-200">
+            {[
+              { key: 'all', label: 'すべて' },
+              { key: 'urgent', label: '緊急' },
+              { key: 'trial', label: '体験' },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setAnnouncementTab(tab.key)}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  announcementTab === tab.key
+                    ? 'border-[#2D4A6F] text-[#2D4A6F]'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}
               >
-                <AnnouncementCard announcement={announcement} />
-              </motion.div>
+                {tab.label}
+              </button>
             ))}
+          </div>
+          <div className="space-y-4">
+            {announcements
+              .filter(a => announcementTab === 'all' || a.category === announcementTab)
+              .map((announcement) => (
+                <motion.div
+                  key={announcement.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <AnnouncementCard announcement={announcement} />
+                </motion.div>
+              ))}
           </div>
         </section>
       )}
