@@ -32,6 +32,7 @@ const iconMap = {
 export default function Home() {
   const [user, setUser] = useState(null);
   const [isStaffRegistered, setIsStaffRegistered] = useState(true);
+  const [announcementTab, setAnnouncementTab] = useState('all');
   const queryClient = useQueryClient();
 
   useEffect(() => {
