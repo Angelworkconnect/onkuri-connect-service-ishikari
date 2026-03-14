@@ -383,15 +383,38 @@ export default function AttendanceClose() {
       },
     },
     moneyforward_attendance: {
-      label: 'マネーフォワード勤怠',
-      desc: 'メール・氏名・日付・出退勤・実働時間形式',
+      label: 'マネーフォワード クラウド勤怠',
+      desc: '打刻単位（出勤・退勤・休憩を別行）で出力。公式インポート形式',
       build: (records) => {
-        const header = ['メールアドレス', '氏名', '勤務日', '出勤時刻', '退勤時刻', '休憩時間(分)', '実労働時間(h)', 'メモ'];
-        const rows = records.map(r => {
+        // 公式仕様: 従業員番号,苗字,名前,打刻所属日,打刻日,打刻時刻,打刻種別
+        const header = ['従業員番号', '苗字', '名前', '打刻所属日', '打刻日', '打刻時刻', '打刻種別'];
+        const rows = [];
+        records.forEach(r => {
           const staff = allStaff.find(s => s.email === r.user_email);
-          const name = staff?.full_name || r.user_name || r.user_email;
-          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return [r.user_email, name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
+          const fullName = staff?.full_name || r.user_name || r.user_email;
+          // 苗字・名前を分割（スペースで区切る、なければ全て苗字に）
+          const nameParts = fullName.split(/[\s　]+/);
+          const lastName = nameParts[0] || fullName;
+          const firstName = nameParts.slice(1).join(' ') || '';
+          // 日付を yyyy/MM/dd 形式に
+          const dateFormatted = r.date.replace(/-/g, '/');
+          // 出勤
+          if (r.clock_in) {
+            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_in, '出勤']);
+          }
+          // 休憩（break_minutesがある場合、開始・終了を推定）
+          if (r.break_minutes && r.break_minutes > 0 && r.clock_in && r.clock_out) {
+            const [outH, outM] = r.clock_out.split(':').map(Number);
+            const breakStart = outH * 60 + outM - r.break_minutes;
+            const bsH = Math.floor(breakStart / 60).toString().padStart(2, '0');
+            const bsM = (breakStart % 60).toString().padStart(2, '0');
+            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, `${bsH}:${bsM}`, '休憩開始']);
+            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '休憩終了']);
+          }
+          // 退勤
+          if (r.clock_out) {
+            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '退勤']);
+          }
         });
         return [header, ...rows];
       },
