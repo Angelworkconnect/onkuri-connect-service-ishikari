@@ -610,6 +610,7 @@ export default function AttendanceClose() {
       {editingRecord && (
         <AttendanceEditDialog
           record={editingRecord}
+          open={!!editingRecord}
           onClose={() => setEditingRecord(null)}
           onSaved={() => {
             queryClient.invalidateQueries(['attendance-all']);
