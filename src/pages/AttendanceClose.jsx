@@ -619,23 +619,37 @@ export default function AttendanceClose() {
                 <FileText className="w-4 h-4" />
                 CSVフォーマット
               </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {Object.entries(CSV_FORMATS).map(([key, fmt]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setCsvFormat(key)}
-                    className={`text-left px-3 py-2.5 rounded-lg border transition-colors ${
-                      csvFormat === key
-                        ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-[#2D4A6F]'
-                    }`}
-                  >
-                    <div className="font-medium text-sm">{fmt.label}</div>
-                    <div className={`text-xs mt-0.5 ${csvFormat === key ? 'text-white/70' : 'text-slate-400'}`}>{fmt.desc}</div>
-                  </button>
-                ))}
-              </div>
+              {[
+                { group: '汎用・Excel', keys: ['standard', 'decimal'] },
+                { group: 'クラウド給与・HR系', keys: ['mfkyuyo', 'moneyforward_attendance', 'freee', 'smarthr'] },
+                { group: '勤怠管理システム', keys: ['jobcan', 'kinokuniya', 'harmos', 'akashi', 'kincone', 'teamspirit'] },
+                { group: 'パッケージ給与ソフト', keys: ['yayoi', 'obckyuyo', 'pca'] },
+              ].map(({ group, keys }) => (
+                <div key={group} className="mb-3">
+                  <p className="text-xs font-medium text-slate-400 mb-1.5">{group}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {keys.map(key => {
+                      const fmt = CSV_FORMATS[key];
+                      if (!fmt) return null;
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setCsvFormat(key)}
+                          className={`text-left px-3 py-2 rounded-lg border transition-colors ${
+                            csvFormat === key
+                              ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                              : 'bg-white text-slate-700 border-slate-200 hover:border-[#2D4A6F]'
+                          }`}
+                        >
+                          <div className="font-medium text-sm">{fmt.label}</div>
+                          <div className={`text-xs mt-0.5 leading-tight ${csvFormat === key ? 'text-white/70' : 'text-slate-400'}`}>{fmt.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* 出力ボタン */}
