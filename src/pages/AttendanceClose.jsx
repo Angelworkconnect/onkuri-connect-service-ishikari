@@ -65,6 +65,17 @@ export default function AttendanceClose() {
     enabled: !!user,
   });
 
+  // レート制限対策: バッチ処理
+  const updateInBatches = async (records, updateFn, batchSize = 5, delayMs = 300) => {
+    for (let i = 0; i < records.length; i += batchSize) {
+      const batch = records.slice(i, i + batchSize);
+      await Promise.all(batch.map(updateFn));
+      if (i + batchSize < records.length) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+  };
+
   const closeMonthMutation = useMutation({
     mutationFn: async ({ yearMonth }) => {
       const records = attendanceRecords.filter(r => r.date.startsWith(yearMonth));
@@ -74,12 +85,12 @@ export default function AttendanceClose() {
         throw new Error(`未承認の勤怠が${unapproved.length}件あります。先に承認してください。`);
       }
 
-      // 勤怠レコードを締める
-      await Promise.all(
-        records.map(r => base44.entities.Attendance.update(r.id, { 
+      // 勤怠レコードを締める（バッチ処理でレート制限回避）
+      await updateInBatches(records, (r) =>
+        base44.entities.Attendance.update(r.id, { 
           month_closed: true,
           closed_year_month: yearMonth 
-        }))
+        })
       );
 
       // 締め記録を作成
