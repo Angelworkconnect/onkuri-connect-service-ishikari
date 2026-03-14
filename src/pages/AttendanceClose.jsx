@@ -230,6 +230,7 @@ export default function AttendanceClose() {
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
           const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
+          // MFクラウド給与は氏名のみ（コード列なし）
           return [name, r.date, r.clock_in||'', r.clock_out||'', breakH, workH, r.notes||''];
         });
         return [header, ...rows];
@@ -244,7 +245,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.user_email, r.date, r.clock_in||'', r.clock_out||'',
+          return [staff?.external_staff_code||'', name, r.user_email, r.date, r.clock_in||'', r.clock_out||'',
             ((r.break_minutes||0)/60).toFixed(4), (mins/60).toFixed(4), r.notes||''];
         });
         return [header, ...rows];
@@ -260,7 +261,7 @@ export default function AttendanceClose() {
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const workH = `${Math.floor(mins/60)}:${(mins%60).toString().padStart(2,'0')}`;
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH, '0:00', r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH, '0:00', r.notes||''];
         });
         return [header, ...rows];
       },
@@ -274,7 +275,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
         });
         return [header, ...rows];
       },
