@@ -36,6 +36,7 @@ export default function AttendanceClose() {
   const [selectedStaffEmails, setSelectedStaffEmails] = useState(['__all__']); // '__all__' = 全員
   const [editingRecord, setEditingRecord] = useState(null);
   const [expandedHistory, setExpandedHistory] = useState(null); // 展開中の締め履歴ID
+  const [csvFormat, setCsvFormat] = useState('standard'); // CSV出力フォーマット
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
