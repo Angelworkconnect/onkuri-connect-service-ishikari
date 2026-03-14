@@ -204,10 +204,11 @@ export default function AttendanceClose() {
       label: '汎用（標準）',
       desc: '氏名・日付・時刻・実働時間など基本情報',
       build: (records) => {
-        const header = ['氏名', 'メール', '勤務日', '曜日', '出勤時刻', '退勤時刻', '休憩(分)', '実労働時間(h)', '実労働時間(分)', '状態', '備考', '修正理由'];
+        const header = ['外部コード', '氏名', 'メール', '勤務日', '曜日', '出勤時刻', '退勤時刻', '休憩(分)', '実労働時間(h)', '実労働時間(分)', '状態', '備考', '修正理由'];
         const rows = records.map(r => {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
+          const code = staff?.external_staff_code || '';
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const dow = ['日','月','火','水','木','金','土'][new Date(r.date).getDay()];
           return [name, r.user_email, r.date, dow, r.clock_in||'', r.clock_out||'',
