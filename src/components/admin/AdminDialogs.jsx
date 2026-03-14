@@ -130,6 +130,11 @@ export default function AdminDialogs({
                 </Select>
               </div>
             </div>
+            <div>
+              <Label>外部連携コード <span className="text-xs font-normal text-slate-400">（給与ソフト・勤怠システムの社員番号）</span></Label>
+              <Input value={staffForm.external_staff_code || ''} onChange={(e) => setStaffForm({...staffForm, external_staff_code: e.target.value})} placeholder="例: 001, E0042" />
+              <p className="text-xs text-slate-400 mt-1">MFクラウド勤怠・freee・弥生・ジョブカンなど各ソフトのCSV出力時に使用されます</p>
+            </div>
             <div><Label>カテゴリー *</Label>
               <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
