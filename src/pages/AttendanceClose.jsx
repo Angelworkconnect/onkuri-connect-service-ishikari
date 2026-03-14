@@ -482,6 +482,31 @@ export default function AttendanceClose() {
               </p>
             </div>
 
+            {/* CSV フォーマット選択 */}
+            <div>
+              <Label className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4" />
+                CSVフォーマット
+              </Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {Object.entries(CSV_FORMATS).map(([key, fmt]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setCsvFormat(key)}
+                    className={`text-left px-3 py-2.5 rounded-lg border transition-colors ${
+                      csvFormat === key
+                        ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-[#2D4A6F]'
+                    }`}
+                  >
+                    <div className="font-medium text-sm">{fmt.label}</div>
+                    <div className={`text-xs mt-0.5 ${csvFormat === key ? 'text-white/70' : 'text-slate-400'}`}>{fmt.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* 出力ボタン */}
             <div className="flex flex-wrap gap-3">
               <Button
