@@ -148,9 +148,31 @@ export default function AttendanceClose() {
     return Math.max(0, (outH * 60 + outM) - (inH * 60 + inM) - (breakMins || 0));
   };
 
+  const toggleStaff = (email) => {
+    if (email === '__all__') {
+      setSelectedStaffEmails(['__all__']);
+    } else {
+      setSelectedStaffEmails(prev => {
+        const withoutAll = prev.filter(e => e !== '__all__');
+        if (withoutAll.includes(email)) {
+          const next = withoutAll.filter(e => e !== email);
+          return next.length === 0 ? ['__all__'] : next;
+        } else {
+          return [...withoutAll, email];
+        }
+      });
+    }
+  };
+
+  const isAllSelected = selectedStaffEmails.includes('__all__');
+
   const getExportRecords = (yearMonth) => {
     return attendanceRecords
-      .filter(r => r.date.startsWith(yearMonth))
+      .filter(r => {
+        if (!r.date.startsWith(yearMonth)) return false;
+        if (isAllSelected) return true;
+        return selectedStaffEmails.includes(r.user_email);
+      })
       .sort((a, b) => a.date.localeCompare(b.date) || (a.user_email || '').localeCompare(b.user_email || ''));
   };
 
