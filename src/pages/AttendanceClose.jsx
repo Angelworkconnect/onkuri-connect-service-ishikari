@@ -305,34 +305,87 @@ export default function AttendanceClose() {
             勤怠データ出力
           </h2>
           <p className="text-sm text-slate-500 mb-4">締め済み・未締め問わず出力できます。</p>
-          <div className="flex flex-wrap gap-4 items-end">
+          
+          <div className="space-y-5">
+            {/* 年月選択 */}
             <div>
               <Label>対象年月</Label>
               <Input
                 type="month"
                 value={exportMonth}
                 onChange={(e) => setExportMonth(e.target.value)}
-                className="w-44"
+                className="w-44 mt-1"
               />
             </div>
-            <Button
-              onClick={handleExportCSV}
-              variant="outline"
-              disabled={isExporting || !exportMonth}
-              className="border-[#2D4A6F] text-[#2D4A6F]"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              CSV出力
-            </Button>
-            <Button
-              onClick={handleExportHTML}
-              variant="outline"
-              disabled={isExporting || !exportMonth}
-              className="border-emerald-600 text-emerald-700"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              HTMLレポート出力
-            </Button>
+
+            {/* スタッフ選択 */}
+            <div>
+              <Label className="flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4" />
+                出力対象スタッフ
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {/* 全員ボタン */}
+                <button
+                  type="button"
+                  onClick={() => toggleStaff('__all__')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                    isAllSelected
+                      ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                      : 'bg-white text-slate-600 border-slate-300 hover:border-[#2D4A6F]'
+                  }`}
+                >
+                  {isAllSelected && <Check className="w-3.5 h-3.5" />}
+                  全員
+                </button>
+                {/* 個別スタッフ */}
+                {allStaff.filter(s => s.status !== 'inactive').map(staff => {
+                  const selected = !isAllSelected && selectedStaffEmails.includes(staff.email);
+                  return (
+                    <button
+                      key={staff.email}
+                      type="button"
+                      onClick={() => toggleStaff(staff.email)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                        selected
+                          ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                          : 'bg-white text-slate-600 border-slate-300 hover:border-[#2D4A6F]'
+                      }`}
+                    >
+                      {selected && <Check className="w-3.5 h-3.5" />}
+                      {staff.full_name}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-slate-400 mt-2">
+                {isAllSelected
+                  ? 'すべてのスタッフが対象です'
+                  : `${selectedStaffEmails.length}名が選択されています`}
+              </p>
+            </div>
+
+            {/* 出力ボタン */}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={handleExportCSV}
+                variant="outline"
+                disabled={isExporting || !exportMonth}
+                className="border-[#2D4A6F] text-[#2D4A6F]"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                CSV出力
+              </Button>
+              <Button
+                onClick={handleExportHTML}
+                variant="outline"
+                disabled={isExporting || !exportMonth}
+                className="border-emerald-600 text-emerald-700"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                HTMLレポート出力
+              </Button>
+            </div>
           </div>
         </Card>
 
