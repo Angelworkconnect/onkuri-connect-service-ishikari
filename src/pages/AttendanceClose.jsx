@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Lock, Unlock, AlertTriangle, Download, FileText } from "lucide-react";
+import { Lock, Unlock, AlertTriangle, Download, FileText, Users, Check } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
