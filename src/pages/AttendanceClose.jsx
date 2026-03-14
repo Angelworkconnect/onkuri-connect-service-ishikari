@@ -65,8 +65,8 @@ export default function AttendanceClose() {
     enabled: !!user,
   });
 
-  // レート制限対策: バッチ処理
-  const updateInBatches = async (records, updateFn, batchSize = 5, delayMs = 300) => {
+  // レート制限対策: 1件ずつ順番に処理
+  const updateInBatches = async (records, updateFn, batchSize = 1, delayMs = 600) => {
     for (let i = 0; i < records.length; i += batchSize) {
       const batch = records.slice(i, i + batchSize);
       await Promise.all(batch.map(updateFn));
