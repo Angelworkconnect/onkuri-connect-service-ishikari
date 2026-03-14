@@ -306,7 +306,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
         });
         return [header, ...rows];
       },
@@ -321,7 +321,7 @@ export default function AttendanceClose() {
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const workH = `${Math.floor(mins/60)}:${(mins%60).toString().padStart(2,'0')}`;
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH];
         });
         return [header, ...rows];
       },
@@ -337,7 +337,7 @@ export default function AttendanceClose() {
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
           const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
-          return ['', name, r.date.replace(/-/g,'/'), r.clock_in||'', r.clock_out||'', breakH, workH, r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date.replace(/-/g,'/'), r.clock_in||'', r.clock_out||'', breakH, workH, r.notes||''];
         });
         return [header, ...rows];
       },
@@ -351,7 +351,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
         });
         return [header, ...rows];
       },
@@ -365,7 +365,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
         });
         return [header, ...rows];
       },
@@ -379,7 +379,7 @@ export default function AttendanceClose() {
           const staff = allStaff.find(s => s.email === r.user_email);
           const name = staff?.full_name || r.user_name || r.user_email;
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
         });
         return [header, ...rows];
       },
@@ -402,7 +402,7 @@ export default function AttendanceClose() {
           const dateFormatted = r.date.replace(/-/g, '/');
           // 出勤
           if (r.clock_in) {
-            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_in, '出勤']);
+            rows.push([staff?.external_staff_code||'', lastName, firstName, dateFormatted, dateFormatted, r.clock_in, '出勤']);
           }
           // 休憩（break_minutesがある場合、開始・終了を推定）
           if (r.break_minutes && r.break_minutes > 0 && r.clock_in && r.clock_out) {
@@ -410,12 +410,12 @@ export default function AttendanceClose() {
             const breakStart = outH * 60 + outM - r.break_minutes;
             const bsH = Math.floor(breakStart / 60).toString().padStart(2, '0');
             const bsM = (breakStart % 60).toString().padStart(2, '0');
-            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, `${bsH}:${bsM}`, '休憩開始']);
-            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '休憩終了']);
+            rows.push([staff?.external_staff_code||'', lastName, firstName, dateFormatted, dateFormatted, `${bsH}:${bsM}`, '休憩開始']);
+            rows.push([staff?.external_staff_code||'', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '休憩終了']);
           }
           // 退勤
           if (r.clock_out) {
-            rows.push(['', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '退勤']);
+            rows.push([staff?.external_staff_code||'', lastName, firstName, dateFormatted, dateFormatted, r.clock_out, '退勤']);
           }
         });
         return [header, ...rows];
@@ -446,7 +446,7 @@ export default function AttendanceClose() {
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
           const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
-          return ['', name, r.date, r.clock_in||'', r.clock_out||'', breakH, workH];
+          return [staff?.external_staff_code||'', name, r.date, r.clock_in||'', r.clock_out||'', breakH, workH];
         });
         return [header, ...rows];
       },
