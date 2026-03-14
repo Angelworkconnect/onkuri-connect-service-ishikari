@@ -34,6 +34,8 @@ export default function AttendanceClose() {
   const [exportMonth, setExportMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [isExporting, setIsExporting] = useState(false);
   const [selectedStaffEmails, setSelectedStaffEmails] = useState(['__all__']); // '__all__' = 全員
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [expandedHistory, setExpandedHistory] = useState(null); // 展開中の締め履歴ID
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
