@@ -32,6 +32,7 @@ export default function AttendanceClose() {
   const [selectedYearMonth, setSelectedYearMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [exportMonth, setExportMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedStaffEmails, setSelectedStaffEmails] = useState(['__all__']); // '__all__' = 全員
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
