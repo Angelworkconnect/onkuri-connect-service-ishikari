@@ -211,7 +211,7 @@ export default function AttendanceClose() {
           const code = staff?.external_staff_code || '';
           const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
           const dow = ['日','月','火','水','木','金','土'][new Date(r.date).getDay()];
-          return [name, r.user_email, r.date, dow, r.clock_in||'', r.clock_out||'',
+          return [code, name, r.user_email, r.date, dow, r.clock_in||'', r.clock_out||'',
             r.break_minutes||0, (mins/60).toFixed(2), mins,
             r.status==='approved'?'承認済':r.status==='completed'?'承認待':'勤務中',
             r.notes||'', r.correction_reason||''];
