@@ -117,12 +117,12 @@ export default function AttendanceClose() {
     mutationFn: async (closeRecord) => {
       const records = attendanceRecords.filter(r => r.closed_year_month === closeRecord.year_month);
       
-      // 勤怠レコードの締めを解除
-      await Promise.all(
-        records.map(r => base44.entities.Attendance.update(r.id, { 
+      // 勤怠レコードの締めを解除（バッチ処理）
+      await updateInBatches(records, (r) =>
+        base44.entities.Attendance.update(r.id, { 
           month_closed: false,
           closed_year_month: null
-        }))
+        })
       );
 
       // 締め記録を更新
