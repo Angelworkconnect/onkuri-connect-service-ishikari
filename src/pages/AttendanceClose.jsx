@@ -295,6 +295,137 @@ export default function AttendanceClose() {
         return [header, ...rows];
       },
     },
+    smarthr: {
+      label: 'SmartHR',
+      desc: '従業員番号・氏名・日付・出退勤・実働(分)形式',
+      build: (records) => {
+        const header = ['従業員番号', '氏名', '日付', '出勤時刻', '退勤時刻', '休憩時間(分)', '実労働時間(分)', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    yayoi: {
+      label: '弥生給与・弥生給与Next',
+      desc: '社員コード・氏名・日付・時刻・実働時間(h:m)形式',
+      build: (records) => {
+        const header = ['社員コード', '氏名', '日付', '出勤時刻', '退勤時刻', '休憩(分)', '実働時間'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const workH = `${Math.floor(mins/60)}:${(mins%60).toString().padStart(2,'0')}`;
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH];
+        });
+        return [header, ...rows];
+      },
+    },
+    obckyuyo: {
+      label: '給与奉行（OBC）',
+      desc: '社員コード・氏名・年月日・出退勤・就業時間形式',
+      build: (records) => {
+        const header = ['社員コード', '社員名', '年月日', '出勤時刻', '退勤時刻', '休憩時間', '就業時間', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
+          const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
+          return ['', name, r.date.replace(/-/g,'/'), r.clock_in||'', r.clock_out||'', breakH, workH, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    pca: {
+      label: 'PCA給与',
+      desc: '社員コード・氏名・日付・出退勤・実働時間(分)形式',
+      build: (records) => {
+        const header = ['社員コード', '社員名', '日付', '出勤', '退勤', '休憩(分)', '実働(分)', '摘要'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    harmos: {
+      label: 'クラウドハーモス',
+      desc: 'スタッフID・氏名・日付・打刻時刻・勤務時間形式',
+      build: (records) => {
+        const header = ['スタッフID', '氏名', '日付', '出勤打刻', '退勤打刻', '休憩(分)', '勤務時間(h)', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    akashi: {
+      label: 'AKASHI / タイムワールド',
+      desc: '従業員番号・氏名・日付・出退勤・休憩・実働(分)形式',
+      build: (records) => {
+        const header = ['従業員番号', '従業員名', '勤務日', '出勤時刻', '退勤時刻', '休憩時間(分)', '実働時間(分)', '勤務メモ'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    moneyforward_attendance: {
+      label: 'マネーフォワード勤怠',
+      desc: 'メール・氏名・日付・出退勤・実働時間形式',
+      build: (records) => {
+        const header = ['メールアドレス', '氏名', '勤務日', '出勤時刻', '退勤時刻', '休憩時間(分)', '実労働時間(h)', 'メモ'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return [r.user_email, name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    teamspirit: {
+      label: 'TeamSpirit',
+      desc: 'ユーザーID・氏名・日付・開始終了・稼働時間形式',
+      build: (records) => {
+        const header = ['ユーザーID', '氏名', '日付', '開始時刻', '終了時刻', '休憩(分)', '稼働時間(h)', 'コメント'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return [r.user_email, name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, (mins/60).toFixed(2), r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    kincone: {
+      label: 'キンコーン / Touch On Time',
+      desc: '社員番号・氏名・年月日・出退勤・実働(hh:mm)形式',
+      build: (records) => {
+        const header = ['社員番号', '氏名', '年月日', '出勤', '退勤', '休憩時間', '実働時間'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
+          const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', breakH, workH];
+        });
+        return [header, ...rows];
+      },
+    },
   };
 
   const handleExportCSV = () => {
