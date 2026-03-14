@@ -606,6 +606,18 @@ export default function AttendanceClose() {
         </Card>
       </div>
 
+      {/* 勤怠修正ダイアログ */}
+      {editingRecord && (
+        <AttendanceEditDialog
+          record={editingRecord}
+          onClose={() => setEditingRecord(null)}
+          onSaved={() => {
+            queryClient.invalidateQueries(['attendance-all']);
+            setEditingRecord(null);
+          }}
+        />
+      )}
+
       {/* 締め確認ダイアログ */}
       <Dialog open={closeDialogOpen} onOpenChange={setCloseDialogOpen}>
         <DialogContent>
