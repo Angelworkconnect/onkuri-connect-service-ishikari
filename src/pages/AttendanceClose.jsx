@@ -191,28 +191,124 @@ export default function AttendanceClose() {
       .sort((a, b) => a.date.localeCompare(b.date) || (a.user_email || '').localeCompare(b.user_email || ''));
   };
 
+  // 時刻→小数時間 (例: "09:30" → 9.5)
+  const timeToDecimal = (t) => {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    return ((h * 60 + m) / 60).toFixed(4);
+  };
+
+  // CSV フォーマット定義
+  const CSV_FORMATS = {
+    standard: {
+      label: '汎用（標準）',
+      desc: '氏名・日付・時刻・実働時間など基本情報',
+      build: (records) => {
+        const header = ['氏名', 'メール', '勤務日', '曜日', '出勤時刻', '退勤時刻', '休憩(分)', '実労働時間(h)', '実労働時間(分)', '状態', '備考', '修正理由'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const dow = ['日','月','火','水','木','金','土'][new Date(r.date).getDay()];
+          return [name, r.user_email, r.date, dow, r.clock_in||'', r.clock_out||'',
+            r.break_minutes||0, (mins/60).toFixed(2), mins,
+            r.status==='approved'?'承認済':r.status==='completed'?'承認待':'勤務中',
+            r.notes||'', r.correction_reason||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    mfkyuyo: {
+      label: 'MFクラウド給与',
+      desc: '氏名・日付・出退勤時刻・休憩・実働(h)形式',
+      build: (records) => {
+        const header = ['従業員名', '日付', '出勤時刻', '退勤時刻', '休憩時間', '実労働時間', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const breakH = `${Math.floor((r.break_minutes||0)/60).toString().padStart(2,'0')}:${((r.break_minutes||0)%60).toString().padStart(2,'0')}`;
+          const workH = `${Math.floor(mins/60).toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}`;
+          return [name, r.date, r.clock_in||'', r.clock_out||'', breakH, workH, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    freee: {
+      label: 'freee人事労務',
+      desc: '社員番号・メール・日付・時刻・小数時間形式',
+      build: (records) => {
+        const header = ['社員番号', '氏名', 'メールアドレス', '勤務日', '出勤時刻', '退勤時刻', '休憩時間(h)', '勤務時間(h)', 'メモ'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.user_email, r.date, r.clock_in||'', r.clock_out||'',
+            ((r.break_minutes||0)/60).toFixed(4), (mins/60).toFixed(4), r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    jobcan: {
+      label: 'ジョブカン',
+      desc: 'スタッフコード・氏名・打刻形式',
+      build: (records) => {
+        const header = ['スタッフコード', '氏名', '日付', '出勤', '退勤', '休憩(分)', '実働時間', '残業時間', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          const workH = `${Math.floor(mins/60)}:${(mins%60).toString().padStart(2,'0')}`;
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, workH, '0:00', r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    kinokuniya: {
+      label: '勤次郎 / KING OF TIME',
+      desc: '従業員コード・氏名・日付・開始・終了形式',
+      build: (records) => {
+        const header = ['従業員コード', '従業員名', '日付', '開始時刻', '終了時刻', '休憩(分)', '実働時間(分)', '備考'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return ['', name, r.date, r.clock_in||'', r.clock_out||'', r.break_minutes||0, mins, r.notes||''];
+        });
+        return [header, ...rows];
+      },
+    },
+    decimal: {
+      label: '小数時間形式（汎用）',
+      desc: '時刻を全て小数(例:9.5h)で出力。Excelでの計算に最適',
+      build: (records) => {
+        const header = ['氏名', '日付', '出勤(h)', '退勤(h)', '休憩(h)', '実働(h)', '状態'];
+        const rows = records.map(r => {
+          const staff = allStaff.find(s => s.email === r.user_email);
+          const name = staff?.full_name || r.user_name || r.user_email;
+          const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
+          return [name, r.date,
+            timeToDecimal(r.clock_in), timeToDecimal(r.clock_out),
+            ((r.break_minutes||0)/60).toFixed(4), (mins/60).toFixed(4),
+            r.status==='approved'?'承認済':r.status==='completed'?'承認待':'勤務中'];
+        });
+        return [header, ...rows];
+      },
+    },
+  };
+
   const handleExportCSV = () => {
     const records = getExportRecords(exportMonth);
     if (records.length === 0) { alert('対象データがありません'); return; }
     setIsExporting(true);
-    const rows = [['氏名', '勤務日', '出勤', '退勤', '休憩(分)', '実労働時間(h)', '状態', '備考', '修正理由']];
-    records.forEach(r => {
-      const staff = allStaff.find(s => s.email === r.user_email);
-      const name = staff?.full_name || r.user_name || r.user_email;
-      const mins = calcWorkMinutes(r.clock_in, r.clock_out, r.break_minutes);
-      rows.push([
-        name, r.date, r.clock_in || '', r.clock_out || '',
-        r.break_minutes || 0, (mins / 60).toFixed(2),
-        r.status === 'approved' ? '承認済' : r.status === 'completed' ? '承認待' : '勤務中',
-        r.notes || '', r.correction_reason || '',
-      ]);
-    });
+    const fmt = CSV_FORMATS[csvFormat] || CSV_FORMATS.standard;
+    const rows = fmt.build(records);
     const csv = '\uFEFF' + rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `勤怠_${exportMonth}.csv`;
+    a.download = `勤怠_${exportMonth}_${fmt.label}.csv`;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
