@@ -493,24 +493,113 @@ export default function AttendanceClose() {
                   <TableHead>実行日時</TableHead>
                   <TableHead>件数</TableHead>
                   <TableHead>状態</TableHead>
+                  <TableHead>操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {closedMonths.map((record) => (
-                  <TableRow key={record.id}>
-                    <TableCell className="font-medium">{record.year_month}</TableCell>
-                    <TableCell>{record.closed_by_name}</TableCell>
-                    <TableCell>{format(new Date(record.created_date), 'yyyy/MM/dd HH:mm')}</TableCell>
-                    <TableCell>{record.total_records}件</TableCell>
-                    <TableCell>
-                      {record.is_reopened ? (
-                        <Badge variant="outline" className="text-amber-600">再開済み</Badge>
-                      ) : (
-                        <Badge className="bg-slate-100 text-slate-600">締め済み</Badge>
+                {closedMonths.map((record) => {
+                  const isExpanded = expandedHistory === record.id;
+                  const monthRecords = attendanceRecords
+                    .filter(r => r.date.startsWith(record.year_month))
+                    .sort((a, b) => a.date.localeCompare(b.date) || (a.user_email || '').localeCompare(b.user_email || ''));
+
+                  return (
+                    <React.Fragment key={record.id}>
+                      <TableRow className="hover:bg-slate-50">
+                        <TableCell className="font-medium">{record.year_month}</TableCell>
+                        <TableCell>{record.closed_by_name}</TableCell>
+                        <TableCell>{format(new Date(record.created_date), 'yyyy/MM/dd HH:mm')}</TableCell>
+                        <TableCell>{record.total_records}件</TableCell>
+                        <TableCell>
+                          {record.is_reopened ? (
+                            <Badge variant="outline" className="text-amber-600">再開済み</Badge>
+                          ) : (
+                            <Badge className="bg-slate-100 text-slate-600">締め済み</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {/* 再開ボタン（締め済みのみ） */}
+                            {!record.is_reopened && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  if (confirm(`${record.year_month}の締めを再開しますか？`)) {
+                                    reopenMonthMutation.mutate(record);
+                                  }
+                                }}
+                              >
+                                <Unlock className="w-3.5 h-3.5 mr-1" />
+                                再開
+                              </Button>
+                            )}
+                            {/* 勤怠を展開して修正 */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setExpandedHistory(isExpanded ? null : record.id)}
+                            >
+                              <Pencil className="w-3.5 h-3.5 mr-1" />
+                              勤怠修正
+                              {isExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+
+                      {/* 展開された勤怠レコード一覧 */}
+                      {isExpanded && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="p-0 bg-slate-50">
+                            <div className="p-4">
+                              <p className="text-xs text-slate-500 mb-3">{record.year_month} の勤怠レコード（{monthRecords.length}件）</p>
+                              <div className="rounded-lg border border-slate-200 overflow-hidden">
+                                <table className="w-full text-sm">
+                                  <thead className="bg-slate-100">
+                                    <tr>
+                                      <th className="text-left p-2 font-medium text-slate-600">日付</th>
+                                      <th className="text-left p-2 font-medium text-slate-600">氏名</th>
+                                      <th className="text-left p-2 font-medium text-slate-600">出勤</th>
+                                      <th className="text-left p-2 font-medium text-slate-600">退勤</th>
+                                      <th className="text-left p-2 font-medium text-slate-600">状態</th>
+                                      <th className="text-left p-2 font-medium text-slate-600"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {monthRecords.map(r => {
+                                      const staff = allStaff.find(s => s.email === r.user_email);
+                                      const name = staff?.full_name || r.user_name || r.user_email;
+                                      const statusLabel = r.status === 'approved' ? '承認済' : r.status === 'completed' ? '承認待' : '勤務中';
+                                      return (
+                                        <tr key={r.id} className="border-t border-slate-200 hover:bg-white">
+                                          <td className="p-2">{r.date}</td>
+                                          <td className="p-2">{name}</td>
+                                          <td className="p-2">{r.clock_in || '-'}</td>
+                                          <td className="p-2">{r.clock_out || '-'}</td>
+                                          <td className="p-2">
+                                            <Badge className={r.status === 'approved' ? 'bg-green-100 text-green-700 text-xs' : 'bg-amber-100 text-amber-700 text-xs'}>
+                                              {statusLabel}
+                                            </Badge>
+                                          </td>
+                                          <td className="p-2">
+                                            <Button size="sm" variant="ghost" onClick={() => setEditingRecord(r)}>
+                                              <Pencil className="w-3.5 h-3.5" />
+                                            </Button>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                    </React.Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
