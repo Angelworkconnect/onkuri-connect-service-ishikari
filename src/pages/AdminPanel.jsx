@@ -1164,7 +1164,7 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <TabsList className="bg-white shadow-lg rounded-xl mb-6 w-full h-auto p-2 flex flex-wrap justify-start gap-1 overflow-visible">
+            <TabsList className="bg-white shadow-lg rounded-xl mb-6 w-full h-auto p-2 flex flex-wrap justify-start gap-1" style={{overflow: 'visible', height: 'auto'}}>
               <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Settings className="w-4 h-4" /><span>サイト設定</span></TabsTrigger>
               <TabsTrigger value="services" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Gift className="w-4 h-4" /><span>サービス</span></TabsTrigger>
               <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><QrCode className="w-4 h-4" /><span>QRコード</span></TabsTrigger>
