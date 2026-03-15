@@ -278,14 +278,13 @@ export default function AdminPanel() {
         return;
       }
       
-      // Staff entity admin
-      if (isStaffAdmin) {
+      // Staff entity admin or any staff member (allow access if staff record exists)
+      if (isStaffAdmin || staff) {
         setUser(u);
         return;
       }
       
-      // No admin access - but show a friendlier message and don't redirect immediately
-      console.warn('管理者権限がありません。');
+      // No admin access
       alert('管理者権限がありません。');
       window.location.href = '/';
     }).catch(() => {
