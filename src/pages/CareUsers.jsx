@@ -317,7 +317,7 @@ export default function CareUsers() {
               <Label>備考</Label>
               <Input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
             </div>
-            )} {/* end manual/edit mode */}
+            </>) } {/* end manual/edit mode */}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={closeDialog}>キャンセル</Button>
