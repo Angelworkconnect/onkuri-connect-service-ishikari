@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Users, Search } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Users, Search, UserCheck, PenLine } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
