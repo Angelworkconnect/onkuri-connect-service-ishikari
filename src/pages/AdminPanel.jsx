@@ -1185,6 +1185,7 @@ export default function AdminPanel() {
                 { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
                 { value: 'transport', icon: Truck, label: '送迎管理' },
                 { value: 'clients', icon: Users, label: 'クライアント' },
+                { value: 'analytics', icon: Brain, label: 'AI分析' },
                 ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
                   key={value}
