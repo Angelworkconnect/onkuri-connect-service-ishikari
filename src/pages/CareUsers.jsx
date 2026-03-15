@@ -37,6 +37,8 @@ export default function CareUsers() {
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('active');
+  const [inputMode, setInputMode] = useState('client'); // 'client' | 'manual'
+  const [clientSearch, setClientSearch] = useState('');
 
   const { data: users = [] } = useQuery({
     queryKey: ['care-user-records'],
