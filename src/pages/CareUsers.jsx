@@ -240,7 +240,7 @@ export default function CareUsers() {
 
             {/* 手動入力モード（または編集時） */}
             {(editingUser || inputMode === 'manual') && (
-            <div className="grid grid-cols-2 gap-3">
+            <><div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>名前 *</Label>
                 <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="山田 花子" />
