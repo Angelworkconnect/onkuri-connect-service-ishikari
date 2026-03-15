@@ -33,7 +33,6 @@ const navigation = [
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
   { name: '体験情報', href: 'TrialInfo', icon: ClipboardList },
-  { name: '経営', href: 'CareBusinessDashboard', icon: BarChart3 },
   ];
 
   const adminNavigation = [];
