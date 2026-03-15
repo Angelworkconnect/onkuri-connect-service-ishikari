@@ -1169,40 +1169,25 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <div className="bg-white shadow-lg rounded-xl mb-6 overflow-hidden">
-              <TabsList asChild>
-                <div className="flex flex-wrap gap-0 p-0">
-                  {[
-                    { value: 'settings', icon: Settings, label: 'サイト設定' },
-                    { value: 'services', icon: Gift, label: 'サービス' },
-                    { value: 'qrcode', icon: QrCode, label: 'QRコード' },
-                    { value: 'shifts', icon: Calendar, label: '単発管理' },
-                    { value: 'applications', icon: FileText, label: '応募管理' },
-                    { value: 'attendance', icon: Clock, label: '勤怠管理' },
-                    { value: 'announcements', icon: Bell, label: 'お知らせ' },
-                    { value: 'staff', icon: Users, label: 'スタッフ' },
-                    { value: 'tips', icon: Sparkles, label: 'サンクス' },
-                    { value: 'benefits', icon: Gift, label: '福利厚生' },
-                    { value: 'help', icon: Bell, label: 'ヘルプ' },
-                    { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
-                    { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
-                    { value: 'transport', icon: Truck, label: '送迎管理' },
-                    { value: 'clients', icon: Users, label: 'クライアント' },
-                    { value: 'analytics', icon: Brain, label: 'AI分析' },
-                    { value: 'care', icon: BarChart3, label: '経営' },
-                  ].map(({ value, icon: Icon, label }) => (
-                    <TabsTrigger
-                      key={value}
-                      value={value}
-                      className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50 text-xs flex flex-col items-center gap-1 py-3 px-4 h-auto rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] transition-colors"
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="leading-tight text-center whitespace-nowrap">{label}</span>
-                    </TabsTrigger>
-                  ))}
-                </div>
-              </TabsList>
-            </div>
+            <TabsList className="bg-white shadow-lg rounded-xl mb-6 w-full h-auto p-2 flex flex-wrap justify-start gap-1">
+              <TabsTrigger value="settings" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Settings className="w-4 h-4" /><span>サイト設定</span></TabsTrigger>
+              <TabsTrigger value="services" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Gift className="w-4 h-4" /><span>サービス</span></TabsTrigger>
+              <TabsTrigger value="qrcode" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><QrCode className="w-4 h-4" /><span>QRコード</span></TabsTrigger>
+              <TabsTrigger value="shifts" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Calendar className="w-4 h-4" /><span>単発管理</span></TabsTrigger>
+              <TabsTrigger value="applications" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><FileText className="w-4 h-4" /><span>応募管理</span></TabsTrigger>
+              <TabsTrigger value="attendance" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Clock className="w-4 h-4" /><span>勤怠管理</span></TabsTrigger>
+              <TabsTrigger value="announcements" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Bell className="w-4 h-4" /><span>お知らせ</span></TabsTrigger>
+              <TabsTrigger value="staff" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Users className="w-4 h-4" /><span>スタッフ</span></TabsTrigger>
+              <TabsTrigger value="tips" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Sparkles className="w-4 h-4" /><span>サンクス</span></TabsTrigger>
+              <TabsTrigger value="benefits" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Gift className="w-4 h-4" /><span>福利厚生</span></TabsTrigger>
+              <TabsTrigger value="help" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Bell className="w-4 h-4" /><span>ヘルプ</span></TabsTrigger>
+              <TabsTrigger value="messages" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><MessageCircle className="w-4 h-4" /><span>メッセージ</span></TabsTrigger>
+              <TabsTrigger value="shift_ai" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Calendar className="w-4 h-4" /><span>シフト管理</span></TabsTrigger>
+              <TabsTrigger value="transport" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Truck className="w-4 h-4" /><span>送迎管理</span></TabsTrigger>
+              <TabsTrigger value="clients" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Users className="w-4 h-4" /><span>クライアント</span></TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><Brain className="w-4 h-4" /><span>AI分析</span></TabsTrigger>
+              <TabsTrigger value="care" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"><BarChart3 className="w-4 h-4" /><span>経営</span></TabsTrigger>
+            </TabsList>
 
           {/* Site Settings Tab */}
           <TabsContent value="settings">
