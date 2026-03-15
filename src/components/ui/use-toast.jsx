@@ -134,6 +134,10 @@ function toast({ ...props }) {
     },
   });
 
+  // duration指定があれば自動でdismiss
+  const duration = props.duration ?? 3000;
+  setTimeout(() => dismiss(), duration);
+
   return {
     id,
     dismiss,
