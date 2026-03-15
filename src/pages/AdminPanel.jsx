@@ -1850,16 +1850,7 @@ export default function AdminPanel() {
 
           {/* Care Business Dashboard Tab */}
           <TabsContent value="care">
-            <div className="bg-white rounded-xl shadow p-8 text-center">
-              <div className="text-5xl mb-4">📊</div>
-              <h2 className="text-xl font-bold text-slate-800 mb-2">介護経営ダッシュボード</h2>
-              <p className="text-slate-500 mb-6">稼働率・売上・利益予測・利用者動向の確認は専用ダッシュボードで行います。</p>
-              <a href="/CareBusinessDashboard">
-                <Button className="bg-[#2D4A6F] hover:bg-[#1E3A5F] text-white text-lg px-8 py-4 h-auto">
-                  経営ダッシュボードを開く →
-                </Button>
-              </a>
-            </div>
+            <CareBusinessDashboardEmbed />
           </TabsContent>
 
                    </Tabs>
