@@ -1169,7 +1169,8 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <TabsList className="bg-white shadow-lg p-1.5 mb-6 w-full flex-wrap justify-start gap-1.5 h-auto">
+            <TabsList asChild>
+              <div className="bg-white shadow-lg p-1.5 mb-6 w-full flex flex-wrap justify-start gap-1.5 rounded-lg">
               {[
                 { value: 'settings', icon: Settings, label: 'サイト設定' },
                 { value: 'services', icon: Gift, label: 'サービス' },
@@ -1198,6 +1199,7 @@ export default function AdminPanel() {
                   <span className="leading-tight text-center">{label}</span>
                 </TabsTrigger>
               ))}
+              </div>
             </TabsList>
 
           {/* Site Settings Tab */}
