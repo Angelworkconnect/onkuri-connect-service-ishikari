@@ -33,7 +33,7 @@ import {
 import { 
         Plus, Calendar, Users, FileText, Bell,
          CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-         Eye, EyeOff, Sparkles, Settings, Gift, MessageCircle, Send, Truck, Shield, Brain, Lock
+         Eye, EyeOff, Sparkles, Settings, Gift, MessageCircle, Send, Truck, Shield, Brain, Lock, BarChart3
         } from "lucide-react";
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
@@ -1186,6 +1186,7 @@ export default function AdminPanel() {
                 { value: 'transport', icon: Truck, label: '送迎管理' },
                 { value: 'clients', icon: Users, label: 'クライアント' },
                 { value: 'analytics', icon: Brain, label: 'AI分析' },
+                { value: 'care', icon: BarChart3, label: '経営' },
                 ].map(({ value, icon: Icon, label }) => (
                 <TabsTrigger
                   key={value}
@@ -1845,6 +1846,20 @@ export default function AdminPanel() {
           {/* Analytics Tab */}
           <TabsContent value="analytics">
             <AnalyticsTab />
+          </TabsContent>
+
+          {/* Care Business Dashboard Tab */}
+          <TabsContent value="care">
+            <div className="bg-white rounded-xl shadow p-8 text-center">
+              <div className="text-5xl mb-4">📊</div>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">介護経営ダッシュボード</h2>
+              <p className="text-slate-500 mb-6">稼働率・売上・利益予測・利用者動向の確認は専用ダッシュボードで行います。</p>
+              <a href="/CareBusinessDashboard">
+                <Button className="bg-[#2D4A6F] hover:bg-[#1E3A5F] text-white text-lg px-8 py-4 h-auto">
+                  経営ダッシュボードを開く →
+                </Button>
+              </a>
+            </div>
           </TabsContent>
 
                    </Tabs>
