@@ -200,27 +200,16 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
   const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
   const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
   const [simMonthlyDays, setSimMonthlyDays] = useState(defaultMonthlyDays);
-  const [simVariableCostRate, setSimVariableCostRate] = useState(3); // 変動費率(%)
+  const [simVariableCostRate, setSimVariableCostRate] = useState(3);
   const [open, setOpen] = useState(true);
+  const [scenarios, setScenarios] = useState([
+    { id: 1, label: '現状維持', rate: 70 },
+    { id: 2, label: '目標', rate: 80 },
+    { id: 3, label: '理想', rate: 90 },
+    { id: 4, label: '満員', rate: 100 },
+  ]);
+  const [nextId, setNextId] = useState(5);
 
-  // 稼働率ごとの損益計算
-  const chartData = Array.from({ length: 21 }, (_, i) => {
-    const rate = i * 5; // 0%〜100%
-    const avgPeople = (simCapacity * rate) / 100;
-    const sales = Math.round(avgPeople * simUnitPrice * simMonthlyDays);
-    const variableCost = Math.round(sales * simVariableCostRate / 100);
-    const totalCost = simFixedCost + variableCost;
-    const profit = sales - totalCost;
-    return { rate: `${rate}%`, 売上: sales, 総費用: totalCost, 利益: profit };
-  });
-
-  // 損益分岐点計算
-  // 売上 = 固定費 + 変動費率×売上 → 売上×(1-変動費率) = 固定費 → 売上 = 固定費/(1-変動費率)
-  const breakEvenSales = simFixedCost / (1 - simVariableCostRate / 100);
-  const breakEvenPeople = simUnitPrice * simMonthlyDays > 0 ? breakEvenSales / (simUnitPrice * simMonthlyDays) : 0;
-  const breakEvenRate = simCapacity > 0 ? (breakEvenPeople / simCapacity) * 100 : 0;
-
-  // 現在の設定での各指標
   const calcAt = (rate) => {
     const avg = (simCapacity * rate) / 100;
     const sales = Math.round(avg * simUnitPrice * simMonthlyDays);
@@ -229,12 +218,32 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
     return { sales, profit };
   };
 
-  const scenarios = [
-    { label: '現状維持 (70%)', rate: 70 },
-    { label: '目標 (80%)', rate: 80 },
-    { label: '理想 (90%)', rate: 90 },
-    { label: '満員 (100%)', rate: 100 },
-  ];
+  const addScenario = () => {
+    setScenarios(s => [...s, { id: nextId, label: `シナリオ${nextId}`, rate: 75 }]);
+    setNextId(n => n + 1);
+  };
+
+  const updateScenario = (id, field, value) => {
+    setScenarios(s => s.map(sc => sc.id === id ? { ...sc, [field]: field === 'rate' ? Math.min(100, Math.max(0, Number(value))) : value } : sc));
+  };
+
+  const removeScenario = (id) => {
+    setScenarios(s => s.filter(sc => sc.id !== id));
+  };
+
+  const chartData = Array.from({ length: 21 }, (_, i) => {
+    const rate = i * 5;
+    const avgPeople = (simCapacity * rate) / 100;
+    const sales = Math.round(avgPeople * simUnitPrice * simMonthlyDays);
+    const variableCost = Math.round(sales * simVariableCostRate / 100);
+    const totalCost = simFixedCost + variableCost;
+    const profit = sales - totalCost;
+    return { rate: `${rate}%`, 売上: sales, 総費用: totalCost, 利益: profit };
+  });
+
+  const breakEvenSales = simFixedCost / (1 - simVariableCostRate / 100);
+  const breakEvenPeople = simUnitPrice * simMonthlyDays > 0 ? breakEvenSales / (simUnitPrice * simMonthlyDays) : 0;
+  const breakEvenRate = simCapacity > 0 ? (breakEvenPeople / simCapacity) * 100 : 0;
 
   return (
     <Card className="border-0 shadow-sm">
@@ -245,7 +254,7 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
         <h3 className="font-semibold text-slate-700 flex items-center gap-2">
           <Calculator className="w-4 h-4 text-[#2D4A6F]" />
           経営シミュレーター
-          <span className="text-xs font-normal text-slate-400 ml-1">— パラメータを変えて利益予測</span>
+          <span className="text-xs font-normal text-slate-400 ml-1">— パラメータを自由に変えて利益予測</span>
         </h3>
         {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
       </button>
@@ -253,29 +262,26 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
       {open && (
         <div className="px-5 pb-6 space-y-6">
           {/* パラメータ入力 */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 bg-slate-50 rounded-xl p-4">
-            {[
-              { label: '定員（人）', value: simCapacity, setter: setSimCapacity, min: 1, max: 100 },
-              { label: '客単価（円）', value: simUnitPrice, setter: setSimUnitPrice, min: 1000 },
-              { label: '固定費（円/月）', value: simFixedCost, setter: setSimFixedCost, min: 0 },
-              { label: '月営業日数', value: simMonthlyDays, setter: setSimMonthlyDays, min: 1, max: 31 },
-              { label: '変動費率（%）', value: simVariableCostRate, setter: setSimVariableCostRate, min: 0, max: 99 },
-            ].map(({ label, value, setter, min, max }) => (
-              <div key={label}>
-                <Label className="text-xs text-slate-500 mb-1 block">{label}</Label>
-                <Input
-                  type="number"
-                  value={value}
-                  min={min}
-                  max={max}
-                  onChange={e => setter(Number(e.target.value))}
-                  className="text-sm h-8"
-                />
-              </div>
-            ))}
+          <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">基本パラメータ</p>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              {[
+                { label: '定員（人）', value: simCapacity, setter: setSimCapacity, min: 1, max: 100 },
+                { label: '客単価（円）', value: simUnitPrice, setter: setSimUnitPrice, min: 1000 },
+                { label: '固定費（円/月）', value: simFixedCost, setter: setSimFixedCost, min: 0 },
+                { label: '月営業日数', value: simMonthlyDays, setter: setSimMonthlyDays, min: 1, max: 31 },
+                { label: '変動費率（%）', value: simVariableCostRate, setter: setSimVariableCostRate, min: 0, max: 99 },
+              ].map(({ label, value, setter, min, max }) => (
+                <div key={label}>
+                  <Label className="text-xs text-slate-500 mb-1 block">{label}</Label>
+                  <Input type="number" value={value} min={min} max={max}
+                    onChange={e => setter(Number(e.target.value))} className="text-sm h-8" />
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* 損益分岐点バナー */}
+          {/* 損益分岐点 */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
             <div>
               <p className="text-xs text-amber-600 font-medium">損益分岐点</p>
@@ -289,7 +295,7 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
 
           {/* 損益グラフ */}
           <div>
-            <p className="text-xs text-slate-500 mb-2">稼働率別 売上・費用・利益（万円）</p>
+            <p className="text-xs text-slate-500 mb-2">稼働率別 売上・費用・利益</p>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -305,16 +311,44 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
             </ResponsiveContainer>
           </div>
 
-          {/* シナリオ比較表 */}
+          {/* カスタムシナリオ比較 */}
           <div>
-            <p className="text-xs text-slate-500 mb-2">シナリオ別 月次予測</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">シナリオ比較（自由にカスタマイズ）</p>
+              <Button size="sm" variant="outline" onClick={addScenario} className="text-xs h-7 px-3">
+                ＋ シナリオ追加
+              </Button>
+            </div>
+            <div className="space-y-2 mb-4">
+              {scenarios.map(sc => (
+                <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
+                  <Input
+                    value={sc.label}
+                    onChange={e => updateScenario(sc.id, 'label', e.target.value)}
+                    className="text-sm h-7 w-32 bg-white"
+                    placeholder="シナリオ名"
+                  />
+                  <span className="text-xs text-slate-400 shrink-0">稼働率</span>
+                  <Input
+                    type="number"
+                    value={sc.rate}
+                    min={0} max={100}
+                    onChange={e => updateScenario(sc.id, 'rate', e.target.value)}
+                    className="text-sm h-7 w-16 bg-white text-center"
+                  />
+                  <span className="text-xs text-slate-400 shrink-0">%</span>
+                  <button onClick={() => removeScenario(sc.id)} className="ml-auto text-slate-300 hover:text-red-400 text-lg leading-none">×</button>
+                </div>
+              ))}
+            </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {scenarios.map(({ label, rate }) => {
-                const { sales, profit } = calcAt(rate);
+              {scenarios.map(sc => {
+                const { sales, profit } = calcAt(sc.rate);
                 const isProfit = profit >= 0;
                 return (
-                  <div key={rate} className={`rounded-xl border-2 p-4 ${isProfit ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}>
-                    <p className="text-xs font-semibold text-slate-600 mb-2">{label}</p>
+                  <div key={sc.id} className={`rounded-xl border-2 p-4 ${isProfit ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}>
+                    <p className="text-xs font-semibold text-slate-600 mb-1">{sc.label}</p>
+                    <p className="text-xs text-slate-400 mb-2">稼働率 {sc.rate}%</p>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-slate-500">売上</span>
