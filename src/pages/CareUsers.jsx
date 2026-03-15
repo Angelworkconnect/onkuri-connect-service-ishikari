@@ -45,6 +45,11 @@ export default function CareUsers() {
     queryFn: () => base44.entities.CareUserRecord.list('-start_date', 200),
   });
 
+  const { data: clients = [] } = useQuery({
+    queryKey: ['clients-for-care'],
+    queryFn: () => base44.entities.Client.list('name', 200),
+  });
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.CareUserRecord.create(data),
     onSuccess: () => { queryClient.invalidateQueries(['care-user-records']); closeDialog(); toast({ title: '登録しました' }); },
