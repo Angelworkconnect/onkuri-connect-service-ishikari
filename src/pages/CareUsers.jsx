@@ -60,7 +60,21 @@ export default function CareUsers() {
     onSuccess: () => { queryClient.invalidateQueries(['care-user-records']); closeDialog(); toast({ title: '更新しました' }); },
   });
 
-  const closeDialog = () => { setDialogOpen(false); setEditingUser(null); setForm({ ...EMPTY_FORM }); };
+  const closeDialog = () => { setDialogOpen(false); setEditingUser(null); setForm({ ...EMPTY_FORM }); setInputMode('client'); setClientSearch(''); };
+
+  const selectClient = (client) => {
+    const CARE_LEVEL_MAP = { none: '', support_1: '要支援1', support_2: '要支援2', care_1: '要介護1', care_2: '要介護2', care_3: '要介護3', care_4: '要介護4', care_5: '要介護5' };
+    setForm(f => ({
+      ...f,
+      name: client.name || '',
+      furigana: client.furigana || '',
+      care_level: CARE_LEVEL_MAP[client.careLevel] || '',
+      visit_days: client.daysOfWeek || [],
+      weekly_visits: client.frequencyPerWeek || 2,
+    }));
+    setClientSearch('');
+    setInputMode('manual'); // クライアント選択後は詳細入力に切り替え
+  };
 
   const openEdit = (u) => {
     setEditingUser(u);
