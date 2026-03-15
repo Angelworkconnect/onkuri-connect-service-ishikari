@@ -56,7 +56,7 @@ export default function CareSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['care-biz-settings']);
-      toast({ title: '保存しました', description: '設定を保存しました。' });
+      toast({ title: '保存しました', description: '設定を保存しました。', duration: 2000 });
     },
   });
 

@@ -60,7 +60,7 @@ export default function CareDayUsageSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['care-day-usage']);
-      toast({ title: '保存しました' });
+      toast({ title: '保存しました', duration: 2000 });
     },
   });
 
