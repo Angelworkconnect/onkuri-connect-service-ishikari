@@ -188,6 +188,152 @@ export default function CareBusinessDashboardEmbed() {
           ))}
         </div>
       </div>
+
+      {/* 経営シミュレーター */}
+      <ProfitSimulator defaultCapacity={capacity} defaultUnitPrice={unitPrice} defaultFixedCost={fixedCost} defaultMonthlyDays={monthlyDays} />
     </div>
+  );
+}
+
+function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, defaultMonthlyDays }) {
+  const [simCapacity, setSimCapacity] = useState(defaultCapacity);
+  const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
+  const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
+  const [simMonthlyDays, setSimMonthlyDays] = useState(defaultMonthlyDays);
+  const [simVariableCostRate, setSimVariableCostRate] = useState(20); // 変動費率(%)
+  const [open, setOpen] = useState(true);
+
+  // 稼働率ごとの損益計算
+  const chartData = Array.from({ length: 21 }, (_, i) => {
+    const rate = i * 5; // 0%〜100%
+    const avgPeople = (simCapacity * rate) / 100;
+    const sales = Math.round(avgPeople * simUnitPrice * simMonthlyDays);
+    const variableCost = Math.round(sales * simVariableCostRate / 100);
+    const totalCost = simFixedCost + variableCost;
+    const profit = sales - totalCost;
+    return { rate: `${rate}%`, 売上: sales, 総費用: totalCost, 利益: profit };
+  });
+
+  // 損益分岐点計算
+  // 売上 = 固定費 + 変動費率×売上 → 売上×(1-変動費率) = 固定費 → 売上 = 固定費/(1-変動費率)
+  const breakEvenSales = simFixedCost / (1 - simVariableCostRate / 100);
+  const breakEvenPeople = simUnitPrice * simMonthlyDays > 0 ? breakEvenSales / (simUnitPrice * simMonthlyDays) : 0;
+  const breakEvenRate = simCapacity > 0 ? (breakEvenPeople / simCapacity) * 100 : 0;
+
+  // 現在の設定での各指標
+  const calcAt = (rate) => {
+    const avg = (simCapacity * rate) / 100;
+    const sales = Math.round(avg * simUnitPrice * simMonthlyDays);
+    const varCost = Math.round(sales * simVariableCostRate / 100);
+    const profit = sales - simFixedCost - varCost;
+    return { sales, profit };
+  };
+
+  const scenarios = [
+    { label: '現状維持 (70%)', rate: 70 },
+    { label: '目標 (80%)', rate: 80 },
+    { label: '理想 (90%)', rate: 90 },
+    { label: '満員 (100%)', rate: 100 },
+  ];
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <button
+        className="w-full flex items-center justify-between p-5 text-left"
+        onClick={() => setOpen(o => !o)}
+      >
+        <h3 className="font-semibold text-slate-700 flex items-center gap-2">
+          <Calculator className="w-4 h-4 text-[#2D4A6F]" />
+          経営シミュレーター
+          <span className="text-xs font-normal text-slate-400 ml-1">— パラメータを変えて利益予測</span>
+        </h3>
+        {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+      </button>
+
+      {open && (
+        <div className="px-5 pb-6 space-y-6">
+          {/* パラメータ入力 */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 bg-slate-50 rounded-xl p-4">
+            {[
+              { label: '定員（人）', value: simCapacity, setter: setSimCapacity, min: 1, max: 100 },
+              { label: '客単価（円）', value: simUnitPrice, setter: setSimUnitPrice, min: 1000 },
+              { label: '固定費（円/月）', value: simFixedCost, setter: setSimFixedCost, min: 0 },
+              { label: '月営業日数', value: simMonthlyDays, setter: setSimMonthlyDays, min: 1, max: 31 },
+              { label: '変動費率（%）', value: simVariableCostRate, setter: setSimVariableCostRate, min: 0, max: 99 },
+            ].map(({ label, value, setter, min, max }) => (
+              <div key={label}>
+                <Label className="text-xs text-slate-500 mb-1 block">{label}</Label>
+                <Input
+                  type="number"
+                  value={value}
+                  min={min}
+                  max={max}
+                  onChange={e => setter(Number(e.target.value))}
+                  className="text-sm h-8"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* 損益分岐点バナー */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+            <div>
+              <p className="text-xs text-amber-600 font-medium">損益分岐点</p>
+              <p className="text-lg font-bold text-amber-700">{breakEvenRate.toFixed(1)}% 稼働</p>
+            </div>
+            <div className="text-xs text-amber-700 space-y-0.5">
+              <p>平均 {breakEvenPeople.toFixed(1)}人／日 が必要</p>
+              <p>月売上 ¥{Math.round(breakEvenSales).toLocaleString()} で収支ゼロ</p>
+            </div>
+          </div>
+
+          {/* 損益グラフ */}
+          <div>
+            <p className="text-xs text-slate-500 mb-2">稼働率別 売上・費用・利益（万円）</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="rate" tick={{ fontSize: 10 }} interval={1} />
+                <YAxis tickFormatter={v => `${Math.round(v/10000)}万`} tick={{ fontSize: 10 }} width={52} />
+                <Tooltip formatter={(v) => `¥${v.toLocaleString()}`} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="4 2" />
+                <Line type="monotone" dataKey="売上" stroke="#2D4A6F" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="総費用" stroke="#f59e0b" strokeWidth={2} dot={false} strokeDasharray="5 3" />
+                <Line type="monotone" dataKey="利益" stroke="#10b981" strokeWidth={2.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* シナリオ比較表 */}
+          <div>
+            <p className="text-xs text-slate-500 mb-2">シナリオ別 月次予測</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {scenarios.map(({ label, rate }) => {
+                const { sales, profit } = calcAt(rate);
+                const isProfit = profit >= 0;
+                return (
+                  <div key={rate} className={`rounded-xl border-2 p-4 ${isProfit ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}>
+                    <p className="text-xs font-semibold text-slate-600 mb-2">{label}</p>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">売上</span>
+                        <span className="font-semibold">¥{Math.round(sales/10000)}万</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">利益</span>
+                        <span className={`font-bold ${isProfit ? 'text-emerald-700' : 'text-red-600'}`}>
+                          {isProfit ? '' : '▲'}¥{Math.abs(Math.round(profit/10000))}万
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </Card>
   );
 }
