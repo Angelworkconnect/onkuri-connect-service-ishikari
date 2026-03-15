@@ -1169,38 +1169,40 @@ export default function AdminPanel() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
         <Tabs defaultValue="settings" className="w-full">
-            <TabsList asChild>
-              <div className="bg-white shadow-lg p-1.5 mb-6 w-full flex flex-wrap justify-start gap-1.5 rounded-lg">
-              {[
-                { value: 'settings', icon: Settings, label: 'サイト設定' },
-                { value: 'services', icon: Gift, label: 'サービス' },
-                { value: 'qrcode', icon: QrCode, label: 'QRコード' },
-                { value: 'shifts', icon: Calendar, label: '単発管理' },
-                { value: 'applications', icon: FileText, label: '応募管理' },
-                { value: 'attendance', icon: Clock, label: '勤怠管理' },
-                { value: 'announcements', icon: Bell, label: 'お知らせ' },
-                { value: 'staff', icon: Users, label: 'スタッフ' },
-                { value: 'tips', icon: Sparkles, label: 'サンクス' },
-                { value: 'benefits', icon: Gift, label: '福利厚生' },
-                { value: 'help', icon: Bell, label: 'ヘルプ' },
-                { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
-                { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
-                { value: 'transport', icon: Truck, label: '送迎管理' },
-                { value: 'clients', icon: Users, label: 'クライアント' },
-                { value: 'analytics', icon: Brain, label: 'AI分析' },
-                { value: 'care', icon: BarChart3, label: '経営' },
-                ].map(({ value, icon: Icon, label }) => (
-                <TabsTrigger
-                  key={value}
-                  value={value}
-                  className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-xs flex flex-col items-center gap-1 py-2 px-3 min-w-[56px] h-auto rounded-lg"
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="leading-tight text-center">{label}</span>
-                </TabsTrigger>
-              ))}
-              </div>
-            </TabsList>
+            <div className="bg-white shadow-lg rounded-xl mb-6 overflow-hidden">
+              <TabsList asChild>
+                <div className="flex flex-wrap gap-0 p-0">
+                  {[
+                    { value: 'settings', icon: Settings, label: 'サイト設定' },
+                    { value: 'services', icon: Gift, label: 'サービス' },
+                    { value: 'qrcode', icon: QrCode, label: 'QRコード' },
+                    { value: 'shifts', icon: Calendar, label: '単発管理' },
+                    { value: 'applications', icon: FileText, label: '応募管理' },
+                    { value: 'attendance', icon: Clock, label: '勤怠管理' },
+                    { value: 'announcements', icon: Bell, label: 'お知らせ' },
+                    { value: 'staff', icon: Users, label: 'スタッフ' },
+                    { value: 'tips', icon: Sparkles, label: 'サンクス' },
+                    { value: 'benefits', icon: Gift, label: '福利厚生' },
+                    { value: 'help', icon: Bell, label: 'ヘルプ' },
+                    { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
+                    { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
+                    { value: 'transport', icon: Truck, label: '送迎管理' },
+                    { value: 'clients', icon: Users, label: 'クライアント' },
+                    { value: 'analytics', icon: Brain, label: 'AI分析' },
+                    { value: 'care', icon: BarChart3, label: '経営' },
+                  ].map(({ value, icon: Icon, label }) => (
+                    <TabsTrigger
+                      key={value}
+                      value={value}
+                      className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-600 hover:text-[#2D4A6F] hover:bg-slate-50 text-xs flex flex-col items-center gap-1 py-3 px-4 h-auto rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] transition-colors"
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="leading-tight text-center whitespace-nowrap">{label}</span>
+                    </TabsTrigger>
+                  ))}
+                </div>
+              </TabsList>
+            </div>
 
           {/* Site Settings Tab */}
           <TabsContent value="settings">
