@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { 
         Home, Calendar, Clock, FileText, Users, 
-                      Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell, Truck, ClipboardList
+                      Menu, X, LogOut, User, Settings, ChevronDown, Sparkles, Gift, CheckCircle, Lock, MessageCircle, Bell, Truck, ClipboardList, BarChart3
       } from "lucide-react";
 import NotificationBell from './components/notifications/NotificationBell';
 
@@ -33,6 +33,7 @@ const navigation = [
   { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
   { name: '福利厚生', href: 'Benefits', icon: Gift },
   { name: '体験情報', href: 'TrialInfo', icon: ClipboardList },
+  { name: '経営', href: 'CareBusinessDashboard', icon: BarChart3 },
   ];
 
   const adminNavigation = [];
