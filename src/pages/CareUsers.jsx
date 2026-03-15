@@ -321,9 +321,11 @@ export default function CareUsers() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={closeDialog}>キャンセル</Button>
-            <Button className="bg-[#2D4A6F]" onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editingUser ? '更新' : '登録'}
-            </Button>
+            {(editingUser || inputMode === 'manual') && (
+              <Button className="bg-[#2D4A6F]" onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
+                {editingUser ? '更新' : '登録'}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
