@@ -187,6 +187,59 @@ export default function CareUsers() {
             <DialogTitle>{editingUser ? '利用者編集' : '利用者登録'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
+
+            {/* 新規登録時のみ：入力方法切り替え */}
+            {!editingUser && (
+              <div className="flex gap-2 bg-slate-100 rounded-lg p-1">
+                <button type="button" onClick={() => setInputMode('client')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm font-medium transition-all ${inputMode === 'client' ? 'bg-white text-[#2D4A6F] shadow-sm' : 'text-slate-500'}`}>
+                  <UserCheck className="w-4 h-4" />登録クライアントから選ぶ
+                </button>
+                <button type="button" onClick={() => setInputMode('manual')}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm font-medium transition-all ${inputMode === 'manual' ? 'bg-white text-[#2D4A6F] shadow-sm' : 'text-slate-500'}`}>
+                  <PenLine className="w-4 h-4" />直接入力
+                </button>
+              </div>
+            )}
+
+            {/* クライアント選択モード */}
+            {!editingUser && inputMode === 'client' && (
+              <div>
+                <Label>クライアント検索</Label>
+                <Input className="mt-1 mb-2" placeholder="名前で検索..." value={clientSearch} onChange={e => setClientSearch(e.target.value)} />
+                <div className="border rounded-lg max-h-52 overflow-y-auto divide-y">
+                  {clients
+                    .filter(c => !clientSearch || c.name?.includes(clientSearch) || c.furigana?.includes(clientSearch))
+                    .filter(c => c.isActive !== false)
+                    .map(client => (
+                      <button key={client.id} type="button" onClick={() => selectClient(client)}
+                        className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-medium text-slate-800">{client.name}</span>
+                            {client.furigana && <span className="text-xs text-slate-400 ml-2">（{client.furigana}）</span>}
+                          </div>
+                          {client.careLevel && client.careLevel !== 'none' && (
+                            <Badge variant="outline" className="text-xs shrink-0">
+                              {{ none:'', support_1:'要支援1', support_2:'要支援2', care_1:'要介護1', care_2:'要介護2', care_3:'要介護3', care_4:'要介護4', care_5:'要介護5' }[client.careLevel]}
+                            </Badge>
+                          )}
+                        </div>
+                        {(client.daysOfWeek || []).length > 0 && (
+                          <p className="text-xs text-slate-400 mt-0.5">{client.daysOfWeek.map(d => DAY_LABELS[d]).join('・')}</p>
+                        )}
+                      </button>
+                    ))}
+                  {clients.filter(c => c.isActive !== false).length === 0 && (
+                    <p className="text-center py-6 text-slate-400 text-sm">クライアントが登録されていません</p>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 mt-2">クライアントを選ぶと情報が自動入力されます</p>
+              </div>
+            )}
+
+            {/* 手動入力モード（または編集時） */}
+            {(editingUser || inputMode === 'manual') && (
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>名前 *</Label>
