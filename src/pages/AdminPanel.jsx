@@ -278,18 +278,14 @@ export default function AdminPanel() {
         return;
       }
       
-      // Staff entity admin - check approval status
+      // Staff entity admin
       if (isStaffAdmin) {
-        if (staff.approval_status === 'approved') {
-          setUser(u);
-          return;
-        }
-        // If pending or rejected, allow access anyway (removed blocking)
         setUser(u);
         return;
       }
       
-      // No admin access
+      // No admin access - but show a friendlier message and don't redirect immediately
+      console.warn('管理者権限がありません。');
       alert('管理者権限がありません。');
       window.location.href = '/';
     }).catch(() => {
