@@ -200,7 +200,7 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
   const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
   const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
   const [simMonthlyDays, setSimMonthlyDays] = useState(defaultMonthlyDays);
-  const [simVariableCostRate, setSimVariableCostRate] = useState(20); // 変動費率(%)
+  const [simVariableCostRate, setSimVariableCostRate] = useState(3); // 変動費率(%)
   const [open, setOpen] = useState(true);
 
   // 稼働率ごとの損益計算
