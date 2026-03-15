@@ -195,48 +195,46 @@ export default function CareBusinessDashboardEmbed() {
   );
 }
 
-const SIM_STORAGE_KEY = 'care_profit_simulator';
+const SIM_STORAGE_KEY = 'care_profit_simulator_v2';
 
-function loadSimState(defaults) {
+function loadSimExtra() {
   try {
     const saved = localStorage.getItem(SIM_STORAGE_KEY);
-    if (saved) return { ...defaults, ...JSON.parse(saved) };
+    if (saved) return JSON.parse(saved);
   } catch {}
-  return defaults;
+  return null;
 }
 
 function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, defaultMonthlyDays }) {
-  const defaults = {
-    simCapacity: defaultCapacity,
-    simUnitPrice: defaultUnitPrice,
-    simFixedCost: defaultFixedCost,
-    simMonthlyDays: defaultMonthlyDays,
-    simVariableCostRate: 3,
-    scenarios: [
-      { id: 1, label: '現状維持', rate: 70 },
-      { id: 2, label: '目標', rate: 80 },
-      { id: 3, label: '理想', rate: 90 },
-      { id: 4, label: '満員', rate: 100 },
-    ],
-    nextId: 5,
-  };
-  const saved = loadSimState(defaults);
+  const extra = loadSimExtra();
 
-  const [simCapacity, setSimCapacity] = useState(saved.simCapacity);
-  const [simUnitPrice, setSimUnitPrice] = useState(saved.simUnitPrice);
-  const [simFixedCost, setSimFixedCost] = useState(saved.simFixedCost);
-  const [simMonthlyDays, setSimMonthlyDays] = useState(saved.simMonthlyDays);
-  const [simVariableCostRate, setSimVariableCostRate] = useState(saved.simVariableCostRate);
+  // 経営設定の値は常にそのまま使う（localStorageには変動費率・シナリオのみ保存）
+  const [simCapacity, setSimCapacity] = useState(defaultCapacity);
+  const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
+  const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
+  const [simMonthlyDays, setSimMonthlyDays] = useState(defaultMonthlyDays);
+  const [simVariableCostRate, setSimVariableCostRate] = useState(extra?.simVariableCostRate ?? 3);
   const [open, setOpen] = useState(true);
-  const [scenarios, setScenarios] = useState(saved.scenarios);
-  const [nextId, setNextId] = useState(saved.nextId);
+  const [scenarios, setScenarios] = useState(extra?.scenarios ?? [
+    { id: 1, label: '現状維持', rate: 70 },
+    { id: 2, label: '目標', rate: 80 },
+    { id: 3, label: '理想', rate: 90 },
+    { id: 4, label: '満員', rate: 100 },
+  ]);
+  const [nextId, setNextId] = useState(extra?.nextId ?? 5);
 
-  // 変更のたびlocalStorageに保存
-  React.useEffect(() => {
+  // 経営設定が変わったらシミュレーターにも反映
+  useEffect(() => { setSimCapacity(defaultCapacity); }, [defaultCapacity]);
+  useEffect(() => { setSimUnitPrice(defaultUnitPrice); }, [defaultUnitPrice]);
+  useEffect(() => { setSimFixedCost(defaultFixedCost); }, [defaultFixedCost]);
+  useEffect(() => { setSimMonthlyDays(defaultMonthlyDays); }, [defaultMonthlyDays]);
+
+  // 変動費率・シナリオのみlocalStorageに保存
+  useEffect(() => {
     localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify({
-      simCapacity, simUnitPrice, simFixedCost, simMonthlyDays, simVariableCostRate, scenarios, nextId
+      simVariableCostRate, scenarios, nextId
     }));
-  }, [simCapacity, simUnitPrice, simFixedCost, simMonthlyDays, simVariableCostRate, scenarios, nextId]);
+  }, [simVariableCostRate, scenarios, nextId]);
 
   const calcAt = (rate) => {
     const avg = (simCapacity * rate) / 100;
