@@ -195,20 +195,48 @@ export default function CareBusinessDashboardEmbed() {
   );
 }
 
+const SIM_STORAGE_KEY = 'care_profit_simulator';
+
+function loadSimState(defaults) {
+  try {
+    const saved = localStorage.getItem(SIM_STORAGE_KEY);
+    if (saved) return { ...defaults, ...JSON.parse(saved) };
+  } catch {}
+  return defaults;
+}
+
 function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, defaultMonthlyDays }) {
-  const [simCapacity, setSimCapacity] = useState(defaultCapacity);
-  const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
-  const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
-  const [simMonthlyDays, setSimMonthlyDays] = useState(defaultMonthlyDays);
-  const [simVariableCostRate, setSimVariableCostRate] = useState(3);
+  const defaults = {
+    simCapacity: defaultCapacity,
+    simUnitPrice: defaultUnitPrice,
+    simFixedCost: defaultFixedCost,
+    simMonthlyDays: defaultMonthlyDays,
+    simVariableCostRate: 3,
+    scenarios: [
+      { id: 1, label: '現状維持', rate: 70 },
+      { id: 2, label: '目標', rate: 80 },
+      { id: 3, label: '理想', rate: 90 },
+      { id: 4, label: '満員', rate: 100 },
+    ],
+    nextId: 5,
+  };
+  const saved = loadSimState(defaults);
+
+  const [simCapacity, setSimCapacity] = useState(saved.simCapacity);
+  const [simUnitPrice, setSimUnitPrice] = useState(saved.simUnitPrice);
+  const [simFixedCost, setSimFixedCost] = useState(saved.simFixedCost);
+  const [simMonthlyDays, setSimMonthlyDays] = useState(saved.simMonthlyDays);
+  const [simVariableCostRate, setSimVariableCostRate] = useState(saved.simVariableCostRate);
   const [open, setOpen] = useState(true);
-  const [scenarios, setScenarios] = useState([
-    { id: 1, label: '現状維持', rate: 70 },
-    { id: 2, label: '目標', rate: 80 },
-    { id: 3, label: '理想', rate: 90 },
-    { id: 4, label: '満員', rate: 100 },
-  ]);
-  const [nextId, setNextId] = useState(5);
+  const [scenarios, setScenarios] = useState(saved.scenarios);
+  const [nextId, setNextId] = useState(saved.nextId);
+
+  // 変更のたびlocalStorageに保存
+  React.useEffect(() => {
+    localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify({
+      simCapacity, simUnitPrice, simFixedCost, simMonthlyDays, simVariableCostRate, scenarios, nextId
+    }));
+  }, [simCapacity, simUnitPrice, simFixedCost, simMonthlyDays, simVariableCostRate, scenarios, nextId]);
 
   const calcAt = (rate) => {
     const avg = (simCapacity * rate) / 100;
