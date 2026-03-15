@@ -17,12 +17,12 @@ function getOccupancyColor(rate) {
   return { bg: 'bg-red-500', text: 'text-red-700', light: 'bg-red-50', border: 'border-red-200' };
 }
 
-function BigMetricCard({ title, value, subtitle, color = 'text-slate-800', bg = 'bg-white', badge, icon: Icon }) {
+function BigMetricCard({ title, value, subtitle, color = 'text-slate-800', bg = 'bg-white', badge, icon: IconComp }) {
   return (
     <Card className={`${bg} border-0 shadow-md p-5 flex flex-col gap-2`}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500">{title}</p>
-        {Icon && <Icon className="w-5 h-5 text-slate-300" />}
+        {IconComp && <IconComp className="w-5 h-5 text-slate-300" />}
       </div>
       <p className={`text-3xl font-bold ${color} leading-none`}>{value}</p>
       {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}

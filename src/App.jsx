@@ -6,6 +6,11 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import TrialInfoPage from './pages/TrialInfo';
+import CareBusinessDashboardPage from './pages/CareBusinessDashboard';
+import CareSettingsPage from './pages/CareSettings';
+import CareDayUsageSettingsPage from './pages/CareDayUsageSettings';
+import CareUsersPage from './pages/CareUsers';
+import CareUserTrendPage from './pages/CareUserTrend';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -60,6 +65,11 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/TrialInfo" element={<LayoutWrapper currentPageName="TrialInfo"><TrialInfoPage /></LayoutWrapper>} />
+      <Route path="/CareBusinessDashboard" element={<LayoutWrapper currentPageName="CareBusinessDashboard"><CareBusinessDashboardPage /></LayoutWrapper>} />
+      <Route path="/CareSettings" element={<LayoutWrapper currentPageName="CareSettings"><CareSettingsPage /></LayoutWrapper>} />
+      <Route path="/CareDayUsageSettings" element={<LayoutWrapper currentPageName="CareDayUsageSettings"><CareDayUsageSettingsPage /></LayoutWrapper>} />
+      <Route path="/CareUsers" element={<LayoutWrapper currentPageName="CareUsers"><CareUsersPage /></LayoutWrapper>} />
+      <Route path="/CareUserTrend" element={<LayoutWrapper currentPageName="CareUserTrend"><CareUserTrendPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
