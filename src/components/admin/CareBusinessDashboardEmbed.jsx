@@ -270,7 +270,7 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
                 { label: '客単価（円）', value: simUnitPrice, setter: setSimUnitPrice, min: 1000 },
                 { label: '固定費（円/月）', value: simFixedCost, setter: setSimFixedCost, min: 0 },
                 { label: '月営業日数', value: simMonthlyDays, setter: setSimMonthlyDays, min: 1, max: 31 },
-                { label: '変動費率（%）', value: simVariableCostRate, setter: setSimVariableCostRate, min: 0, max: 99 },
+                { label: '変動費率（%）', value: simVariableCostRate, setter: setSimVariableCostRate, min: 0 },
               ].map(({ label, value, setter, min, max }) => (
                 <div key={label}>
                   <Label className="text-xs text-slate-500 mb-1 block">{label}</Label>
