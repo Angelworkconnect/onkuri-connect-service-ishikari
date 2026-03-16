@@ -82,36 +82,83 @@ const ADDITIONS = [
   },
 ];
 
+// 資格・スキルタグのキーワードマッチング
+const KEYWORDS = {
+  ptOt: ['PT', 'OT', 'ST', '理学療法士', '作業療法士', '言語聴覚士', '機能訓練指導員'],
+  careWorker: ['介護福祉士'],
+  nurse: ['看護師', '准看護師', '保健師'],
+  socialWorker: ['社会福祉士', 'ケアマネ', 'ケアマネジャー', '介護支援専門員'],
+  rehabAdvisor: ['PT', 'OT', 'ST', '理学療法士', '作業療法士', '言語聴覚士', 'リハ', 'リハビリ'],
+  lifePlan: ['ケアマネ', 'ケアマネジャー', '介護支援専門員', '社会福祉士'],
+  adlSpec: ['介護福祉士', 'PT', 'OT', '理学療法士', '作業療法士', '機能訓練指導員'],
+  dataOp: ['LIFE', 'ICT', 'データ', '科学的介護'],
+};
+
+function hasKeyword(staff, keyList) {
+  const all = [...(staff.qualifications || []), ...(staff.skill_tags || [])];
+  return all.some(q => keyList.some(k => q.includes(k)));
+}
+
 function buildFacilityData(settings, careUsers, staff, bizSettings) {
-  // 在籍中・休職中のみ（退職者除く）
-  const activeStaff = staff.filter(s => s.status !== 'inactive');
-  // シフト・加算計算には在籍中のみ
+  // 在籍中のみを計算対象
   const workingStaff = staff.filter(s => s.status === 'active');
   const activeUsers = careUsers.filter(u => u.status === 'active');
-  const qualifications = workingStaff.flatMap(s => s.qualifications || []);
-  const hasPtOt = qualifications.some(q =>
-    ['PT', 'OT', 'ST', '理学療法士', '作業療法士', '言語聴覚士', '機能訓練指導員'].some(k => q.includes(k))
-  );
-  const hasCareWorker = qualifications.some(q => q.includes('介護福祉士'));
-  const careWorkerCount = workingStaff.filter(s => (s.qualifications || []).some(q => q.includes('介護福祉士'))).length;
+
+  // 各資格・スキル保有スタッフを特定
+  const ptOtStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.ptOt));
+  const careWorkerStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.careWorker));
+  const nurseStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.nurse));
+  const rehabStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.rehabAdvisor));
+  const lifePlanStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.lifePlan));
+  const adlSpecStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.adlSpec));
+  const dataOpStaff = workingStaff.filter(s => hasKeyword(s, KEYWORDS.dataOp));
+
+  const hasPtOt = ptOtStaff.length > 0;
+  const careWorkerCount = careWorkerStaff.length;
+  const careWorkerRatio = workingStaff.length > 0 ? careWorkerCount / workingStaff.length : 0;
+
+  // 「所属があれば加算要件を充足」と自動推論
+  // リハ専門職がいれば連携体制あり / 生活機能アセスメント可能 / 生活機能向上計画作成可能
+  const hasRehabConnection = rehabStaff.length > 0;
+  const hasAssessment = rehabStaff.length > 0 || adlSpecStaff.length >= 2;
+  const hasLifePlanDoc = lifePlanStaff.length > 0 || hasPtOt;
+
+  // ADL評価はPT/OT/介護福祉士がいれば実施体制あり
+  const hasAdlCapable = adlSpecStaff.length > 0;
+  const hasAdlEval = hasAdlCapable && activeUsers.length >= 10;
+  const hasAdlPlan = hasAdlCapable && activeUsers.length >= 10;
+
+  // 科学的介護：LIFEデータ提出スタッフいるか、または専任ICT担当者がいれば推定可
+  const hasLifeSubmission = dataOpStaff.length > 0;
+
+  // 処遇改善：スタッフ3名以上 + 管理体制（管理者ロールのスタッフがいれば賃金計画作成済みと推定）
+  const hasAdminStaff = workingStaff.some(s => s.role === 'admin' || s.role === 'full_time');
+  const hasWagePlan = workingStaff.length >= 3 && hasAdminStaff;
 
   return {
     staffCount: workingStaff.length,
     activeUserCount: activeUsers.length,
     hasPtOt,
-    hasCareWorker,
-    careWorkerRatio: workingStaff.length > 0 ? careWorkerCount / workingStaff.length : 0,
+    hasCareWorker: careWorkerCount > 0,
+    careWorkerRatio,
     hasTrainingPlan: workingStaff.length >= 3,
-    hasWagePlan: false,
+    hasWagePlan,
     hasTrainingPlanDoc: hasPtOt,
-    hasRehabConnection: false,
-    hasAssessment: false,
-    hasLifePlanDoc: false,
-    hasAdlEval: activeUsers.length >= 10,
-    hasAdlPlan: activeUsers.length >= 10,
-    hasLifeSubmission: false,
+    hasRehabConnection,
+    hasAssessment,
+    hasLifePlanDoc,
+    hasAdlEval,
+    hasAdlPlan,
+    hasLifeSubmission,
     hasPdca: workingStaff.length >= 5,
     hasQualityCheck: workingStaff.length >= 4,
+    // 詳細情報（AIアドバイス表示用）
+    ptOtCount: ptOtStaff.length,
+    careWorkerCount,
+    nurseCount: nurseStaff.length,
+    rehabCount: rehabStaff.length,
+    ptOtNames: ptOtStaff.map(s => s.full_name).join('・'),
+    careWorkerNames: careWorkerStaff.map(s => s.full_name).join('・'),
   };
 }
 
