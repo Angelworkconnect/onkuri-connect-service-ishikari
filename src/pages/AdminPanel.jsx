@@ -1903,7 +1903,10 @@ export default function AdminPanel() {
             <AnalyticsTab />
           </TabsContent>
 
-
+          {/* Trial Contract AI Tab */}
+          <TabsContent value="trial_contract">
+            <TrialToContractAI />
+          </TabsContent>
 
           {/* Management Health AI Tab */}
           <TabsContent value="mgmt_health">
