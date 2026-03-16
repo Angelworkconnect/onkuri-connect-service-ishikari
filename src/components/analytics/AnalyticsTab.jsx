@@ -204,7 +204,7 @@ export default function AnalyticsTab() {
   const scores = useMemo(() => {
     if (!allStaff.length) return [];
     return allStaff
-      .filter(s => s.approval_status === 'approved' && s.role !== 'admin')
+      .filter(s => s.approval_status === 'approved' && s.role !== 'admin' && s.role !== 'temporary')
       .map(s => computeStaffScore(s, allTips, allAttendance, allHelpRequests, allShiftEntries));
   }, [allStaff, allTips, allAttendance, allHelpRequests, allShiftEntries]);
 
