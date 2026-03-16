@@ -418,15 +418,29 @@ export default function TrialToContractAI() {
           </Card>
         ) : (
           filteredUsers.map(user => (
-            <Card key={user.id} className="border-0 shadow-sm overflow-hidden">
+            <Card 
+              key={user.id} 
+              className={`border-0 shadow-sm overflow-hidden ${
+                user.contractStatus === 'contracted' 
+                  ? 'border-l-4 border-green-500 bg-green-50' 
+                  : ''
+              }`}
+            >
               <button
-                className="w-full text-left p-4 hover:bg-slate-50 transition-colors"
+                className="w-full text-left p-4 hover:bg-opacity-75 transition-colors"
                 onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
               >
                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                  {/* 左側：利用者名 + スコア */}
+                  {/* 左側：利用者名 + 契約状態 */}
                   <div className="flex-1 min-w-[150px]">
-                    <p className="font-semibold text-slate-800">{user.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-slate-800">{user.name}</p>
+                      {user.contractStatus === 'contracted' && (
+                        <Badge className="bg-green-100 text-green-700 border-0 text-xs font-bold">
+                          ✅ 利用者登録済
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {user.careLevel || '未設定'} • 体験から{user.daysElapsed}日経過
                     </p>
@@ -435,9 +449,15 @@ export default function TrialToContractAI() {
                   {/* 右側：見込み度 + スコア */}
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <Badge className={`${levelBadgeClass[user.level]}`}>
-                        {user.level}見込み
-                      </Badge>
+                      {user.contractStatus === 'contracted' ? (
+                        <Badge className="bg-green-100 text-green-700 border-0">
+                          ✅ 契約
+                        </Badge>
+                      ) : (
+                        <Badge className={`${levelBadgeClass[user.level]}`}>
+                          {user.level}見込み
+                        </Badge>
+                      )}
                       <p className="text-sm font-bold text-slate-800 mt-1">{user.score}/100</p>
                     </div>
                     {expandedUser === user.id ? (
@@ -453,11 +473,13 @@ export default function TrialToContractAI() {
                   <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${
-                        user.level === '高'
-                          ? 'bg-red-500'
-                          : user.level === '中'
-                            ? 'bg-amber-400'
-                            : 'bg-slate-300'
+                        user.contractStatus === 'contracted'
+                          ? 'bg-green-500'
+                          : user.level === '高'
+                            ? 'bg-red-500'
+                            : user.level === '中'
+                              ? 'bg-amber-400'
+                              : 'bg-slate-300'
                       }`}
                       style={{ width: `${user.score}%` }}
                     />
