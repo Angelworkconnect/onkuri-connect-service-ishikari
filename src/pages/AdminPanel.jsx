@@ -1224,12 +1224,13 @@ export default function AdminPanel() {
                   ],
                 },
                 {
-                  group: '📊 経営・AI',
-                  items: [
-                    { value: 'care',        Icon: BarChart3, label: '経営ダッシュボード' },
-                    { value: 'analytics',   Icon: Brain,     label: 'スタッフ分析AI' },
-                    { value: 'addition_ai', Icon: Brain,     label: '加算診断AI' },
-                  ],
+                group: '📊 経営・AI',
+                items: [
+                  { value: 'care',           Icon: BarChart3, label: '経営ダッシュボード' },
+                  { value: 'mgmt_health',    Icon: BarChart3, label: '経営健全度AI' },
+                  { value: 'analytics',      Icon: Brain,     label: 'スタッフ分析AI' },
+                  { value: 'addition_ai',    Icon: Brain,     label: '加算診断AI' },
+                ],
                 },
               ].map(({ group, items }) => (
                 <div key={group} className="mb-3 last:mb-0">
