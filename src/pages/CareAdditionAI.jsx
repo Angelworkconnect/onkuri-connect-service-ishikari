@@ -192,6 +192,17 @@ export default function CareAdditionAI() {
   const [diagResult, setDiagResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiInsight, setAiInsight] = useState('');
+  const [showCustomize, setShowCustomize] = useState(false);
+  // { [addition_id]: { obtained: bool, unit_price: number } }
+  const [customSettings, setCustomSettings] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('addition_custom') || '{}'); } catch { return {}; }
+  });
+
+  const saveCustom = (id, field, value) => {
+    const next = { ...customSettings, [id]: { ...(customSettings[id] || {}), [field]: value } };
+    setCustomSettings(next);
+    localStorage.setItem('addition_custom', JSON.stringify(next));
+  };
 
   const { data: careUsers = [] } = useQuery({
     queryKey: ['care-user-records-ai'],
