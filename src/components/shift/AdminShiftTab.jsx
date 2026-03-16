@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { ChevronLeft, ChevronRight, Sparkles, Users, Calendar, Send, Heart, Settings, Bell, Clock, FileText, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, Users, Calendar, Send, Heart, Settings, Bell, Clock, FileText, Download, Trash2 } from 'lucide-react';
 import ShiftMonthGrid from './ShiftMonthGrid';
 import StaffPiece from './StaffPiece';
 import AIShiftGenerator from './AIShiftGenerator';
