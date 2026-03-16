@@ -256,7 +256,8 @@ export default function TrialToContractAI() {
   }, [trialAnnouncements, allClients]);
 
   const filteredUsers = useMemo(() => {
-    let filtered = scoredUsers;
+    // デフォルトで契約済みを除外（体験中の利用者のみ表示）
+    let filtered = scoredUsers.filter(u => u.contractStatus !== 'contracted');
 
     if (filterLevel !== 'all') {
       filtered = filtered.filter(u => {
