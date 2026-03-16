@@ -18,7 +18,6 @@ import {
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import StatsCard from "@/components/dashboard/StatsCard";
-import CareAdditionAICard from "@/components/admin/CareAdditionAICard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
@@ -303,7 +302,6 @@ export default function Home() {
           </div>
           {/* 管理者向けAIカード */}
           <div className="mt-4 space-y-4 max-w-sm">
-            <CareAdditionAICard />
             <TrialContractAISummaryCard />
           </div>
         </section>
