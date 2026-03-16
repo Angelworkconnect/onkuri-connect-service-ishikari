@@ -1230,6 +1230,7 @@ export default function AdminPanel() {
                   { value: 'care',           Icon: BarChart3, label: '経営ダッシュボード' },
                   { value: 'mgmt_health',    Icon: BarChart3, label: '経営健全度AI' },
                   { value: 'analytics',      Icon: Brain,     label: 'スタッフ分析AI' },
+                  { value: 'trial_contract', Icon: Target,    label: '体験→契約AI' },
                   { value: 'addition_ai',    Icon: Brain,     label: '加算診断AI' },
                 ],
                 },
