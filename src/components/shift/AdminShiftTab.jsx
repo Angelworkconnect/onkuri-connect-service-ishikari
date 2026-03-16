@@ -174,6 +174,13 @@ export default function AdminShiftTab({ user }) {
     onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
   });
 
+  const deleteAllEntriesMutation = useMutation({
+    mutationFn: async () => {
+      for (const e of entries) await base44.entities.ShiftEntry.delete(e.id);
+    },
+    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+  });
+
   const updateStaffOffDaysMutation = useMutation({
     mutationFn: (staffData) => base44.entities.Staff.update(staffData.id, {
       hard_off_days: staffData.hard_off_days,
