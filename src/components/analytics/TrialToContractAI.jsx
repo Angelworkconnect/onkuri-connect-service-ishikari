@@ -333,10 +333,14 @@ export default function TrialToContractAI() {
       </div>
 
       {/* サマリーカード */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Card className="p-4 border-0 shadow-sm">
           <p className="text-xs text-slate-500 mb-1">体験者数</p>
-          <p className="text-2xl font-bold text-[#2D4A6F]">{scoredUsers.length}</p>
+          <p className="text-2xl font-bold text-[#2D4A6F]">{scoredUsers.filter(u => u.contractStatus !== 'contracted').length}</p>
+        </Card>
+        <Card className="p-4 border-0 shadow-sm bg-green-50 border-l-4 border-green-300">
+          <p className="text-xs text-green-600 mb-1">✅ 契約済</p>
+          <p className="text-2xl font-bold text-green-700">{summary.contractedCount}</p>
         </Card>
         <Card className="p-4 border-0 shadow-sm bg-red-50 border-l-4 border-red-300">
           <p className="text-xs text-red-600 mb-1">高見込み</p>
