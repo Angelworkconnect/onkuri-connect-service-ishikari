@@ -279,20 +279,41 @@ export default function TrialToContractAI() {
   }, [scoredUsers, filterLevel, sortBy]);
 
   const summary = useMemo(() => {
-    const highCount = scoredUsers.filter(u => u.level === '高').length;
-    const mediumCount = scoredUsers.filter(u => u.level === '中').length;
-    const lowCount = scoredUsers.filter(u => u.level === '低').length;
-    const avgScore = scoredUsers.length > 0
-      ? Math.round(scoredUsers.reduce((s, u) => s + u.score, 0) / scoredUsers.length)
+    const highCount = scoredUsers.filter(u => u.level === '高' && u.contractStatus !== 'contracted').length;
+    const mediumCount = scoredUsers.filter(u => u.level === '中' && u.contractStatus !== 'contracted').length;
+    const lowCount = scoredUsers.filter(u => u.level === '低' && u.contractStatus !== 'contracted').length;
+    const contractedCount = scoredUsers.filter(u => u.contractStatus === 'contracted').length;
+    
+    const avgScore = scoredUsers.filter(u => u.contractStatus !== 'contracted').length > 0
+      ? Math.round(
+          scoredUsers
+            .filter(u => u.contractStatus !== 'contracted')
+            .reduce((s, u) => s + u.score, 0) /
+            scoredUsers.filter(u => u.contractStatus !== 'contracted').length
+        )
       : 0;
     
-    // 今月の統計
+    // 今月の統計（体験情報ベース）
     const now = new Date();
     const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const monthStats = calculateMonthlyStats(allClients, thisMonth);
+    const thisMonthTrials = scoredUsers.filter(u => u.trialDate && u.trialDate.startsWith(thisMonth));
+    const thisMonthContracted = thisMonthTrials.filter(u => u.contractStatus === 'contracted').length;
+    const contractRate = thisMonthTrials.length > 0 ? Math.round((thisMonthContracted / thisMonthTrials.length) * 100) : 0;
 
-    return { highCount, mediumCount, lowCount, avgScore, monthStats };
-  }, [scoredUsers, allClients]);
+    return {
+      highCount,
+      mediumCount,
+      lowCount,
+      contractedCount,
+      avgScore,
+      monthStats: {
+        totalTrials: thisMonthTrials.length,
+        contracted: thisMonthContracted,
+        contractRate,
+        highProspect: thisMonthTrials.filter(u => u.level === '高').length,
+      },
+    };
+  }, [scoredUsers]);
 
   const levelBadgeClass = {
     '高': 'bg-red-100 text-red-700 border-red-200',
