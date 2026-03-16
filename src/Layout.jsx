@@ -36,6 +36,7 @@ const navigation = [
   { name: 'サンクス',   href: 'TipsHistory',      icon: Sparkles      },
   { name: '福利厚生',   href: 'Benefits',         icon: Gift          },
   { name: '体験情報',   href: 'TrialInfo',        icon: ClipboardList },
+  // --- AI分析（管理者向けは別） ---
 ];
 
   const adminNavigation = [];
