@@ -274,7 +274,8 @@ export default function CareAdditionAI() {
   const totalMonthlyIncrease = diagResult
     ? diagResult.obtainable.reduce((s, a) => {
         const users = careUsers.filter(u => u.status === 'active').length || 10;
-        return s + a.unit_price_per_user * users;
+        const price = customSettings[a.id]?.unit_price || a.unit_price_per_user;
+        return s + price * users;
       }, 0)
     : 0;
 
