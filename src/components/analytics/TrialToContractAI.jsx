@@ -175,21 +175,85 @@ export default function TrialToContractAI() {
   });
 
   const scoredUsers = useMemo(() => {
-    return allClients.map(client => {
-      const scoreData = calculateContractScore(client, allStaff, allAnnouncements);
+    // 体験情報から利用情報を構築
+    const trials = trialAnnouncements.map(trial => {
+      // Announcementの trial_client_name と Client の name でマッチング
+      const matchedContract = allClients.find(
+        c => c.name === trial.trial_client_name || c.name === trial.trial_furigana
+      );
+
       const now = new Date();
-      const startDate = client.start_date ? new Date(client.start_date) : null;
-      const daysElapsed = startDate ? Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) : 0;
-      const recommendations = getFollowupRecommendations(client, daysElapsed);
+      const trialDate = trial.trial_date ? new Date(trial.trial_date) : new Date(trial.created_date);
+      const daysElapsed = Math.floor((now - trialDate) / (1000 * 60 * 60 * 24));
+
+      // スコアリング（体験情報ベース）
+      let score = 0;
+      const reasons = [];
+
+      if (trial.trial_care_level && ['care_1', 'care_2', 'care_3'].includes(trial.trial_care_level)) {
+        score += 15;
+        reasons.push('要介護度が通所対象範囲');
+      }
+
+      if (daysElapsed >= 7 && daysElapsed <= 90) {
+        score += 12;
+        reasons.push('体験から適切な期間経過');
+      } else if (daysElapsed > 90) {
+        score -= 10;
+        reasons.push('体験から時間が経ちすぎている');
+      }
+
+      if (trial.trial_pickup_time) {
+        score += 8;
+        reasons.push('定期的な送迎ニーズ確認');
+      }
+
+      if (trial.trial_medication_has) {
+        score += 6;
+        reasons.push('医療対応による関係構築');
+      }
+
+      if (trial.trial_bath_has) {
+        score += 8;
+        reasons.push('入浴サービスの継続需要');
+      }
+
+      if (trial.trial_notes && trial.trial_notes.trim()) {
+        score += 10;
+        reasons.push('詳細な対応要望あり');
+      }
+
+      // 契約済みの場合
+      if (matchedContract) {
+        score += 30;
+        reasons.push('✅ 【契約成立】利用者登録済み');
+      }
+
+      const normalizedScore = Math.min(100, Math.max(0, score));
+      const level = normalizedScore >= 75 ? '高' : normalizedScore >= 50 ? '中' : '低';
 
       return {
-        ...client,
-        ...scoreData,
+        id: trial.id,
+        name: trial.trial_client_name,
+        furigana: trial.trial_furigana,
+        careLevel: trial.trial_care_level,
+        pickupRequired: trial.trial_pickup_time ? true : false,
+        bathRequired: trial.trial_bath_has,
+        medicationInfo: trial.trial_medication_note,
+        notes: trial.trial_notes,
+        trialDate: trial.trial_date,
+        referral: trial.trial_referral,
+        score: normalizedScore,
+        level,
+        reasons,
         daysElapsed,
-        recommendations,
+        matchedContract,
+        contractStatus: matchedContract ? 'contracted' : 'trial',
       };
     });
-  }, [allClients, allStaff, allAnnouncements]);
+
+    return trials;
+  }, [trialAnnouncements, allClients]);
 
   const filteredUsers = useMemo(() => {
     let filtered = scoredUsers;
