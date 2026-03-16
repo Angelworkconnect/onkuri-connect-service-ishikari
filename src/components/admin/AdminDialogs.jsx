@@ -579,7 +579,13 @@ export default function AdminDialogs({
             <div><Label>スタッフ *</Label>
               <Select value={attendanceForm.user_email} onValueChange={(v) => { const s = allStaff.find(s => s.email === v); setAttendanceForm({...attendanceForm, user_email: v, user_name: s?.full_name || ''}); }}>
                 <SelectTrigger><SelectValue placeholder="スタッフを選択" /></SelectTrigger>
-                <SelectContent>{allStaff.map(s => <SelectItem key={s.email} value={s.email}>{s.full_name}</SelectItem>)}</SelectContent>
+                <SelectContent>
+                  {allStaff.filter(s => s.status !== 'inactive').map(s => (
+                    <SelectItem key={s.email} value={s.email}>
+                      {s.status === 'leave' ? '🟡 ' : ''}{s.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div><Label>日付 *</Label><Input type="date" value={attendanceForm.date} onChange={(e) => setAttendanceForm({...attendanceForm, date: e.target.value})} /></div>
