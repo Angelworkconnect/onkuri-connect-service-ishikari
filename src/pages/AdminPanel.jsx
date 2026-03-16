@@ -1058,8 +1058,14 @@ export default function AdminPanel() {
 
   const handleEditStaff = (staff) => {
     setEditingStaff(staff);
+    // full_nameをスペースで分割して苗字・名前に設定
+    const nameParts = (staff.full_name || '').split(' ');
+    const lastName = nameParts[0] || '';
+    const firstName = nameParts.slice(1).join(' ') || '';
     setStaffForm({
       full_name: staff.full_name || '',
+      last_name: lastName,
+      first_name: firstName,
       email: staff.email,
       phone: staff.phone || '',
       address: staff.address || '',
