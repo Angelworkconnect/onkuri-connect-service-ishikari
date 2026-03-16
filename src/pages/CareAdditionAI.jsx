@@ -229,6 +229,18 @@ export default function CareAdditionAI() {
     const facilityData = buildFacilityData(siteSettings, careUsers, staff, bizSettings);
     const result = diagnose(facilityData);
 
+    // カスタム設定を反映：取得済みフラグがONのものを obtained へ移動
+    Object.entries(customSettings).forEach(([id, cs]) => {
+      if (!cs.obtained) return;
+      ['obtainable', 'insufficient'].forEach(key => {
+        const idx = result[key].findIndex(a => a.id === id);
+        if (idx >= 0) {
+          const [item] = result[key].splice(idx, 1);
+          if (!result.obtained.find(a => a.id === id)) result.obtained.push(item);
+        }
+      });
+    });
+
     // AI insight
     try {
       const prompt = `
