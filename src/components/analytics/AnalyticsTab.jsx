@@ -167,6 +167,7 @@ function MetricCard({ title, value, subtitle, icon: Icon, color = 'text-[#2D4A6F
 // ── メインコンポーネント ────────────────────────────────────
 
 export default function AnalyticsTab() {
+  const [activeTab, setActiveTab] = useState('engagement'); // 'engagement' | 'turnover'
   const [expandedStaff, setExpandedStaff] = useState(null);
   const [sortBy, setSortBy] = useState('risk'); // 'risk' | 'engagement' | 'name'
 
