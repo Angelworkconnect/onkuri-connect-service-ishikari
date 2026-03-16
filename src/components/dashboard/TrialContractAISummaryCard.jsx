@@ -50,12 +50,15 @@ export default function TrialContractAISummaryCard() {
   const summary = useMemo(() => {
     if (allClients.length === 0) return null;
 
-    const scored = allClients.map(c => ({
+    // 利用者登録済み（isActive === true）を除外
+    const trialOnly = allClients.filter(c => c.isActive !== true);
+    
+    const scored = trialOnly.map(c => ({
       ...c,
       ...calculateContractScore(c),
     }));
 
-    const highCount = scored.filter(s => s.level === '高' && s.isActive !== true).length;
+    const highCount = scored.filter(s => s.level === '高').length;
     
     // 今月の統計
     const now = new Date();
