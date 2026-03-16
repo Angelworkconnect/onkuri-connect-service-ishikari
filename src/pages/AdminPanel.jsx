@@ -1873,6 +1873,23 @@ export default function AdminPanel() {
             <CareBusinessDashboardEmbed />
           </TabsContent>
 
+          {/* Addition AI Tab */}
+          <TabsContent value="addition_ai">
+            <div className="bg-white rounded-xl shadow p-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-[#2D4A6F] flex items-center justify-center mx-auto mb-4">
+                <Brain className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 mb-2">加算診断AI</h2>
+              <p className="text-slate-500 mb-6">取得可能な介護加算を診断し、収益改善の可能性を可視化します。</p>
+              <CareAdditionAICard />
+              <a href="/CareAdditionAI" className="block mt-4">
+                <Button className="bg-[#2D4A6F] hover:bg-[#1E3A5F] text-white text-lg px-8 py-4 h-auto w-full">
+                  加算診断AIを開く →
+                </Button>
+              </a>
+            </div>
+          </TabsContent>
+
                    </Tabs>
                   </div>
 
