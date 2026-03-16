@@ -1227,6 +1227,7 @@ export default function AdminPanel() {
                   items: [
                     { value: 'care',        Icon: BarChart3, label: '経営ダッシュボード' },
                     { value: 'analytics',   Icon: Brain,     label: 'AI分析' },
+                    { value: 'turnover_ai', Icon: Brain,     label: '離職率AI' },
                     { value: 'addition_ai', Icon: Brain,     label: '加算診断AI' },
                   ],
                 },
