@@ -284,7 +284,7 @@ export default function AnalyticsTab() {
       {activeTab === 'turnover' && <TurnoverAITab />}
 
       {/* エンゲージメントタブ（以下既存コンテンツ） */}
-      {activeTab !== 'engagement' ? null : (<>
+      {activeTab === 'engagement' && <>
 
       {/* KPI カード群 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
