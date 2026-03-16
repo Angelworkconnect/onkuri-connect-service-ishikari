@@ -9,6 +9,7 @@ import {
   Users, Flame, Star, Shield, Brain, Activity, 
   ChevronDown, ChevronUp, Info
 } from 'lucide-react';
+import TurnoverAITab from './TurnoverAITab';
 
 // ── ユーティリティ ──────────────────────────────────────────
 
