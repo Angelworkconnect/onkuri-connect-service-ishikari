@@ -144,6 +144,16 @@ export default function AdminDialogs({
                 </SelectContent>
               </Select>
             </div>
+            <div><Label>在籍ステータス *</Label>
+              <Select value={staffForm.status || 'active'} onValueChange={(v) => setStaffForm({...staffForm, status: v})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">✅ 在籍中</SelectItem>
+                  <SelectItem value="leave">🟡 休職中</SelectItem>
+                  <SelectItem value="inactive">❌ 退職・停止</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label>承認ステータス *</Label>
               <Select value={staffForm.approval_status} onValueChange={(v) => setStaffForm({...staffForm, approval_status: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
