@@ -1899,10 +1899,7 @@ export default function AdminPanel() {
             <AnalyticsTab />
           </TabsContent>
 
-          {/* Turnover AI Tab */}
-          <TabsContent value="turnover_ai">
-            <TurnoverAITab />
-          </TabsContent>
+
 
           {/* Care Business Dashboard Tab */}
           <TabsContent value="care">
