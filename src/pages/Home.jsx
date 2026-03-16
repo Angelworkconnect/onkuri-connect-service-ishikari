@@ -22,6 +22,7 @@ import CareAdditionAICard from "@/components/admin/CareAdditionAICard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
+import TrialContractAISummaryCard from "@/components/dashboard/TrialContractAISummaryCard";
 
 const iconMap = {
   Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles,
