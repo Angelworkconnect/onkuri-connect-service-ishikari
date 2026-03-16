@@ -478,10 +478,42 @@ export default function TrialToContractAI() {
         <p className="text-xs text-blue-600 mt-2">💡 体験前段階でも紹介元や詳細ニーズがあれば「高」と評価します</p>
       </Card>
 
+      {/* AI判定実行ボタン */}
+      <Card className="border-0 shadow-sm p-4 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-800 mb-0.5">🤖 AI判定を実行・保存</p>
+            <p className="text-xs text-slate-600">現在の判定理由をAI履歴に記録します（学習データとして蓄積）</p>
+          </div>
+          <Button
+            onClick={() => {
+              // 全員分の判定を履歴に保存
+              scoredUsers.forEach(user => {
+                saveJudgmentHistory.mutate({
+                  trialId: user.id,
+                  score: user.score,
+                  level: user.level,
+                  reasons: user.reasons,
+                  contractStatus: user.contractStatus,
+                });
+              });
+            }}
+            disabled={saveJudgmentHistory.isPending}
+            className="bg-purple-600 hover:bg-purple-700 text-white whitespace-nowrap gap-2"
+          >
+            {saveJudgmentHistory.isPending ? (
+              <><RefreshCw className="w-4 h-4 animate-spin" />保存中...</>
+            ) : (
+              <><History className="w-4 h-4" />判定を保存</>
+            )}
+          </Button>
+        </div>
+      </Card>
+
       {/* フィルタ・ソート */}
        <div className="flex flex-wrap gap-2 items-center bg-slate-50 rounded-lg p-4">
          <span className="text-sm text-slate-600 font-medium">見込み度：</span>
-        {['all', 'high', 'medium', 'low'].map(level => (
+         {['all', 'high', 'medium', 'low'].map(level => (
           <button
             key={level}
             onClick={() => setFilterLevel(level)}
