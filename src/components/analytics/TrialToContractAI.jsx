@@ -232,12 +232,34 @@ export default function TrialToContractAI() {
       const normalizedScore = Math.min(100, Math.max(0, score));
       const level = normalizedScore >= 75 ? '高' : normalizedScore >= 50 ? '中' : '低';
 
+      // フォローアップ推奨
+      const recommendations = [];
+      if (daysElapsed <= 3) {
+        recommendations.push('初期フォロー時期です。電話での満足度確認をお勧めします');
+      } else if (daysElapsed <= 7) {
+        recommendations.push('3〜7日経過。送迎条件や契約内容の最終確認を推奨します');
+      } else if (daysElapsed <= 30) {
+        recommendations.push('月内フォロー。契約案内を優先で実施してください');
+      } else {
+        recommendations.push('体験から長期間経過。ご家族への再連絡を強く推奨します');
+      }
+
+      if (trial.trial_pickup_time) {
+        recommendations.push('送迎条件の詳細確認を再度実施してください');
+      }
+
+      if (trial.trial_notes && trial.trial_notes.trim()) {
+        recommendations.push('特別対応が必要。事前に職員と対応内容を共有してください');
+      }
+
       return {
         id: trial.id,
         name: trial.trial_client_name,
         furigana: trial.trial_furigana,
         careLevel: trial.trial_care_level,
+        frequencyPerWeek: undefined,
         pickupRequired: trial.trial_pickup_time ? true : false,
+        dropoffRequired: false,
         bathRequired: trial.trial_bath_has,
         medicationInfo: trial.trial_medication_note,
         notes: trial.trial_notes,
@@ -246,6 +268,7 @@ export default function TrialToContractAI() {
         score: normalizedScore,
         level,
         reasons,
+        recommendations,
         daysElapsed,
         matchedContract,
         contractStatus: matchedContract ? 'contracted' : 'trial',
