@@ -433,7 +433,7 @@ export default function CareAdditionAI() {
                 <div className="space-y-3">
                   {diagResult.obtainable.map(a => {
                     const users = careUsers.filter(u => u.status === 'active').length || 10;
-                    const monthly = a.unit_price_per_user * users;
+                    const monthly = (customSettings[a.id]?.unit_price || a.unit_price_per_user) * users;
                     return (
                       <Card key={a.id} className="border-0 shadow-sm p-4 border-l-4 border-amber-400">
                         <div className="flex items-start justify-between gap-2 mb-3">
