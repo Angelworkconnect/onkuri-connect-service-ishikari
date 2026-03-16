@@ -277,12 +277,14 @@ export default function CareAdditionAI() {
         {/* 事業所サマリ */}
         <Card className="border-0 shadow-sm p-5">
           <h2 className="font-semibold text-slate-700 mb-3 text-sm">診断に使用するデータ</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { label: '在籍スタッフ', value: `${staff.filter(s => s.status === 'active').length}名` },
-              { label: '休職中', value: `${staff.filter(s => s.status === 'leave').length}名` },
               { label: '利用者数', value: `${careUsers.filter(u => u.status === 'active').length}名` },
-              { label: '介護福祉士', value: `${staff.filter(s => s.status === 'active' && (s.qualifications || []).some(q => q.includes('介護福祉士'))).length}名` },
+              { label: '介護福祉士', value: `${staff.filter(s => s.status === 'active' && hasKeyword(s, KEYWORDS.careWorker)).length}名` },
+              { label: 'PT/OT/ST等', value: `${staff.filter(s => s.status === 'active' && hasKeyword(s, KEYWORDS.ptOt)).length}名` },
+              { label: '看護師', value: `${staff.filter(s => s.status === 'active' && hasKeyword(s, KEYWORDS.nurse)).length}名` },
+              { label: 'ケアマネ等', value: `${staff.filter(s => s.status === 'active' && hasKeyword(s, KEYWORDS.socialWorker)).length}名` },
             ].map(({ label, value }) => (
               <div key={label} className="bg-slate-50 rounded-xl p-3 text-center">
                 <p className="text-xs text-slate-500">{label}</p>
