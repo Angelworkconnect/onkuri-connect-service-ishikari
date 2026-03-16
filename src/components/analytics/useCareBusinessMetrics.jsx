@@ -79,7 +79,7 @@ export function useCareBusinessMetrics() {
       : null;
 
     // ── 人件費計算 ──
-    const activeStaff = staff.filter(s => s.status === 'active' && s.role !== 'admin');
+    const activeStaff = staff.filter(s => s.status === 'active' && s.role !== 'admin' && s.role !== 'temporary');
     const staffCount = activeStaff.length;
     
     let estimatedLaborCost = 0;
