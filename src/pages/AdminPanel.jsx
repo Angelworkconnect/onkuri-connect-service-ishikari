@@ -1191,33 +1191,73 @@ export default function AdminPanel() {
         })()}
 
         <Tabs defaultValue="settings" className="w-full">
-            <div className="bg-white shadow-lg rounded-xl mb-6 p-2" style={{display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
+            <div className="bg-white shadow-lg rounded-xl mb-6 p-3">
               {[
-                { value: 'settings', Icon: Settings, label: 'サイト設定' },
-                { value: 'services', Icon: Gift, label: 'サービス' },
-                { value: 'qrcode', Icon: QrCode, label: 'QRコード' },
-                { value: 'shifts', Icon: Calendar, label: '単発管理' },
-                { value: 'applications', Icon: FileText, label: '応募管理' },
-                { value: 'attendance', Icon: Clock, label: '勤怠管理' },
-                { value: 'announcements', Icon: Bell, label: 'お知らせ' },
-                { value: 'staff', Icon: Users, label: 'スタッフ' },
-                { value: 'tips', Icon: Sparkles, label: 'サンクス' },
-                { value: 'benefits', Icon: Gift, label: '福利厚生' },
-                { value: 'help', Icon: Bell, label: 'ヘルプ' },
-                { value: 'messages', Icon: MessageCircle, label: 'メッセージ' },
-                { value: 'shift_ai', Icon: Calendar, label: 'シフト管理' },
-                { value: 'transport', Icon: Truck, label: '送迎管理' },
-                { value: 'clients', Icon: Users, label: 'クライアント' },
-                { value: 'analytics', Icon: Brain, label: 'AI分析' },
-                { value: 'care', Icon: BarChart3, label: '経営' },
-                { value: 'addition_ai', Icon: Brain, label: '加算診断AI' },
-              ].map(({ value, Icon, label }) => (
-                <TabsList key={value} className="h-auto p-0 bg-transparent">
-                  <TabsTrigger value={value} className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-slate-600 text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg">
-                    <Icon className="w-4 h-4" />
-                    <span>{label}</span>
-                  </TabsTrigger>
-                </TabsList>
+                {
+                  group: '⚙️ 設定',
+                  items: [
+                    { value: 'settings', Icon: Settings, label: 'サイト設定' },
+                    { value: 'services', Icon: Gift, label: 'サービス' },
+                    { value: 'qrcode', Icon: QrCode, label: 'QRコード' },
+                  ],
+                },
+                {
+                  group: '👥 スタッフ・利用者',
+                  items: [
+                    { value: 'staff',   Icon: Users,     label: 'スタッフ' },
+                    { value: 'clients', Icon: Users,     label: 'クライアント' },
+                  ],
+                },
+                {
+                  group: '📅 シフト・勤怠',
+                  items: [
+                    { value: 'shift_ai',      Icon: Calendar, label: 'シフト管理' },
+                    { value: 'shifts',        Icon: Calendar, label: '単発管理' },
+                    { value: 'applications',  Icon: FileText, label: '応募管理' },
+                    { value: 'attendance',    Icon: Clock,    label: '勤怠管理' },
+                    { value: 'transport',     Icon: Truck,    label: '送迎管理' },
+                  ],
+                },
+                {
+                  group: '💬 コミュニケーション',
+                  items: [
+                    { value: 'announcements', Icon: Bell,          label: 'お知らせ' },
+                    { value: 'messages',      Icon: MessageCircle, label: 'メッセージ' },
+                    { value: 'help',          Icon: Bell,          label: 'ヘルプ' },
+                  ],
+                },
+                {
+                  group: '🎁 福利厚生・特典',
+                  items: [
+                    { value: 'tips',     Icon: Sparkles, label: 'サンクス' },
+                    { value: 'benefits', Icon: Gift,     label: '福利厚生' },
+                  ],
+                },
+                {
+                  group: '📊 経営・AI',
+                  items: [
+                    { value: 'care',        Icon: BarChart3, label: '経営ダッシュボード' },
+                    { value: 'analytics',   Icon: Brain,     label: 'AI分析' },
+                    { value: 'addition_ai', Icon: Brain,     label: '加算診断AI' },
+                  ],
+                },
+              ].map(({ group, items }) => (
+                <div key={group} className="mb-3 last:mb-0">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 px-1">{group}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {items.map(({ value, Icon, label }) => (
+                      <TabsList key={value} className="h-auto p-0 bg-transparent">
+                        <TabsTrigger
+                          value={value}
+                          className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-slate-600 text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{label}</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
 
