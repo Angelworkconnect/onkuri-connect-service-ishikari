@@ -163,7 +163,21 @@ export default function AdminShiftTab({ user }) {
         return base44.entities.DayRequirement.create({ shift_month_id: currentShiftMonth.id, date, required_total });
       }
     },
-    onSuccess: () => queryClient.invalidateQueries(['shift-requirements', year, month]),
+    onMutate: async ({ date, required_total }) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-requirements', year, month] });
+      const prev = queryClient.getQueryData(['shift-requirements', year, month]) || [];
+      const existing = prev.find(r => r.date === date);
+      if (existing) {
+        queryClient.setQueryData(['shift-requirements', year, month], prev.map(r => r.date === date ? { ...r, required_total } : r));
+      } else {
+        queryClient.setQueryData(['shift-requirements', year, month], [...prev, { date, required_total, id: 'temp-' + date }]);
+      }
+      return { prev };
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['shift-requirements', year, month] }),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-requirements', year, month], ctx.prev);
+    },
   });
 
   const deleteAllAutoMutation = useMutation({
