@@ -22,18 +22,21 @@ import {
 import NotificationBell from './components/notifications/NotificationBell';
 
 const navigation = [
-  { name: 'ホーム', href: 'Home', icon: Home },
-  { name: '単発', href: 'Shifts', icon: Calendar },
-  { name: '勤怠', href: 'Attendance', icon: Clock },
-  { name: '応募履歴', href: 'MyApplications', icon: FileText },
-  { name: 'メッセージ', href: 'Messages', icon: MessageCircle },
-  { name: 'シフト', href: 'MyShift', icon: Calendar },
-  { name: '送迎', href: 'Transport', icon: Truck },
-  { name: '残業申請', href: 'OvertimeRequest', icon: Clock },
-  { name: 'サンクス', href: 'TipsHistory', icon: Sparkles },
-  { name: '福利厚生', href: 'Benefits', icon: Gift },
-  { name: '体験情報', href: 'TrialInfo', icon: ClipboardList },
-  ];
+  // --- 日常業務 ---
+  { name: 'シフト',     href: 'MyShift',         icon: Calendar      },
+  { name: '勤怠',       href: 'Attendance',       icon: Clock         },
+  { name: '残業申請',   href: 'OvertimeRequest',  icon: Clock         },
+  { name: '送迎',       href: 'Transport',        icon: Truck         },
+  // --- 単発・応募 ---
+  { name: '単発',       href: 'Shifts',           icon: Calendar      },
+  { name: '応募履歴',   href: 'MyApplications',   icon: FileText      },
+  // --- コミュニケーション ---
+  { name: 'メッセージ', href: 'Messages',         icon: MessageCircle },
+  // --- 特典・情報 ---
+  { name: 'サンクス',   href: 'TipsHistory',      icon: Sparkles      },
+  { name: '福利厚生',   href: 'Benefits',         icon: Gift          },
+  { name: '体験情報',   href: 'TrialInfo',        icon: ClipboardList },
+];
 
   const adminNavigation = [];
 
