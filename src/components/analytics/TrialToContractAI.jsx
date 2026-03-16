@@ -189,44 +189,68 @@ export default function TrialToContractAI() {
       // スコアリング（体験情報ベース）
       let score = 0;
       const reasons = [];
+      const isPreTrial = daysElapsed < 0 || !trial.trial_date; // 体験日未設定 or 将来日
 
+      // 【体験前段階での見込み評価】
+      // 紹介元がある場合
+      if (trial.trial_referral && trial.trial_referral.trim()) {
+        score += 20;
+        reasons.push(`📞 紹介元あり「${trial.trial_referral}」→ 真度の高い見込み客`);
+      }
+
+      // 要介護度が対象範囲
       if (trial.trial_care_level && ['care_1', 'care_2', 'care_3'].includes(trial.trial_care_level)) {
+        score += 18;
+        reasons.push('要介護度が通所対象範囲（介護1〜3）');
+      }
+
+      // ニーズが明確（体験前でも詳細な要望がある = 本気度高い）
+      if (trial.trial_notes && trial.trial_notes.trim()) {
         score += 15;
-        reasons.push('要介護度が通所対象範囲');
+        reasons.push('詳細な対応要望あり → 利用イメージ明確');
       }
 
-      if (daysElapsed >= 7 && daysElapsed <= 90) {
-        score += 12;
-        reasons.push('体験から適切な期間経過');
-      } else if (daysElapsed > 90) {
-        score -= 10;
-        reasons.push('体験から時間が経ちすぎている');
-      }
-
+      // 送迎ニーズあり
       if (trial.trial_pickup_time) {
-        score += 8;
-        reasons.push('定期的な送迎ニーズ確認');
+        score += 12;
+        reasons.push('定期的な送迎ニーズ確認 → 継続利用見込み高い');
       }
 
+      // 【体験後の段階での評価】
+      if (!isPreTrial) {
+        if (daysElapsed >= 7 && daysElapsed <= 90) {
+          score += 15;
+          reasons.push('🎯 体験から適切な期間経過（1-3週間が決定タイミング）');
+        } else if (daysElapsed > 90) {
+          score -= 15;
+          reasons.push('⚠️ 体験から時間が経ちすぎている（再接触推奨）');
+        }
+      }
+
+      // サービス詳細ニーズ
       if (trial.trial_medication_has) {
-        score += 6;
-        reasons.push('医療対応による関係構築');
+        score += 8;
+        reasons.push('薬管理あり → 医療対応による関係構築');
       }
 
       if (trial.trial_bath_has) {
-        score += 8;
-        reasons.push('入浴サービスの継続需要');
+        score += 10;
+        reasons.push('入浴サービス → 信頼関係と利用頻度高い');
       }
 
-      if (trial.trial_notes && trial.trial_notes.trim()) {
-        score += 10;
-        reasons.push('詳細な対応要望あり');
+      // アレルギーなど細かい配慮情報
+      if (trial.trial_allergy_has) {
+        score += 5;
+        reasons.push('アレルギー情報など詳細対応が必要');
       }
 
       // 契約済みの場合
       if (matchedContract) {
-        score += 30;
+        score += 40;
         reasons.push('✅ 【契約成立】利用者登録済み');
+      } else if (isPreTrial) {
+        // 体験前なので、まずは期待度を表示
+        reasons.push('📅 体験日未設定 → 体験後に判定更新予定');
       }
 
       const normalizedScore = Math.min(100, Math.max(0, score));
