@@ -1903,6 +1903,11 @@ export default function AdminPanel() {
 
 
 
+          {/* Management Health AI Tab */}
+          <TabsContent value="mgmt_health">
+            <ManagementHealthAI />
+          </TabsContent>
+
           {/* Care Business Dashboard Tab */}
           <TabsContent value="care">
             <CareBusinessDashboardEmbed />
