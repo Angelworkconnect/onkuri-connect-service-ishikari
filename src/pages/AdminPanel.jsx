@@ -33,7 +33,7 @@ import {
 import { 
         Plus, Calendar, Users, FileText, Bell,
          CheckCircle, XCircle, Trash2, Edit, Clock, UserPlus, Mail, QrCode, Download,
-         Eye, EyeOff, Sparkles, Settings, Gift, MessageCircle, Send, Truck, Shield, Brain, Lock, BarChart3
+         Eye, EyeOff, Sparkles, Settings, Gift, MessageCircle, Send, Truck, Shield, Brain, Lock, BarChart3, Target
         } from "lucide-react";
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
