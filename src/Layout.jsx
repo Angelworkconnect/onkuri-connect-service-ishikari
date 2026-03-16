@@ -21,6 +21,8 @@ import {
       } from "lucide-react";
 import NotificationBell from './components/notifications/NotificationBell';
 
+const APP_BUILD_VERSION = '1.0.0';
+
 const navigation = [
   // --- 日常業務 ---
   { name: 'シフト',     href: 'MyShift',         icon: Calendar      },
