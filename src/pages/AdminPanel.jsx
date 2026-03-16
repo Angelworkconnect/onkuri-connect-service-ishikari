@@ -750,6 +750,8 @@ export default function AdminPanel() {
   const resetStaffForm = () => {
     setStaffForm({
       full_name: '',
+      last_name: '',
+      first_name: '',
       email: '',
       phone: '',
       address: '',
