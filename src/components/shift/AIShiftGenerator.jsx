@@ -23,7 +23,11 @@ function generateShifts({ staff, requests, requirements, entries, mode, year, mo
     if (r.request_type === 'OFF') offDates[r.staff_email].add(r.date);
   });
 
-  const activeStaff = staff.filter(s => s.status === 'active' && s.approval_status === 'approved');
+  const activeStaff = staff.filter(s =>
+    s.status === 'active' &&
+    s.approval_status === 'approved' &&
+    s.display_in_shift_calendar !== false
+  );
 
   // 既存のエントリと新生成エントリを合算してチェック
   const allEntries = [...entries];
