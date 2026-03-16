@@ -427,9 +427,29 @@ export default function TrialToContractAI() {
         </div>
       </Card>
 
+      {/* 判定基準の説明 */}
+      <Card className="border-0 shadow-sm p-4 bg-blue-50 border-l-4 border-blue-300">
+        <p className="text-sm font-semibold text-blue-800 mb-2">📊 見込み度の判定基準</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-blue-700">
+          <div>
+            <span className="font-bold text-red-600">高見込み（65点以上）</span>
+            <p>紹介元あり / 要介護度対象 / 詳細ニーズ明確 / 体験1-3週間</p>
+          </div>
+          <div>
+            <span className="font-bold text-amber-600">中見込み（40-64点）</span>
+            <p>基本情報あり / 送迎ニーズなど / 体験初期or長期</p>
+          </div>
+          <div>
+            <span className="font-bold text-slate-600">低見込み（40点未満）</span>
+            <p>情報不足 / 対象外要介護度 / 長期経過後</p>
+          </div>
+        </div>
+        <p className="text-xs text-blue-600 mt-2">💡 体験前段階でも紹介元や詳細ニーズがあれば「高」と評価します</p>
+      </Card>
+
       {/* フィルタ・ソート */}
-      <div className="flex flex-wrap gap-2 items-center bg-slate-50 rounded-lg p-4">
-        <span className="text-sm text-slate-600 font-medium">見込み度：</span>
+       <div className="flex flex-wrap gap-2 items-center bg-slate-50 rounded-lg p-4">
+         <span className="text-sm text-slate-600 font-medium">見込み度：</span>
         {['all', 'high', 'medium', 'low'].map(level => (
           <button
             key={level}
