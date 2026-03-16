@@ -328,6 +328,7 @@ export default function TrialToContractAI() {
         daysElapsed,
         matchedContract,
         contractStatus: matchedContract ? 'contracted' : 'trial',
+        judgmentHistory: trial.ai_judgment_history || [],
       };
     });
 
