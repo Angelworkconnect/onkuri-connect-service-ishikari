@@ -380,6 +380,22 @@ export default function AdminShiftTab({ user }) {
                 <FileText className="w-3.5 h-3.5 mr-1" />特記事項
               </Button>
             )}
+            {!isPublished && currentShiftMonth && entries.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50"
+                onClick={() => {
+                  if (window.confirm(`${year}年${month}月のシフト全${entries.length}件を完全削除しますか？\nこの操作は元に戻せません。`)) {
+                    deleteAllEntriesMutation.mutate();
+                  }
+                }}
+                disabled={deleteAllEntriesMutation.isPending}
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1" />
+                {deleteAllEntriesMutation.isPending ? '削除中...' : '全削除'}
+              </Button>
+            )}
             {!isPublished && currentShiftMonth && (
               <Button size="sm" className="bg-indigo-600" onClick={() => setPublishConfirmOpen(true)}>
                 <Send className="w-3.5 h-3.5 mr-1" />シフト公開
