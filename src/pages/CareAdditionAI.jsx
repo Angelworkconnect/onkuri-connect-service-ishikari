@@ -317,6 +317,48 @@ export default function CareAdditionAI() {
           {!isDataReady && (
             <p className="text-xs text-amber-600 mt-2 text-center">※スタッフ・利用者データを登録すると精度が上がります</p>
           )}
+          {/* カスタマイズ折りたたみ */}
+          <button
+            className="w-full mt-3 text-xs text-slate-400 hover:text-slate-600 flex items-center justify-center gap-1"
+            onClick={() => setShowCustomize(v => !v)}
+          >
+            ⚙️ 加算の単価・取得済み状況を手動で設定する {showCustomize ? '▲' : '▼'}
+          </button>
+          {showCustomize && (
+            <div className="mt-3 space-y-2 border-t pt-3">
+              {ADDITIONS.map(a => {
+                const cs = customSettings[a.id] || {};
+                return (
+                  <div key={a.id} className="bg-slate-50 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span className="text-sm font-medium text-slate-700 flex-1">{a.name}</span>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <label className="flex items-center gap-1 text-xs text-slate-500 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={cs.obtained === true}
+                          onChange={e => saveCustom(a.id, 'obtained', e.target.checked)}
+                          className="rounded"
+                        />
+                        取得済み
+                      </label>
+                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                        <span>単価¥</span>
+                        <input
+                          type="number"
+                          className="w-20 border border-slate-200 rounded px-2 py-1 text-xs text-slate-700"
+                          placeholder={a.unit_price_per_user}
+                          value={cs.unit_price ?? ''}
+                          onChange={e => saveCustom(a.id, 'unit_price', e.target.value ? Number(e.target.value) : '')}
+                        />
+                        <span>/人</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <p className="text-xs text-slate-400">※ 設定はブラウザに保存されます</p>
+            </div>
+          )}
         </Card>
 
         {diagResult && (
