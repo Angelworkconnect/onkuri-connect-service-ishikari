@@ -2,73 +2,77 @@ import React, { useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Target, TrendingUp, ChevronRight } from 'lucide-react';
 
-function calculateContractScore(user) {
-  let score = 0;
-
-  if (!user) return { score: 0, level: '低' };
-
-  const careLevelMatch = ['care_1', 'care_2', 'care_3'].includes(user.careLevel);
-  if (careLevelMatch) score += 15;
-
-  if (user.start_date) {
-    const now = new Date();
-    const startDate = new Date(user.start_date);
-    const daysActive = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
-    if (daysActive >= 7 && daysActive <= 90) score += 12;
-    else if (daysActive > 90) score -= 10;
-  }
-
-  if (user.address && !user.emergencyContactName) score += 10;
-  if (user.frequencyPerWeek && user.frequencyPerWeek >= 2) score += 12;
-  if (user.pickupRequired || user.dropoffRequired) score += 8;
-  if (user.specialNeeds && user.specialNeeds.trim()) score += 8;
-  if (user.medicationInfo && user.medicationInfo.trim()) score += 6;
-  if (user.allergies && user.allergies.trim()) score += 4;
-  if (user.notes && (user.notes.includes('外出') || user.notes.includes('活動'))) score += 10;
-  if (user.emergencyContactName && user.emergencyContactPhone) score += 8;
-
-  if (user.isActive === false) score = Math.min(30, score);
-
-  const normalizedScore = Math.min(100, Math.max(0, score));
-  const level = normalizedScore >= 75 ? '高' : normalizedScore >= 50 ? '中' : '低';
-
-  return { score: normalizedScore, level };
-}
-
 export default function TrialContractAISummaryCard() {
-  const { data: allClients = [] } = useQuery({
-    queryKey: ['trial-clients-summary'],
-    queryFn: () => base44.entities.Client.list('-created_date', 300),
+  // 体験情報を取得（Announcement の trial カテゴリ）
+  const { data: trialAnnouncements = [] } = useQuery({
+    queryKey: ['summary-trial-announcements'],
+    queryFn: () => base44.entities.Announcement.filter({ category: 'trial' }, '-created_date', 500),
+    staleTime: 60000,
+  });
+
+  // 利用者登録（Client entity）
+  const { data: contractedClients = [] } = useQuery({
+    queryKey: ['summary-contract-clients'],
+    queryFn: () => base44.entities.Client.filter({ isActive: true }, '-created_date', 500),
     staleTime: 60000,
   });
 
   const summary = useMemo(() => {
-    if (allClients.length === 0) return null;
+    if (trialAnnouncements.length === 0) return null;
 
-    // 利用者登録済み（isActive === true）を除外
-    const trialOnly = allClients.filter(c => c.isActive !== true);
-    
-    const scored = trialOnly.map(c => ({
-      ...c,
-      ...calculateContractScore(c),
-    }));
+    // 体験者のスコアリング
+    const trials = trialAnnouncements.map(trial => {
+      const matchedContract = contractedClients.find(
+        c => c.name === trial.trial_client_name
+      );
 
-    const highCount = scored.filter(s => s.level === '高').length;
+      let score = 0;
+
+      if (trial.trial_care_level && ['care_1', 'care_2', 'care_3'].includes(trial.trial_care_level)) {
+        score += 15;
+      }
+
+      if (trial.trial_date) {
+        const now = new Date();
+        const trialDate = new Date(trial.trial_date);
+        const daysElapsed = Math.floor((now - trialDate) / (1000 * 60 * 60 * 24));
+        if (daysElapsed >= 7 && daysElapsed <= 90) score += 12;
+      }
+
+      if (trial.trial_pickup_time) score += 8;
+      if (trial.trial_medication_has) score += 6;
+      if (trial.trial_bath_has) score += 8;
+      if (trial.trial_notes && trial.trial_notes.trim()) score += 10;
+
+      if (matchedContract) score += 30;
+
+      const normalizedScore = Math.min(100, Math.max(0, score));
+      const level = normalizedScore >= 75 ? '高' : normalizedScore >= 50 ? '中' : '低';
+
+      return {
+        level,
+        score: normalizedScore,
+        isContracted: !!matchedContract,
+      };
+    });
+
+    const highCount = trials.filter(t => t.level === '高' && !t.isContracted).length;
     
     // 今月の統計
     const now = new Date();
     const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const monthUsers = allClients.filter(u => u.start_date && u.start_date.startsWith(thisMonth));
-    const contracted = monthUsers.filter(u => u.status === 'active').length;
-    const contractRate = monthUsers.length > 0 ? Math.round((contracted / monthUsers.length) * 100) : 0;
+    const thisMonthTrials = trialAnnouncements.filter(t => t.trial_date && t.trial_date.startsWith(thisMonth));
+    const thisMonthContracted = thisMonthTrials.filter(t => {
+      return contractedClients.some(c => c.name === t.trial_client_name);
+    }).length;
+    const contractRate = thisMonthTrials.length > 0 ? Math.round((thisMonthContracted / thisMonthTrials.length) * 100) : 0;
 
-    return { highCount, contractRate, totalTrials: allClients.length };
-  }, [allClients]);
+    return { highCount, contractRate };
+  }, [trialAnnouncements, contractedClients]);
 
   if (!summary) return null;
 
