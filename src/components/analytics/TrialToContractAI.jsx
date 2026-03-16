@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   AlertCircle, TrendingUp, CheckCircle, Phone, Users, Target,
-  ChevronDown, ChevronUp, Info
+  ChevronDown, ChevronUp, Info, History, RefreshCw
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { Button } from '@/components/ui/button';
 
 // スコアリングロジック
 function calculateContractScore(user, allStaff, allAnnouncements) {
