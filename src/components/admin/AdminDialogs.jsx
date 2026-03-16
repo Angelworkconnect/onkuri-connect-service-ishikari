@@ -219,7 +219,7 @@ export default function AdminDialogs({
             )}
             <div className="flex gap-2 ml-auto w-full sm:w-auto">
               <Button variant="outline" onClick={() => setStaffDialogOpen(false)} className="flex-1 sm:flex-none">キャンセル</Button>
-              <Button onClick={handleSubmitStaff} className="bg-[#2D4A6F] flex-1 sm:flex-none" disabled={!staffForm.full_name || !staffForm.email}>
+              <Button onClick={handleSubmitStaff} className="bg-[#2D4A6F] flex-1 sm:flex-none" disabled={(!staffForm.full_name && !staffForm.last_name) || !staffForm.email}>
                 {editingStaff ? '更新' : '登録'}
               </Button>
             </div>
