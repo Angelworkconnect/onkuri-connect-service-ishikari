@@ -18,6 +18,7 @@ import {
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import StatsCard from "@/components/dashboard/StatsCard";
+import CareAdditionAICard from "@/components/admin/CareAdditionAICard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
