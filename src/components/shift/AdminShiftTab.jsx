@@ -169,16 +169,34 @@ export default function AdminShiftTab({ user }) {
   const deleteAllAutoMutation = useMutation({
     mutationFn: async () => {
       const autoEntries = entries.filter(e => e.auto_generated);
-      for (const e of autoEntries) await base44.entities.ShiftEntry.delete(e.id);
+      await Promise.all(autoEntries.map(e => base44.entities.ShiftEntry.delete(e.id)));
     },
-    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      queryClient.setQueryData(['shift-entries', year, month], prev.filter(e => !e.auto_generated));
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const deleteAllEntriesMutation = useMutation({
     mutationFn: async () => {
-      for (const e of entries) await base44.entities.ShiftEntry.delete(e.id);
+      await Promise.all(entries.map(e => base44.entities.ShiftEntry.delete(e.id)));
     },
-    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      queryClient.setQueryData(['shift-entries', year, month], []);
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const updateStaffOffDaysMutation = useMutation({
