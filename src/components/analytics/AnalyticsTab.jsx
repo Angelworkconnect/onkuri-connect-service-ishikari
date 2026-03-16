@@ -563,5 +563,3 @@ export default function AnalyticsTab() {
     </div>
   );
 }
-
-import { useState, useMemo } from 'react';
