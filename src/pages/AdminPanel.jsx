@@ -1208,6 +1208,7 @@ export default function AdminPanel() {
                 { value: 'clients', Icon: Users, label: 'クライアント' },
                 { value: 'analytics', Icon: Brain, label: 'AI分析' },
                 { value: 'care', Icon: BarChart3, label: '経営' },
+                { value: 'addition_ai', Icon: Brain, label: '加算診断AI' },
               ].map(({ value, Icon, label }) => (
                 <TabsList key={value} className="h-auto p-0 bg-transparent">
                   <TabsTrigger value={value} className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-slate-600 text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg">

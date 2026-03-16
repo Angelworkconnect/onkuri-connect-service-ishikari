@@ -71,6 +71,7 @@ const AuthenticatedApp = () => {
       <Route path="/CareDayUsageSettings" element={<LayoutWrapper currentPageName="CareDayUsageSettings"><CareDayUsageSettingsPage /></LayoutWrapper>} />
       <Route path="/CareUsers" element={<LayoutWrapper currentPageName="CareUsers"><CareUsersPage /></LayoutWrapper>} />
       <Route path="/CareUserTrend" element={<LayoutWrapper currentPageName="CareUserTrend"><CareUserTrendPage /></LayoutWrapper>} />
+      <Route path="/CareAdditionAI" element={<LayoutWrapper currentPageName="CareAdditionAI"><CareAdditionAIPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
