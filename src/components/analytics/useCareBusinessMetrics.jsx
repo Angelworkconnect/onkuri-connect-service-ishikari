@@ -73,10 +73,21 @@ export function useCareBusinessMetrics() {
     // ── 人件費計算 ──
     const activeStaff = staff.filter(s => s.status === 'active');
     const staffCount = activeStaff.length;
-    const avgWage = staffCount > 0
-      ? activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / staffCount
-      : 1000;
-    const estimatedLaborCost = Math.round(avgWage * 160 * staffCount);
+    
+    let estimatedLaborCost = 0;
+    // 詳細モード：設定値から計算
+    if (settings?.cost_input_mode === 'detailed' && settings?.salary_staff_count > 0) {
+      estimatedLaborCost = Math.round(
+        (settings.salary_avg_hourly || 1000) *
+        (settings.salary_monthly_hours || 160) *
+        settings.salary_staff_count
+      );
+    } else if (staffCount > 0) {
+      // シンプルモードまたは詳細設定がない場合：Staff entity から推定
+      const avgWage = activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / staffCount;
+      estimatedLaborCost = Math.round(avgWage * 160 * staffCount);
+    }
+    
     const laborRate = estimatedRevenue > 0
       ? Math.round((estimatedLaborCost / estimatedRevenue) * 100)
       : null;
