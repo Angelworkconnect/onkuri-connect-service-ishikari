@@ -83,16 +83,19 @@ export function useCareBusinessMetrics() {
     const staffCount = activeStaff.length;
     
     let estimatedLaborCost = 0;
+    let avgWage = 1000;
+    
     // 詳細モード：設定値から計算
     if (settings?.cost_input_mode === 'detailed' && settings?.salary_staff_count > 0) {
+      avgWage = settings.salary_avg_hourly || 1000;
       estimatedLaborCost = Math.round(
-        (settings.salary_avg_hourly || 1000) *
+        avgWage *
         (settings.salary_monthly_hours || 160) *
         settings.salary_staff_count
       );
     } else if (staffCount > 0) {
       // シンプルモードまたは詳細設定がない場合：Staff entity から推定
-      const avgWage = activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / staffCount;
+      avgWage = activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / staffCount;
       estimatedLaborCost = Math.round(avgWage * 160 * staffCount);
     }
     
