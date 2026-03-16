@@ -54,66 +54,6 @@ export default function Layout({ children, currentPageName }) {
   const [logoChar, setLogoChar] = useState('');
 
   useEffect(() => {
-    // スマホキャッシュ対策：バージョンチェックと強制更新
-    const checkAndUpdateVersion = async () => {
-      try {
-        const savedVersion = localStorage.getItem('app_build_version');
-        
-        if (savedVersion !== APP_BUILD_VERSION) {
-          console.log(`[Version Update] ${savedVersion} → ${APP_BUILD_VERSION}`);
-          
-          // バージョン更新
-          localStorage.setItem('app_build_version', APP_BUILD_VERSION);
-          
-          // Service Worker キャッシュクリア試行
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-              registrations.forEach(reg => {
-                console.log('[SW] Unregistering:', reg.scope);
-                reg.unregister();
-              });
-            });
-          }
-          
-          // Cache Storage クリア試行
-          if ('caches' in window) {
-            caches.keys().then(names => {
-              names.forEach(name => {
-                console.log('[Cache] Deleting:', name);
-                caches.delete(name);
-              });
-            });
-          }
-          
-          // IndexedDB もクリア
-          if ('indexedDB' in window && 'databases' in indexedDB) {
-            try {
-              const dbs = await indexedDB.databases();
-              dbs.forEach(db => {
-                console.log('[IndexedDB] Deleting:', db.name);
-                indexedDB.deleteDatabase(db.name);
-              });
-            } catch (e) {
-              console.log('[IndexedDB] Clear error:', e);
-            }
-          }
-          
-          // 旧バージョンから移行の場合は強制リロード
-          if (savedVersion) {
-            console.log('[Reload] Forcing reload for cache clear...');
-            setTimeout(() => {
-              window.location.reload();
-            }, 500);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('[Version Check Error]', error);
-      }
-    };
-    
-    checkAndUpdateVersion().catch(e => console.error('[Version Check Error]', e));
-
     base44.entities.SiteSettings.list().then(settings => {
       if (settings.length > 0) {
         if (settings[0].office_name) setOfficeName(settings[0].office_name);
