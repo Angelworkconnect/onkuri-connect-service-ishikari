@@ -12,6 +12,14 @@ const AI_MODES = [
   { id: 'FUYOU', label: '扶養保護', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', desc: 'ONKURI専用' },
 ];
 
+const ROLE_OPTIONS = [
+  { value: 'all', label: '全員' },
+  { value: 'admin', label: '管理者' },
+  { value: 'full_time', label: '正社員' },
+  { value: 'part_time', label: 'パート' },
+  { value: 'temporary', label: '単発' },
+];
+
 function generateShifts({ staff, requests, requirements, entries, mode, year, month }) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const newEntries = [];
@@ -29,7 +37,6 @@ function generateShifts({ staff, requests, requirements, entries, mode, year, mo
     s.display_in_shift_calendar !== false
   );
 
-  // 既存のエントリと新生成エントリを合算してチェック
   const allEntries = [...entries];
 
   for (let d = 1; d <= daysInMonth; d++) {
@@ -39,13 +46,11 @@ function generateShifts({ staff, requests, requirements, entries, mode, year, mo
     const existing = allEntries.filter(e => e.date === date);
     if (existing.length >= required) continue;
 
-    // 候補スタッフをフィルタ・ソート
     let candidates = activeStaff.filter(s => {
       if (offDates[s.email]?.has(date)) return false;
       const { canPlace } = canPlaceStaff(s, date, allEntries, []);
       if (!canPlace) return false;
 
-      // 扶養チェック
       if (mode === 'FUYOU' && s.tax_mode !== 'FULL') {
         const limit = getAnnualLimit(s);
         if (limit < Infinity) {
@@ -66,7 +71,6 @@ function generateShifts({ staff, requests, requirements, entries, mode, year, mo
     } else if (mode === 'COST') {
       candidates = candidates.sort((a, b) => (a.hourly_wage || 1000) - (b.hourly_wage || 1000));
     } else {
-      // 今月配置の少ない順（公平）
       candidates = candidates.sort((a, b) => {
         const aCount = allEntries.filter(e => e.staff_id === a.id).length;
         const bCount = allEntries.filter(e => e.staff_id === b.id).length;
@@ -101,16 +105,37 @@ function generateShifts({ staff, requests, requirements, entries, mode, year, mo
 
 export default function AIShiftGenerator({ staff, requests, requirements, existingEntries, year, month, onGenerate }) {
   const [mode, setMode] = useState('STABLE');
+  const [selectedRoles, setSelectedRoles] = useState(['all']);
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastWarnings, setLastWarnings] = useState([]);
+
+  const toggleRole = (role) => {
+    if (role === 'all') {
+      setSelectedRoles(['all']);
+      return;
+    }
+    setSelectedRoles(prev => {
+      const withoutAll = prev.filter(r => r !== 'all');
+      if (withoutAll.includes(role)) {
+        const next = withoutAll.filter(r => r !== role);
+        return next.length === 0 ? ['all'] : next;
+      } else {
+        return [...withoutAll, role];
+      }
+    });
+  };
+
+  const filteredStaff = selectedRoles.includes('all')
+    ? staff
+    : staff.filter(s => selectedRoles.includes(s.role));
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     setLastWarnings([]);
-    await new Promise(r => setTimeout(r, 800)); // 演出
+    await new Promise(r => setTimeout(r, 800));
 
     const { newEntries, warnings } = generateShifts({
-      staff, requests, requirements,
+      staff: filteredStaff, requests, requirements,
       entries: existingEntries,
       mode, year, month,
     });
@@ -121,20 +146,72 @@ export default function AIShiftGenerator({ staff, requests, requirements, existi
   };
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {AI_MODES.map(m => (
-          <button
-            key={m.id}
-            onClick={() => setMode(m.id)}
-            className={`border-2 rounded-xl p-2 text-center transition-all ${mode === m.id ? m.color + ' ring-2 ring-offset-1 ring-current' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}
-          >
-            <m.icon className="w-4 h-4 mx-auto mb-0.5" />
-            <div className="text-xs font-bold">{m.label}</div>
-            <div className="text-[10px] opacity-70">{m.desc}</div>
-          </button>
-        ))}
+    <div className="space-y-4">
+      {/* AIモード選択 */}
+      <div>
+        <p className="text-xs font-semibold text-slate-500 mb-2">AIモード</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {AI_MODES.map(m => (
+            <button
+              key={m.id}
+              onClick={() => setMode(m.id)}
+              className={`border-2 rounded-xl p-2 text-center transition-all ${mode === m.id ? m.color + ' ring-2 ring-offset-1 ring-current' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}
+            >
+              <m.icon className="w-4 h-4 mx-auto mb-0.5" />
+              <div className="text-xs font-bold">{m.label}</div>
+              <div className="text-[10px] opacity-70">{m.desc}</div>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* カテゴリー（役職）フィルター */}
+      <div>
+        <p className="text-xs font-semibold text-slate-500 mb-2">対象カテゴリー（複数選択可）</p>
+        <div className="flex flex-wrap gap-2">
+          {ROLE_OPTIONS.map(opt => {
+            const isSelected = selectedRoles.includes(opt.value);
+            const count = opt.value === 'all'
+              ? staff.filter(s => s.status === 'active' && s.approval_status === 'approved').length
+              : staff.filter(s => s.role === opt.value && s.status === 'active' && s.approval_status === 'approved').length;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => toggleRole(opt.value)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border-2 transition-all ${
+                  isSelected
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
+                }`}
+              >
+                {opt.label}
+                <span className={`text-[11px] px-1 rounded-full ${isSelected ? 'bg-white/20' : 'bg-slate-100'}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-slate-400 mt-1.5">
+          対象: {filteredStaff.filter(s => s.status === 'active' && s.approval_status === 'approved').length}名
+        </p>
+      </div>
+
+      {/* 希望休マッチング状況 */}
+      {requests.length > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-3">
+          <p className="text-xs font-bold text-orange-700 mb-1">📅 希望休マッチング</p>
+          <p className="text-xs text-orange-600">
+            {requests.filter(r => r.request_type === 'OFF').length}件の希望休を考慮してシフトを生成します
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1">
+            {[...new Set(requests.filter(r => r.request_type === 'OFF').map(r => r.staff_name))].slice(0, 6).map(name => (
+              <span key={name} className="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full">{name}</span>
+            ))}
+            {[...new Set(requests.filter(r => r.request_type === 'OFF').map(r => r.staff_name))].length > 6 && (
+              <span className="text-[10px] text-orange-500">他...</span>
+            )}
+          </div>
+        </div>
+      )}
 
       <Button
         onClick={handleGenerate}
