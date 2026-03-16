@@ -251,10 +251,40 @@ export default function AnalyticsTab() {
       <div className="bg-gradient-to-r from-[#1E3A5F] to-[#2D4A6F] rounded-2xl p-6 text-white">
         <div className="flex items-center gap-3 mb-1">
           <Brain className="w-6 h-6 text-[#E8A4B8]" />
-          <h2 className="text-xl font-bold">ANGEL ANALYTICS SUITE</h2>
+          <h2 className="text-xl font-bold">スタッフ分析 AI</h2>
         </div>
-        <p className="text-white/60 text-sm">職員解析統合エンジン — 感覚経営から「見える組織」へ</p>
+        <p className="text-white/60 text-sm">職員のエンゲージメント・離職リスクを可視化します</p>
       </div>
+
+      {/* 内部タブ切り替え */}
+      <div className="flex gap-2 bg-slate-100 rounded-xl p-1 w-fit">
+        <button
+          onClick={() => setActiveTab('engagement')}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'engagement'
+              ? 'bg-white text-[#2D4A6F] shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          📊 エンゲージメント分析
+        </button>
+        <button
+          onClick={() => setActiveTab('turnover')}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'turnover'
+              ? 'bg-white text-red-600 shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          🚨 離職リスク予測AI
+        </button>
+      </div>
+
+      {/* 離職リスクタブ */}
+      {activeTab === 'turnover' && <TurnoverAITab />}
+
+      {/* エンゲージメントタブ（以下既存コンテンツ） */}
+      {activeTab !== 'engagement' ? null : (<>
 
       {/* KPI カード群 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
