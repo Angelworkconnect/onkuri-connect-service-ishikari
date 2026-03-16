@@ -79,7 +79,7 @@ export function useCareBusinessMetrics() {
       : null;
 
     // ── 人件費計算 ──
-    const activeStaff = staff.filter(s => s.status === 'active');
+    const activeStaff = staff.filter(s => s.status === 'active' && s.role !== 'admin');
     const staffCount = activeStaff.length;
     
     let estimatedLaborCost = 0;
@@ -94,7 +94,7 @@ export function useCareBusinessMetrics() {
         settings.salary_staff_count
       );
     } else if (staffCount > 0) {
-      // シンプルモードまたは詳細設定がない場合：Staff entity から推定
+      // シンプルモードまたは詳細設定がない場合：Staff entity から推定（管理者除外）
       avgWage = activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / staffCount;
       estimatedLaborCost = Math.round(avgWage * 160 * staffCount);
     }
