@@ -83,22 +83,25 @@ const ADDITIONS = [
 ];
 
 function buildFacilityData(settings, careUsers, staff, bizSettings) {
+  // 在籍中・休職中のみ（退職者除く）
+  const activeStaff = staff.filter(s => s.status !== 'inactive');
+  // シフト・加算計算には在籍中のみ
+  const workingStaff = staff.filter(s => s.status === 'active');
   const activeUsers = careUsers.filter(u => u.status === 'active');
-  const qualifications = staff.flatMap(s => s.qualifications || []);
+  const qualifications = workingStaff.flatMap(s => s.qualifications || []);
   const hasPtOt = qualifications.some(q =>
     ['PT', 'OT', 'ST', '理学療法士', '作業療法士', '言語聴覚士', '機能訓練指導員'].some(k => q.includes(k))
   );
   const hasCareWorker = qualifications.some(q => q.includes('介護福祉士'));
-  const careWorkerCount = staff.filter(s => (s.qualifications || []).some(q => q.includes('介護福祉士'))).length;
+  const careWorkerCount = workingStaff.filter(s => (s.qualifications || []).some(q => q.includes('介護福祉士'))).length;
 
   return {
-    staffCount: staff.filter(s => s.status === 'active').length,
+    staffCount: workingStaff.length,
     activeUserCount: activeUsers.length,
     hasPtOt,
     hasCareWorker,
-    careWorkerRatio: staff.length > 0 ? careWorkerCount / staff.length : 0,
-    // These require manual input / AI assumptions based on size:
-    hasTrainingPlan: staff.length >= 3,
+    careWorkerRatio: workingStaff.length > 0 ? careWorkerCount / workingStaff.length : 0,
+    hasTrainingPlan: workingStaff.length >= 3,
     hasWagePlan: false,
     hasTrainingPlanDoc: hasPtOt,
     hasRehabConnection: false,
@@ -107,8 +110,8 @@ function buildFacilityData(settings, careUsers, staff, bizSettings) {
     hasAdlEval: activeUsers.length >= 10,
     hasAdlPlan: activeUsers.length >= 10,
     hasLifeSubmission: false,
-    hasPdca: staff.length >= 5,
-    hasQualityCheck: staff.length >= 4,
+    hasPdca: workingStaff.length >= 5,
+    hasQualityCheck: workingStaff.length >= 4,
   };
 }
 
