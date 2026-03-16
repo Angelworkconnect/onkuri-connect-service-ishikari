@@ -55,7 +55,7 @@ export default function TrialContractAISummaryCard() {
       ...calculateContractScore(c),
     }));
 
-    const highCount = scored.filter(s => s.level === '高').length;
+    const highCount = scored.filter(s => s.level === '高' && s.isActive !== true).length;
     
     // 今月の統計
     const now = new Date();
