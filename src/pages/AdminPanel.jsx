@@ -50,6 +50,7 @@ import AnnouncementsTab from '../components/admin/AnnouncementsTab';
 import AdminDialogs from '../components/admin/AdminDialogs';
 import AnalyticsTab from '../components/analytics/AnalyticsTab';
 import ManagementHealthAI from '../components/analytics/ManagementHealthAI';
+import TrialToContractAI from '../components/analytics/TrialToContractAI';
 
 import ClientManagementTab from '../components/admin/ClientManagementTab';
 import CareBusinessDashboardEmbed from '../components/admin/CareBusinessDashboardEmbed';
