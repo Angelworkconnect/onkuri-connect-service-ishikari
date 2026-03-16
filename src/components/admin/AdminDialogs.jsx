@@ -118,8 +118,8 @@ export default function AdminDialogs({
           <DialogHeader><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4 max-h-[65vh] overflow-y-auto">
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>苗字 *</Label><Input value={staffForm.last_name || ''} onChange={(e) => setStaffForm({...staffForm, last_name: e.target.value, full_name: `${e.target.value}${staffForm.first_name ? ' ' + staffForm.first_name : ''}`})} placeholder="山下" /></div>
-              <div><Label>名前 *</Label><Input value={staffForm.first_name || ''} onChange={(e) => setStaffForm({...staffForm, first_name: e.target.value, full_name: `${staffForm.last_name || ''}${e.target.value ? ' ' + e.target.value : ''}`})} placeholder="恵" /></div>
+              <div><Label>苗字 *</Label><Input value={staffForm.last_name || ''} onChange={(e) => { const ln = e.target.value; setStaffForm(prev => ({...prev, last_name: ln, full_name: [ln, prev.first_name].filter(Boolean).join(' ')})); }} placeholder="山下" /></div>
+              <div><Label>名前 *</Label><Input value={staffForm.first_name || ''} onChange={(e) => { const fn = e.target.value; setStaffForm(prev => ({...prev, first_name: fn, full_name: [prev.last_name, fn].filter(Boolean).join(' ')})); }} placeholder="恵" /></div>
             </div>
             <div><Label>メールアドレス *</Label><Input type="email" value={staffForm.email} onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} placeholder="yamada@example.com" /></div>
             <div><Label>電話番号</Label><Input type="tel" value={staffForm.phone} onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} placeholder="090-1234-5678" /></div>
