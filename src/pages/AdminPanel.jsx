@@ -1081,10 +1081,12 @@ export default function AdminPanel() {
   };
 
   const handleSubmitStaff = () => {
+    const fullName = [staffForm.last_name, staffForm.first_name].filter(Boolean).join(' ');
+    const data = { ...staffForm, full_name: fullName || staffForm.full_name };
     if (editingStaff) {
-      updateStaffMutation.mutate({ id: editingStaff.id, data: staffForm });
+      updateStaffMutation.mutate({ id: editingStaff.id, data });
     } else {
-      createStaffMutation.mutate(staffForm);
+      createStaffMutation.mutate(data);
     }
   };
 
