@@ -41,12 +41,14 @@ export default function AdminShiftTab({ user }) {
   const [previewSheetStaff, setPreviewSheetStaff] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: allStaff = [] } = useQuery({
+  const { data: allStaffRaw = [] } = useQuery({
     queryKey: ['shift-staff'],
     queryFn: () => base44.entities.Staff.list(),
     enabled: !!user,
     staleTime: 60000,
   });
+  // シフト表示対象：display_in_shift_calendarがtrueかつ在籍中(active)のスタッフのみ
+  const allStaff = allStaffRaw.filter(s => s.display_in_shift_calendar !== false && s.status !== 'inactive');
 
   const { data: shiftMonths = [] } = useQuery({
     queryKey: ['shift-months'],
