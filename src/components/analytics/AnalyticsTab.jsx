@@ -558,6 +558,7 @@ export default function AnalyticsTab() {
         <Info className="w-3 h-3" />
         スコアは既存データ（サンクス・勤怠・シフト・ヘルプ）から自動算出されます。データ蓄積により精度が向上します。
       </div>
+    </>)}
     </div>
   );
 }
