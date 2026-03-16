@@ -147,11 +147,21 @@ export default function AdminShiftTab({ user }) {
 
   const bulkCreateMutation = useMutation({
     mutationFn: async (newEntries) => {
-      for (const e of newEntries) {
-        await base44.entities.ShiftEntry.create({ ...e, shift_month_id: currentShiftMonth.id });
-      }
+      return Promise.all(
+        newEntries.map(e => base44.entities.ShiftEntry.create({ ...e, shift_month_id: currentShiftMonth.id }))
+      );
     },
-    onSuccess: () => queryClient.invalidateQueries(['shift-entries', year, month]),
+    onMutate: async (newEntries) => {
+      await queryClient.cancelQueries({ queryKey: ['shift-entries', year, month] });
+      const prev = queryClient.getQueryData(['shift-entries', year, month]) || [];
+      const optimistic = newEntries.map((e, i) => ({ ...e, id: 'temp-bulk-' + i, shift_month_id: currentShiftMonth.id }));
+      queryClient.setQueryData(['shift-entries', year, month], [...prev, ...optimistic]);
+      return { prev };
+    },
+    onSuccess: () => refetchEntries(),
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['shift-entries', year, month], ctx.prev);
+    },
   });
 
   const upsertRequirementMutation = useMutation({
