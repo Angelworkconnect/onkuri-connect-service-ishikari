@@ -51,6 +51,7 @@ import AdminDialogs from '../components/admin/AdminDialogs';
 import AnalyticsTab from '../components/analytics/AnalyticsTab';
 import ClientManagementTab from '../components/admin/ClientManagementTab';
 import CareBusinessDashboardEmbed from '../components/admin/CareBusinessDashboardEmbed';
+import CareAdditionAICard from '../components/admin/CareAdditionAICard';
 import { format } from "date-fns";
 import { getDisplayTimeText, getMessageTimestamp } from "@/components/utils/datetime";
 
