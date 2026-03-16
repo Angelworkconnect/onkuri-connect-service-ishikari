@@ -239,11 +239,19 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
   };
 
   // Step3: 終了・提出
-  const submitRide = async () => {
-    if (!form.endTime || !form.endOdometerKm) {
-      alert('終了時刻と終了メーターが必須です');
-      return;
-    }
+   const submitRide = async () => {
+     if (!form.endTime || !form.endOdometerKm) {
+       alert('終了時刻と終了メーターが必須です');
+       return;
+     }
+
+     const startOdom = parseFloat(form.startOdometerKm);
+     const endOdom = parseFloat(form.endOdometerKm);
+
+     if (endOdom < startOdom) {
+       alert('終了メーターは開始メーター以上である必要があります。\n開始: ' + startOdom + ' km\n終了: ' + endOdom + ' km');
+       return;
+     }
     setSaving(true);
     try {
       let rideId = savedRide.id;
