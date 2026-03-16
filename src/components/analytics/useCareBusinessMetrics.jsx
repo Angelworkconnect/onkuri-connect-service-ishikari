@@ -44,10 +44,18 @@ export function useCareBusinessMetrics() {
 
     const capacity = settings?.capacity || 18;
     const unitPrice = settings?.unit_price || 10200;
-    const fixedCost = settings?.fixed_cost || 2350000;
     const monthlyDays = settings?.monthly_business_days || 26;
     const bizDays = settings?.business_days_of_week || [1, 2, 3, 4, 5, 6];
     const weeklyBusinessDays = bizDays.length;
+
+    // 固定費：シンプルモードは設定値、詳細モードはスタッフ給与+その他費用
+    let fixedCost = settings?.fixed_cost || 2350000;
+    if (settings?.cost_input_mode === 'detailed') {
+      const salaryTotal = (settings?.salary_avg_hourly || 1000) *
+        (settings?.salary_monthly_hours || 160) *
+        (settings?.salary_staff_count || 0);
+      fixedCost = Math.round(salaryTotal + (settings?.other_costs_monthly || 0));
+    }
 
     // 曜日別マップ
     const dayMap = {};
