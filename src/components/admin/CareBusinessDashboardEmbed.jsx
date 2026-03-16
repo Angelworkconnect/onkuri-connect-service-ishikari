@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { Settings, Users, Calendar, AlertTriangle, Target, BarChart3, TrendingUp, Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line, ReferenceLine, Legend } from 'recharts';
+import { useCareBusinessMetrics } from '../analytics/useCareBusinessMetrics';
 
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -53,34 +52,16 @@ function SimulationCard({ rate, maxSlots, capacity, unitPrice, monthlyDays, fixe
 }
 
 export default function CareBusinessDashboardEmbed() {
-  const { data: settingsList = [] } = useQuery({ queryKey: ['care-biz-settings'], queryFn: () => base44.entities.CareBusinessSettings.list() });
-  const { data: dayUsageList = [] } = useQuery({ queryKey: ['care-day-usage'], queryFn: () => base44.entities.CareDayUsage.list() });
-  const { data: careUsers = [] } = useQuery({ queryKey: ['care-user-records'], queryFn: () => base44.entities.CareUserRecord.list('-start_date', 200) });
+  const { metrics, isLoading } = useCareBusinessMetrics();
 
-  const settings = settingsList[0] || { capacity: 18, unit_price: 10200, fixed_cost: 2350000, business_days_of_week: [1,2,3,4,5,6], monthly_business_days: 26 };
-  const bizDays = settings.business_days_of_week || [1,2,3,4,5,6];
-  const capacity = settings.capacity || 18;
-  const unitPrice = settings.unit_price || 10200;
-  const fixedCost = settings.fixed_cost || 2350000;
-  const monthlyDays = settings.monthly_business_days || 26;
-  const weeklyBusinessDays = bizDays.length;
+  const {
+    settings, hasSettings, capacity, unitPrice, fixedCost, monthlyDays,
+    bizDays, weeklyBusinessDays, dayMap, currentWeeklySlots, maxWeeklySlots,
+    occupancyRate, avgUsers, estimatedRevenue: monthlySales, estimatedProfit: monthlyProfit,
+    activeUsers, newThisMonth, endedThisMonth,
+  } = metrics;
 
-  const dayMap = {};
-  dayUsageList.forEach(d => { dayMap[d.day_of_week] = d; });
-
-  const currentWeeklySlots = bizDays.reduce((s, d) => s + (dayMap[d]?.user_count || 0), 0);
-  const maxWeeklySlots = capacity * weeklyBusinessDays;
-  const avgPeople = weeklyBusinessDays > 0 ? currentWeeklySlots / weeklyBusinessDays : 0;
-  const occupancyRate = maxWeeklySlots > 0 ? (currentWeeklySlots / maxWeeklySlots) * 100 : 0;
-  const monthlySales = Math.round(avgPeople * unitPrice * monthlyDays);
-  const monthlyProfit = monthlySales - fixedCost;
-  const occColor = getOccupancyColor(occupancyRate);
-
-  const now = new Date();
-  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  const activeUsers = careUsers.filter(u => u.status === 'active').length;
-  const newThisMonth = careUsers.filter(u => u.start_date?.startsWith(thisMonth)).length;
-  const endedThisMonth = careUsers.filter(u => u.end_date?.startsWith(thisMonth) && u.status === 'ended').length;
+  const occColor = getOccupancyColor(occupancyRate ?? 0);
 
   const chartData = [1,2,3,4,5,6,0].map(dow => ({
     name: DAY_LABELS[dow],
@@ -89,14 +70,12 @@ export default function CareBusinessDashboardEmbed() {
     isOpen: bizDays.includes(dow),
   }));
 
-  const hasSettings = settingsList.length > 0;
-
   return (
     <div className="space-y-6">
       {/* ヘッダー */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-slate-800">{settings.facility_name || '介護経営ダッシュボード'}</h2>
+          <h2 className="text-xl font-bold text-slate-800">{settings?.facility_name || '介護経営ダッシュボード'}</h2>
           <p className="text-sm text-slate-500">定員 {capacity}名 ／ 月営業日数 {monthlyDays}日</p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -117,14 +96,14 @@ export default function CareBusinessDashboardEmbed() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="border-0 shadow-sm p-4">
           <p className="text-xs text-slate-500">平均人数</p>
-          <p className="text-2xl font-bold text-slate-800">{avgPeople.toFixed(1)}人</p>
+          <p className="text-2xl font-bold text-slate-800">{avgUsers}人</p>
           <p className="text-xs text-slate-400">定員 {capacity}名</p>
         </Card>
         <Card className={`${occColor.light} border-2 ${occColor.border} shadow-sm p-4`}>
           <p className="text-xs text-slate-500">稼働率</p>
-          <p className={`text-2xl font-bold ${occColor.text}`}>{occupancyRate.toFixed(1)}%</p>
+          <p className={`text-2xl font-bold ${occColor.text}`}>{occupancyRate != null ? `${occupancyRate}%` : '-'}</p>
           <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1">
-            <div className={`h-1.5 rounded-full ${occColor.bg}`} style={{ width: `${Math.min(100, occupancyRate)}%` }} />
+            <div className={`h-1.5 rounded-full ${occColor.bg}`} style={{ width: `${Math.min(100, occupancyRate ?? 0)}%` }} />
           </div>
         </Card>
         <Card className="border-0 shadow-sm p-4">
@@ -197,18 +176,11 @@ export default function CareBusinessDashboardEmbed() {
 
 const SIM_STORAGE_KEY = 'care_profit_simulator_v2';
 
-function loadSimExtra() {
-  try {
-    const saved = localStorage.getItem(SIM_STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return null;
-}
-
 function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, defaultMonthlyDays }) {
-  const extra = loadSimExtra();
+  const extra = (() => {
+    try { const s = localStorage.getItem(SIM_STORAGE_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
+  })();
 
-  // 経営設定の値は常にそのまま使う（localStorageには変動費率・シナリオのみ保存）
   const [simCapacity, setSimCapacity] = useState(defaultCapacity);
   const [simUnitPrice, setSimUnitPrice] = useState(defaultUnitPrice);
   const [simFixedCost, setSimFixedCost] = useState(defaultFixedCost);
@@ -229,19 +201,15 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
   useEffect(() => { setSimFixedCost(defaultFixedCost); }, [defaultFixedCost]);
   useEffect(() => { setSimMonthlyDays(defaultMonthlyDays); }, [defaultMonthlyDays]);
 
-  // 変動費率・シナリオのみlocalStorageに保存
   useEffect(() => {
-    localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify({
-      simVariableCostRate, scenarios, nextId
-    }));
+    localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify({ simVariableCostRate, scenarios, nextId }));
   }, [simVariableCostRate, scenarios, nextId]);
 
   const calcAt = (rate) => {
     const avg = (simCapacity * rate) / 100;
     const sales = Math.round(avg * simUnitPrice * simMonthlyDays);
     const varCost = Math.round(sales * simVariableCostRate / 100);
-    const profit = sales - simFixedCost - varCost;
-    return { sales, profit };
+    return { sales, profit: sales - simFixedCost - varCost };
   };
 
   const addScenario = () => {
@@ -253,18 +221,15 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
     setScenarios(s => s.map(sc => sc.id === id ? { ...sc, [field]: field === 'rate' ? Math.min(100, Math.max(0, Number(value))) : value } : sc));
   };
 
-  const removeScenario = (id) => {
-    setScenarios(s => s.filter(sc => sc.id !== id));
-  };
+  const removeScenario = (id) => setScenarios(s => s.filter(sc => sc.id !== id));
 
   const chartData = Array.from({ length: 21 }, (_, i) => {
     const rate = i * 5;
-    const avgPeople = (simCapacity * rate) / 100;
-    const sales = Math.round(avgPeople * simUnitPrice * simMonthlyDays);
-    const variableCost = Math.round(sales * simVariableCostRate / 100);
-    const totalCost = simFixedCost + variableCost;
-    const profit = sales - totalCost;
-    return { rate: `${rate}%`, 売上: sales, 総費用: totalCost, 利益: profit };
+    const avg = (simCapacity * rate) / 100;
+    const sales = Math.round(avg * simUnitPrice * simMonthlyDays);
+    const varCost = Math.round(sales * simVariableCostRate / 100);
+    const totalCost = simFixedCost + varCost;
+    return { rate: `${rate}%`, 売上: sales, 総費用: totalCost, 利益: sales - totalCost };
   });
 
   const breakEvenSales = simFixedCost / (1 - simVariableCostRate / 100);
@@ -273,10 +238,7 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
 
   return (
     <Card className="border-0 shadow-sm">
-      <button
-        className="w-full flex items-center justify-between p-5 text-left"
-        onClick={() => setOpen(o => !o)}
-      >
+      <button className="w-full flex items-center justify-between p-5 text-left" onClick={() => setOpen(o => !o)}>
         <h3 className="font-semibold text-slate-700 flex items-center gap-2">
           <Calculator className="w-4 h-4 text-[#2D4A6F]" />
           経営シミュレーター
@@ -287,7 +249,6 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
 
       {open && (
         <div className="px-5 pb-6 space-y-6">
-          {/* パラメータ入力 */}
           <div className="bg-slate-50 rounded-xl p-4 space-y-3">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">基本パラメータ</p>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -307,7 +268,6 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
             </div>
           </div>
 
-          {/* 損益分岐点 */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
             <div>
               <p className="text-xs text-amber-600 font-medium">損益分岐点</p>
@@ -319,7 +279,6 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
             </div>
           </div>
 
-          {/* 損益グラフ */}
           <div>
             <p className="text-xs text-slate-500 mb-2">稼働率別 売上・費用・利益</p>
             <ResponsiveContainer width="100%" height={220}>
@@ -337,31 +296,17 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
             </ResponsiveContainer>
           </div>
 
-          {/* カスタムシナリオ比較 */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">シナリオ比較（自由にカスタマイズ）</p>
-              <Button size="sm" variant="outline" onClick={addScenario} className="text-xs h-7 px-3">
-                ＋ シナリオ追加
-              </Button>
+              <Button size="sm" variant="outline" onClick={addScenario} className="text-xs h-7 px-3">＋ シナリオ追加</Button>
             </div>
             <div className="space-y-2 mb-4">
               {scenarios.map(sc => (
                 <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                  <Input
-                    value={sc.label}
-                    onChange={e => updateScenario(sc.id, 'label', e.target.value)}
-                    className="text-sm h-7 w-32 bg-white"
-                    placeholder="シナリオ名"
-                  />
+                  <Input value={sc.label} onChange={e => updateScenario(sc.id, 'label', e.target.value)} className="text-sm h-7 w-32 bg-white" placeholder="シナリオ名" />
                   <span className="text-xs text-slate-400 shrink-0">稼働率</span>
-                  <Input
-                    type="number"
-                    value={sc.rate}
-                    min={0} max={100}
-                    onChange={e => updateScenario(sc.id, 'rate', e.target.value)}
-                    className="text-sm h-7 w-16 bg-white text-center"
-                  />
+                  <Input type="number" value={sc.rate} min={0} max={100} onChange={e => updateScenario(sc.id, 'rate', e.target.value)} className="text-sm h-7 w-16 bg-white text-center" />
                   <span className="text-xs text-slate-400 shrink-0">%</span>
                   <button onClick={() => removeScenario(sc.id)} className="ml-auto text-slate-300 hover:text-red-400 text-lg leading-none">×</button>
                 </div>
@@ -376,15 +321,10 @@ function ProfitSimulator({ defaultCapacity, defaultUnitPrice, defaultFixedCost, 
                     <p className="text-xs font-semibold text-slate-600 mb-1">{sc.label}</p>
                     <p className="text-xs text-slate-400 mb-2">稼働率 {sc.rate}%</p>
                     <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">売上</span>
-                        <span className="font-semibold">¥{Math.round(sales/10000)}万</span>
-                      </div>
+                      <div className="flex justify-between"><span className="text-slate-500">売上</span><span className="font-semibold">¥{Math.round(sales/10000)}万</span></div>
                       <div className="flex justify-between">
                         <span className="text-slate-500">利益</span>
-                        <span className={`font-bold ${isProfit ? 'text-emerald-700' : 'text-red-600'}`}>
-                          {isProfit ? '' : '▲'}¥{Math.abs(Math.round(profit/10000))}万
-                        </span>
+                        <span className={`font-bold ${isProfit ? 'text-emerald-700' : 'text-red-600'}`}>{isProfit ? '' : '▲'}¥{Math.abs(Math.round(profit/10000))}万</span>
                       </div>
                     </div>
                   </div>
