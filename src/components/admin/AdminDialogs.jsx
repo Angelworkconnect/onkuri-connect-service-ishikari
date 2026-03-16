@@ -593,8 +593,8 @@ export default function AdminDialogs({
             </div>
             <div><Label>日付 *</Label><Input type="date" value={attendanceForm.date} onChange={(e) => setAttendanceForm({...attendanceForm, date: e.target.value})} /></div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>出勤時刻</Label><Input type="time" value={attendanceForm.clock_in} onChange={(e) => setAttendanceForm({...attendanceForm, clock_in: e.target.value})} /></div>
-              <div><Label>退勤時刻</Label><Input type="time" value={attendanceForm.clock_out} onChange={(e) => setAttendanceForm({...attendanceForm, clock_out: e.target.value})} /></div>
+              <div><Label>出勤時間</Label><Input type="time" value={attendanceForm.clock_in} onChange={(e) => setAttendanceForm({...attendanceForm, clock_in: e.target.value})} /></div>
+              <div><Label>退勤時間</Label><Input type="time" value={attendanceForm.clock_out} onChange={(e) => setAttendanceForm({...attendanceForm, clock_out: e.target.value})} /></div>
             </div>
             <div><Label>状態 *</Label>
               <Select value={attendanceForm.status} onValueChange={(v) => setAttendanceForm({...attendanceForm, status: v})}>
