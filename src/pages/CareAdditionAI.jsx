@@ -224,16 +224,19 @@ export default function CareAdditionAI() {
 介護通所サービス事業所の加算診断結果を分析してください。
 
 【事業所データ】
-・スタッフ数: ${facilityData.staffCount}名
+・在籍スタッフ数: ${facilityData.staffCount}名
 ・利用者数: ${facilityData.activeUserCount}名
-・介護福祉士比率: ${Math.round(facilityData.careWorkerRatio * 100)}%
-・機能訓練指導員配置: ${facilityData.hasPtOt ? 'あり' : 'なし'}
+・介護福祉士数: ${facilityData.careWorkerCount}名（比率: ${Math.round(facilityData.careWorkerRatio * 100)}%）${facilityData.careWorkerNames ? '（' + facilityData.careWorkerNames + '）' : ''}
+・機能訓練指導員（PT/OT等）: ${facilityData.ptOtCount}名${facilityData.ptOtNames ? '（' + facilityData.ptOtNames + '）' : ''}
+・リハビリ専門職: ${facilityData.rehabCount}名
+・看護師: ${facilityData.nurseCount}名
 
 【診断結果】
+・既取得加算: ${result.obtained.map(a => a.name).join('、') || 'なし'}
 ・取得可能加算: ${result.obtainable.map(a => a.name).join('、') || 'なし'}
 ・条件不足加算: ${result.insufficient.map(a => a.name).join('、') || 'なし'}
 
-最優先で取り組むべき加算と、具体的な改善アクションを1〜2文で簡潔にアドバイスしてください。
+スタッフの資格・所属を踏まえ、最優先で取り組むべき加算と具体的な改善アクションを1〜2文で簡潔にアドバイスしてください。
       `;
       const insight = await base44.integrations.Core.InvokeLLM({ prompt, model: 'gpt_5_mini' });
       setAiInsight(typeof insight === 'string' ? insight : '');
