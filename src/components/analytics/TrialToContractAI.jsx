@@ -254,7 +254,9 @@ export default function TrialToContractAI() {
       }
 
       const normalizedScore = Math.min(100, Math.max(0, score));
-      const level = normalizedScore >= 75 ? '高' : normalizedScore >= 50 ? '中' : '低';
+      // 見込み度判定：体験前段階でも紹介元や詳細ニーズがあれば「高」
+      // 体験後は経過日数と詳細ニーズで判定
+      const level = normalizedScore >= 65 ? '高' : normalizedScore >= 40 ? '中' : '低';
 
       // フォローアップ推奨
       const recommendations = [];
