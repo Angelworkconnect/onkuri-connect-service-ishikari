@@ -639,16 +639,22 @@ export default function Dashboard() {
             <Card className="border-0 shadow-sm p-6">
               <h3 className="font-medium text-slate-800 mb-4">クイックアクセス</h3>
               <div className="space-y-2">
-                <Link to={createPageUrl('Shifts')}>
+                <Link to={createPageUrl('MyShift')}>
                   <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
                     <Calendar className="w-4 h-4 mr-3" />
-                    シフト一覧
+                    シフト確認
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Attendance')}>
                   <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
                     <Clock className="w-4 h-4 mr-3" />
                     勤怠履歴
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('Shifts')}>
+                  <Button variant="ghost" className="w-full justify-start text-slate-600 hover:text-[#2D4A6F] hover:bg-[#2D4A6F]/5">
+                    <Calendar className="w-4 h-4 mr-3" />
+                    単発募集
                   </Button>
                 </Link>
                 <Link to={createPageUrl('MyApplications')}>
