@@ -12,6 +12,7 @@ import CareDayUsageSettingsPage from './pages/CareDayUsageSettings';
 import CareUsersPage from './pages/CareUsers';
 import CareUserTrendPage from './pages/CareUserTrend';
 import CareAdditionAIPage from './pages/CareAdditionAI';
+import TrialContractAIPage from './pages/TrialContractAI';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
