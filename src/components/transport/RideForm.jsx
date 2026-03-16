@@ -244,14 +244,6 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
        alert('終了時刻と終了メーターが必須です');
        return;
      }
-
-     const startOdom = parseFloat(form.startOdometerKm);
-     const endOdom = parseFloat(form.endOdometerKm);
-
-     if (endOdom < startOdom) {
-       alert('終了メーターは開始メーター以上である必要があります。\n開始: ' + startOdom + ' km\n終了: ' + endOdom + ' km');
-       return;
-     }
     setSaving(true);
     try {
       let rideId = savedRide.id;
