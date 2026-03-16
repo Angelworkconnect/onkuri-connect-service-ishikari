@@ -1,31 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  TrendingUp, TrendingDown, AlertTriangle, CheckCircle, 
+import {
+  TrendingUp, TrendingDown, AlertTriangle, CheckCircle,
   Users, Activity, DollarSign, BarChart3, RefreshCw, Brain,
   ChevronDown, ChevronUp
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useCareBusinessMetrics } from './useCareBusinessMetrics';
 
 // ── スコアリングロジック ──────────────────────────────────────
 
-function computeHealthScore({ settings, dayUsages, staff, attendance, shiftEntries, tips }) {
+function computeHealthScore(metrics) {
+  const {
+    occupancyRate, estimatedRevenue, estimatedProfit, profitMargin,
+    laborRate, staffCount, avgUsers, tipsDecreasing, lowDays, capacity,
+  } = metrics;
+
   const reasons = [];
   const recommendations = [];
-  let score = 60; // ベーススコア
+  let score = 60;
 
-  // 1. 稼働率チェック（利用者数 / 定員）
-  const capacity = settings?.capacity || 0;
-  const recentUsages = dayUsages.slice(0, 30);
-  const avgUsers = recentUsages.length > 0
-    ? recentUsages.reduce((s, d) => s + (d.user_count || 0), 0) / recentUsages.length
-    : 0;
-  const occupancyRate = capacity > 0 ? Math.min(100, Math.round((avgUsers / capacity) * 100)) : null;
-
+  // 1. 稼働率
   if (occupancyRate !== null) {
     if (occupancyRate >= 85) {
       score += 15;
@@ -44,74 +39,46 @@ function computeHealthScore({ settings, dayUsages, staff, attendance, shiftEntri
     recommendations.push('経営設定から定員・単価を設定してください');
   }
 
-  // 2. 売上・利益チェック
-  const unitPrice = settings?.unit_price || 0;
-  const fixedCost = settings?.fixed_cost || 0;
-  const monthlyDays = settings?.monthly_business_days || 22;
-  const estimatedRevenue = unitPrice * avgUsers * monthlyDays;
-  const estimatedProfit = estimatedRevenue - fixedCost;
-  const profitMargin = estimatedRevenue > 0 ? (estimatedProfit / estimatedRevenue) * 100 : null;
-
+  // 2. 利益率
   if (profitMargin !== null) {
     if (profitMargin >= 20) {
       score += 10;
-      reasons.push('✅ 利益率が良好です（推定' + Math.round(profitMargin) + '%）');
+      reasons.push('✅ 利益率が良好です（推定' + profitMargin + '%）');
     } else if (profitMargin >= 5) {
-      reasons.push('⚠️ 利益率に改善余地があります（推定' + Math.round(profitMargin) + '%）');
+      reasons.push('⚠️ 利益率に改善余地があります（推定' + profitMargin + '%）');
       recommendations.push('固定費の見直しや稼働率向上で利益改善が期待できます');
-    } else if (profitMargin < 5) {
+    } else {
       score -= 15;
-      reasons.push('❌ 利益率が低い状態です（推定' + Math.round(profitMargin) + '%）');
+      reasons.push('❌ 利益率が低い状態です（推定' + profitMargin + '%）');
       recommendations.push('利益率が低下しています。コスト削減または稼働率向上が必要です');
     }
   }
 
-  // 3. 人件費率チェック（職員数 × 給与推定 / 売上）
-  const activeStaff = staff.filter(s => s.status === 'active');
-  const staffCount = activeStaff.length;
-  const avgWage = activeStaff.reduce((s, st) => s + (st.hourly_wage || 1000), 0) / Math.max(1, staffCount);
-  // 月160h × 平均時給 × 職員数 で人件費推定
-  const estimatedLaborCost = avgWage * 160 * staffCount;
-  const laborRate = estimatedRevenue > 0 ? (estimatedLaborCost / estimatedRevenue) * 100 : null;
-
+  // 3. 人件費率
   if (laborRate !== null) {
     if (laborRate <= 60) {
       score += 10;
-      reasons.push('✅ 人件費率は適正範囲内です（推定' + Math.round(laborRate) + '%）');
+      reasons.push('✅ 人件費率は適正範囲内です（推定' + laborRate + '%）');
     } else if (laborRate <= 75) {
       score -= 5;
-      reasons.push('⚠️ 人件費率がやや高めです（推定' + Math.round(laborRate) + '%）');
+      reasons.push('⚠️ 人件費率がやや高めです（推定' + laborRate + '%）');
       recommendations.push('人件費率が高めです。シフトバランスや残業状況を確認してください');
     } else {
       score -= 15;
-      reasons.push('❌ 人件費率が高く、収益を圧迫しています（推定' + Math.round(laborRate) + '%）');
+      reasons.push('❌ 人件費率が高く、収益を圧迫しています（推定' + laborRate + '%）');
       recommendations.push('人件費率が高すぎます。人員配置の最適化と残業削減を優先してください');
     }
   }
 
-  // 4. 利用者数傾向チェック（曜日別）
-  const weekdayGroups = {};
-  dayUsages.forEach(d => {
-    const dow = d.day_of_week;
-    if (dow !== undefined) {
-      if (!weekdayGroups[dow]) weekdayGroups[dow] = [];
-      weekdayGroups[dow].push(d.user_count || 0);
-    }
-  });
-  const lowDays = Object.entries(weekdayGroups)
-    .filter(([, counts]) => {
-      const avg = counts.reduce((s, v) => s + v, 0) / counts.length;
-      return capacity > 0 && avg / capacity < 0.6;
-    });
+  // 4. 稼働率の低い曜日
   if (lowDays.length >= 2) {
     score -= 5;
-    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-    const names = lowDays.map(([d]) => dayNames[d]).join('・');
+    const names = lowDays.join('・');
     reasons.push('⚠️ 稼働率の低い曜日があります（' + names + '）');
     recommendations.push('稼働率の低い曜日（' + names + '）の利用者確保を検討してください');
   }
 
-  // 5. 職員数と利用者のバランス
+  // 5. 職員・利用者バランス
   if (staffCount > 0 && avgUsers > 0) {
     const ratio = avgUsers / staffCount;
     if (ratio < 2) {
@@ -128,25 +95,15 @@ function computeHealthScore({ settings, dayUsages, staff, attendance, shiftEntri
     }
   }
 
-  // 6. 離職傾向（tips減少 = エンゲージメント低下の代替指標）
-  const recentMonth = new Date().toISOString().slice(0, 7);
-  const prevMonth = (() => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - 1);
-    return d.toISOString().slice(0, 7);
-  })();
-  const tipsThisMonth = tips.filter(t => t.date?.startsWith(recentMonth) && !t.is_deleted).length;
-  const tipsPrevMonth = tips.filter(t => t.date?.startsWith(prevMonth) && !t.is_deleted).length;
-  if (staffCount > 0 && tipsPrevMonth > 0 && tipsThisMonth < tipsPrevMonth * 0.5) {
+  // 6. サンクス活動
+  if (tipsDecreasing) {
     score -= 5;
     reasons.push('⚠️ サンクス活動が減少しており、離職傾向に注意が必要です');
     recommendations.push('スタッフのエンゲージメントが低下しています。スタッフ分析AIを確認してください');
   }
 
-  // スコア範囲制限
   score = Math.min(100, Math.max(0, score));
 
-  // 判定
   let verdict, verdictColor, verdictBg;
   if (score >= 80) {
     verdict = '良好';
@@ -162,28 +119,12 @@ function computeHealthScore({ settings, dayUsages, staff, attendance, shiftEntri
     verdictBg = 'bg-red-100 border-red-300';
   }
 
-  return {
-    score,
-    verdict,
-    verdictColor,
-    verdictBg,
-    reasons,
-    recommendations,
-    occupancyRate,
-    estimatedRevenue,
-    estimatedProfit,
-    profitMargin,
-    laborRate,
-    staffCount,
-    avgUsers: Math.round(avgUsers),
-    estimatedLaborCost,
-  };
+  return { score, verdict, verdictColor, verdictBg, reasons, recommendations };
 }
 
 // ── サブコンポーネント ──────────────────────────────────────
 
 function ScoreGauge({ score, verdict, verdictColor, verdictBg }) {
-  const color = score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-amber-400' : 'bg-red-500';
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="relative w-36 h-36">
@@ -228,51 +169,12 @@ function MetricItem({ label, value, sub, icon: Icon, color = 'text-[#2D4A6F]', b
 
 export default function ManagementHealthAI() {
   const [expanded, setExpanded] = useState(true);
-
-  const { data: settingsList = [], isLoading: loadingSettings } = useQuery({
-    queryKey: ['mgmt-health-settings'],
-    queryFn: () => base44.entities.CareBusinessSettings.list(),
-    staleTime: 60000,
-  });
-
-  const { data: dayUsages = [], isLoading: loadingUsages } = useQuery({
-    queryKey: ['mgmt-health-usages'],
-    queryFn: () => base44.entities.CareDayUsage.list('-year_month', 100),
-    staleTime: 60000,
-  });
-
-  const { data: staff = [], isLoading: loadingStaff } = useQuery({
-    queryKey: ['mgmt-health-staff'],
-    queryFn: () => base44.entities.Staff.list(),
-    staleTime: 60000,
-  });
-
-  const { data: attendance = [] } = useQuery({
-    queryKey: ['mgmt-health-attendance'],
-    queryFn: () => base44.entities.Attendance.list('-date', 200),
-    staleTime: 60000,
-  });
-
-  const { data: shiftEntries = [] } = useQuery({
-    queryKey: ['mgmt-health-shifts'],
-    queryFn: () => base44.entities.ShiftEntry.list('-date', 200),
-    staleTime: 60000,
-  });
-
-  const { data: tips = [] } = useQuery({
-    queryKey: ['mgmt-health-tips'],
-    queryFn: () => base44.entities.TipRecord.list('-date', 200),
-    staleTime: 60000,
-  });
-
-  const isLoading = loadingSettings || loadingUsages || loadingStaff;
-  const settings = settingsList[0] || null;
-  const facilityName = settings?.facility_name || '事業所';
+  const { metrics, isLoading } = useCareBusinessMetrics();
 
   const result = useMemo(() => {
-    if (!settings && !staff.length) return null;
-    return computeHealthScore({ settings, dayUsages, staff, attendance, shiftEntries, tips });
-  }, [settings, dayUsages, staff, attendance, shiftEntries, tips]);
+    if (!metrics.settings && !metrics.staffCount) return null;
+    return computeHealthScore(metrics);
+  }, [metrics]);
 
   if (isLoading) {
     return (
@@ -293,6 +195,7 @@ export default function ManagementHealthAI() {
   }
 
   const fmt = (n) => n != null ? n.toLocaleString('ja-JP') : '-';
+  const { occupancyRate, estimatedRevenue, estimatedProfit, profitMargin, laborRate, staffCount, avgUsers, capacity } = metrics;
 
   return (
     <div className="space-y-5">
@@ -302,57 +205,48 @@ export default function ManagementHealthAI() {
           <Brain className="w-6 h-6 text-[#E8A4B8]" />
           <h2 className="text-xl font-bold">経営健全度AI</h2>
         </div>
-        <p className="text-white/60 text-sm">事業所の経営状態をスコアで可視化します</p>
-        <p className="text-white/40 text-xs mt-1">対象：{facilityName}</p>
+        <p className="text-white/60 text-sm">事業所の経営状態をスコアで可視化します（経営ダッシュボードと同期）</p>
+        <p className="text-white/40 text-xs mt-1">対象：{metrics.facilityName}</p>
       </div>
 
       {/* スコア + 主要指標 */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
         <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-          {/* ゲージ */}
           <div className="shrink-0">
-            <ScoreGauge
-              score={result.score}
-              verdict={result.verdict}
-              verdictColor={result.verdictColor}
-              verdictBg={result.verdictBg}
-            />
+            <ScoreGauge {...result} />
           </div>
-
-          {/* 主要指標 */}
-          <div className="flex-1 grid grid-cols-2 md:grid-cols-2 gap-3 w-full">
+          <div className="flex-1 grid grid-cols-2 gap-3 w-full">
             <MetricItem
-              label="稼働率（推定）"
-              value={result.occupancyRate != null ? `${result.occupancyRate}%` : '未設定'}
-              sub="定員比"
+              label="稼働率（週枠ベース）"
+              value={occupancyRate != null ? `${occupancyRate}%` : '未設定'}
+              sub="定員比・曜日別利用数から算出"
               icon={Activity}
-              color={result.occupancyRate >= 85 ? 'text-green-600' : result.occupancyRate >= 70 ? 'text-amber-600' : 'text-red-600'}
-              bg={result.occupancyRate >= 85 ? 'bg-green-50' : result.occupancyRate >= 70 ? 'bg-amber-50' : 'bg-red-50'}
+              color={occupancyRate >= 85 ? 'text-green-600' : occupancyRate >= 70 ? 'text-amber-600' : 'text-red-600'}
+              bg={occupancyRate >= 85 ? 'bg-green-50' : occupancyRate >= 70 ? 'bg-amber-50' : 'bg-red-50'}
             />
             <MetricItem
               label="推定月次売上"
-              value={result.estimatedRevenue > 0 ? `¥${fmt(Math.round(result.estimatedRevenue))}` : '未設定'}
-              sub="単価×利用者×営業日"
+              value={estimatedRevenue > 0 ? `¥${fmt(estimatedRevenue)}` : '未設定'}
+              sub="単価×平均人数×営業日"
               icon={DollarSign}
               color="text-indigo-600"
               bg="bg-indigo-50"
             />
             <MetricItem
               label="推定月次利益"
-              value={result.estimatedProfit != null && result.estimatedRevenue > 0
-                ? `¥${fmt(Math.round(result.estimatedProfit))}` : '未設定'}
-              sub={result.profitMargin != null ? `利益率 ${Math.round(result.profitMargin)}%` : ''}
+              value={estimatedRevenue > 0 ? `¥${fmt(estimatedProfit)}` : '未設定'}
+              sub={profitMargin != null ? `利益率 ${profitMargin}%` : ''}
               icon={TrendingUp}
-              color={result.profitMargin >= 20 ? 'text-green-600' : result.profitMargin >= 5 ? 'text-amber-600' : 'text-red-600'}
-              bg={result.profitMargin >= 20 ? 'bg-green-50' : result.profitMargin >= 5 ? 'bg-amber-50' : 'bg-red-50'}
+              color={profitMargin >= 20 ? 'text-green-600' : profitMargin >= 5 ? 'text-amber-600' : 'text-red-600'}
+              bg={profitMargin >= 20 ? 'bg-green-50' : profitMargin >= 5 ? 'bg-amber-50' : 'bg-red-50'}
             />
             <MetricItem
               label="人件費率（推定）"
-              value={result.laborRate != null ? `${Math.round(result.laborRate)}%` : '未設定'}
-              sub={`在籍職員 ${result.staffCount}名`}
+              value={laborRate != null ? `${laborRate}%` : '未設定'}
+              sub={`在籍職員 ${staffCount}名`}
               icon={Users}
-              color={result.laborRate <= 60 ? 'text-green-600' : result.laborRate <= 75 ? 'text-amber-600' : 'text-red-600'}
-              bg={result.laborRate <= 60 ? 'bg-green-50' : result.laborRate <= 75 ? 'bg-amber-50' : 'bg-red-50'}
+              color={laborRate <= 60 ? 'text-green-600' : laborRate <= 75 ? 'text-amber-600' : 'text-red-600'}
+              bg={laborRate <= 60 ? 'bg-green-50' : laborRate <= 75 ? 'bg-amber-50' : 'bg-red-50'}
             />
           </div>
         </div>
@@ -362,12 +256,12 @@ export default function ManagementHealthAI() {
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
           <p className="text-xs text-slate-400 mb-1">平均利用者数 / 日</p>
-          <p className="text-3xl font-bold text-[#2D4A6F]">{result.avgUsers}<span className="text-sm text-slate-400 ml-1">名</span></p>
-          <p className="text-xs text-slate-400 mt-0.5">定員 {settings?.capacity || '-'} 名</p>
+          <p className="text-3xl font-bold text-[#2D4A6F]">{avgUsers}<span className="text-sm text-slate-400 ml-1">名</span></p>
+          <p className="text-xs text-slate-400 mt-0.5">定員 {capacity || '-'} 名</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 text-center">
           <p className="text-xs text-slate-400 mb-1">在籍職員数</p>
-          <p className="text-3xl font-bold text-[#2D4A6F]">{result.staffCount}<span className="text-sm text-slate-400 ml-1">名</span></p>
+          <p className="text-3xl font-bold text-[#2D4A6F]">{staffCount}<span className="text-sm text-slate-400 ml-1">名</span></p>
           <p className="text-xs text-slate-400 mt-0.5">稼働中スタッフ</p>
         </div>
       </div>
@@ -388,7 +282,6 @@ export default function ManagementHealthAI() {
           <div className="px-4 pb-4 space-y-2">
             {result.reasons.map((r, i) => (
               <div key={i} className="text-sm text-slate-700 flex items-start gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                <span className="mt-0.5 shrink-0">{r.startsWith('✅') ? '' : r.startsWith('❌') ? '' : r.startsWith('⚠️') ? '' : ''}</span>
                 <span>{r}</span>
               </div>
             ))}
@@ -416,9 +309,8 @@ export default function ManagementHealthAI() {
         </Card>
       )}
 
-      {/* フッター注記 */}
       <p className="text-xs text-slate-400 text-center pb-2">
-        ※ スコアは稼働率・人件費・利益・職員数などの既存データから自動算出されます。設定データが充実するほど精度が上がります。
+        ※ 経営ダッシュボードと同一データ・同一計算式で算出しています。設定変更はすぐに反映されます。
       </p>
     </div>
   );
