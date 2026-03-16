@@ -21,7 +21,6 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import AnnouncementCard from "@/components/dashboard/AnnouncementCard";
 import ShiftCard from "@/components/shifts/ShiftCard";
 import ServiceCard from "@/components/services/ServiceCard";
-import TrialContractAISummaryCard from "@/components/dashboard/TrialContractAISummaryCard";
 
 const iconMap = {
   Heart, Truck, Flower2, Package, Gift, Calendar, Clock, Users, Sparkles,
@@ -299,10 +298,6 @@ export default function Home() {
               icon={Users}
               description="おんくりの輪の仲間"
             />
-          </div>
-          {/* 管理者向けAIカード */}
-          <div className="mt-4 space-y-4 max-w-sm">
-            <TrialContractAISummaryCard />
           </div>
         </section>
       )}
