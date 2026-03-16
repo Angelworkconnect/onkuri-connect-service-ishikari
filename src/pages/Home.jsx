@@ -301,9 +301,10 @@ export default function Home() {
               description="おんくりの輪の仲間"
             />
           </div>
-          {/* 加算診断AIカード（管理者向け） */}
-          <div className="mt-4 max-w-sm">
+          {/* 管理者向けAIカード */}
+          <div className="mt-4 space-y-4 max-w-sm">
             <CareAdditionAICard />
+            <TrialContractAISummaryCard />
           </div>
         </section>
       )}
