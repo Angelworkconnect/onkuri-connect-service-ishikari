@@ -1166,29 +1166,7 @@ export default function AdminPanel() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6">
-        {/* カスタムタブナビゲーション */}
-        {(() => {
-          const tabs = [
-            { value: 'settings', icon: Settings, label: 'サイト設定' },
-            { value: 'services', icon: Gift, label: 'サービス' },
-            { value: 'qrcode', icon: QrCode, label: 'QRコード' },
-            { value: 'shifts', icon: Calendar, label: '単発管理' },
-            { value: 'applications', icon: FileText, label: '応募管理' },
-            { value: 'attendance', icon: Clock, label: '勤怠管理' },
-            { value: 'announcements', icon: Bell, label: 'お知らせ' },
-            { value: 'staff', icon: Users, label: 'スタッフ' },
-            { value: 'tips', icon: Sparkles, label: 'サンクス' },
-            { value: 'benefits', icon: Gift, label: '福利厚生' },
-            { value: 'help', icon: Bell, label: 'ヘルプ' },
-            { value: 'messages', icon: MessageCircle, label: 'メッセージ' },
-            { value: 'shift_ai', icon: Calendar, label: 'シフト管理' },
-            { value: 'transport', icon: Truck, label: '送迎管理' },
-            { value: 'clients', icon: Users, label: 'クライアント' },
-            { value: 'analytics', icon: Brain, label: 'AI分析' },
-            { value: 'care', icon: BarChart3, label: '経営' },
-          ];
-          return null;
-        })()}
+
 
         <Tabs defaultValue="settings" className="w-full">
             <div className="bg-white shadow-lg rounded-xl mb-6 p-3">
