@@ -177,6 +177,33 @@ export default function TrialToContractAI() {
     queryFn: () => base44.entities.Staff.list(),
   });
 
+  // AI判定履歴を保存
+  const saveJudgmentHistory = useMutation({
+    mutationFn: async (data) => {
+      const { trialId, score, level, reasons, contractStatus } = data;
+      const trial = trialAnnouncements.find(t => t.id === trialId);
+      if (!trial) return;
+
+      const newHistory = {
+        timestamp: new Date().toISOString(),
+        score,
+        level,
+        reasons,
+        contract_status: contractStatus,
+      };
+
+      const currentHistory = trial.ai_judgment_history || [];
+      const updatedHistory = [...currentHistory, newHistory];
+
+      await base44.entities.Announcement.update(trialId, {
+        ai_judgment_history: updatedHistory,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trial-announcements'] });
+    },
+  });
+
   const scoredUsers = useMemo(() => {
     // 体験情報から利用情報を構築
     const trials = trialAnnouncements.map(trial => {
