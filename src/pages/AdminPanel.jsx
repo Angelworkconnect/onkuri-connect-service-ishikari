@@ -49,7 +49,7 @@ import MessagesTab from '../components/admin/MessagesTab';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab';
 import AdminDialogs from '../components/admin/AdminDialogs';
 import AnalyticsTab from '../components/analytics/AnalyticsTab';
-import TurnoverAITab from '../components/analytics/TurnoverAITab';
+
 import ClientManagementTab from '../components/admin/ClientManagementTab';
 import CareBusinessDashboardEmbed from '../components/admin/CareBusinessDashboardEmbed';
 import CareAdditionAICard from '../components/admin/CareAdditionAICard';
