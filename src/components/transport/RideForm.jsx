@@ -285,13 +285,22 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
         }
       }
       
-      const endOdometer = parseFloat(form.endOdometerKm) || 0;
-      const dist = Math.max(0, endOdometer - (parseFloat(form.startOdometerKm) || 0));
-      
+      const startOdom = parseFloat(form.startOdometerKm);
+      const endOdom = parseFloat(form.endOdometerKm);
+
+      // 両方の値が有効な数値か確認
+      if (isNaN(startOdom) || isNaN(endOdom)) {
+        alert('開始メーターと終了メーターを正しく入力してください');
+        setSaving(false);
+        return;
+      }
+
+      const dist = Math.max(0, endOdom - startOdom);
+
       await base44.entities.Ride.update(rideId, {
         tripType: form.tripType,
         endTime: form.endTime,
-        endOdometerKm: endOdometer,
+        endOdometerKm: endOdom,
         distanceKm: dist,
         abnormality: form.abnormality,
         abnormalityNote: form.abnormalityNote,
