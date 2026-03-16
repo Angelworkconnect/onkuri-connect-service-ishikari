@@ -621,6 +621,55 @@ export default function TrialToContractAI() {
                     </ul>
                   </div>
 
+                  {/* AI判定履歴 */}
+                  {user.judgmentHistory && user.judgmentHistory.length > 0 && (
+                    <div>
+                      <button
+                        className="w-full text-left p-3 bg-blue-50 rounded border border-blue-200 flex items-center justify-between gap-2 hover:bg-blue-100 transition-colors"
+                        onClick={() => setExpandedHistory(expandedHistory === user.id ? null : user.id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <History className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm font-semibold text-blue-700">AI判定履歴 ({user.judgmentHistory.length}回)</span>
+                        </div>
+                        {expandedHistory === user.id ? (
+                          <ChevronUp className="w-4 h-4 text-blue-600" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-blue-600" />
+                        )}
+                      </button>
+
+                      {expandedHistory === user.id && (
+                        <div className="mt-2 space-y-2">
+                          {user.judgmentHistory.map((entry, i) => (
+                            <div key={i} className="bg-white rounded border border-slate-200 p-3 text-xs">
+                              <div className="flex items-center justify-between gap-2 mb-2">
+                                <span className="font-semibold text-slate-700">
+                                  {format(parseISO(entry.timestamp), 'yyyy/MM/dd HH:mm')}
+                                </span>
+                                <Badge className={
+                                  entry.level === '高' ? 'bg-red-100 text-red-700 border-0' :
+                                  entry.level === '中' ? 'bg-amber-100 text-amber-700 border-0' :
+                                  'bg-slate-100 text-slate-600 border-0'
+                                }>
+                                  {entry.level}見込み {entry.score}/100
+                                </Badge>
+                              </div>
+                              <div className="space-y-1">
+                                {entry.reasons.map((reason, j) => (
+                                  <p key={j} className="text-slate-600">• {reason}</p>
+                                ))}
+                              </div>
+                              <div className="mt-2 text-slate-500 border-t pt-2">
+                                ステータス: {entry.contract_status === 'contracted' ? '✅ 契約済み' : '📅 体験中'}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* 基本情報 */}
                   {(user.frequencyPerWeek || user.careLevel) && (
                     <div>
