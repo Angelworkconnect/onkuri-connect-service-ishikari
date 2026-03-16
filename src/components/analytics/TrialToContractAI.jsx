@@ -153,8 +153,10 @@ function calculateMonthlyStats(users, month) {
 
 export default function TrialToContractAI() {
   const [expandedUser, setExpandedUser] = useState(null);
+  const [expandedHistory, setExpandedHistory] = useState(null);
   const [filterLevel, setFilterLevel] = useState('all'); // all / high / medium / low
   const [sortBy, setSortBy] = useState('score'); // score / days / name
+  const queryClient = useQueryClient();
 
   // 体験情報を取得（Announcement の trial カテゴリ）
   const { data: trialAnnouncements = [] } = useQuery({
