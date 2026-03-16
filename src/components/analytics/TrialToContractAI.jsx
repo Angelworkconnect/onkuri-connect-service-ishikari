@@ -155,20 +155,23 @@ export default function TrialToContractAI() {
   const [filterLevel, setFilterLevel] = useState('all'); // all / high / medium / low
   const [sortBy, setSortBy] = useState('score'); // score / days / name
 
+  // 体験情報を取得（Announcement の trial カテゴリ）
+  const { data: trialAnnouncements = [] } = useQuery({
+    queryKey: ['trial-announcements'],
+    queryFn: () => base44.entities.Announcement.filter({ category: 'trial' }, '-created_date', 500),
+    staleTime: 60000,
+  });
+
+  // 利用者登録（Client entity）
   const { data: allClients = [] } = useQuery({
-    queryKey: ['trial-clients'],
-    queryFn: () => base44.entities.Client.list('-created_date', 300),
+    queryKey: ['contract-clients'],
+    queryFn: () => base44.entities.Client.filter({ isActive: true }, '-created_date', 500),
     staleTime: 60000,
   });
 
   const { data: allStaff = [] } = useQuery({
     queryKey: ['trial-staff'],
     queryFn: () => base44.entities.Staff.list(),
-  });
-
-  const { data: allAnnouncements = [] } = useQuery({
-    queryKey: ['trial-announcements'],
-    queryFn: () => base44.entities.Announcement.list('-created_date', 200),
   });
 
   const scoredUsers = useMemo(() => {
