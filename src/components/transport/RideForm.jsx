@@ -244,6 +244,14 @@ export default function RideForm({ user, vehicles, staff, templates, editingRide
        alert('終了時刻と終了メーターが必須です');
        return;
      }
+     
+     const startOdom = parseFloat(form.startOdometerKm);
+     const endOdom = parseFloat(form.endOdometerKm);
+     
+     if (endOdom < startOdom) {
+       alert('終了メーターが開始メーターより小さくなっています。\n開始: ' + startOdom + ' km\n終了: ' + endOdom + ' km\n\nメーター一周の場合のみ続行してください。');
+       return;
+     }
     setSaving(true);
     try {
       let rideId = savedRide.id;
