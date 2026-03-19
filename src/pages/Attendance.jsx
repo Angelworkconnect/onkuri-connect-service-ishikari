@@ -465,7 +465,7 @@ export default function Attendance() {
                       </thead>
                       <tbody>
                         {allActiveStaff.map(s => {
-                          const staffRecords = monthRecords.filter(r => r.user_email === s.email);
+                          const staffRecords = monthRecords.filter(r => r.staff_email === s.email);
                           return (
                             <tr key={s.email} className="hover:bg-slate-50">
                               <td className="sticky left-0 z-10 bg-white border border-slate-200 px-2 py-1 font-medium text-slate-800 whitespace-nowrap">
