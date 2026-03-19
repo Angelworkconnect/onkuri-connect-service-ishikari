@@ -159,20 +159,37 @@ export default function StaffPayrollSummary({ records, staff }) {
       </div>
 
       {/* タブ */}
-      <div className="flex gap-1 mb-3">
-        {TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`text-xs px-3 py-1 rounded-full border transition-all font-medium ${
-              tab === t.key
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-400'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <div className="flex gap-1">
+          {TABS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`text-xs px-3 py-1 rounded-full border transition-all font-medium ${
+                tab === t.key
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-400'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        {tab === 'monthly' && (
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
+            {new Date().getFullYear()}年{new Date().getMonth() + 1}月
+          </span>
+        )}
+        {tab === 'yearly' && (
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
+            {new Date().getFullYear()}年
+          </span>
+        )}
+        {tab === 'daily' && (
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
+            {new Date().getMonth() + 1}月{new Date().getDate()}日
+          </span>
+        )}
       </div>
 
       <SummaryCards s={s} />
