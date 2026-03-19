@@ -304,6 +304,7 @@ export default function AdminPanel() {
   }, [queryClient]);
 
   const { data: shifts = [] } = useQuery({ queryKey: ['admin-shifts'], queryFn: () => base44.entities.Shift.list('-date') });
+  const { data: allShiftEntries = [] } = useQuery({ queryKey: ['admin-shift-entries-global'], queryFn: () => base44.entities.ShiftEntry.list('-date') });
   const { data: applications = [] } = useQuery({ queryKey: ['admin-applications'], queryFn: () => base44.entities.ShiftApplication.list('-created_date') });
   const { data: announcements = [] } = useQuery({ queryKey: ['admin-announcements'], queryFn: () => base44.entities.Announcement.list('-created_date') });
   const { data: attendanceRecords = [] } = useQuery({ queryKey: ['admin-attendance'], queryFn: () => base44.entities.Attendance.list('-date') });
