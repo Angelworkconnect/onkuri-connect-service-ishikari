@@ -66,17 +66,7 @@ const fmtMin = (mins) => {
 
 const fmtYen = (v) => v > 0 ? `¥${Math.round(v).toLocaleString()}` : '-';
 
-function filterRecords(records, tab) {
-  const now = new Date();
-  const today = now.toISOString().split('T')[0];
-  const yearMonth = today.slice(0, 7);
-  const year = today.slice(0, 4);
 
-  if (tab === 'daily') return records.filter(r => r.date === today);
-  if (tab === 'monthly') return records.filter(r => r.date?.startsWith(yearMonth));
-  if (tab === 'yearly') return records.filter(r => r.date?.startsWith(year));
-  return records; // 累計
-}
 
 function SummaryCards({ s }) {
   return (
