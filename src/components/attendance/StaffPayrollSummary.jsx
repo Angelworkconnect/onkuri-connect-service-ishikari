@@ -137,7 +137,22 @@ const TABS = [
 
 export default function StaffPayrollSummary({ records, staff }) {
   const [tab, setTab] = useState('monthly');
-  const filtered = filterRecords(records, tab);
+  const now = new Date();
+  const [monthOffset, setMonthOffset] = useState(0); // 0=今月, -1=先月 ...
+
+  const targetDate = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+  const targetYearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
+
+  function filterRecordsWithOffset(records, tab) {
+    const today = now.toISOString().split('T')[0];
+    const year = String(now.getFullYear());
+    if (tab === 'daily') return records.filter(r => r.date === today);
+    if (tab === 'monthly') return records.filter(r => r.date?.startsWith(targetYearMonth));
+    if (tab === 'yearly') return records.filter(r => r.date?.startsWith(year));
+    return records;
+  }
+
+  const filtered = filterRecordsWithOffset(records, tab);
   const s = calcPayrollSummary(filtered, staff);
   const hasWage = (staff?.monthly_salary > 0) || (staff?.hourly_wage > 0) || (staff?.daily_wage > 0);
   const payTypeLabel = s.payType === 'monthly' ? '正社員（月給）' : s.payType === 'daily' ? '日給制' : 'パート（時給）';
