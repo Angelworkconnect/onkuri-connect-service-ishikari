@@ -78,6 +78,17 @@ export default function Attendance() {
     enabled: !!user,
   });
 
+  const { data: siteSettings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const list = await base44.entities.SiteSettings.list();
+      return list.length > 0 ? list[0] : {};
+    },
+    enabled: !!user,
+  });
+
+  const isAdmin = user?.role === 'admin';
+
   const todayAttendance = attendanceRecords.find(record => record.date === today);
 
   const clockOutMutation = useMutation({
