@@ -60,6 +60,18 @@ export default function Attendance() {
     enabled: !!user,
   });
 
+  const { data: allAttendanceRecords = [] } = useQuery({
+    queryKey: ['attendance-all'],
+    queryFn: () => base44.entities.Attendance.list('-date'),
+    enabled: !!user,
+  });
+
+  const { data: allStaff = [] } = useQuery({
+    queryKey: ['staff-all'],
+    queryFn: () => base44.entities.Staff.list(),
+    enabled: !!user,
+  });
+
   const todayAttendance = attendanceRecords.find(record => record.date === today);
 
   const clockOutMutation = useMutation({
