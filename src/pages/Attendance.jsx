@@ -444,7 +444,7 @@ export default function Attendance() {
                             const dow = getDay(day);
                             const isToday = isSameDay(day, new Date());
                             return (
-                              <th key={format(day, 'd')} className={`border border-slate-200 px-1 py-1.5 text-center min-w-[38px] font-semibold ${
+                              <th key={format(day, 'd')} className={`border border-slate-200 px-1 py-1.5 text-center min-w-[28px] font-semibold ${
                                 isToday ? 'bg-[#2D4A6F] text-white' :
                                 dow === 0 ? 'bg-red-50 text-red-500' :
                                 dow === 6 ? 'bg-blue-50 text-blue-500' :
@@ -455,7 +455,7 @@ export default function Attendance() {
                               </th>
                             );
                           })}
-                          <th className="border border-slate-200 px-2 py-1.5 text-center bg-slate-100 text-slate-600 font-semibold min-w-[40px]">日数</th>
+                          <th className="border border-slate-200 px-2 py-1.5 text-center bg-slate-100 text-slate-600 font-semibold min-w-[36px]">日数</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -471,20 +471,13 @@ export default function Attendance() {
                                 const rec = staffRecords.find(r => r.date === dateStr);
                                 const dow = getDay(day);
                                 return (
-                                  <td key={dateStr} className={`border border-slate-200 px-0.5 py-0.5 text-center align-middle ${
+                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle w-7 h-7 ${
                                     dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
                                   }`}>
                                     {rec ? (
-                                      <div className={`rounded text-[9px] px-0.5 py-0.5 leading-tight ${
-                                        rec.status === 'working' ? 'bg-green-100 text-green-700' :
-                                        rec.status === 'approved' ? 'bg-blue-100 text-blue-700' :
-                                        'bg-slate-100 text-slate-600'
-                                      }`}>
-                                        <div>{rec.clock_in || '?'}</div>
-                                        <div>{rec.clock_out || '中'}</div>
-                                      </div>
+                                      <span className="text-green-600 font-bold text-sm">●</span>
                                     ) : (
-                                      <span className="text-slate-200">—</span>
+                                      <span className="text-slate-200 text-sm">·</span>
                                     )}
                                   </td>
                                 );
