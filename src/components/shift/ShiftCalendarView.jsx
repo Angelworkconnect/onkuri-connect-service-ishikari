@@ -51,7 +51,7 @@ function getDisplayName(staffName, staff) {
     other => other.id !== s.id && other.full_name?.split(/\s+/)[0] === lastName
   );
   if (hasSameLastName && firstName) {
-    return `${lastName} ${firstName[0]}`;
+    return `${lastName}（${firstName[0]}）`;
   }
   return lastName || staffName;
 }
