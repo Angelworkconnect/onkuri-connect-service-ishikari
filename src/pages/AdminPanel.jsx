@@ -1504,9 +1504,6 @@ export default function AdminPanel() {
                       <Card className="border-0 shadow-lg">
                         <Tabs defaultValue="att-calendar" className="w-full">
                           <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-white flex-wrap">
-                            <TabsTrigger value="att-global" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
-                              全体カレンダー
-                            </TabsTrigger>
                             <TabsTrigger value="att-calendar" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
                               カレンダー
                             </TabsTrigger>
