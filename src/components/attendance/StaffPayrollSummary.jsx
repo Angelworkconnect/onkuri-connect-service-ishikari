@@ -102,8 +102,8 @@ export default function StaffPayrollSummary({ records, staff }) {
       <div className="flex items-center gap-2 mb-3">
         <DollarSign className="w-4 h-4 text-emerald-600" />
         <span className="text-sm font-bold text-emerald-800">給与計算サマリー</span>
-        <Badge className={`text-xs ml-1 ${isFullTime ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-          {isFullTime ? '正社員（月給）' : s.employmentType === 'part_time' ? 'パート（時給）' : '単発（時給）'}
+        <Badge className={`text-xs ml-1 ${s.payType === 'monthly' ? 'bg-blue-100 text-blue-700' : s.payType === 'daily' ? 'bg-orange-100 text-orange-700' : 'bg-purple-100 text-purple-700'}`}>
+          {payTypeLabel}
         </Badge>
         {!hasWage && (
           <span className="flex items-center gap-1 text-xs text-amber-600 ml-auto">
