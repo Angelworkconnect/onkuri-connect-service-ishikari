@@ -81,6 +81,37 @@ export default function SiteSettingsTab({ settingsForm, setSettingsForm, onSave,
 
       <Card className="border-0 shadow-lg">
         <div className="p-6 border-b">
+          <h2 className="text-lg font-medium">プライバシー・表示設定</h2>
+        </div>
+        <div className="p-6 space-y-4 max-w-2xl">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+            <div>
+              <p className="font-medium text-sm text-slate-800">勤怠画面：全体カレンダー表示</p>
+              <p className="text-xs text-slate-500 mt-0.5">スタッフが全員の勤怠（シフト）を閲覧できるようにする</p>
+            </div>
+            <Switch
+              checked={!!settingsForm.show_all_attendance_calendar}
+              onCheckedChange={(v) => setSettingsForm({...settingsForm, show_all_attendance_calendar: v})}
+            />
+          </div>
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+            <div>
+              <p className="font-medium text-sm text-slate-800">シフト画面：全体シフト表示</p>
+              <p className="text-xs text-slate-500 mt-0.5">スタッフが全員のシフトを閲覧できるようにする</p>
+            </div>
+            <Switch
+              checked={!!settingsForm.show_all_shift_calendar}
+              onCheckedChange={(v) => setSettingsForm({...settingsForm, show_all_shift_calendar: v})}
+            />
+          </div>
+          <Button onClick={onSave} className="bg-[#2D4A6F]" disabled={isSaving}>
+            {isSaving ? '保存中...' : '設定を保存'}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="border-0 shadow-lg">
+        <div className="p-6 border-b">
           <h2 className="text-lg font-medium">ダッシュボード右側情報セクション</h2>
         </div>
         <div className="p-6 space-y-6 max-w-2xl">
