@@ -422,7 +422,7 @@ export default function Attendance() {
                 <p className="text-slate-500 text-sm">全体カレンダーは現在非公開設定です。</p>
               </Card>
             ) : (
-            <Card className="bg-white border-0 shadow-lg p-4">
+              <Card className="bg-white border-0 shadow-lg p-4">
               {/* 月ナビ */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium text-slate-800">全スタッフ勤怠一覧</h3>
