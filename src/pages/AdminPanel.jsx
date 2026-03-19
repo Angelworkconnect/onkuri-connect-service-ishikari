@@ -1726,7 +1726,7 @@ export default function AdminPanel() {
                             </div>
                           </TabsContent>
 
-                          <TabsContent value="by-month" className="p-6">
+                          <TabsContent value="att-by-month" className="p-6">
                             <div className="space-y-6">
                               <div className="flex gap-4 items-center">
                                 <Label className="min-w-[80px]">対象月</Label>
