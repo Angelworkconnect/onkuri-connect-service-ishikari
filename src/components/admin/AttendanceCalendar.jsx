@@ -32,6 +32,23 @@ export default function AttendanceCalendar({ attendanceRecords, staff, shiftEntr
     return s?.full_name || email;
   };
 
+  // 同姓の場合は「姓＋名1文字」で表示するための表示名を取得
+  const getDisplayName = (email) => {
+    const s = staff.find(m => m.email === email);
+    if (!s?.full_name) return email;
+    const parts = s.full_name.split(/\s+/);
+    const lastName = parts[0] || '';
+    const firstName = parts[1] || '';
+    // 同じ姓を持つスタッフが他にいるか確認
+    const hasSameLastName = staff.some(
+      other => other.email !== email && other.full_name?.split(/\s+/)[0] === lastName
+    );
+    if (hasSameLastName && firstName) {
+      return `${lastName} ${firstName[0]}`;
+    }
+    return lastName || s.full_name;
+  };
+
   const monthAttendanceRecords = attendanceRecords.filter(r => {
     const d = new Date(r.date + 'T00:00:00');
     return isSameMonth(d, currentMonth);
