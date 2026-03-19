@@ -135,17 +135,17 @@ export default function StaffPayrollSummary({ records, staff }) {
           <p className="text-xs text-slate-400 mt-0.5">1日8h超分</p>
         </div>
 
-        {/* 基本給 / 月給 */}
-        <div className="bg-white rounded-xl p-3 shadow-sm border border-emerald-100">
-          <div className="flex items-center gap-1 mb-1">
-            <Calendar className="w-3 h-3 text-slate-400" />
-            <span className="text-xs text-slate-500">{s.payType === 'monthly' ? '月給（固定）' : '基本給'}</span>
+        {/* 基本給 / 月給 — 正社員（月給）のみ表示 */}
+        {s.payType === 'monthly' && (
+          <div className="bg-white rounded-xl p-3 shadow-sm border border-emerald-100">
+            <div className="flex items-center gap-1 mb-1">
+              <Calendar className="w-3 h-3 text-slate-400" />
+              <span className="text-xs text-slate-500">月給（固定）</span>
+            </div>
+            <p className="text-base font-bold text-slate-800">{fmtYen(s.basePay)}</p>
+            <p className="text-xs text-slate-400 mt-0.5">月給 ¥{(s.monthlySalary || 0).toLocaleString()}</p>
           </div>
-          <p className="text-base font-bold text-slate-800">{fmtYen(s.basePay)}</p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {s.payType === 'monthly' ? `月給 ¥${(s.monthlySalary || 0).toLocaleString()}` : s.payType === 'daily' ? `日給 ¥${(s.dailyWage || 0).toLocaleString()}` : `時給 ¥${(s.hourlyWage || 0).toLocaleString()}`}
-          </p>
-        </div>
+        )}
 
         {/* 合計給与 */}
         <div className={`rounded-xl p-3 shadow-sm border ${s.totalPay > 0 ? 'bg-emerald-600 border-emerald-700' : 'bg-white border-emerald-100'}`}>
