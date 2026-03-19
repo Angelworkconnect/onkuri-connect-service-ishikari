@@ -1520,6 +1520,13 @@ export default function AdminPanel() {
                             </TabsTrigger>
                           </TabsList>
 
+                          <TabsContent value="att-global" className="p-6">
+                            <AttendanceCalendar
+                              attendanceRecords={attendanceRecords}
+                              staff={allStaff}
+                            />
+                          </TabsContent>
+
                           <TabsContent value="att-calendar" className="p-6">
                             <AttendanceCalendar 
                               attendanceRecords={attendanceRecords} 
