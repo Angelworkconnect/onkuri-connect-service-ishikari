@@ -143,7 +143,7 @@ export default function StaffPayrollSummary({ records, staff }) {
           </div>
           <p className="text-base font-bold text-slate-800">{fmtYen(s.basePay)}</p>
           <p className="text-xs text-slate-400 mt-0.5">
-            {isFullTime ? `月給 ¥${(s.monthlySalary || 0).toLocaleString()}` : `時給 ¥${(s.hourlyWage || 0).toLocaleString()}`}
+            {s.payType === 'monthly' ? `月給 ¥${(s.monthlySalary || 0).toLocaleString()}` : s.payType === 'daily' ? `日給 ¥${(s.dailyWage || 0).toLocaleString()}` : `時給 ¥${(s.hourlyWage || 0).toLocaleString()}`}
           </p>
         </div>
 
