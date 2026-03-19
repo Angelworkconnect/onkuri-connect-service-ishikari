@@ -12,6 +12,7 @@ import { ja } from "date-fns/locale";
 import { createPageUrl } from "@/utils";
 import AttendanceEditDialog from "@/components/attendance/AttendanceEditDialog";
 import OvertimeApprovalTab from "@/components/attendance/OvertimeApprovalTab";
+import StaffPayrollSummary from "@/components/attendance/StaffPayrollSummary";
 
 const calculateWorkMinutes = (clockIn, clockOut, breakMinutes = 0) => {
   if (!clockIn || !clockOut) return 0;
