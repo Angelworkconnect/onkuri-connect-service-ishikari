@@ -39,12 +39,11 @@ export default function AttendanceCalendar({ attendanceRecords, staff, shiftEntr
     const parts = s.full_name.split(/\s+/);
     const lastName = parts[0] || '';
     const firstName = parts[1] || '';
-    // 同じ姓を持つスタッフが他にいるか確認
     const hasSameLastName = staff.some(
       other => other.email !== email && other.full_name?.split(/\s+/)[0] === lastName
     );
     if (hasSameLastName && firstName) {
-      return `${lastName} ${firstName[0]}`;
+      return `${lastName}（${firstName[0]}）`;
     }
     return lastName || s.full_name;
   };
