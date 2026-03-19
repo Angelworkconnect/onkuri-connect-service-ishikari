@@ -404,6 +404,92 @@ export default function Attendance() {
             )}
           </Card>
         )}
+            </TabsContent>
+
+            {/* 全体カレンダータブ */}
+            <TabsContent value="all" className="mt-4">
+              <Card className="bg-white border-0 shadow-lg p-6">
+                {/* 月ナビ */}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-slate-800">
+                    全スタッフ勤怠カレンダー
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => subMonths(m, 1))}>
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-base font-semibold text-slate-700 min-w-[90px] text-center">
+                      {format(allCurrentMonth, 'yyyy年M月')}
+                    </span>
+                    <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => addMonths(m, 1))}>
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* カレンダーグリッド */}
+                {(() => {
+                  const ms = startOfMonth(allCurrentMonth);
+                  const me = endOfMonth(allCurrentMonth);
+                  const days = eachDayOfInterval({ start: ms, end: me });
+                  const startOffset = getDay(ms);
+                  const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+
+                  return (
+                    <>
+                      <div className="grid grid-cols-7 gap-1 mb-1">
+                        {DAY_NAMES.map((d, i) => (
+                          <div key={i} className={`text-center text-xs font-bold py-2 ${i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-slate-600'}`}>{d}</div>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: startOffset }).map((_, i) => (
+                          <div key={`e-${i}`} className="min-h-[80px] bg-slate-50 rounded-lg opacity-40" />
+                        ))}
+                        {days.map(day => {
+                          const dateStr = format(day, 'yyyy-MM-dd');
+                          const dayRecords = allAttendanceRecords.filter(r => r.date === dateStr);
+                          const isToday = isSameDay(day, new Date());
+                          const dow = getDay(day);
+                          return (
+                            <div key={dateStr} className={`min-h-[80px] p-1.5 rounded-lg border text-xs flex flex-col ${isToday ? 'border-[#2D4A6F] border-2 bg-[#2D4A6F]/5' : 'border-slate-200 bg-white'}`}>
+                              <div className={`font-bold mb-1 ${isToday ? 'text-[#2D4A6F]' : dow === 0 ? 'text-red-500' : dow === 6 ? 'text-blue-500' : 'text-slate-700'}`}>
+                                {format(day, 'd')}
+                                {dayRecords.length > 0 && (
+                                  <span className="ml-1 text-[10px] bg-[#2D4A6F] text-white rounded-full px-1.5 py-0.5">{dayRecords.length}</span>
+                                )}
+                              </div>
+                              <div className="space-y-0.5 overflow-y-auto flex-1 max-h-[60px]">
+                                {dayRecords.map(r => {
+                                  const name = allStaff.find(s => s.email === r.user_email)?.full_name || r.user_email;
+                                  return (
+                                    <div key={r.id} className={`rounded px-1 py-0.5 border ${r.status === 'working' ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-100'}`}>
+                                      <div className="font-medium truncate text-[10px] text-slate-700">{name}</div>
+                                      <div className="text-slate-400 text-[9px]">{r.clock_in || '未'} 〜 {r.clock_out || '未'}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  );
+                })()}
+
+                {/* 月間サマリー */}
+                <div className="mt-4 p-3 bg-slate-50 rounded-lg flex items-center gap-3">
+                  <Users className="w-5 h-5 text-[#2D4A6F]" />
+                  <span className="text-sm font-medium text-slate-700">月間出勤延べ人数：</span>
+                  <span className="text-lg font-bold text-[#2D4A6F]">
+                    {allAttendanceRecords.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
+                  </span>
+                </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
