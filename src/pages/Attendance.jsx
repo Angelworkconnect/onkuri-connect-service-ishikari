@@ -412,6 +412,15 @@ export default function Attendance() {
 
           {/* 全体カレンダータブ */}
           <TabsContent value="all">
+            {!isAdmin && !siteSettings.show_all_attendance_calendar && (
+              <Card className="bg-white border-0 shadow-lg p-8 text-center">
+                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                  <Users className="w-6 h-6 text-slate-400" />
+                </div>
+                <p className="text-slate-500 text-sm">全体カレンダーは現在非公開設定です。</p>
+              </Card>
+            )}
+            {(isAdmin || siteSettings.show_all_attendance_calendar) && (
             <Card className="bg-white border-0 shadow-lg p-4">
               {/* 月ナビ */}
               <div className="flex items-center justify-between mb-4">
