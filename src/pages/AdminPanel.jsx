@@ -1525,6 +1525,7 @@ export default function AdminPanel() {
                             <AttendanceCalendar
                               attendanceRecords={attendanceRecords}
                               staff={allStaff}
+                              shiftEntries={allShiftEntries}
                             />
                           </TabsContent>
 
