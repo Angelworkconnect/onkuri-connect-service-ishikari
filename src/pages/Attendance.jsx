@@ -395,10 +395,10 @@ export default function Attendance() {
 
           {/* 全体カレンダータブ */}
           <TabsContent value="all">
-            <Card className="bg-white border-0 shadow-lg p-6">
+            <Card className="bg-white border-0 shadow-lg p-4">
               {/* 月ナビ */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-slate-800">全スタッフ勤怠カレンダー</h3>
+                <h3 className="text-lg font-medium text-slate-800">全スタッフ勤怠一覧</h3>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => subMonths(m, 1))}>
                     <ChevronLeft className="w-4 h-4" />
@@ -412,53 +412,92 @@ export default function Attendance() {
                 </div>
               </div>
 
-              {/* カレンダーグリッド */}
+              {/* スタッフ×日付 テーブル */}
               {(() => {
                 const ms = startOfMonth(allCurrentMonth);
                 const me = endOfMonth(allCurrentMonth);
                 const days = eachDayOfInterval({ start: ms, end: me });
-                const startOffset = getDay(ms);
-                const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+                const yearMonth = format(allCurrentMonth, 'yyyy-MM');
+                const monthRecords = allAttendanceRecords.filter(r => r.date?.startsWith(yearMonth));
+
+                // 当月に出勤記録があるスタッフを抽出（全スタッフ順で）
+                const activeEmails = [...new Set(monthRecords.map(r => r.user_email))];
+                const activeStaff = allStaff.filter(s => activeEmails.includes(s.email));
+                // staffリストにない場合も含める
+                const unknownEmails = activeEmails.filter(e => !allStaff.find(s => s.email === e));
+                const allActiveStaff = [
+                  ...activeStaff,
+                  ...unknownEmails.map(e => ({ email: e, full_name: e }))
+                ];
+
+                if (allActiveStaff.length === 0) {
+                  return <div className="text-center py-12 text-slate-400">この月の勤怠記録はありません</div>;
+                }
+
                 return (
-                  <>
-                    <div className="grid grid-cols-7 gap-1 mb-1">
-                      {DAY_NAMES.map((d, i) => (
-                        <div key={i} className={`text-center text-xs font-bold py-2 ${i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-slate-600'}`}>{d}</div>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-7 gap-1">
-                      {Array.from({ length: startOffset }).map((_, i) => (
-                        <div key={`e-${i}`} className="min-h-[80px] bg-slate-50 rounded-lg opacity-40" />
-                      ))}
-                      {days.map(day => {
-                        const dateStr = format(day, 'yyyy-MM-dd');
-                        const dayRecords = allAttendanceRecords.filter(r => r.date === dateStr);
-                        const isToday = isSameDay(day, new Date());
-                        const dow = getDay(day);
-                        return (
-                          <div key={dateStr} className={`min-h-[80px] p-1.5 rounded-lg border text-xs flex flex-col ${isToday ? 'border-[#2D4A6F] border-2 bg-[#2D4A6F]/5' : 'border-slate-200 bg-white'}`}>
-                            <div className={`font-bold mb-1 ${isToday ? 'text-[#2D4A6F]' : dow === 0 ? 'text-red-500' : dow === 6 ? 'text-blue-500' : 'text-slate-700'}`}>
-                              {format(day, 'd')}
-                              {dayRecords.length > 0 && (
-                                <span className="ml-1 text-[10px] bg-[#2D4A6F] text-white rounded-full px-1.5 py-0.5">{dayRecords.length}</span>
-                              )}
-                            </div>
-                            <div className="space-y-0.5 overflow-y-auto flex-1 max-h-[60px]">
-                              {dayRecords.map(r => {
-                                const name = allStaff.find(s => s.email === r.user_email)?.full_name || r.user_email;
+                  <div className="overflow-x-auto">
+                    <table className="text-xs border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <th className="sticky left-0 z-10 bg-slate-100 border border-slate-200 px-2 py-1.5 text-left min-w-[80px] text-slate-600 font-semibold">氏名</th>
+                          {days.map(day => {
+                            const dow = getDay(day);
+                            const isToday = isSameDay(day, new Date());
+                            return (
+                              <th key={format(day, 'd')} className={`border border-slate-200 px-1 py-1.5 text-center min-w-[38px] font-semibold ${
+                                isToday ? 'bg-[#2D4A6F] text-white' :
+                                dow === 0 ? 'bg-red-50 text-red-500' :
+                                dow === 6 ? 'bg-blue-50 text-blue-500' :
+                                'bg-slate-100 text-slate-600'
+                              }`}>
+                                <div>{format(day, 'd')}</div>
+                                <div className="font-normal text-[9px]">{'日月火水木金土'[dow]}</div>
+                              </th>
+                            );
+                          })}
+                          <th className="border border-slate-200 px-2 py-1.5 text-center bg-slate-100 text-slate-600 font-semibold min-w-[40px]">日数</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allActiveStaff.map(s => {
+                          const staffRecords = monthRecords.filter(r => r.user_email === s.email);
+                          return (
+                            <tr key={s.email} className="hover:bg-slate-50">
+                              <td className="sticky left-0 z-10 bg-white border border-slate-200 px-2 py-1 font-medium text-slate-800 whitespace-nowrap">
+                                {s.full_name || s.email}
+                              </td>
+                              {days.map(day => {
+                                const dateStr = format(day, 'yyyy-MM-dd');
+                                const rec = staffRecords.find(r => r.date === dateStr);
+                                const dow = getDay(day);
                                 return (
-                                  <div key={r.id} className={`rounded px-1 py-0.5 border ${r.status === 'working' ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-100'}`}>
-                                    <div className="font-medium truncate text-[10px] text-slate-700">{name}</div>
-                                    <div className="text-slate-400 text-[9px]">{r.clock_in || '未'} 〜 {r.clock_out || '未'}</div>
-                                  </div>
+                                  <td key={dateStr} className={`border border-slate-200 px-0.5 py-0.5 text-center align-middle ${
+                                    dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
+                                  }`}>
+                                    {rec ? (
+                                      <div className={`rounded text-[9px] px-0.5 py-0.5 leading-tight ${
+                                        rec.status === 'working' ? 'bg-green-100 text-green-700' :
+                                        rec.status === 'approved' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-slate-100 text-slate-600'
+                                      }`}>
+                                        <div>{rec.clock_in || '?'}</div>
+                                        <div>{rec.clock_out || '中'}</div>
+                                      </div>
+                                    ) : (
+                                      <span className="text-slate-200">—</span>
+                                    )}
+                                  </td>
                                 );
                               })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
+                              <td className="border border-slate-200 px-2 py-1 text-center font-bold text-[#2D4A6F]">
+                                {staffRecords.length}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 );
               })()}
 
