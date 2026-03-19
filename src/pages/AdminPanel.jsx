@@ -1524,7 +1524,7 @@ export default function AdminPanel() {
                             />
                           </TabsContent>
 
-                          <TabsContent value="by-date" className="p-6">
+                          <TabsContent value="att-by-date" className="p-6">
                             <div className="space-y-6">
                               <div className="flex gap-4 items-center">
                                 <Label className="min-w-[80px]">対象日付</Label>
