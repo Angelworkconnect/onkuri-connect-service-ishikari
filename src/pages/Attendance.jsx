@@ -476,15 +476,21 @@ export default function Attendance() {
                                 const rec = staffRecords.find(r => r.date === dateStr);
                                 const dow = getDay(day);
                                 return (
-                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle px-0.5 py-0.5 ${
+                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle w-7 h-7 relative group ${
                                    dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
                                   }`}>
                                     {rec ? (
-                                      <div className="flex flex-col items-center leading-tight">
-                                        <span className="text-green-600 font-bold text-[10px]">●</span>
-                                        {rec.start_time && <span className="text-[8px] text-slate-500">{rec.start_time}</span>}
-                                        {rec.end_time && <span className="text-[8px] text-slate-500">{rec.end_time}</span>}
-                                      </div>
+                                      <>
+                                        <span className="text-green-600 font-bold text-sm cursor-default">●</span>
+                                        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block pointer-events-none">
+                                          <div className="bg-slate-800 text-white text-[11px] rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg">
+                                            <div className="font-semibold">{s.full_name || s.email}</div>
+                                            {rec.start_time && rec.end_time && (
+                                              <div className="text-slate-300">{rec.start_time} 〜 {rec.end_time}</div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </>
                                     ) : (
                                       <span className="text-slate-200 text-sm">·</span>
                                     )}
