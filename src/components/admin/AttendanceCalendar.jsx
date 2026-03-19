@@ -67,7 +67,7 @@ export default function AttendanceCalendar({ attendanceRecords, staff }) {
       </div>
 
       {/* Desktop: Grid Calendar */}
-      <div className="hidden sm:block">
+      <div>
         {/* Day Headers */}
         <div className="grid grid-cols-7 gap-1 mb-1">
           {DAY_NAMES.map((d, i) => (
@@ -125,7 +125,7 @@ export default function AttendanceCalendar({ attendanceRecords, staff }) {
       </div>
 
       {/* Mobile: List View */}
-      <div className="sm:hidden space-y-2">
+      <div className="hidden space-y-2">
         {daysInMonth.map((day) => {
           const dayAttendance = getAttendanceForDay(day);
           const isToday = isSameDay(day, new Date());
