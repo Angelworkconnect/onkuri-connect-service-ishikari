@@ -504,7 +504,7 @@ export default function Attendance() {
                 <Users className="w-5 h-5 text-[#2D4A6F]" />
                 <span className="text-sm font-medium text-slate-700">月間出勤延べ人数：</span>
                 <span className="text-lg font-bold text-[#2D4A6F]">
-                  {allAttendanceRecords.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
+                  {allShiftEntries.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
                 </span>
               </div>
             </Card>
