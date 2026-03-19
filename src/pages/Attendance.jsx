@@ -199,6 +199,21 @@ export default function Attendance() {
           </Card>
         )}
 
+        {/* メインタブ */}
+        <div className="mb-4">
+          <Tabs value={mainTab} onValueChange={setMainTab}>
+            <TabsList className="bg-white shadow rounded-xl p-1 h-auto">
+              <TabsTrigger value="my" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white px-5 py-2 rounded-lg">
+                <Clock className="w-4 h-4 mr-1" />自分の勤怠
+              </TabsTrigger>
+              <TabsTrigger value="all" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white px-5 py-2 rounded-lg">
+                <Users className="w-4 h-4 mr-1" />全体カレンダー
+              </TabsTrigger>
+            </TabsList>
+
+            {/* 自分の勤怠タブ */}
+            <TabsContent value="my" className="mt-4">
+
         {/* 詳細統計・扶養ライン */}
         <div className="mb-6">
           <AttendanceStats
