@@ -94,8 +94,8 @@ const fmtYen = (v) => v > 0 ? `¥${Math.round(v).toLocaleString()}` : '-';
 
 export default function StaffPayrollSummary({ records, staff }) {
   const s = calcPayrollSummary(records, staff);
-  const isFullTime = s.employmentType === 'full_time';
-  const hasWage = isFullTime ? s.monthlySalary > 0 : s.hourlyWage > 0;
+  const hasWage = s.monthlySalary > 0 || s.hourlyWage > 0 || s.dailyWage > 0;
+  const payTypeLabel = s.payType === 'monthly' ? '正社員（月給）' : s.payType === 'daily' ? '日給制' : 'パート（時給）';
 
   return (
     <div className="px-4 pb-4 pt-2 bg-gradient-to-br from-emerald-50 to-teal-50 border-b border-emerald-100">
