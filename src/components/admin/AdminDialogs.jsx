@@ -231,6 +231,27 @@ export default function AdminDialogs({
                     onChange={(e) => setStaffForm({...staffForm, daily_wage: e.target.value ? Number(e.target.value) : ''})} />
                 </div>
               </div>
+              <div className="border-t border-amber-200 pt-3">
+                <p className="text-xs font-semibold text-amber-700 mb-2">🚌 交通費</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">交通費（円）</Label>
+                    <Input type="number" placeholder="例: 10000"
+                      value={staffForm.commute_allowance || ''}
+                      onChange={(e) => setStaffForm({...staffForm, commute_allowance: e.target.value ? Number(e.target.value) : ''})} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">支給単位</Label>
+                    <Select value={staffForm.commute_allowance_type || 'monthly'} onValueChange={(v) => setStaffForm({...staffForm, commute_allowance_type: v})}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">月額</SelectItem>
+                        <SelectItem value="daily">日額（出勤日数×金額）</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
               <p className="text-xs text-amber-600">※ 雇用形態に合わせて入力してください。給与計算サマリーに反映されます。</p>
             </div>
             <StaffTaxFields form={staffForm} setForm={setStaffForm} />
