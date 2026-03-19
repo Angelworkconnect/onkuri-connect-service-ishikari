@@ -222,9 +222,11 @@ export default function Attendance() {
             <TabsTrigger value="my" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white px-5 py-2 rounded-lg">
               <Clock className="w-4 h-4 mr-1" />自分の勤怠
             </TabsTrigger>
-            <TabsTrigger value="all" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white px-5 py-2 rounded-lg">
-              <Users className="w-4 h-4 mr-1" />全体カレンダー
-            </TabsTrigger>
+            {(isAdmin || siteSettings.show_all_attendance_calendar) && (
+              <TabsTrigger value="all" className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white px-5 py-2 rounded-lg">
+                <Users className="w-4 h-4 mr-1" />全体カレンダー
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* 自分の勤怠タブ */}
