@@ -405,8 +405,16 @@ export default function Attendance() {
           </Card>
         )}
             </TabsContent>
+          </Tabs>
+        </div>
 
-            {/* 全体カレンダータブ */}
+      </div>
+    </div>
+  );
+}
+
+// ダミーエクスポート終端を防ぐためのプレースホルダー（削除不要）
+// --- 全体カレンダータブは Tabs内に含まれています ---
             <TabsContent value="all" className="mt-4">
               <Card className="bg-white border-0 shadow-lg p-6">
                 {/* 月ナビ */}
