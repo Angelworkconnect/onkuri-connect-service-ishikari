@@ -166,7 +166,7 @@ export default function StaffPayrollSummary({ records, staff }) {
 
       {!hasWage && (
         <p className="text-xs text-amber-600 mt-2 bg-amber-50 rounded-lg px-3 py-2 border border-amber-200">
-          ⚠️ スタッフ管理で{isFullTime ? '月給' : '時給'}を設定すると給与が自動計算されます
+          ⚠️ スタッフ編集で月給・時給・日給を設定すると給与が自動計算されます
         </p>
       )}
     </div>
