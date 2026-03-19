@@ -40,6 +40,7 @@ import { Link } from 'react-router-dom';
 import QRCodeManager from '../components/admin/QRCodeManager';
 import SiteSettingsTab from '../components/admin/SiteSettingsTab';
 import AttendanceCalendar from '../components/admin/AttendanceCalendar';
+import StaffPayrollSummary from '../components/attendance/StaffPayrollSummary';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import StaffListTabComponent from '../components/admin/StaffListTab';
 import TipsTab from '../components/admin/TipsTab';
