@@ -35,6 +35,8 @@ export default function Attendance() {
   const [staff, setStaff] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [viewMode, setViewMode] = useState('calendar');
+  const [mainTab, setMainTab] = useState('my');
+  const [allCurrentMonth, setAllCurrentMonth] = useState(new Date());
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
