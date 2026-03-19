@@ -13,9 +13,12 @@ const OVERTIME_RATE = 1.25; // 法定残業割増率
  * @param {Object} staff - スタッフ情報
  */
 export function calcPayrollSummary(records, staff) {
-  const employmentType = staff?.employment_type || 'part_time';
   const hourlyWage = staff?.hourly_wage || 0;
   const monthlySalary = staff?.monthly_salary || 0;
+  const dailyWage = staff?.daily_wage || 0;
+
+  // 給与種別を自動判定: 月給 > 日給 > 時給
+  const payType = monthlySalary > 0 ? 'monthly' : dailyWage > 0 ? 'daily' : 'hourly';
 
   let totalMins = 0;
   let overtimeMins = 0;
@@ -46,17 +49,17 @@ export function calcPayrollSummary(records, staff) {
   let overtimePay = 0;
   let totalPay = 0;
 
-  if (employmentType === 'full_time') {
-    // 正社員: 固定月給 + 残業代
+  if (payType === 'monthly') {
     basePay = monthlySalary;
-    if (monthlySalary > 0 && totalMins > 0) {
-      // 月の所定労働時間を160時間として計算
+    if (monthlySalary > 0 && overtimeHours > 0) {
       const hourlyRate = monthlySalary / 160;
       overtimePay = Math.round(hourlyRate * OVERTIME_RATE * overtimeHours);
     }
     totalPay = basePay + overtimePay;
+  } else if (payType === 'daily') {
+    basePay = Math.round(dailyWage * workDays);
+    totalPay = basePay;
   } else {
-    // パート・単発: 時給制
     if (hourlyWage > 0) {
       basePay = Math.round(hourlyWage * regularHours);
       overtimePay = Math.round(hourlyWage * OVERTIME_RATE * overtimeHours);
@@ -65,7 +68,7 @@ export function calcPayrollSummary(records, staff) {
   }
 
   return {
-    employmentType,
+    payType,
     workDays,
     totalMins,
     totalHours,
@@ -73,6 +76,7 @@ export function calcPayrollSummary(records, staff) {
     overtimeHours,
     hourlyWage,
     monthlySalary,
+    dailyWage,
     basePay,
     overtimePay,
     totalPay,
