@@ -66,6 +66,12 @@ export default function Attendance() {
     enabled: !!user,
   });
 
+  const { data: allShiftEntries = [] } = useQuery({
+    queryKey: ['shift-entries-all'],
+    queryFn: () => base44.entities.ShiftEntry.list('-date'),
+    enabled: !!user,
+  });
+
   const { data: allStaff = [] } = useQuery({
     queryKey: ['staff-all'],
     queryFn: () => base44.entities.Staff.list(),
