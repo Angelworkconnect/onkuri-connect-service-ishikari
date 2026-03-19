@@ -1613,7 +1613,7 @@ export default function AdminPanel() {
                                 const staffRecords = attendanceRecords.filter(r => r.user_email === email);
                                 const staffInfo = allStaff.find(s => s.email === email);
                                 return (
-                                  <Card key={email} className="border border-slate-200">
+                                  <Card key={email} className="border border-slate-200 overflow-hidden">
                                     <div className="p-4 bg-gradient-to-r from-slate-50 to-white border-b">
                                       <div className="flex items-center justify-between flex-wrap gap-3">
                                         <div className="flex items-center gap-3">
