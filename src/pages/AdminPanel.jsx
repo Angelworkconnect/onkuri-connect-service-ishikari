@@ -1636,7 +1636,7 @@ export default function AdminPanel() {
                                              '単発'}
                                           </Badge>
                                         </div>
-                                        <div className="flex gap-6 text-sm">
+                                        <div className="flex gap-4 text-sm flex-wrap">
                                           <div className="text-center">
                                             <p className="text-slate-600">出勤日数</p>
                                             <p className="text-xl font-bold text-slate-900">{staffRecords.length}</p>
@@ -1645,6 +1645,24 @@ export default function AdminPanel() {
                                             <p className="text-slate-600">合計時間</p>
                                             <p className="text-xl font-bold text-[#2D4A6F]">{calculateTotalHours(email)}</p>
                                           </div>
+                                          {staffInfo?.monthly_salary > 0 && (
+                                            <div className="text-center">
+                                              <p className="text-slate-600 text-xs">月給</p>
+                                              <p className="text-sm font-bold text-emerald-700">¥{staffInfo.monthly_salary.toLocaleString()}</p>
+                                            </div>
+                                          )}
+                                          {staffInfo?.hourly_wage > 0 && (
+                                            <div className="text-center">
+                                              <p className="text-slate-600 text-xs">時給</p>
+                                              <p className="text-sm font-bold text-emerald-700">¥{staffInfo.hourly_wage.toLocaleString()}</p>
+                                            </div>
+                                          )}
+                                          {staffInfo?.daily_wage > 0 && (
+                                            <div className="text-center">
+                                              <p className="text-slate-600 text-xs">日給</p>
+                                              <p className="text-sm font-bold text-emerald-700">¥{staffInfo.daily_wage.toLocaleString()}</p>
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
