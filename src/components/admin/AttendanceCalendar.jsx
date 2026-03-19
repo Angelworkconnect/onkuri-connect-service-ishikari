@@ -124,7 +124,7 @@ export default function AttendanceCalendar({ attendanceRecords, staff, shiftEntr
                         ? 'bg-blue-50 border-blue-100'
                         : 'bg-green-50 border-green-200'
                     }`}>
-                      <div className="font-medium truncate text-[10px] text-green-800">{getStaffName(record.user_email)}</div>
+                      <div className="font-medium truncate text-[10px] text-green-800">{getDisplayName(record.user_email)}</div>
                       <div className="text-green-600 text-[9px]">{record.clock_in || '未'} 〜 {record.clock_out || '勤務中'}</div>
                     </div>
                   ))}
