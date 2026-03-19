@@ -139,7 +139,7 @@ export default function StaffPayrollSummary({ records, staff }) {
         <div className="bg-white rounded-xl p-3 shadow-sm border border-emerald-100">
           <div className="flex items-center gap-1 mb-1">
             <Calendar className="w-3 h-3 text-slate-400" />
-            <span className="text-xs text-slate-500">{isFullTime ? '月給（固定）' : '基本給'}</span>
+            <span className="text-xs text-slate-500">{s.payType === 'monthly' ? '月給（固定）' : '基本給'}</span>
           </div>
           <p className="text-base font-bold text-slate-800">{fmtYen(s.basePay)}</p>
           <p className="text-xs text-slate-400 mt-0.5">
