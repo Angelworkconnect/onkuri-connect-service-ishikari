@@ -191,9 +191,13 @@ export default function StaffPayrollSummary({ records, staff }) {
           ))}
         </div>
         {tab === 'monthly' && (
-          <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
-            {new Date().getFullYear()}年{new Date().getMonth() + 1}月
-          </span>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setMonthOffset(o => o - 1)} className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:border-emerald-400 text-xs">‹</button>
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full min-w-[80px] text-center">
+              {targetDate.getFullYear()}年{targetDate.getMonth() + 1}月
+            </span>
+            <button onClick={() => setMonthOffset(o => Math.min(o + 1, 0))} className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:border-emerald-400 text-xs disabled:opacity-30" disabled={monthOffset >= 0}>›</button>
+          </div>
         )}
         {tab === 'yearly' && (
           <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
