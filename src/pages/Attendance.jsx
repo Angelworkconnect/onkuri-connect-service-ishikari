@@ -423,121 +423,117 @@ export default function Attendance() {
               </Card>
             ) : (
               <Card className="bg-white border-0 shadow-lg p-4">
-              {/* 月ナビ */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-slate-800">全スタッフ勤怠一覧</h3>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => subMonths(m, 1))}>
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                  <span className="text-base font-semibold text-slate-700 min-w-[90px] text-center">
-                    {format(allCurrentMonth, 'yyyy年M月')}
-                  </span>
-                  <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => addMonths(m, 1))}>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
+                {/* 月ナビ */}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-slate-800">全スタッフ勤怠一覧</h3>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => subMonths(m, 1))}>
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-base font-semibold text-slate-700 min-w-[90px] text-center">
+                      {format(allCurrentMonth, 'yyyy年M月')}
+                    </span>
+                    <Button variant="ghost" size="icon" onClick={() => setAllCurrentMonth(m => addMonths(m, 1))}>
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              {/* スタッフ×日付 テーブル */}
-              {(() => {
-                const ms = startOfMonth(allCurrentMonth);
-                const me = endOfMonth(allCurrentMonth);
-                const days = eachDayOfInterval({ start: ms, end: me });
-                const yearMonth = format(allCurrentMonth, 'yyyy-MM');
-                const monthRecords = allShiftEntries.filter(r => r.date?.startsWith(yearMonth));
-
-                // 当月にシフトがあるスタッフを抽出
-                const activeEmails = [...new Set(monthRecords.map(r => r.staff_email))];
-                const activeStaff = allStaff.filter(s => activeEmails.includes(s.email));
-                const unknownEmails = activeEmails.filter(e => !allStaff.find(s => s.email === e));
-                const allActiveStaff = [
-                  ...activeStaff,
-                  ...unknownEmails.map(e => ({ email: e, full_name: e }))
-                ];
-
-                if (allActiveStaff.length === 0) {
-                  return <div className="text-center py-12 text-slate-400">この月の勤怠記録はありません</div>;
-                }
-
-                return (
-                  <div className="overflow-x-auto">
-                    <table className="text-xs border-collapse w-full">
-                      <thead>
-                        <tr>
-                          <th className="sticky left-0 z-10 bg-slate-100 border border-slate-200 px-2 py-1.5 text-left min-w-[80px] text-slate-600 font-semibold">氏名</th>
-                          {days.map(day => {
-                            const dow = getDay(day);
-                            const isToday = isSameDay(day, new Date());
+                {/* スタッフ×日付 テーブル */}
+                {(() => {
+                  const ms = startOfMonth(allCurrentMonth);
+                  const me = endOfMonth(allCurrentMonth);
+                  const days = eachDayOfInterval({ start: ms, end: me });
+                  const yearMonth = format(allCurrentMonth, 'yyyy-MM');
+                  const monthRecords = allShiftEntries.filter(r => r.date?.startsWith(yearMonth));
+                  const activeEmails = [...new Set(monthRecords.map(r => r.staff_email))];
+                  const activeStaff = allStaff.filter(s => activeEmails.includes(s.email));
+                  const unknownEmails = activeEmails.filter(e => !allStaff.find(s => s.email === e));
+                  const allActiveStaff = [
+                    ...activeStaff,
+                    ...unknownEmails.map(e => ({ email: e, full_name: e }))
+                  ];
+                  if (allActiveStaff.length === 0) {
+                    return <div className="text-center py-12 text-slate-400">この月の勤怠記録はありません</div>;
+                  }
+                  return (
+                    <div className="overflow-x-auto">
+                      <table className="text-xs border-collapse w-full">
+                        <thead>
+                          <tr>
+                            <th className="sticky left-0 z-10 bg-slate-100 border border-slate-200 px-2 py-1.5 text-left min-w-[80px] text-slate-600 font-semibold">氏名</th>
+                            {days.map(day => {
+                              const dow = getDay(day);
+                              const isToday = isSameDay(day, new Date());
+                              return (
+                                <th key={format(day, 'd')} className={`border border-slate-200 px-1 py-1.5 text-center min-w-[28px] font-semibold ${
+                                  isToday ? 'bg-[#2D4A6F] text-white' :
+                                  dow === 0 ? 'bg-red-50 text-red-500' :
+                                  dow === 6 ? 'bg-blue-50 text-blue-500' :
+                                  'bg-slate-100 text-slate-600'
+                                }`}>
+                                  <div>{format(day, 'd')}</div>
+                                  <div className="font-normal text-[9px]">{'日月火水木金土'[dow]}</div>
+                                </th>
+                              );
+                            })}
+                            <th className="border border-slate-200 px-2 py-1.5 text-center bg-slate-100 text-slate-600 font-semibold min-w-[36px]">日数</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allActiveStaff.map(s => {
+                            const staffRecords = monthRecords.filter(r => r.staff_email === s.email);
                             return (
-                              <th key={format(day, 'd')} className={`border border-slate-200 px-1 py-1.5 text-center min-w-[28px] font-semibold ${
-                                isToday ? 'bg-[#2D4A6F] text-white' :
-                                dow === 0 ? 'bg-red-50 text-red-500' :
-                                dow === 6 ? 'bg-blue-50 text-blue-500' :
-                                'bg-slate-100 text-slate-600'
-                              }`}>
-                                <div>{format(day, 'd')}</div>
-                                <div className="font-normal text-[9px]">{'日月火水木金土'[dow]}</div>
-                              </th>
+                              <tr key={s.email} className="hover:bg-slate-50">
+                                <td className="sticky left-0 z-10 bg-white border border-slate-200 px-2 py-1 font-medium text-slate-800 whitespace-nowrap">
+                                  {s.full_name || s.email}
+                                </td>
+                                {days.map(day => {
+                                  const dateStr = format(day, 'yyyy-MM-dd');
+                                  const rec = staffRecords.find(r => r.date === dateStr);
+                                  const dow = getDay(day);
+                                  return (
+                                    <td key={dateStr} className={`border border-slate-200 text-center align-middle w-7 h-7 relative group ${
+                                      dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
+                                    }`}>
+                                      {rec ? (
+                                        <>
+                                          <span className="text-green-600 font-bold text-sm cursor-default">●</span>
+                                          <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block pointer-events-none">
+                                            <div className="bg-slate-800 text-white text-[11px] rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg">
+                                              <div className="font-semibold">{s.full_name || s.email}</div>
+                                              {rec.start_time && rec.end_time && (
+                                                <div className="text-slate-300">{rec.start_time} 〜 {rec.end_time}</div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <span className="text-slate-200 text-sm">·</span>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                                <td className="border border-slate-200 px-2 py-1 text-center font-bold text-[#2D4A6F]">
+                                  {staffRecords.length}
+                                </td>
+                              </tr>
                             );
                           })}
-                          <th className="border border-slate-200 px-2 py-1.5 text-center bg-slate-100 text-slate-600 font-semibold min-w-[36px]">日数</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {allActiveStaff.map(s => {
-                          const staffRecords = monthRecords.filter(r => r.staff_email === s.email);
-                          return (
-                            <tr key={s.email} className="hover:bg-slate-50">
-                              <td className="sticky left-0 z-10 bg-white border border-slate-200 px-2 py-1 font-medium text-slate-800 whitespace-nowrap">
-                                {s.full_name || s.email}
-                              </td>
-                              {days.map(day => {
-                                const dateStr = format(day, 'yyyy-MM-dd');
-                                const rec = staffRecords.find(r => r.date === dateStr);
-                                const dow = getDay(day);
-                                return (
-                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle w-7 h-7 relative group ${
-                                   dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
-                                  }`}>
-                                    {rec ? (
-                                      <>
-                                        <span className="text-green-600 font-bold text-sm cursor-default">●</span>
-                                        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block pointer-events-none">
-                                          <div className="bg-slate-800 text-white text-[11px] rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg">
-                                            <div className="font-semibold">{s.full_name || s.email}</div>
-                                            {rec.start_time && rec.end_time && (
-                                              <div className="text-slate-300">{rec.start_time} 〜 {rec.end_time}</div>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </>
-                                    ) : (
-                                      <span className="text-slate-200 text-sm">·</span>
-                                    )}
-                                  </td>
-                                );
-                              })}
-                              <td className="border border-slate-200 px-2 py-1 text-center font-bold text-[#2D4A6F]">
-                                {staffRecords.length}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })()}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
 
-              {/* 月間サマリー */}
-              <div className="mt-4 p-3 bg-slate-50 rounded-lg flex items-center gap-3">
-                <Users className="w-5 h-5 text-[#2D4A6F]" />
-                <span className="text-sm font-medium text-slate-700">月間出勤延べ人数：</span>
-                <span className="text-lg font-bold text-[#2D4A6F]">
-                  {allShiftEntries.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
-                </span>
-              </div>
+                {/* 月間サマリー */}
+                <div className="mt-4 p-3 bg-slate-50 rounded-lg flex items-center gap-3">
+                  <Users className="w-5 h-5 text-[#2D4A6F]" />
+                  <span className="text-sm font-medium text-slate-700">月間出勤延べ人数：</span>
+                  <span className="text-lg font-bold text-[#2D4A6F]">
+                    {allShiftEntries.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
+                  </span>
+                </div>
               </Card>
             )}
           </TabsContent>
