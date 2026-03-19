@@ -134,7 +134,7 @@ export default function AttendanceCalendar({ attendanceRecords, staff, shiftEntr
                     if (alreadyAttended) return null;
                     return (
                       <div key={`shift-${entry.id}`} className="rounded px-1 py-0.5 border bg-purple-50 border-purple-200">
-                        <div className="font-medium truncate text-[10px] text-purple-800">{entry.staff_name || getStaffName(entry.staff_email)}</div>
+                        <div className="font-medium truncate text-[10px] text-purple-800">{getDisplayName(entry.staff_email)}</div>
                         <div className="text-purple-500 text-[9px]">{entry.start_time || ''} 〜 {entry.end_time || ''}</div>
                       </div>
                     );
