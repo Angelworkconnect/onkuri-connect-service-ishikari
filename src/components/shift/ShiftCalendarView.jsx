@@ -40,6 +40,22 @@ function buildCalendarDays(year, month) {
   return { cells, firstDay };
 }
 
+function getDisplayName(staffName, staff) {
+  if (!staffName) return '';
+  const s = staff.find(m => m.full_name === staffName);
+  if (!s) return staffName;
+  const parts = staffName.split(/\s+/);
+  const lastName = parts[0] || '';
+  const firstName = parts[1] || '';
+  const hasSameLastName = staff.some(
+    other => other.id !== s.id && other.full_name?.split(/\s+/)[0] === lastName
+  );
+  if (hasSameLastName && firstName) {
+    return `${lastName} ${firstName[0]}`;
+  }
+  return lastName || staffName;
+}
+
 export default function ShiftCalendarView({ year, month, entries, isAdmin, staff = [] }) {
   const { cells } = buildCalendarDays(year, month);
 
