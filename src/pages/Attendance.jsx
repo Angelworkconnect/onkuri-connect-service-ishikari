@@ -538,6 +538,7 @@ export default function Attendance() {
                 </span>
               </div>
             </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
