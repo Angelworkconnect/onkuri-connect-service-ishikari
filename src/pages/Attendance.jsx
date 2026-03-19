@@ -476,11 +476,15 @@ export default function Attendance() {
                                 const rec = staffRecords.find(r => r.date === dateStr);
                                 const dow = getDay(day);
                                 return (
-                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle w-7 h-7 ${
-                                    dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
+                                  <td key={dateStr} className={`border border-slate-200 text-center align-middle px-0.5 py-0.5 ${
+                                   dow === 0 ? 'bg-red-50/40' : dow === 6 ? 'bg-blue-50/40' : ''
                                   }`}>
                                     {rec ? (
-                                      <span className="text-green-600 font-bold text-sm">●</span>
+                                      <div className="flex flex-col items-center leading-tight">
+                                        <span className="text-green-600 font-bold text-[10px]">●</span>
+                                        {rec.start_time && <span className="text-[8px] text-slate-500">{rec.start_time}</span>}
+                                        {rec.end_time && <span className="text-[8px] text-slate-500">{rec.end_time}</span>}
+                                      </div>
                                     ) : (
                                       <span className="text-slate-200 text-sm">·</span>
                                     )}
