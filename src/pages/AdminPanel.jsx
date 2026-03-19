@@ -1648,18 +1648,19 @@ export default function AdminPanel() {
                                         </div>
                                       </div>
                                     </div>
+                                    <StaffPayrollSummary records={staffRecords} staff={staffInfo} />
                                     <div className="overflow-x-auto">
-                                      <Table>
-                                        <TableHeader>
-                                          <TableRow>
-                                            <TableHead>日付</TableHead>
-                                            <TableHead>出勤</TableHead>
-                                            <TableHead>退勤</TableHead>
-                                            <TableHead>勤務時間</TableHead>
-                                            <TableHead>状態</TableHead>
-                                            <TableHead>操作</TableHead>
-                                          </TableRow>
-                                        </TableHeader>
+                                     <Table>
+                                       <TableHeader>
+                                         <TableRow>
+                                           <TableHead>日付</TableHead>
+                                           <TableHead>出勤</TableHead>
+                                           <TableHead>退勤</TableHead>
+                                           <TableHead>勤務時間</TableHead>
+                                           <TableHead>状態</TableHead>
+                                           <TableHead>操作</TableHead>
+                                         </TableRow>
+                                       </TableHeader>
                                         <TableBody>
                                           {staffRecords.map((record) => {
                                             let hours = 0;
