@@ -424,12 +424,11 @@ export default function Attendance() {
                 const me = endOfMonth(allCurrentMonth);
                 const days = eachDayOfInterval({ start: ms, end: me });
                 const yearMonth = format(allCurrentMonth, 'yyyy-MM');
-                const monthRecords = allAttendanceRecords.filter(r => r.date?.startsWith(yearMonth));
+                const monthRecords = allShiftEntries.filter(r => r.date?.startsWith(yearMonth));
 
-                // 当月に出勤記録があるスタッフを抽出（全スタッフ順で）
-                const activeEmails = [...new Set(monthRecords.map(r => r.user_email))];
+                // 当月にシフトがあるスタッフを抽出
+                const activeEmails = [...new Set(monthRecords.map(r => r.staff_email))];
                 const activeStaff = allStaff.filter(s => activeEmails.includes(s.email));
-                // staffリストにない場合も含める
                 const unknownEmails = activeEmails.filter(e => !allStaff.find(s => s.email === e));
                 const allActiveStaff = [
                   ...activeStaff,
