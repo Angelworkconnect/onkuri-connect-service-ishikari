@@ -264,8 +264,9 @@ export default function AttendanceApproval() {
               ) : byStaff.map(({ name, email, records }) => {
                 const totalMins = records.reduce((sum, r) => sum + calculateWorkMinutes(r.clock_in, r.clock_out, r.break_minutes), 0);
                 const pendingCount = records.filter(r => r.status === 'completed').length;
+                const staffData = allStaff.find(s => s.email === email);
                 return (
-                  <Card key={email} className="border-0 shadow-lg mb-4">
+                  <Card key={email} className="border-0 shadow-lg mb-4 overflow-hidden">
                     <div className="px-6 py-3 border-b bg-slate-50 flex items-center gap-3">
                       <User className="w-4 h-4 text-[#2D4A6F]" />
                       <span className="font-medium">{name}</span>
@@ -273,6 +274,8 @@ export default function AttendanceApproval() {
                       <span className="text-slate-600 text-sm">合計: {formatMinutes(totalMins)}</span>
                       {pendingCount > 0 && <Badge className="bg-yellow-100 text-yellow-700 text-xs ml-auto">承認待ち {pendingCount}件</Badge>}
                     </div>
+                    {/* 給与サマリー */}
+                    <StaffPayrollSummary records={records} staff={staffData} />
                     <div className="overflow-x-auto">
                       <Table><TableHeaders showName={false} /><TableBody>{records.map(r => <RecordRow key={r.id} record={r} showName={false} />)}</TableBody></Table>
                     </div>
