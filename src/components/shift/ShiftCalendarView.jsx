@@ -135,7 +135,7 @@ export default function ShiftCalendarView({ year, month, entries, isAdmin, staff
                          style={{ fontSize: '10px' }}
                        >
                          {isAdmin && (
-                           <div className="font-medium truncate">{e.staff_name}</div>
+                           <div className="font-medium truncate">{getDisplayName(e.staff_name, staff)}</div>
                          )}
                          {e.start_time && e.end_time
                            ? <div>{e.start_time}〜{e.end_time}</div>
