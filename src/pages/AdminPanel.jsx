@@ -1607,7 +1607,7 @@ export default function AdminPanel() {
                             </div>
                           </TabsContent>
 
-                          <TabsContent value="by-staff" className="p-6">
+                          <TabsContent value="att-by-staff" className="p-6">
                             <div className="space-y-6">
                               {getUniqueStaffEmails().map(email => {
                                 const staffRecords = attendanceRecords.filter(r => r.user_email === email);
