@@ -208,6 +208,31 @@ export default function AdminDialogs({
                 <p className="text-xs text-indigo-600 mt-1">選択中: {(staffForm.qualifications || []).join('、')}</p>
               )}
             </div>
+            {/* 給与設定 */}
+            <div className="border rounded-lg p-4 bg-amber-50 space-y-3">
+              <p className="text-sm font-bold text-amber-800">💰 給与設定</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-xs">月給（円）</Label>
+                  <Input type="number" placeholder="例: 200000"
+                    value={staffForm.monthly_salary || ''}
+                    onChange={(e) => setStaffForm({...staffForm, monthly_salary: e.target.value ? Number(e.target.value) : ''})} />
+                </div>
+                <div>
+                  <Label className="text-xs">時給（円）</Label>
+                  <Input type="number" placeholder="例: 1200"
+                    value={staffForm.hourly_wage || ''}
+                    onChange={(e) => setStaffForm({...staffForm, hourly_wage: e.target.value ? Number(e.target.value) : ''})} />
+                </div>
+                <div>
+                  <Label className="text-xs">日給（円）</Label>
+                  <Input type="number" placeholder="例: 10000"
+                    value={staffForm.daily_wage || ''}
+                    onChange={(e) => setStaffForm({...staffForm, daily_wage: e.target.value ? Number(e.target.value) : ''})} />
+                </div>
+              </div>
+              <p className="text-xs text-amber-600">※ 雇用形態に合わせて入力してください。給与計算サマリーに反映されます。</p>
+            </div>
             <StaffTaxFields form={staffForm} setForm={setStaffForm} />
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-3">
