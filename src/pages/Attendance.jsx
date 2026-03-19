@@ -538,7 +538,7 @@ export default function Attendance() {
                   {allShiftEntries.filter(r => r.date?.startsWith(format(allCurrentMonth, 'yyyy-MM'))).length} 人日
                 </span>
               </div>
-            </Card>
+              </Card>
             )}
           </TabsContent>
         </Tabs>
