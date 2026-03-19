@@ -1503,16 +1503,16 @@ export default function AdminPanel() {
                       <Card className="border-0 shadow-lg">
                         <Tabs defaultValue="att-calendar" className="w-full">
                           <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-white">
-                            <TabsTrigger value="calendar" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
+                            <TabsTrigger value="att-calendar" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
                               カレンダー
                             </TabsTrigger>
-                            <TabsTrigger value="by-date" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
+                            <TabsTrigger value="att-by-date" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
                               日別
                             </TabsTrigger>
-                            <TabsTrigger value="by-staff" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
+                            <TabsTrigger value="att-by-staff" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
                               人別
                             </TabsTrigger>
-                            <TabsTrigger value="by-month" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
+                            <TabsTrigger value="att-by-month" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#2D4A6F] data-[state=active]:bg-transparent px-6 py-3">
                               月別統計
                             </TabsTrigger>
                           </TabsList>
