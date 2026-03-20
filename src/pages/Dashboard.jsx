@@ -141,12 +141,6 @@ export default function Dashboard() {
   const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
-    base44.entities.SiteSettings.list().then(settings => {
-      if (settings.length > 0 && settings[0].logo_char) {
-        setLogoChar(settings[0].logo_char);
-      }
-    }).catch(() => {});
-
     base44.auth.me().then(async (u) => {
       // Staffエンティティから名前と承認状態を取得
       const staffList = await base44.entities.Staff.filter({ email: u.email });
