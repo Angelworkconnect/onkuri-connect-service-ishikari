@@ -85,6 +85,7 @@ export default function Attendance() {
       return list.length > 0 ? list[0] : {};
     },
     enabled: !!user,
+    staleTime: 30000,
   });
 
   const isAdmin = user?.role === 'admin';
