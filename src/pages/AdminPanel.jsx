@@ -352,6 +352,8 @@ export default function AdminPanel() {
         info_benefits_title: siteSettings.info_benefits_title || '',
         info_benefits_description: siteSettings.info_benefits_description || '',
         info_benefits_items: siteSettings.info_benefits_items || [],
+        show_all_attendance_calendar: !!siteSettings.show_all_attendance_calendar,
+        show_all_shift_calendar: !!siteSettings.show_all_shift_calendar,
       });
     }
   }, [siteSettings?.id]);
