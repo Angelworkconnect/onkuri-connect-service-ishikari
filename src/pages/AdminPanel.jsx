@@ -1244,13 +1244,13 @@ export default function AdminPanel() {
                 <div key={group} className="mb-3 last:mb-0">
                   <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 px-1">{group}</p>
                   <div className="flex flex-wrap gap-1">
-                    {items.map(({ value, Icon, label }) => (
+                    {items.map(({ value, Icon: ItemIcon, label }) => (
                       <TabsList key={value} className="h-auto p-0 bg-transparent">
                         <TabsTrigger
                           value={value}
                           className="data-[state=active]:bg-[#2D4A6F] data-[state=active]:text-white text-slate-600 text-xs flex flex-col items-center gap-1 py-2 px-3 h-auto rounded-lg"
                         >
-                          <Icon className="w-4 h-4" />
+                          <ItemIcon className="w-4 h-4" />
                           <span>{label}</span>
                         </TabsTrigger>
                       </TabsList>
