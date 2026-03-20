@@ -168,6 +168,19 @@ export default function Dashboard() {
     });
   }, []);
 
+  const { data: siteSettingsData = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const list = await base44.entities.SiteSettings.list();
+      return list.length > 0 ? list[0] : {};
+    },
+    staleTime: 60000,
+  });
+
+  useEffect(() => {
+    if (siteSettingsData?.logo_char) setLogoChar(siteSettingsData.logo_char);
+  }, [siteSettingsData]);
+
   const { data: announcements = [] } = useQuery({
     queryKey: ['announcements'],
     queryFn: async () => {
