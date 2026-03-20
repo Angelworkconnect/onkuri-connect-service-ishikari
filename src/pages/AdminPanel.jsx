@@ -248,6 +248,8 @@ export default function AdminPanel() {
     info_benefits_title: '',
     info_benefits_description: '',
     info_benefits_items: [],
+    show_all_attendance_calendar: false,
+    show_all_shift_calendar: false,
   });
 
   useEffect(() => {
