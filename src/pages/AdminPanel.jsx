@@ -603,7 +603,7 @@ export default function AdminPanel() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-site-settings']);
-      queryClient.invalidateQueries(['site-settings']);
+      queryClient.removeQueries(['site-settings']);
       alert('サイト設定を保存しました');
     },
   });
