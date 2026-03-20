@@ -186,11 +186,14 @@ export default function Dashboard() {
     queryFn: async () => {
       return base44.entities.Announcement.list('-created_date', 50);
     },
+    enabled: !!user,
+    staleTime: 60000,
   });
 
   const { data: openShifts = [] } = useQuery({
     queryKey: ['shifts-open'],
     queryFn: () => base44.entities.Shift.filter({ status: 'open', is_visible: true }, 'date', 10),
+    enabled: !!user,
     staleTime: 60000,
   });
 
