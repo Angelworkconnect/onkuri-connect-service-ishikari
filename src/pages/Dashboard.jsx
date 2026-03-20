@@ -199,8 +199,9 @@ export default function Dashboard() {
 
   const { data: myApplications = [] } = useQuery({
     queryKey: ['my-applications', user?.email],
-    queryFn: () => user ? base44.entities.ShiftApplication.filter({ applicant_email: user.email }) : [],
+    queryFn: () => base44.entities.ShiftApplication.filter({ applicant_email: user.email }),
     enabled: !!user,
+    staleTime: 60000,
   });
 
   // 本日承認済みシフトがあるかチェック（単発スタッフ用）
