@@ -86,6 +86,14 @@ export default function MyShift() {
     enabled: !!user,
   });
 
+  const { data: siteSettings = {} } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const list = await base44.entities.SiteSettings.list();
+      return list.length > 0 ? list[0] : {};
+    },
+  });
+
   const addRequestMutation = useMutation({
     mutationFn: (data) => base44.entities.ShiftRequest.create({
       ...data, year, month,
