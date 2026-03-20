@@ -92,6 +92,8 @@ export default function MyShift() {
       const list = await base44.entities.SiteSettings.list();
       return list.length > 0 ? list[0] : {};
     },
+    enabled: !!user,
+    staleTime: 30000,
   });
 
   const addRequestMutation = useMutation({
