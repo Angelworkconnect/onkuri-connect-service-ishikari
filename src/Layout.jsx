@@ -82,6 +82,7 @@ export default function Layout({ children, currentPageName }) {
         const staffList = await base44.entities.Staff.filter({ email: u.email });
         if (staffList.length > 0) {
           u.full_name = staffList[0].full_name;
+          u.role = staffList[0].role; // Use Staff role as primary
           if (staffList[0].role === 'admin') {
             setIsAdmin(true);
           }
@@ -113,7 +114,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
-              {(user?.staff_role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
+              {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                 const isActive = currentPageName === item.href;
                 return (
                   <Link key={item.name} to={createPageUrl(item.href)}>
@@ -219,7 +220,7 @@ export default function Layout({ children, currentPageName }) {
                 <SheetContent side="right" className="w-72">
                   <div className="py-4">
                     <nav className="space-y-2">
-                      {(user?.staff_role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
+                      {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                         const isActive = currentPageName === item.href;
                         return (
                           <Link 
