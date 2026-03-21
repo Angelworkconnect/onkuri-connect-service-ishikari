@@ -83,6 +83,7 @@ export default function Layout({ children, currentPageName }) {
         if (staffList.length > 0) {
           u.full_name = staffList[0].full_name;
           u.role = staffList[0].role; // Use Staff role as primary
+          u.approval_status = staffList[0].approval_status; // Store approval status
           if (staffList[0].role === 'admin') {
             setIsAdmin(true);
           }
@@ -116,8 +117,14 @@ export default function Layout({ children, currentPageName }) {
             <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
               {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                 const isActive = currentPageName === item.href;
+                const handleClick = (e) => {
+                  if (user?.role === 'temporary' && user?.approval_status !== 'approved') {
+                    e.preventDefault();
+                    alert('スタッフ登録の承認待ち中です。\n管理者の承認後にご利用いただけます。');
+                  }
+                };
                 return (
-                  <Link key={item.name} to={createPageUrl(item.href)}>
+                  <Link key={item.name} to={createPageUrl(item.href)} onClick={handleClick}>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -222,11 +229,19 @@ export default function Layout({ children, currentPageName }) {
                     <nav className="space-y-2">
                       {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                         const isActive = currentPageName === item.href;
+                        const handleClick = (e) => {
+                          if (user?.role === 'temporary' && user?.approval_status !== 'approved') {
+                            e.preventDefault();
+                            alert('スタッフ登録の承認待ち中です。\n管理者の承認後にご利用いただけます。');
+                          } else {
+                            setMobileMenuOpen(false);
+                          }
+                        };
                         return (
                           <Link 
                             key={item.name} 
                             to={createPageUrl(item.href)}
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={handleClick}
                           >
                             <Button
                               variant="ghost"
