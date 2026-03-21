@@ -179,7 +179,7 @@ export default function Shifts() {
       {/* Header */}
       <div className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white">
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <h1 className="text-3xl font-light mb-2">単発</h1>
+          <h1 className="text-3xl font-light mb-2">シフト一覧</h1>
           <p className="text-white/70">あなたに合ったお仕事を見つけましょう</p>
         </div>
       </div>
