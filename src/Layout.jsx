@@ -40,6 +40,7 @@ const navigation = [
 ];
 
 const temporaryNavigation = [
+  { name: 'シフト',     href: 'MyShift',         icon: Calendar      },
   { name: '単発',       href: 'Shifts',           icon: Calendar      },
   { name: '応募履歴',   href: 'MyApplications',   icon: FileText      },
 ];
