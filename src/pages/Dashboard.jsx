@@ -490,7 +490,7 @@ export default function Dashboard() {
             </div>
 
             {/* 今月のシフト */}
-            {currentShiftMonth && (
+            {currentShiftMonth && user?.staff_role !== 'temporary' && (
               <Card className="border-0 shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-slate-100">
                   <div className="flex items-center justify-between mb-3">
@@ -643,8 +643,10 @@ export default function Dashboard() {
             {/* Info Section */}
             <InfoSection />
 
-            {/* Tip & Benefits */}
-            <TipBenefitSection user={user} />
+            {/* Tip & Benefits - 単発以外のみ表示 */}
+            {user?.staff_role !== 'temporary' && (
+              <TipBenefitSection user={user} />
+            )}
 
             {/* Quick Links */}
             <Card className="border-0 shadow-sm p-6">
@@ -685,7 +687,8 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Announcements */}
+            {/* Announcements - 単発以外のみ表示 */}
+            {user?.staff_role !== 'temporary' && (
             <Card className="border-0 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-100">
                 <div className="flex items-center gap-2">
@@ -745,10 +748,11 @@ export default function Dashboard() {
                   )}
                 </TabsContent>
               </Tabs>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+              </Card>
+              )}
+              </div>
+              </div>
+              </div>
+              </div>
+              );
+              }
