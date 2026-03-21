@@ -638,15 +638,14 @@ export default function Dashboard() {
             <HelpCallSection user={user} />
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - 単発以外のみ表示 */}
+          {user?.staff_role !== 'temporary' && (
           <div className="space-y-6">
             {/* Info Section */}
             <InfoSection />
 
-            {/* Tip & Benefits - 単発以外のみ表示 */}
-            {user?.staff_role !== 'temporary' && (
-              <TipBenefitSection user={user} />
-            )}
+            {/* Tip & Benefits */}
+            <TipBenefitSection user={user} />
 
             {/* Quick Links */}
             <Card className="border-0 shadow-sm p-6">
@@ -751,6 +750,7 @@ export default function Dashboard() {
               </Card>
               )}
               </div>
+              )}
               </div>
               </div>
               </div>
