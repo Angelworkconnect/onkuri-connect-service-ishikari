@@ -39,6 +39,11 @@ const navigation = [
   // --- AI分析（管理者向けは別） ---
 ];
 
+const temporaryNavigation = [
+  { name: '単発',       href: 'Shifts',           icon: Calendar      },
+  { name: '応募履歴',   href: 'MyApplications',   icon: FileText      },
+];
+
   const adminNavigation = [];
 
 const settingsNavigation = [
@@ -104,7 +109,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
-              {navigation.map((item) => {
+              {(user?.staff_role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                 const isActive = currentPageName === item.href;
                 return (
                   <Link key={item.name} to={createPageUrl(item.href)}>
@@ -210,7 +215,7 @@ export default function Layout({ children, currentPageName }) {
                 <SheetContent side="right" className="w-72">
                   <div className="py-4">
                     <nav className="space-y-2">
-                      {navigation.map((item) => {
+                      {(user?.staff_role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
                         const isActive = currentPageName === item.href;
                         return (
                           <Link 
