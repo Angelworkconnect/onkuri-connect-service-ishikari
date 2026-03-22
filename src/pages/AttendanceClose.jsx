@@ -599,15 +599,28 @@ export default function AttendanceClose() {
         {/* 月次締め実行 */}
         <Card className="border-0 shadow-lg p-6">
           <h2 className="text-lg font-medium mb-4">新規月次締め</h2>
-          <div className="flex gap-4 items-end">
-            <div className="flex-1 max-w-xs">
-              <Label>対象年月</Label>
+          {/* 現在の締日設定表示 */}
+          <div className="mb-4 p-3 bg-[#2D4A6F]/5 rounded-lg flex items-center gap-2 text-sm">
+            <Lock className="w-4 h-4 text-[#2D4A6F]" />
+            <span className="text-slate-600">締日設定:</span>
+            <strong className="text-[#2D4A6F]">{closeDay === 0 ? '月末締め' : `毎月${closeDay}日締め`}</strong>
+            <span className="text-slate-400 text-xs ml-2">（管理画面 → サイト設定で変更可）</span>
+          </div>
+          <div className="flex gap-4 items-end flex-wrap">
+            <div>
+              <Label>対象年月ラベル</Label>
               <Input
                 type="month"
                 value={selectedYearMonth}
                 onChange={(e) => setSelectedYearMonth(e.target.value)}
+                className="w-44"
               />
             </div>
+            {selectedYearMonth && (
+              <div className="text-sm text-slate-600 pb-2">
+                対象期間: <strong className="text-[#2D4A6F]">{getClosePeriod(selectedYearMonth, closeDay).from} 〜 {getClosePeriod(selectedYearMonth, closeDay).to}</strong>
+              </div>
+            )}
             <Button
               onClick={() => setCloseDialogOpen(true)}
               className="bg-[#2D4A6F]"
