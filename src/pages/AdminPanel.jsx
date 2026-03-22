@@ -1089,14 +1089,12 @@ export default function AdminPanel() {
     setStaffDialogOpen(true);
   };
 
-  const handleSubmitStaff = (data) => {
-    return new Promise((resolve, reject) => {
-      if (editingStaff) {
-        updateStaffMutation.mutate({ id: editingStaff.id, data }, { onSuccess: resolve, onError: reject });
-      } else {
-        createStaffMutation.mutate(data, { onSuccess: resolve, onError: reject });
-      }
-    });
+  const handleSubmitStaff = async (data) => {
+    if (editingStaff) {
+      await updateStaffMutation.mutateAsync({ id: editingStaff.id, data });
+    } else {
+      await createStaffMutation.mutateAsync(data);
+    }
   };
 
   const handleEditShift = (shift) => {
