@@ -186,41 +186,32 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
           {/* カテゴリー */}
           <div>
             <Label>カテゴリー *</Label>
-            <Select value={form.role} onValueChange={v => set('role', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">管理者</SelectItem>
-                <SelectItem value="full_time">正社員</SelectItem>
-                <SelectItem value="part_time">パート</SelectItem>
-                <SelectItem value="temporary">単発</SelectItem>
-              </SelectContent>
-            </Select>
+            <NativeSelect value={form.role} onChange={v => set('role', v)}>
+              <option value="admin">管理者</option>
+              <option value="full_time">正社員</option>
+              <option value="part_time">パート</option>
+              <option value="temporary">単発</option>
+            </NativeSelect>
           </div>
 
           {/* 在籍ステータス */}
           <div>
             <Label>在籍ステータス *</Label>
-            <Select value={form.status} onValueChange={v => set('status', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">在職中</SelectItem>
-                <SelectItem value="leave">休職中</SelectItem>
-                <SelectItem value="inactive">退職・停止</SelectItem>
-              </SelectContent>
-            </Select>
+            <NativeSelect value={form.status} onChange={v => set('status', v)}>
+              <option value="active">在職中</option>
+              <option value="leave">休職中</option>
+              <option value="inactive">退職・停止</option>
+            </NativeSelect>
           </div>
 
           {/* 承認ステータス */}
           <div>
             <Label>承認ステータス *</Label>
-            <Select value={form.approval_status} onValueChange={v => set('approval_status', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">承認待ち</SelectItem>
-                <SelectItem value="approved">承認済み</SelectItem>
-                <SelectItem value="rejected">却下</SelectItem>
-              </SelectContent>
-            </Select>
+            <NativeSelect value={form.approval_status} onChange={v => set('approval_status', v)}>
+              <option value="pending">承認待ち</option>
+              <option value="approved">承認済み</option>
+              <option value="rejected">却下</option>
+            </NativeSelect>
           </div>
 
           {/* シフトカレンダー表示 */}
