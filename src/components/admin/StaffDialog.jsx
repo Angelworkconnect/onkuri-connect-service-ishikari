@@ -8,16 +8,25 @@ import {
 import { Mail } from "lucide-react";
 import StaffTaxFields from './StaffTaxFields';
 
-// ネイティブselectラッパー（Radix UIのSelect問題を回避）
-function NativeSelect({ value, onChange, children, className = '' }) {
+// ボタン式選択UI（macOS Dialogでのネイティブselect問題を回避）
+function SegmentSelect({ value, onChange, options }) {
   return (
-    <select
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${className}`}
-    >
-      {children}
-    </select>
+    <div className="flex flex-wrap gap-1 mt-1">
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          type="button"
+          onClick={() => onChange(opt.value)}
+          className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+            value === opt.value
+              ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
   );
 }
 
