@@ -97,6 +97,19 @@ export default function AttendanceClose() {
     enabled: !!user,
   });
 
+  // 締日設定を読み込む
+  useQuery({
+    queryKey: ['site-settings-close'],
+    queryFn: async () => {
+      const settings = await base44.entities.SiteSettings.list();
+      if (settings.length > 0 && settings[0].attendance_close_day !== undefined) {
+        setCloseDay(settings[0].attendance_close_day || 0);
+      }
+      return settings;
+    },
+    enabled: !!user,
+  });
+
   // レート制限対策: 1件ずつ順番に処理
   const updateInBatches = async (records, updateFn, batchSize = 1, delayMs = 600) => {
     for (let i = 0; i < records.length; i += batchSize) {
