@@ -114,20 +114,20 @@ export default function AdminDialogs({
 
       {/* Staff Dialog */}
       <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4 max-h-[65vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[92vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0"><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
+          <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
             <div className="grid grid-cols-2 gap-3">
               <div><Label>苗字 *</Label><Input value={staffForm.last_name || ''} onChange={(e) => { const ln = e.target.value; setStaffForm(prev => ({...prev, last_name: ln, full_name: [ln, prev.first_name].filter(Boolean).join(' ')})); }} placeholder="山下" /></div>
               <div><Label>名前 *</Label><Input value={staffForm.first_name || ''} onChange={(e) => { const fn = e.target.value; setStaffForm(prev => ({...prev, first_name: fn, full_name: [prev.last_name, fn].filter(Boolean).join(' ')})); }} placeholder="恵" /></div>
             </div>
-            <div><Label>メールアドレス *</Label><Input type="email" value={staffForm.email} onChange={(e) => setStaffForm({...staffForm, email: e.target.value})} placeholder="yamada@example.com" /></div>
-            <div><Label>電話番号</Label><Input type="tel" value={staffForm.phone} onChange={(e) => setStaffForm({...staffForm, phone: e.target.value})} placeholder="090-1234-5678" /></div>
-            <div><Label>住所</Label><Input value={staffForm.address} onChange={(e) => setStaffForm({...staffForm, address: e.target.value})} placeholder="札幌市中央区..." /></div>
+            <div><Label>メールアドレス *</Label><Input type="email" value={staffForm.email || ''} onChange={(e) => setStaffForm(prev => ({...prev, email: e.target.value}))} placeholder="yamada@example.com" /></div>
+            <div><Label>電話番号</Label><Input type="tel" value={staffForm.phone || ''} onChange={(e) => setStaffForm(prev => ({...prev, phone: e.target.value}))} placeholder="090-1234-5678" /></div>
+            <div><Label>住所</Label><Input value={staffForm.address || ''} onChange={(e) => setStaffForm(prev => ({...prev, address: e.target.value}))} placeholder="札幌市中央区..." /></div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>生年月日</Label><Input type="date" value={staffForm.date_of_birth} onChange={(e) => setStaffForm({...staffForm, date_of_birth: e.target.value})} /></div>
+              <div><Label>生年月日</Label><Input type="date" value={staffForm.date_of_birth || ''} onChange={(e) => setStaffForm(prev => ({...prev, date_of_birth: e.target.value}))} /></div>
               <div><Label>性別</Label>
-                <Select value={staffForm.gender} onValueChange={(v) => setStaffForm({...staffForm, gender: v})}>
+                <Select value={staffForm.gender || 'other'} onValueChange={(v) => setStaffForm(prev => ({...prev, gender: v}))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="male">男性</SelectItem><SelectItem value="female">女性</SelectItem><SelectItem value="other">その他</SelectItem></SelectContent>
                 </Select>
@@ -135,33 +135,37 @@ export default function AdminDialogs({
             </div>
             <div>
               <Label>外部連携コード <span className="text-xs font-normal text-slate-400">（給与ソフト・勤怠システムの社員番号）</span></Label>
-              <Input value={staffForm.external_staff_code || ''} onChange={(e) => setStaffForm({...staffForm, external_staff_code: e.target.value})} placeholder="例: 001, E0042" />
+              <Input value={staffForm.external_staff_code || ''} onChange={(e) => setStaffForm(prev => ({...prev, external_staff_code: e.target.value}))} placeholder="例: 001, E0042" />
               <p className="text-xs text-slate-400 mt-1">MFクラウド勤怠・freee・弥生・ジョブカンなど各ソフトのCSV出力時に使用されます</p>
             </div>
             <div><Label>カテゴリー *</Label>
-              <Select value={staffForm.role} onValueChange={(v) => setStaffForm({...staffForm, role: v})}>
+              <Select value={staffForm.role || 'temporary'} onValueChange={(v) => setStaffForm(prev => ({...prev, role: v}))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">管理者</SelectItem><SelectItem value="full_time">正社員</SelectItem>
-                  <SelectItem value="part_time">パート</SelectItem><SelectItem value="temporary">単発</SelectItem>
+                  <SelectItem value="admin">管理者</SelectItem>
+                  <SelectItem value="full_time">正社員</SelectItem>
+                  <SelectItem value="part_time">パート</SelectItem>
+                  <SelectItem value="temporary">単発</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div><Label>在籍ステータス *</Label>
-              <Select value={staffForm.status || 'active'} onValueChange={(v) => setStaffForm({...staffForm, status: v})}>
+              <Select value={staffForm.status || 'active'} onValueChange={(v) => setStaffForm(prev => ({...prev, status: v}))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">✅ 在籍中</SelectItem>
-                  <SelectItem value="leave">🟡 休職中</SelectItem>
-                  <SelectItem value="inactive">❌ 退職・停止</SelectItem>
+                  <SelectItem value="active">在職中</SelectItem>
+                  <SelectItem value="leave">休職中</SelectItem>
+                  <SelectItem value="inactive">退職・停止</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div><Label>承認ステータス *</Label>
-              <Select value={staffForm.approval_status} onValueChange={(v) => setStaffForm({...staffForm, approval_status: v})}>
+              <Select value={staffForm.approval_status || 'pending'} onValueChange={(v) => setStaffForm(prev => ({...prev, approval_status: v}))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">承認待ち</SelectItem><SelectItem value="approved">承認済み</SelectItem><SelectItem value="rejected">却下</SelectItem>
+                  <SelectItem value="pending">承認待ち</SelectItem>
+                  <SelectItem value="approved">承認済み</SelectItem>
+                  <SelectItem value="rejected">却下</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -169,14 +173,14 @@ export default function AdminDialogs({
               <input
                 type="checkbox"
                 checked={staffForm.display_in_shift_calendar !== false}
-                onChange={(e) => setStaffForm({...staffForm, display_in_shift_calendar: e.target.checked})}
+                onChange={(e) => setStaffForm(prev => ({...prev, display_in_shift_calendar: e.target.checked}))}
                 className="w-4 h-4 accent-indigo-600"
               />
-              <Label className="mb-0">シフトカレンダーに表示する</Label>
+              <Label className="mb-0 cursor-pointer">シフトカレンダーに表示する</Label>
             </div>
             <div>
               <Label>保有資格（複数選択可）</Label>
-              <div className="mt-2 border rounded-lg p-3 max-h-48 overflow-y-auto bg-slate-50 space-y-1.5">
+              <div className="mt-2 border rounded-lg p-3 max-h-40 overflow-y-auto bg-slate-50 space-y-1.5">
                 {[
                   '無資格','看護師','准看護師','介護福祉士','実務者研修','初任者研修',
                   '理学療法士','作業療法士','言語聴覚士','柔道整復師','あん摩マッサージ指圧師',
@@ -191,10 +195,9 @@ export default function AdminDialogs({
                         type="checkbox"
                         checked={checked}
                         onChange={() => {
-                          const cur = staffForm.qualifications || [];
-                          setStaffForm({
-                            ...staffForm,
-                            qualifications: checked ? cur.filter(x => x !== q) : [...cur, q],
+                          setStaffForm(prev => {
+                            const cur = prev.qualifications || [];
+                            return { ...prev, qualifications: checked ? cur.filter(x => x !== q) : [...cur, q] };
                           });
                         }}
                         className="w-4 h-4 accent-indigo-600"
@@ -216,33 +219,33 @@ export default function AdminDialogs({
                   <Label className="text-xs">月給（円）</Label>
                   <Input type="number" placeholder="例: 200000"
                     value={staffForm.monthly_salary || ''}
-                    onChange={(e) => setStaffForm({...staffForm, monthly_salary: e.target.value ? Number(e.target.value) : ''})} />
+                    onChange={(e) => setStaffForm(prev => ({...prev, monthly_salary: e.target.value ? Number(e.target.value) : ''}))} />
                 </div>
                 <div>
                   <Label className="text-xs">時給（円）</Label>
                   <Input type="number" placeholder="例: 1200"
                     value={staffForm.hourly_wage || ''}
-                    onChange={(e) => setStaffForm({...staffForm, hourly_wage: e.target.value ? Number(e.target.value) : ''})} />
+                    onChange={(e) => setStaffForm(prev => ({...prev, hourly_wage: e.target.value ? Number(e.target.value) : ''}))} />
                 </div>
                 <div>
                   <Label className="text-xs">日給（円）</Label>
                   <Input type="number" placeholder="例: 10000"
                     value={staffForm.daily_wage || ''}
-                    onChange={(e) => setStaffForm({...staffForm, daily_wage: e.target.value ? Number(e.target.value) : ''})} />
+                    onChange={(e) => setStaffForm(prev => ({...prev, daily_wage: e.target.value ? Number(e.target.value) : ''}))} />
                 </div>
               </div>
               <div className="border-t border-amber-200 pt-3">
-                <p className="text-xs font-semibold text-amber-700 mb-2">🚌 交通費</p>
+                <p className="text-xs font-semibold text-amber-700 mb-2">交通費</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs">交通費（円）</Label>
                     <Input type="number" placeholder="例: 10000"
                       value={staffForm.commute_allowance || ''}
-                      onChange={(e) => setStaffForm({...staffForm, commute_allowance: e.target.value ? Number(e.target.value) : ''})} />
+                      onChange={(e) => setStaffForm(prev => ({...prev, commute_allowance: e.target.value ? Number(e.target.value) : ''}))} />
                   </div>
                   <div>
                     <Label className="text-xs">支給単位</Label>
-                    <Select value={staffForm.commute_allowance_type || 'monthly'} onValueChange={(v) => setStaffForm({...staffForm, commute_allowance_type: v})}>
+                    <Select value={staffForm.commute_allowance_type || 'monthly'} onValueChange={(v) => setStaffForm(prev => ({...prev, commute_allowance_type: v}))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="monthly">月額</SelectItem>
@@ -252,11 +255,11 @@ export default function AdminDialogs({
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-amber-600">※ 雇用形態に合わせて入力してください。給与計算サマリーに反映されます。</p>
+              <p className="text-xs text-amber-600">※ 雇用形態に合わせて入力してください。</p>
             </div>
             <StaffTaxFields form={staffForm} setForm={setStaffForm} />
           </div>
-          <DialogFooter className="flex-col sm:flex-row gap-3">
+          <DialogFooter className="flex-shrink-0 flex-col sm:flex-row gap-3 pt-2 border-t">
             {editingStaff && (
               <Button variant="outline" onClick={() => inviteStaffMutation.mutate({ email: staffForm.email })}
                 className="w-full sm:w-auto gap-2 border-blue-200 text-blue-600 hover:bg-blue-50" disabled={inviteStaffMutation.isPending}>
@@ -265,7 +268,8 @@ export default function AdminDialogs({
             )}
             <div className="flex gap-2 ml-auto w-full sm:w-auto">
               <Button variant="outline" onClick={() => setStaffDialogOpen(false)} className="flex-1 sm:flex-none">キャンセル</Button>
-              <Button onClick={handleSubmitStaff} className="bg-[#2D4A6F] flex-1 sm:flex-none" disabled={(!staffForm.full_name && !staffForm.last_name) || !staffForm.email}>
+              <Button onClick={handleSubmitStaff} className="bg-[#2D4A6F] flex-1 sm:flex-none"
+                disabled={(!staffForm.full_name && !staffForm.last_name) || !staffForm.email}>
                 {editingStaff ? '更新' : '登録'}
               </Button>
             </div>
