@@ -81,6 +81,67 @@ export default function SiteSettingsTab({ settingsForm, setSettingsForm, onSave,
 
       <Card className="border-0 shadow-lg">
         <div className="p-6 border-b">
+          <h2 className="text-lg font-medium">勤怠締日設定</h2>
+        </div>
+        <div className="p-6 space-y-4 max-w-2xl">
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <Label className="text-sm font-medium text-amber-800 mb-3 block">締日（毎月何日締め）</Label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setSettingsForm({...settingsForm, attendance_close_day: 0})}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
+                  (settingsForm.attendance_close_day || 0) === 0
+                    ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                    : 'bg-white text-slate-600 border-slate-300 hover:border-[#2D4A6F]'
+                }`}
+              >
+                月末締め
+              </button>
+              {[5,10,15,20,25].map(d => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setSettingsForm({...settingsForm, attendance_close_day: d})}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
+                    (settingsForm.attendance_close_day || 0) === d
+                      ? 'bg-[#2D4A6F] text-white border-[#2D4A6F]'
+                      : 'bg-white text-slate-600 border-slate-300 hover:border-[#2D4A6F]'
+                  }`}
+                >
+                  {d}日締め
+                </button>
+              ))}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">その他:</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={28}
+                  value={(settingsForm.attendance_close_day || 0) !== 0 && ![5,10,15,20,25].includes(settingsForm.attendance_close_day || 0) ? settingsForm.attendance_close_day : ''}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    if (!isNaN(v) && v >= 1 && v <= 28) setSettingsForm({...settingsForm, attendance_close_day: v});
+                  }}
+                  placeholder="1〜28"
+                  className="w-20 h-9 px-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-1 focus:ring-[#2D4A6F]"
+                />
+                <span className="text-sm text-slate-500">日締め</span>
+              </div>
+            </div>
+            <p className="text-xs text-amber-700 mt-3">
+              現在の設定: <strong>{(settingsForm.attendance_close_day || 0) === 0 ? '月末締め（毎月末日）' : `毎月${settingsForm.attendance_close_day}日締め`}</strong>
+              　→　勤怠締め処理画面の対象期間に自動反映されます
+            </p>
+          </div>
+          <Button onClick={onSave} className="bg-[#2D4A6F]" disabled={isSaving}>
+            {isSaving ? '保存中...' : '締日設定を保存'}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="border-0 shadow-lg">
+        <div className="p-6 border-b">
           <h2 className="text-lg font-medium">プライバシー・表示設定</h2>
         </div>
         <div className="p-6 space-y-4 max-w-2xl">
