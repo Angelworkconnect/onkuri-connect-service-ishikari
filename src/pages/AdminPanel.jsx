@@ -43,7 +43,7 @@ import AttendanceCalendar from '../components/admin/AttendanceCalendar';
 import StaffPayrollSummary from '../components/attendance/StaffPayrollSummary';
 import HelpRequestManager from '../components/admin/HelpRequestManager';
 import StaffListTabComponent from '../components/admin/StaffListTab';
-import StaffDialog from '../components/admin/StaffDialog';
+import StaffDialog from '../components/admin/StaffDialog.jsx';
 import TipsTab from '../components/admin/TipsTab';
 import AdminShiftTabComp from '../components/shift/AdminShiftTab';
 import BenefitsTabInline from '../components/admin/BenefitsTabInline';

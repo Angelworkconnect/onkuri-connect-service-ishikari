@@ -13,7 +13,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Plus, Trash2, Send } from "lucide-react";
-import StaffDialog from './StaffDialog';
+import StaffDialog from './StaffDialog.jsx';
 
 const tipTypes = [
   { value: 'everyday_thanks', label: 'エブリデイサンクス' },
