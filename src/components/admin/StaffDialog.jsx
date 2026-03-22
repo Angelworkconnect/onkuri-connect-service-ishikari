@@ -121,7 +121,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg w-full overflow-hidden" style={{maxHeight: '92vh', display: 'flex', flexDirection: 'column'}}>
+      <DialogContent className="max-w-lg w-full" style={{maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'visible'}}>
         <DialogHeader style={{flexShrink: 0}}>
           <DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle>
         </DialogHeader>
