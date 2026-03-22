@@ -121,9 +121,15 @@ export default function AttendanceClose() {
     }
   };
 
+  // 締日設定に基づく対象レコード取得
+  const getRecordsForPeriod = (yearMonth) => {
+    const period = getClosePeriod(yearMonth, closeDay);
+    return attendanceRecords.filter(r => r.date >= period.from && r.date <= period.to);
+  };
+
   const closeMonthMutation = useMutation({
     mutationFn: async ({ yearMonth }) => {
-      const records = attendanceRecords.filter(r => r.date.startsWith(yearMonth));
+      const records = getRecordsForPeriod(yearMonth);
       const unapproved = records.filter(r => r.status !== 'approved');
       
       if (unapproved.length > 0) {
