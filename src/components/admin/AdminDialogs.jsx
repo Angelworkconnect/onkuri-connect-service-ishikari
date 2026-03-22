@@ -112,8 +112,8 @@ export default function AdminDialogs({
         </DialogContent>
       </Dialog>
 
-      {/* Staff Dialog */}
-      <Dialog open={staffDialogOpen} onOpenChange={setStaffDialogOpen}>
+      {/* Staff Dialog - handled by StaffDialog component in AdminPanel */}
+      <Dialog open={staffDialogOpen && false} onOpenChange={setStaffDialogOpen}>
         <DialogContent className="max-w-lg max-h-[92vh] flex flex-col">
           <DialogHeader className="flex-shrink-0"><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
           <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
