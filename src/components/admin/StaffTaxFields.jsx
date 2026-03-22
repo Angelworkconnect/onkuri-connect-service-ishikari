@@ -1,7 +1,6 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const TAX_MODES = [
   { value: 'FULL', label: '無制限（制限なし）' },
@@ -19,12 +18,13 @@ export default function StaffTaxFields({ form, setForm }) {
       <p className="text-xs font-bold text-pink-700">💕 扶養・税制プロファイル</p>
       <div>
         <Label>税制モード</Label>
-        <Select value={form.tax_mode || 'FULL'} onValueChange={(v) => update('tax_mode', v)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {TAX_MODES.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        <select
+          value={form.tax_mode || 'FULL'}
+          onChange={e => update('tax_mode', e.target.value)}
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          {TAX_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+        </select>
       </div>
       {form.tax_mode === 'CUSTOM' && (
         <div>
