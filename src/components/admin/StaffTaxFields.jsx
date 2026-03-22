@@ -13,12 +13,13 @@ const TAX_MODES = [
 ];
 
 export default function StaffTaxFields({ form, setForm }) {
+  const update = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
   return (
     <div className="border rounded-lg p-3 space-y-3 bg-pink-50/50">
       <p className="text-xs font-bold text-pink-700">💕 扶養・税制プロファイル</p>
       <div>
         <Label>税制モード</Label>
-        <Select value={form.tax_mode || 'FULL'} onValueChange={(v) => setForm({ ...form, tax_mode: v })}>
+        <Select value={form.tax_mode || 'FULL'} onValueChange={(v) => update('tax_mode', v)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             {TAX_MODES.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
@@ -29,25 +30,25 @@ export default function StaffTaxFields({ form, setForm }) {
         <div>
           <Label>年収上限（円）</Label>
           <Input type="number" value={form.annual_income_limit || ''} placeholder="1200000"
-            onChange={(e) => setForm({ ...form, annual_income_limit: Number(e.target.value) })} />
+            onChange={(e) => update('annual_income_limit', Number(e.target.value))} />
         </div>
       )}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label>月労働時間上限</Label>
           <Input type="number" value={form.monthly_hour_limit || ''} placeholder="80"
-            onChange={(e) => setForm({ ...form, monthly_hour_limit: Number(e.target.value) })} />
+            onChange={(e) => update('monthly_hour_limit', Number(e.target.value))} />
         </div>
         <div>
           <Label>時給（円）</Label>
           <Input type="number" value={form.hourly_wage || ''} placeholder="1100"
-            onChange={(e) => setForm({ ...form, hourly_wage: Number(e.target.value) })} />
+            onChange={(e) => update('hourly_wage', Number(e.target.value))} />
         </div>
       </div>
       <div>
         <Label>最大連勤日数</Label>
         <Input type="number" value={form.max_consecutive_days || ''} placeholder="5"
-          onChange={(e) => setForm({ ...form, max_consecutive_days: Number(e.target.value) })} />
+          onChange={(e) => update('max_consecutive_days', Number(e.target.value))} />
       </div>
     </div>
   );
