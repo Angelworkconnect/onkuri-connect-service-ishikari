@@ -1094,11 +1094,13 @@ export default function AdminPanel() {
   };
 
   const handleSubmitStaff = (data) => {
-    if (editingStaff) {
-      updateStaffMutation.mutate({ id: editingStaff.id, data });
-    } else {
-      createStaffMutation.mutate(data);
-    }
+    return new Promise((resolve, reject) => {
+      if (editingStaff) {
+        updateStaffMutation.mutate({ id: editingStaff.id, data }, { onSuccess: resolve, onError: reject });
+      } else {
+        createStaffMutation.mutate(data, { onSuccess: resolve, onError: reject });
+      }
+    });
   };
 
   const handleEditShift = (shift) => {
