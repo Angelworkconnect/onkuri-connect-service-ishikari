@@ -117,7 +117,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
     });
   };
 
-  const canSubmit = !!(form.full_name || form.last_name) && !!form.email;
+  const canSubmit = !!(form.full_name || form.last_name) && !!(form.email && form.email.trim());
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
