@@ -18,13 +18,22 @@ export default function StaffTaxFields({ form, setForm }) {
       <p className="text-xs font-bold text-pink-700">💕 扶養・税制プロファイル</p>
       <div>
         <Label>税制モード</Label>
-        <select
-          value={form.tax_mode || 'FULL'}
-          onChange={e => update('tax_mode', e.target.value)}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          {TAX_MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-        </select>
+        <div className="flex flex-wrap gap-1 mt-1">
+          {TAX_MODES.map(m => (
+            <button
+              key={m.value}
+              type="button"
+              onClick={() => update('tax_mode', m.value)}
+              className={`px-2 py-1 rounded-md text-xs border transition-colors ${
+                (form.tax_mode || 'FULL') === m.value
+                  ? 'bg-pink-600 text-white border-pink-600'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
       </div>
       {form.tax_mode === 'CUSTOM' && (
         <div>
