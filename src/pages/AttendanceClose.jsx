@@ -26,9 +26,37 @@ import AttendanceEditDialog from "@/components/attendance/AttendanceEditDialog";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
+// 締日設定に基づき、指定「締め年月ラベル」の勤怠対象期間を返す
+// closeDay=0: 月末締め → その月の1日〜末日
+// closeDay=N: N日締め → 前月N+1日〜当月N日
+function getClosePeriod(yearMonth, closeDay) {
+  const [y, m] = yearMonth.split('-').map(Number);
+  if (!closeDay || closeDay === 0) {
+    // 月末締め
+    const lastDay = new Date(y, m, 0).getDate();
+    return {
+      from: `${yearMonth}-01`,
+      to: `${yearMonth}-${String(lastDay).padStart(2, '0')}`,
+      label: `${yearMonth}（月末締め）`,
+    };
+  } else {
+    // N日締め: 前月(N+1)日 〜 当月N日
+    const prevDate = new Date(y, m - 2, closeDay + 1); // 前月のN+1日
+    const toDate = new Date(y, m - 1, closeDay); // 当月N日
+    const fromStr = format(prevDate, 'yyyy-MM-dd');
+    const toStr = format(toDate, 'yyyy-MM-dd');
+    return {
+      from: fromStr,
+      to: toStr,
+      label: `${yearMonth}（${format(prevDate, 'M/d')}〜${format(toDate, 'M/d')}）`,
+    };
+  }
+}
+
 export default function AttendanceClose() {
   const [user, setUser] = useState(null);
   const [allStaff, setAllStaff] = useState([]);
+  const [closeDay, setCloseDay] = useState(0); // 締日設定
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [selectedYearMonth, setSelectedYearMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [exportMonth, setExportMonth] = useState(format(new Date(), 'yyyy-MM'));
