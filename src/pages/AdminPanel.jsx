@@ -365,8 +365,6 @@ export default function AdminPanel() {
     mutationFn: (data) => base44.entities.Staff.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-staff'] });
-      setStaffDialogOpen(false);
-      resetStaffForm();
     },
   });
 
@@ -374,8 +372,6 @@ export default function AdminPanel() {
     mutationFn: ({ id, data }) => base44.entities.Staff.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-staff'] });
-      setStaffDialogOpen(false);
-      resetStaffForm();
     },
   });
 
