@@ -100,7 +100,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
     } else {
       setForm(DEFAULT_FORM);
     }
-  }, [open, editingStaff?.id]);
+  }, [open, editingStaff?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
