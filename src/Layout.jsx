@@ -36,7 +36,6 @@ const navigation = [
   { name: 'サンクス',   href: 'TipsHistory',      icon: Sparkles      },
   { name: '福利厚生',   href: 'Benefits',         icon: Gift          },
   { name: '体験情報',   href: 'TrialInfo',        icon: ClipboardList },
-  // --- AI分析（管理者向けは別） ---
 ];
 
 const temporaryNavigation = [
@@ -48,13 +47,14 @@ const temporaryNavigation = [
   { name: 'サンクス',   href: 'TipsHistory',      icon: Sparkles      },
 ];
 
-  const adminNavigation = [];
+const adminNavigation = [];
 
 const settingsNavigation = [
   { name: '通知設定', href: 'NotificationSettings' },
 ];
 
-
+// 承認が必要なロール（adminを除く全スタッフ）
+const APPROVAL_REQUIRED_ROLES = ['temporary', 'part_time', 'full_time'];
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -73,17 +73,15 @@ export default function Layout({ children, currentPageName }) {
 
     base44.auth.me().then(async (u) => {
       if (u) {
-        // Check if user is admin in User entity
         if (u.role === 'admin') {
           setIsAdmin(true);
         }
         
-        // Check Staff entity role and get full name
         const staffList = await base44.entities.Staff.filter({ email: u.email });
         if (staffList.length > 0) {
           u.full_name = staffList[0].full_name;
-          u.role = staffList[0].role; // Use Staff role as primary
-          u.approval_status = staffList[0].approval_status; // Store approval status
+          u.role = staffList[0].role;
+          u.approval_status = staffList[0].approval_status;
           if (staffList[0].role === 'admin') {
             setIsAdmin(true);
           }
@@ -93,11 +91,97 @@ export default function Layout({ children, currentPageName }) {
     }).catch(() => {});
   }, []);
 
+  // 承認待ちかどうかの判定（adminを除く全ロール）
+  const isPendingApproval = (u) => {
+    if (!u) return false;
+    if (u.role === 'admin') return false;
+    return APPROVAL_REQUIRED_ROLES.includes(u.role) && u.approval_status !== 'approved';
+  };
+
   const isHome = currentPageName === 'Home';
 
   if (isHome) {
     return <>{children}</>;
   }
+
+  // 承認待ち画面
+  if (user && isPendingApproval(user)) {
+    const roleLabel = user.role === 'full_time' ? '正社員' : user.role === 'part_time' ? 'パート' : 'スタッフ';
+    return (
+      <div className="min-h-screen bg-slate-50">
+        {/* Header */}
+        <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center justify-between h-16">
+              <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] flex items-center justify-center">
+                  <span className="text-white font-medium text-sm">{logoChar || officeName?.[0] || '輪'}</span>
+                </div>
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-[#E8A4B8]/20 flex items-center justify-center">
+                      <span className="text-sm font-medium text-[#C17A8E]">
+                        {user.full_name?.[0] || user.email?.[0]?.toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="hidden sm:block text-slate-700">{user.full_name || user.email}</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-2">
+                    <p className="text-sm font-medium text-slate-800">{user.full_name}</p>
+                    <p className="text-xs text-slate-500">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-red-600"
+                    onClick={() => base44.auth.logout()}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    ログアウト
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </header>
+
+        {/* 承認待ちメッセージ */}
+        <main className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+          <div className="max-w-md mx-auto px-6 text-center">
+            <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-10 h-10 text-amber-600" />
+            </div>
+            <h1 className="text-2xl font-medium text-slate-800 mb-3">承認待ちです</h1>
+            <p className="text-slate-600 mb-2">
+              <span className="font-medium text-[#2D4A6F]">{roleLabel}</span>としての登録が完了しました。
+            </p>
+            <p className="text-slate-500 text-sm mb-6">
+              管理者が承認するまでお待ちください。<br />
+              承認後、すべての機能をご利用いただけます。
+            </p>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-700">
+              <p className="font-medium mb-1">現在のステータス</p>
+              <p>承認待ち（管理者の確認中）</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const getNavItems = () => {
+    if (user?.role === 'temporary') return temporaryNavigation;
+    return navigation;
+  };
+
+  const handleNavClick = (e) => {
+    // adminは制限なし、承認済みも制限なし（このブロックに来ない）
+    // ここに到達するのは承認済みユーザーのみ
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -115,16 +199,10 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
-              {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
+              {getNavItems().map((item) => {
                 const isActive = currentPageName === item.href;
-                const handleClick = (e) => {
-                  if (user?.role === 'temporary' && user?.approval_status !== 'approved') {
-                    e.preventDefault();
-                    alert('スタッフ登録の承認待ち中です。\n管理者の承認後にご利用いただけます。');
-                  }
-                };
                 return (
-                  <Link key={item.name} to={createPageUrl(item.href)} onClick={handleClick}>
+                  <Link key={item.name} to={createPageUrl(item.href)}>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -227,21 +305,13 @@ export default function Layout({ children, currentPageName }) {
                 <SheetContent side="right" className="w-72">
                   <div className="py-4">
                     <nav className="space-y-2">
-                      {(user?.role === 'temporary' ? temporaryNavigation : navigation).map((item) => {
+                      {getNavItems().map((item) => {
                         const isActive = currentPageName === item.href;
-                        const handleClick = (e) => {
-                          if (user?.role === 'temporary' && user?.approval_status !== 'approved') {
-                            e.preventDefault();
-                            alert('スタッフ登録の承認待ち中です。\n管理者の承認後にご利用いただけます。');
-                          } else {
-                            setMobileMenuOpen(false);
-                          }
-                        };
                         return (
                           <Link 
                             key={item.name} 
                             to={createPageUrl(item.href)}
-                            onClick={handleClick}
+                            onClick={() => setMobileMenuOpen(false)}
                           >
                             <Button
                               variant="ghost"
@@ -305,8 +375,6 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
-
-
-      </div>
-      );
-      }
+    </div>
+  );
+}
