@@ -12,8 +12,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Plus, Mail, Trash2, Sparkles, Send } from "lucide-react";
-import StaffTaxFields from './StaffTaxFields';
+import { Plus, Trash2, Send } from "lucide-react";
 import StaffDialog from './StaffDialog';
 
 const tipTypes = [
