@@ -126,7 +126,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
           <DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle>
         </DialogHeader>
 
-        <div style={{flex: 1, overflowY: 'auto', paddingRight: '4px'}} className="space-y-4 py-2">
+        <div style={{flex: 1, overflowY: 'auto', minHeight: 0, paddingRight: '4px'}} className="space-y-4 py-2">
           {/* 氏名 */}
           <div className="grid grid-cols-2 gap-3">
             <div>
