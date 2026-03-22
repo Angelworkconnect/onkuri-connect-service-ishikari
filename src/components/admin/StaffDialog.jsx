@@ -70,11 +70,11 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
   useEffect(() => {
     if (!open) return;
     if (editingStaff) {
-      const nameParts = (editingStaff.full_name || '').split(' ');
+      const nameParts = (editingStaff.full_name || '').split(/\s+/);
       setForm({
         ...DEFAULT_FORM,
         full_name: editingStaff.full_name || '',
-        last_name: nameParts[0] || '',
+        last_name: nameParts[0] || editingStaff.full_name || '',
         first_name: nameParts.slice(1).join(' ') || '',
         email: editingStaff.email || '',
         phone: editingStaff.phone || '',
