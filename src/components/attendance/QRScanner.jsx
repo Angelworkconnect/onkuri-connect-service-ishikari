@@ -94,9 +94,16 @@ export default function QRScanner({ user, todayAttendance, onSuccess, canClockIn
       }
 
       const validToken = tokens[0];
-      const now = new Date();
-      if (new Date(validToken.expires_at) < now) {
-        throw new Error('QRコードの有効期限が切れています');
+      const now = Date.now();
+      let expiresMs;
+      if (validToken.expires_at_utc_ms) {
+        expiresMs = validToken.expires_at_utc_ms;
+      } else {
+        const [y, m, d] = validToken.expires_at.split('-').map(Number);
+        expiresMs = Date.UTC(y, m - 1, d, 14, 59, 59, 999);
+      }
+      if (expiresMs < now) {
+        throw new Error('QRコードの有効期限が切れています。管理者に更新を依頼してください。');
       }
 
       // 退勤打刻
