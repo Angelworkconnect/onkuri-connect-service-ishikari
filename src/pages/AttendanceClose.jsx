@@ -982,6 +982,11 @@ export default function AttendanceClose() {
             <p className="text-slate-700">
               {selectedYearMonth}の勤怠を締めます。
             </p>
+            {selectedYearMonth && (
+              <div className="mt-1 text-sm text-[#2D4A6F] font-medium">
+                対象期間: {getClosePeriod(selectedYearMonth, closeDay).from} 〜 {getClosePeriod(selectedYearMonth, closeDay).to}
+              </div>
+            )}
             <p className="text-sm text-slate-500 mt-2">
               ※承認済みの勤怠のみ締められます<br />
               ※締め後も編集は可能です（締め状態は維持）
