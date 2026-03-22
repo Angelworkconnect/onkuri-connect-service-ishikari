@@ -307,7 +307,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
           )}
           <div className="flex gap-2 ml-auto w-full sm:w-auto">
             <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1 sm:flex-none">キャンセル</Button>
-            <Button onClick={handleSubmit} className="bg-[#2D4A6F] flex-1 sm:flex-none" disabled={!canSubmit}>
+            <Button onClick={handleSubmit} className="bg-[#2D4A6F] flex-1 sm:flex-none">
               {editingStaff ? '更新' : '登録'}
             </Button>
           </div>
