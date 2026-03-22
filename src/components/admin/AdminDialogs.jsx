@@ -113,12 +113,12 @@ export default function AdminDialogs({
         </DialogContent>
       </Dialog>
 
-      {/* Staff Dialog - delegated to StaffDialog component */}
+      {/* Staff Dialog - fully self-contained, no stale state */}
       <StaffDialog
         open={staffDialogOpen}
-        onOpenChange={setStaffDialogOpen}
+        onOpenChange={(v) => { setStaffDialogOpen(v); }}
         editingStaff={editingStaff}
-        onSubmit={handleSubmitStaff}
+        onSubmit={(data) => { handleSubmitStaff(data); }}
         onInvite={(email) => inviteStaffMutation.mutate({ email })}
         invitePending={inviteStaffMutation.isPending}
       />
