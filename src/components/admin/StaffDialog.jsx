@@ -5,11 +5,21 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { Mail } from "lucide-react";
 import StaffTaxFields from './StaffTaxFields';
+
+// ネイティブselectラッパー（Radix UIのSelect問題を回避）
+function NativeSelect({ value, onChange, children, className = '' }) {
+  return (
+    <select
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${className}`}
+    >
+      {children}
+    </select>
+  );
+}
 
 const QUALIFICATIONS = [
   '無資格','看護師','准看護師','介護福祉士','実務者研修','初任者研修',
