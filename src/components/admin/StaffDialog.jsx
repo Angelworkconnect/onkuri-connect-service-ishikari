@@ -177,11 +177,11 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
             </div>
             <div>
               <Label>性別</Label>
-              <NativeSelect value={form.gender} onChange={v => set('gender', v)}>
-                <option value="male">男性</option>
-                <option value="female">女性</option>
-                <option value="other">その他</option>
-              </NativeSelect>
+              <SegmentSelect value={form.gender} onChange={v => set('gender', v)} options={[
+                { value: 'male', label: '男性' },
+                { value: 'female', label: '女性' },
+                { value: 'other', label: 'その他' },
+              ]} />
             </div>
           </div>
 
