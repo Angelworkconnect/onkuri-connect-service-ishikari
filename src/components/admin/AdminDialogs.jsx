@@ -113,8 +113,17 @@ export default function AdminDialogs({
         </DialogContent>
       </Dialog>
 
-      {/* Staff Dialog - handled by StaffDialog component in AdminPanel */}
-      <Dialog open={staffDialogOpen && false} onOpenChange={setStaffDialogOpen}>
+      {/* Staff Dialog - delegated to StaffDialog component */}
+      <StaffDialog
+        open={staffDialogOpen}
+        onOpenChange={setStaffDialogOpen}
+        editingStaff={editingStaff}
+        onSubmit={handleSubmitStaff}
+        onInvite={(email) => inviteStaffMutation.mutate({ email })}
+        invitePending={inviteStaffMutation.isPending}
+      />
+      {/* Legacy staff dialog shell (never opens) */}
+      <Dialog open={false} onOpenChange={() => {}}>
         <DialogContent className="max-w-lg max-h-[92vh] flex flex-col">
           <DialogHeader className="flex-shrink-0"><DialogTitle>{editingStaff ? 'スタッフ編集' : '新規スタッフ登録'}</DialogTitle></DialogHeader>
           <div className="flex-1 overflow-y-auto space-y-4 py-2 pr-1">
