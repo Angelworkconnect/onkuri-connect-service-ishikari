@@ -276,13 +276,10 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
                 </div>
                 <div>
                   <Label className="text-xs">支給単位</Label>
-                  <Select value={form.commute_allowance_type} onValueChange={v => set('commute_allowance_type', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="monthly">月額</SelectItem>
-                      <SelectItem value="daily">日額（出勤日数×金額）</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <NativeSelect value={form.commute_allowance_type} onChange={v => set('commute_allowance_type', v)}>
+                   <option value="monthly">月額</option>
+                   <option value="daily">日額（出勤日数×金額）</option>
+                  </NativeSelect>
                 </div>
               </div>
             </div>
