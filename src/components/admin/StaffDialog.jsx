@@ -285,10 +285,10 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
                 </div>
                 <div>
                   <Label className="text-xs">支給単位</Label>
-                  <NativeSelect value={form.commute_allowance_type} onChange={v => set('commute_allowance_type', v)}>
-                   <option value="monthly">月額</option>
-                   <option value="daily">日額（出勤日数×金額）</option>
-                  </NativeSelect>
+                  <SegmentSelect value={form.commute_allowance_type} onChange={v => set('commute_allowance_type', v)} options={[
+                    { value: 'monthly', label: '月額' },
+                    { value: 'daily', label: '日額' },
+                  ]} />
                 </div>
               </div>
             </div>
