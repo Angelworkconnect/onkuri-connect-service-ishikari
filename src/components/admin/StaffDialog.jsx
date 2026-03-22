@@ -91,7 +91,16 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
     setSaved(false);
     try {
       const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
-      await onSubmit({ ...form, full_name: fullName });
+      const numericFields = ['monthly_salary', 'hourly_wage', 'daily_wage', 'commute_allowance', 'annual_income_limit', 'monthly_hour_limit', 'weekly_hour_limit', 'max_consecutive_days'];
+      const cleaned = { ...form, full_name: fullName };
+      numericFields.forEach(k => {
+        if (cleaned[k] === '' || cleaned[k] === null || cleaned[k] === undefined) {
+          delete cleaned[k];
+        } else {
+          cleaned[k] = Number(cleaned[k]);
+        }
+      });
+      await onSubmit(cleaned);
       setSaving(false);
       setSaved(true);
       setTimeout(() => {
