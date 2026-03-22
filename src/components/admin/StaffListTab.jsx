@@ -97,7 +97,7 @@ export default function StaffListTab({ allStaff, onEdit, onDelete, onInvite, onA
                       s.status === 'inactive' ? 'bg-slate-100 text-slate-500 border-slate-200' :
                       'bg-emerald-100 text-emerald-700 border-emerald-200'
                     } variant="outline">
-                      {s.status === 'leave' ? '🟡 休職中' : s.status === 'inactive' ? '❌ 退職・停止' : '✅ 在籍中'}
+                      {s.status === 'leave' ? '休職中' : s.status === 'inactive' ? '退職・停止' : '在職中'}
                     </Badge>
                     <Badge className={
                       s.approval_status === 'approved' ? 'bg-green-100 text-green-700' :
