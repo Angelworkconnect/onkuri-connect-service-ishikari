@@ -168,14 +168,11 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
             </div>
             <div>
               <Label>性別</Label>
-              <Select value={form.gender} onValueChange={v => set('gender', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">男性</SelectItem>
-                  <SelectItem value="female">女性</SelectItem>
-                  <SelectItem value="other">その他</SelectItem>
-                </SelectContent>
-              </Select>
+              <NativeSelect value={form.gender} onChange={v => set('gender', v)}>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+                <option value="other">その他</option>
+              </NativeSelect>
             </div>
           </div>
 
