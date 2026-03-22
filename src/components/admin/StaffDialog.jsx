@@ -39,8 +39,39 @@ const DEFAULT_FORM = {
   display_in_shift_calendar: true, external_staff_code: '',
   monthly_salary: '', hourly_wage: '', daily_wage: '',
   commute_allowance: '', commute_allowance_type: 'monthly',
-  tax_mode: 'FULL', monthly_hour_limit: '', max_consecutive_days: '',
+  tax_mode: 'FULL', annual_income_limit: '', monthly_hour_limit: '', max_consecutive_days: '',
 };
+
+// 数値フィールドのクリーニング：空文字・null・NaN → 除外、それ以外 → number
+function buildPayload(form) {
+  const NUMERIC = ['monthly_salary','hourly_wage','daily_wage','commute_allowance','annual_income_limit','monthly_hour_limit','weekly_hour_limit','max_consecutive_days'];
+  const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
+  const payload = {
+    full_name: fullName,
+    email: form.email,
+    gender: form.gender,
+    role: form.role,
+    status: form.status,
+    approval_status: form.approval_status,
+    qualifications: form.qualifications || [],
+    display_in_shift_calendar: form.display_in_shift_calendar,
+    commute_allowance_type: form.commute_allowance_type,
+    tax_mode: form.tax_mode,
+  };
+  if (form.phone) payload.phone = form.phone;
+  if (form.address) payload.address = form.address;
+  if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
+  if (form.external_staff_code) payload.external_staff_code = form.external_staff_code;
+
+  NUMERIC.forEach(k => {
+    const v = form[k];
+    if (v === '' || v === null || v === undefined) return;
+    const n = Number(v);
+    if (!isNaN(n) && n !== 0) payload[k] = n;
+  });
+
+  return payload;
+}
 
 export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit, onInvite, invitePending }) {
   const [form, setForm] = useState(DEFAULT_FORM);
@@ -86,42 +117,10 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
 
   const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
-  const toNumOrNull = (v) => {
-    if (v === '' || v === null || v === undefined) return null;
-    const n = Number(v);
-    return isNaN(n) ? null : n;
-  };
-
   const handleSubmit = async () => {
     setSaving(true);
     setSaved(false);
-    const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
-    const payload = {
-      full_name: fullName,
-      email: form.email,
-      phone: form.phone || null,
-      address: form.address || null,
-      date_of_birth: form.date_of_birth || null,
-      gender: form.gender,
-      role: form.role,
-      status: form.status,
-      approval_status: form.approval_status,
-      qualifications: form.qualifications || [],
-      display_in_shift_calendar: form.display_in_shift_calendar,
-      external_staff_code: form.external_staff_code || null,
-      commute_allowance_type: form.commute_allowance_type,
-      tax_mode: form.tax_mode,
-      monthly_salary: toNumOrNull(form.monthly_salary),
-      hourly_wage: toNumOrNull(form.hourly_wage),
-      daily_wage: toNumOrNull(form.daily_wage),
-      commute_allowance: toNumOrNull(form.commute_allowance),
-      annual_income_limit: toNumOrNull(form.annual_income_limit),
-      monthly_hour_limit: toNumOrNull(form.monthly_hour_limit),
-      max_consecutive_days: toNumOrNull(form.max_consecutive_days),
-    };
-    // nullフィールドを除去
-    Object.keys(payload).forEach(k => { if (payload[k] === null) delete payload[k]; });
-
+    const payload = buildPayload(form);
     try {
       await onSubmit(payload);
       setSaving(false);
@@ -151,10 +150,8 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
       style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={(e) => { if (e.target === e.currentTarget) onOpenChange(false); }}
     >
-      {/* Overlay */}
       <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
 
-      {/* Modal */}
       <div style={{
         position: 'relative', zIndex: 1, background: 'white', borderRadius: '12px',
         width: '100%', maxWidth: '540px', maxHeight: '90vh',
@@ -307,7 +304,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
                   <div key={f.key}>
                     <label style={{ fontSize: '12px', color: '#374151' }}>{f.label}</label>
                     <input type="number" placeholder={f.placeholder} value={form[f.key]}
-                      onChange={e => set(f.key, e.target.value ? Number(e.target.value) : '')}
+                      onChange={e => set(f.key, e.target.value)}
                       style={{ width: '100%', marginTop: '4px', padding: '7px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', boxSizing: 'border-box' }}
                     />
                   </div>
@@ -319,7 +316,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
                   <div>
                     <label style={{ fontSize: '12px', color: '#374151' }}>交通費（円）</label>
                     <input type="number" placeholder="10000" value={form.commute_allowance}
-                      onChange={e => set('commute_allowance', e.target.value ? Number(e.target.value) : '')}
+                      onChange={e => set('commute_allowance', e.target.value)}
                       style={{ width: '100%', marginTop: '4px', padding: '7px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', boxSizing: 'border-box' }}
                     />
                   </div>
