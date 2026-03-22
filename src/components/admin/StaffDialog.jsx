@@ -88,14 +88,21 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
 
   const handleSubmit = async () => {
     setSaving(true);
-    const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
-    await onSubmit({ ...form, full_name: fullName });
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
-      onOpenChange(false);
-    }, 1200);
+    setSaved(false);
+    try {
+      const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
+      await onSubmit({ ...form, full_name: fullName });
+      setSaving(false);
+      setSaved(true);
+      setTimeout(() => {
+        setSaved(false);
+        onOpenChange(false);
+      }, 1200);
+    } catch (err) {
+      console.error('Staff save error:', err);
+      setSaving(false);
+      alert('保存に失敗しました: ' + (err?.message || err));
+    }
   };
 
   const toggleQualification = (q) => {
