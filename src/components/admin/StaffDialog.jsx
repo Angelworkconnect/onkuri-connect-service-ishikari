@@ -195,32 +195,32 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
           {/* カテゴリー */}
           <div>
             <Label>カテゴリー *</Label>
-            <NativeSelect value={form.role} onChange={v => set('role', v)}>
-              <option value="admin">管理者</option>
-              <option value="full_time">正社員</option>
-              <option value="part_time">パート</option>
-              <option value="temporary">単発</option>
-            </NativeSelect>
+            <SegmentSelect value={form.role} onChange={v => set('role', v)} options={[
+              { value: 'admin', label: '管理者' },
+              { value: 'full_time', label: '正社員' },
+              { value: 'part_time', label: 'パート' },
+              { value: 'temporary', label: '単発' },
+            ]} />
           </div>
 
           {/* 在籍ステータス */}
           <div>
             <Label>在籍ステータス *</Label>
-            <NativeSelect value={form.status} onChange={v => set('status', v)}>
-              <option value="active">在職中</option>
-              <option value="leave">休職中</option>
-              <option value="inactive">退職・停止</option>
-            </NativeSelect>
+            <SegmentSelect value={form.status} onChange={v => set('status', v)} options={[
+              { value: 'active', label: '在職中' },
+              { value: 'leave', label: '休職中' },
+              { value: 'inactive', label: '退職・停止' },
+            ]} />
           </div>
 
           {/* 承認ステータス */}
           <div>
             <Label>承認ステータス *</Label>
-            <NativeSelect value={form.approval_status} onChange={v => set('approval_status', v)}>
-              <option value="pending">承認待ち</option>
-              <option value="approved">承認済み</option>
-              <option value="rejected">却下</option>
-            </NativeSelect>
+            <SegmentSelect value={form.approval_status} onChange={v => set('approval_status', v)} options={[
+              { value: 'pending', label: '承認待ち' },
+              { value: 'approved', label: '承認済み' },
+              { value: 'rejected', label: '却下' },
+            ]} />
           </div>
 
           {/* シフトカレンダー表示 */}
