@@ -30,9 +30,18 @@ export default function QRScanner({ user, todayAttendance, onSuccess, canClockIn
       }
 
       const validToken = tokens[0];
-      const now = new Date();
-      if (new Date(validToken.expires_at) < now) {
-        throw new Error('QRコードの有効期限が切れています');
+      const now = Date.now();
+      // JST対応: expires_at_utc_ms があればそれを使用、なければ当日のJST 23:59:59で判定
+      let expiresMs;
+      if (validToken.expires_at_utc_ms) {
+        expiresMs = validToken.expires_at_utc_ms;
+      } else {
+        // 旧形式: "YYYY-MM-DD" をJST 23:59:59として計算
+        const [y, m, d] = validToken.expires_at.split('-').map(Number);
+        expiresMs = Date.UTC(y, m - 1, d, 14, 59, 59, 999); // UTC 14:59:59 = JST 23:59:59
+      }
+      if (expiresMs < now) {
+        throw new Error('QRコードの有効期限が切れています。管理者に更新を依頼してください。');
       }
 
       // 出勤打刻
