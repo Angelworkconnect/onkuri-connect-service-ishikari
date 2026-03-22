@@ -1968,9 +1968,18 @@ export default function AdminPanel() {
                    </Tabs>
                   </div>
 
+      <StaffDialog
+        open={staffDialogOpen}
+        onOpenChange={setStaffDialogOpen}
+        editingStaff={editingStaff}
+        onSubmit={handleSubmitStaff}
+        onInvite={(email) => inviteStaffMutation.mutate({ email })}
+        invitePending={inviteStaffMutation.isPending}
+      />
+
       <AdminDialogs
         shiftDialogOpen={shiftDialogOpen} setShiftDialogOpen={setShiftDialogOpen} editingShift={editingShift} shiftForm={shiftForm} setShiftForm={setShiftForm} handleSubmitShift={handleSubmitShift} serviceTypes={serviceTypes}
-        staffDialogOpen={staffDialogOpen} setStaffDialogOpen={setStaffDialogOpen} editingStaff={editingStaff} staffForm={staffForm} setStaffForm={setStaffForm} handleSubmitStaff={handleSubmitStaff} inviteStaffMutation={inviteStaffMutation}
+        staffDialogOpen={false} setStaffDialogOpen={setStaffDialogOpen} editingStaff={editingStaff} staffForm={staffForm} setStaffForm={setStaffForm} handleSubmitStaff={handleSubmitStaff} inviteStaffMutation={inviteStaffMutation}
         announcementDialogOpen={announcementDialogOpen} setAnnouncementDialogOpen={setAnnouncementDialogOpen} editingAnnouncement={editingAnnouncement} announcementForm={announcementForm} setAnnouncementForm={setAnnouncementForm} handleSubmitAnnouncement={handleSubmitAnnouncement}
         reportDialogOpen={reportDialogOpen} setReportDialogOpen={setReportDialogOpen} reportForm={reportForm} setReportForm={setReportForm} handleGenerateReport={handleGenerateReport} isGeneratingReport={isGeneratingReport}
         tipDialogOpen={tipDialogOpen} setTipDialogOpen={setTipDialogOpen} tipForm={tipForm} setTipForm={setTipForm} allStaff={allStaff} createTipMutation={createTipMutation} resetTipForm={resetTipForm}
