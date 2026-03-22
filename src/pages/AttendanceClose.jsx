@@ -229,9 +229,10 @@ export default function AttendanceClose() {
   const isAllSelected = selectedStaffEmails.includes('__all__');
 
   const getExportRecords = (yearMonth) => {
+    const period = getClosePeriod(yearMonth, closeDay);
     return attendanceRecords
       .filter(r => {
-        if (!r.date.startsWith(yearMonth)) return false;
+        if (r.date < period.from || r.date > period.to) return false;
         if (isAllSelected) return true;
         return selectedStaffEmails.includes(r.user_email);
       })
