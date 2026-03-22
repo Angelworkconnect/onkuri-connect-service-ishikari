@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Mail, Trash2, Sparkles, Send } from "lucide-react";
 import StaffTaxFields from './StaffTaxFields';
+import StaffDialog from './StaffDialog';
 
 const tipTypes = [
   { value: 'everyday_thanks', label: 'エブリデイサンクス' },
