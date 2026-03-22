@@ -297,7 +297,7 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
           <StaffTaxFields form={form} setForm={setForm} />
         </div>
 
-        <DialogFooter className="flex-shrink-0 flex-col sm:flex-row gap-2 pt-2 border-t">
+        <DialogFooter style={{flexShrink: 0}} className="flex-col sm:flex-row gap-2 pt-2 border-t mt-2">
           {editingStaff && (
             <Button variant="outline" onClick={() => onInvite(form.email)}
               className="w-full sm:w-auto gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
