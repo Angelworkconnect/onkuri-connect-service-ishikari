@@ -1093,9 +1093,7 @@ export default function AdminPanel() {
     setStaffDialogOpen(true);
   };
 
-  const handleSubmitStaff = () => {
-    const fullName = [staffForm.last_name, staffForm.first_name].filter(Boolean).join(' ');
-    const data = { ...staffForm, full_name: fullName || staffForm.full_name };
+  const handleSubmitStaff = (data) => {
     if (editingStaff) {
       updateStaffMutation.mutate({ id: editingStaff.id, data });
     } else {
