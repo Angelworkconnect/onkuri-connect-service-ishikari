@@ -86,21 +86,44 @@ export default function StaffDialog({ open, onOpenChange, editingStaff, onSubmit
 
   const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
+  const toNumOrNull = (v) => {
+    if (v === '' || v === null || v === undefined) return null;
+    const n = Number(v);
+    return isNaN(n) ? null : n;
+  };
+
   const handleSubmit = async () => {
     setSaving(true);
     setSaved(false);
+    const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
+    const payload = {
+      full_name: fullName,
+      email: form.email,
+      phone: form.phone || null,
+      address: form.address || null,
+      date_of_birth: form.date_of_birth || null,
+      gender: form.gender,
+      role: form.role,
+      status: form.status,
+      approval_status: form.approval_status,
+      qualifications: form.qualifications || [],
+      display_in_shift_calendar: form.display_in_shift_calendar,
+      external_staff_code: form.external_staff_code || null,
+      commute_allowance_type: form.commute_allowance_type,
+      tax_mode: form.tax_mode,
+      monthly_salary: toNumOrNull(form.monthly_salary),
+      hourly_wage: toNumOrNull(form.hourly_wage),
+      daily_wage: toNumOrNull(form.daily_wage),
+      commute_allowance: toNumOrNull(form.commute_allowance),
+      annual_income_limit: toNumOrNull(form.annual_income_limit),
+      monthly_hour_limit: toNumOrNull(form.monthly_hour_limit),
+      max_consecutive_days: toNumOrNull(form.max_consecutive_days),
+    };
+    // nullフィールドを除去
+    Object.keys(payload).forEach(k => { if (payload[k] === null) delete payload[k]; });
+
     try {
-      const fullName = [form.last_name, form.first_name].filter(Boolean).join(' ') || form.full_name;
-      const numericFields = ['monthly_salary', 'hourly_wage', 'daily_wage', 'commute_allowance', 'annual_income_limit', 'monthly_hour_limit', 'weekly_hour_limit', 'max_consecutive_days'];
-      const cleaned = { ...form, full_name: fullName };
-      numericFields.forEach(k => {
-        if (cleaned[k] === '' || cleaned[k] === null || cleaned[k] === undefined) {
-          delete cleaned[k];
-        } else {
-          cleaned[k] = Number(cleaned[k]);
-        }
-      });
-      await onSubmit(cleaned);
+      await onSubmit(payload);
       setSaving(false);
       setSaved(true);
       setTimeout(() => {
