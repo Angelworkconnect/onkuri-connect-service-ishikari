@@ -250,7 +250,8 @@ export default function AdminPanel() {
     info_benefits_items: [],
     show_all_attendance_calendar: false,
     show_all_shift_calendar: false,
-  });
+    attendance_close_day: 0,
+    });
 
   useEffect(() => {
     base44.auth.me().then(async u => {
@@ -354,6 +355,7 @@ export default function AdminPanel() {
         info_benefits_items: siteSettings.info_benefits_items || [],
         show_all_attendance_calendar: !!siteSettings.show_all_attendance_calendar,
         show_all_shift_calendar: !!siteSettings.show_all_shift_calendar,
+        attendance_close_day: siteSettings.attendance_close_day || 0,
       });
     }
   }, [siteSettings?.id]);
