@@ -558,9 +558,9 @@ export default function AttendanceClose() {
     setIsExporting(false);
   };
 
-  // 月別集計
+  // 月別集計（締日設定対応）
   const getMonthlyStats = (yearMonth) => {
-    const records = attendanceRecords.filter(r => r.date.startsWith(yearMonth));
+    const records = getRecordsForPeriod(yearMonth);
     const approved = records.filter(r => r.status === 'approved').length;
     const closed = records.filter(r => r.month_closed).length;
     return { total: records.length, approved, closed };
