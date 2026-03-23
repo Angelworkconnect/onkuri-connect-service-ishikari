@@ -127,9 +127,14 @@ export function useCareBusinessMetrics() {
       return capacity > 0 && count / capacity < 0.6;
     }).map(d => DAY_LABELS[d]);
 
+    const targetRates = settings?.target_rates?.length === 4
+      ? settings.target_rates
+      : [75, 80, 85, 90];
+
     return {
       settings,
       hasSettings: settingsList.length > 0,
+      targetRates,
       capacity,
       unitPrice,
       fixedCost,

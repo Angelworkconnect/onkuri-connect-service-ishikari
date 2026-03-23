@@ -58,7 +58,7 @@ export default function CareBusinessDashboardEmbed() {
     settings, hasSettings, capacity, unitPrice, fixedCost, monthlyDays,
     bizDays, weeklyBusinessDays, dayMap, currentWeeklySlots, maxWeeklySlots,
     occupancyRate, avgUsers, estimatedRevenue: monthlySales, estimatedProfit: monthlyProfit,
-    activeUsers, newThisMonth, endedThisMonth,
+    activeUsers, newThisMonth, endedThisMonth, targetRates,
   } = metrics;
 
   const occColor = getOccupancyColor(occupancyRate ?? 0);
@@ -160,7 +160,7 @@ export default function CareBusinessDashboardEmbed() {
       <div>
         <h3 className="font-semibold text-slate-700 mb-3 flex items-center gap-2"><Target className="w-4 h-4 text-[#2D4A6F]" />目標稼働率シミュレーション</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[75, 80, 85, 90].map(rate => (
+          {(targetRates || [75, 80, 85, 90]).map(rate => (
             <SimulationCard key={rate} rate={rate} maxSlots={maxWeeklySlots} capacity={capacity}
               unitPrice={unitPrice} monthlyDays={monthlyDays} fixedCost={fixedCost}
               weeklyBusinessDays={weeklyBusinessDays} currentSlots={currentWeeklySlots} />
