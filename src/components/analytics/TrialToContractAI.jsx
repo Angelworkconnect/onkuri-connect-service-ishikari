@@ -403,15 +403,45 @@ export default function TrialToContractAI() {
     '低': 'bg-slate-100 text-slate-600 border-slate-200',
   };
 
+  // 過去実績データ
+  const historyData = useMemo(() => {
+    const monthMap = {};
+    scoredUsers.forEach(u => {
+      const key = u.trialDate ? u.trialDate.substring(0, 7) : '不明';
+      if (!monthMap[key]) monthMap[key] = { month: key, trials: [], contracted: [], notContracted: [] };
+      monthMap[key].trials.push(u);
+      if (u.contractStatus === 'contracted') {
+        monthMap[key].contracted.push(u);
+      } else {
+        monthMap[key].notContracted.push(u);
+      }
+    });
+    return Object.values(monthMap).sort((a, b) => b.month.localeCompare(a.month));
+  }, [scoredUsers]);
+
   return (
     <div className="space-y-6">
       {/* ヘッダー */}
       <div className="bg-gradient-to-r from-[#2D4A6F] to-[#1E3A5F] rounded-2xl p-6 text-white">
-        <div className="flex items-center gap-3 mb-1">
-          <Target className="w-6 h-6 text-[#E8A4B8]" />
-          <h2 className="text-xl font-bold">体験→契約AI</h2>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <Target className="w-6 h-6 text-[#E8A4B8]" />
+              <h2 className="text-xl font-bold">体験→契約AI</h2>
+            </div>
+            <p className="text-white/60 text-sm">体験者の契約見込みを可視化し、優先フォロー対象を明確にします</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('current')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'current' ? 'bg-white text-[#2D4A6F]' : 'bg-white/20 text-white hover:bg-white/30'}`}
+            >現在の体験者</button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'history' ? 'bg-white text-[#2D4A6F]' : 'bg-white/20 text-white hover:bg-white/30'}`}
+            >過去実績</button>
+          </div>
         </div>
-        <p className="text-white/60 text-sm">体験者の契約見込みを可視化し、優先フォロー対象を明確にします</p>
       </div>
 
       {/* サマリーカード */}
