@@ -65,7 +65,15 @@ export default function SiteSettingsTab({ settingsForm, setSettingsForm, onSave,
             <Input
               value={settingsForm.cta_text || ''}
               onChange={(e) => setSettingsForm({...settingsForm, cta_text: e.target.value})}
-              placeholder="おんくりの輪で一緒に働きませんか？"
+              placeholder="今すぐ働き方を変える →"
+            />
+          </div>
+          <div>
+            <Label>CTAサブテキスト</Label>
+            <Input
+              value={settingsForm.cta_sub_text || ''}
+              onChange={(e) => setSettingsForm({...settingsForm, cta_sub_text: e.target.value})}
+              placeholder="登録は30秒。すぐに応募できます。"
             />
           </div>
           <div>

@@ -200,14 +200,14 @@ export default function Home() {
               <Sparkles className="w-5 h-5 text-[#E8A4B8]" />
               <span className="text-sm tracking-wider text-white/70">介護事業所専用オペレーションOS</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 leading-tight whitespace-pre-line">
               {siteSettings.hero_title || '人が辞めない介護へ。\n現場が回り続ける仕組みを。'}
             </h1>
-            <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4">
-              {siteSettings.hero_subtitle || '単発・短時間から即戦力を確保。'}
+            <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4 whitespace-pre-line">
+              {siteSettings.hero_subtitle || '単発・短時間から即戦力を確保。\nシフト・勤怠・コミュニケーションを一体化した\n介護事業所専用オペレーションOS。'}
             </p>
-            <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
-              {siteSettings.hero_description || 'シフト・勤怠・コミュニケーションを一体化した\n介護事業所専用オペレーションOS。'}
+            <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed whitespace-pre-line">
+              {siteSettings.hero_description || 'Angel Work Connectは、\n人材不足・定着課題・現場の負担を同時に解決する\n介護事業所専用オペレーションOSです。\nAIがシフト調整・人材配置・業務分析をサポートし、\n現場の最適化と働きやすさを実現します。'}
             </p>
             
             <div className="flex flex-wrap gap-4">
@@ -418,7 +418,7 @@ export default function Home() {
             {siteSettings.cta_text || '今すぐ働き方を変える →'}
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            登録は30秒。すぐに応募できます。
+            {siteSettings.cta_sub_text || '登録は30秒。すぐに応募できます。'}
           </p>
           {!user && (
             <Button 
