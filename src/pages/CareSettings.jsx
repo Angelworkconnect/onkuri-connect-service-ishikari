@@ -26,6 +26,7 @@ const DEFAULT_FORM = {
   salary_avg_hourly: 1000,
   salary_monthly_hours: 160,
   other_costs_monthly: 0,
+  target_rates: [75, 80, 85, 90],
 };
 
 export default function CareSettings() {
@@ -58,6 +59,7 @@ export default function CareSettings() {
         salary_avg_hourly: s.salary_avg_hourly || 1000,
         salary_monthly_hours: s.salary_monthly_hours || 160,
         other_costs_monthly: s.other_costs_monthly || 0,
+        target_rates: s.target_rates?.length === 4 ? s.target_rates : [75, 80, 85, 90],
       });
     }
   }, [settingsList.length]);
@@ -157,6 +159,40 @@ export default function CareSettings() {
           <div>
             <Label className="text-sm font-medium">備考メモ（ダッシュボードに表示）</Label>
             <Textarea className="mt-1" value={form.memo} onChange={e => setForm({ ...form, memo: e.target.value })} rows={3} placeholder="経営上の重要事項や目標など..." />
+          </div>
+        </Card>
+
+        {/* 目標稼働率設定 */}
+        <Card className="border-0 shadow-md p-6 space-y-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">目標稼働率シミュレーション設定</h2>
+            <p className="text-xs text-slate-500 mt-1">ダッシュボードの「目標稼働率シミュレーション」に表示する4段階の稼働率（%）を自由に設定できます</p>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {[0,1,2,3].map(i => (
+              <div key={i}>
+                <Label className="text-xs text-slate-500 mb-1 block">目標 {i+1}</Label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={form.target_rates[i] ?? ''}
+                    onChange={e => {
+                      const v = Math.min(100, Math.max(1, Number(e.target.value)));
+                      const next = [...form.target_rates];
+                      next[i] = v;
+                      setForm({ ...form, target_rates: next });
+                    }}
+                    className="pr-7 text-center font-bold"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-4 gap-3 text-xs text-center text-slate-400">
+            {form.target_rates.map((r, i) => <span key={i}>目標{i+1}: {r}%</span>)}
           </div>
         </Card>
 
