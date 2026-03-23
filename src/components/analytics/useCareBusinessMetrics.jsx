@@ -10,7 +10,7 @@ export function useCareBusinessMetrics() {
   const { data: settingsList = [], isLoading: loadingSettings } = useQuery({
     queryKey: ['care-biz-settings'],
     queryFn: () => base44.entities.CareBusinessSettings.list(),
-    staleTime: 60000,
+    staleTime: 0,
   });
 
   const { data: dayUsageList = [], isLoading: loadingUsages } = useQuery({

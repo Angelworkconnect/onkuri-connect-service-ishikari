@@ -59,7 +59,7 @@ export default function CareSettings() {
         salary_avg_hourly: s.salary_avg_hourly || 1000,
         salary_monthly_hours: s.salary_monthly_hours || 160,
         other_costs_monthly: s.other_costs_monthly || 0,
-        target_rates: s.target_rates?.length === 4 ? s.target_rates : [75, 80, 85, 90],
+        target_rates: Array.isArray(s.target_rates) && s.target_rates.length === 4 ? [...s.target_rates] : [75, 80, 85, 90],
       });
     }
   }, [settingsList.length]);
@@ -177,12 +177,12 @@ export default function CareSettings() {
                     type="number"
                     min={1}
                     max={100}
-                    value={form.target_rates[i] ?? ''}
+                    value={(form.target_rates ?? [75,80,85,90])[i] ?? ''}
                     onChange={e => {
                       const v = Math.min(100, Math.max(1, Number(e.target.value)));
-                      const next = [...form.target_rates];
-                      next[i] = v;
-                      setForm({ ...form, target_rates: next });
+                      const current = Array.isArray(form.target_rates) ? [...form.target_rates] : [75,80,85,90];
+                      current[i] = v;
+                      setForm({ ...form, target_rates: current });
                     }}
                     className="pr-7 text-center font-bold"
                   />
@@ -192,7 +192,7 @@ export default function CareSettings() {
             ))}
           </div>
           <div className="grid grid-cols-4 gap-3 text-xs text-center text-slate-400">
-            {form.target_rates.map((r, i) => <span key={i}>目標{i+1}: {r}%</span>)}
+            {(form.target_rates ?? [75,80,85,90]).map((r, i) => <span key={i}>目標{i+1}: {r}%</span>)}
           </div>
         </Card>
 
