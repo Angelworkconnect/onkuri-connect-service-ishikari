@@ -152,10 +152,11 @@ function calculateMonthlyStats(users, month) {
 }
 
 export default function TrialToContractAI() {
+  const [activeTab, setActiveTab] = useState('current'); // current / history
   const [expandedUser, setExpandedUser] = useState(null);
   const [expandedHistory, setExpandedHistory] = useState(null);
-  const [filterLevel, setFilterLevel] = useState('all'); // all / high / medium / low
-  const [sortBy, setSortBy] = useState('score'); // score / days / name
+  const [filterLevel, setFilterLevel] = useState('all');
+  const [sortBy, setSortBy] = useState('score');
   const queryClient = useQueryClient();
 
   // 体験情報を取得（Announcement の trial カテゴリ）
