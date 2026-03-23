@@ -252,6 +252,7 @@ export default function AdminPanel() {
     show_all_attendance_calendar: false,
     show_all_shift_calendar: false,
     attendance_close_day: 0,
+    cta_sub_text: '',
     });
 
   useEffect(() => {
@@ -357,6 +358,7 @@ export default function AdminPanel() {
         show_all_attendance_calendar: !!siteSettings.show_all_attendance_calendar,
         show_all_shift_calendar: !!siteSettings.show_all_shift_calendar,
         attendance_close_day: siteSettings.attendance_close_day || 0,
+        cta_sub_text: siteSettings.cta_sub_text || '',
       });
     }
   }, [siteSettings?.id]);
