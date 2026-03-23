@@ -198,23 +198,23 @@ export default function Home() {
           >
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-5 h-5 text-[#E8A4B8]" />
-              <span className="text-sm tracking-wider text-white/70">石狩市を拠点とした地域密着型</span>
+              <span className="text-sm tracking-wider text-white/70">介護事業所専用オペレーションOS</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 leading-tight">
-              {siteSettings.hero_title || '地域で支える、人生に寄り添う。'}
+              {siteSettings.hero_title || '人が辞めない介護へ。\n現場が回り続ける仕組みを。'}
             </h1>
             <p className="text-xl md:text-2xl text-[#E8A4B8] font-medium mb-4">
-              {siteSettings.hero_subtitle || 'タイミー的単発・短時間から参加できるお仕事'}
+              {siteSettings.hero_subtitle || '単発・短時間から即戦力を確保。'}
             </p>
             <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
-              {siteSettings.hero_description || 'おんくりの輪は、介護から葬祭まで\n人生のすべての節目に寄り添う\n地域密着型のワーク＆サポートプラットフォームです。'}
+              {siteSettings.hero_description || 'シフト・勤怠・コミュニケーションを一体化した\n介護事業所専用オペレーションOS。'}
             </p>
             
             <div className="flex flex-wrap gap-4">
               {user ? (
                 <Link to={createPageUrl('Dashboard')}>
                   <Button size="lg" className="bg-white text-[#2D4A6F] hover:bg-white/90 h-14 px-8">
-                    ダッシュボードへ
+                    今すぐ業務を開始
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
@@ -415,11 +415,10 @@ export default function Home() {
       <section className="bg-gradient-to-br from-[#2D4A6F] to-[#1E3A5F] text-white py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-light mb-6">
-            {siteSettings.cta_text || 'おんくりの輪で一緒に働きませんか？'}
+            {siteSettings.cta_text || '今すぐ働き方を変える →'}
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-            単発から始められる柔軟な働き方。<br />
-            あなたの経験とスキルを地域のために活かしてください。
+            登録は30秒。すぐに応募できます。
           </p>
           {!user && (
             <Button 
@@ -439,11 +438,11 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-              <h3 className="text-xl font-medium text-white mb-2">おんくりの輪</h3>
-              <p className="text-sm">{siteSettings.footer_text || '石狩市を拠点とした地域密着型介護・生活支援事業体'}</p>
+              <h3 className="text-xl font-medium text-white mb-1">Angel Work Connect</h3>
+              <p className="text-sm">{siteSettings.footer_text || '介護事業所専用オペレーションOS'}</p>
             </div>
             <div className="text-sm">
-              © {new Date().getFullYear()} おんくりの輪. All rights reserved.
+              © {new Date().getFullYear()} Angel Work Connect. All rights reserved.
             </div>
           </div>
         </div>
