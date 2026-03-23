@@ -841,6 +841,7 @@ export default function TrialToContractAI() {
         <Info className="w-3 h-3" />
         スコアはルールベースで計算されており、要介護度・利用ニーズ・フォロー状況などから判定されます
       </div>
+      </>}
     </div>
   );
 }
