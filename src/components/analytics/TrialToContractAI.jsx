@@ -444,6 +444,73 @@ export default function TrialToContractAI() {
         </div>
       </div>
 
+      {/* 過去実績タブ */}
+      {activeTab === 'history' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-4 border-0 shadow-sm text-center">
+              <p className="text-xs text-slate-500 mb-1">総体験件数</p>
+              <p className="text-2xl font-bold text-[#2D4A6F]">{scoredUsers.length}</p>
+            </Card>
+            <Card className="p-4 border-0 shadow-sm text-center bg-green-50">
+              <p className="text-xs text-green-600 mb-1">累計契約件数</p>
+              <p className="text-2xl font-bold text-green-700">{summary.contractedCount}</p>
+            </Card>
+            <Card className="p-4 border-0 shadow-sm text-center bg-blue-50">
+              <p className="text-xs text-blue-600 mb-1">累計契約率</p>
+              <p className="text-2xl font-bold text-blue-700">
+                {scoredUsers.length > 0 ? Math.round((summary.contractedCount / scoredUsers.length) * 100) : 0}%
+              </p>
+            </Card>
+          </div>
+
+          {historyData.map(({ month, trials, contracted, notContracted }) => (
+            <Card key={month} className="border-0 shadow-sm overflow-hidden">
+              <div className="p-4 bg-slate-50 border-b flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-slate-800">{month === '不明' ? '日付不明' : month}</span>
+                  <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">体験 {trials.length}件</span>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">契約 {contracted.length}件</span>
+                  {trials.length > 0 && (
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                      契約率 {Math.round((contracted.length / trials.length) * 100)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="divide-y">
+                {trials.map(u => (
+                  <div key={u.id} className={`px-4 py-3 flex items-center justify-between gap-3 ${u.contractStatus === 'contracted' ? 'bg-green-50' : ''}`}>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${u.contractStatus === 'contracted' ? 'bg-green-500' : 'bg-slate-300'}`} />
+                      <div className="min-w-0">
+                        <p className="font-medium text-slate-800 text-sm truncate">{u.name || '名前未設定'}</p>
+                        {u.furigana && <p className="text-xs text-slate-400 truncate">{u.furigana}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {u.careLevel && <span className="text-xs text-slate-500 hidden sm:block">{u.careLevel}</span>}
+                      {u.trialDate && <span className="text-xs text-slate-400 hidden sm:block">{u.trialDate}</span>}
+                      {u.contractStatus === 'contracted' ? (
+                        <Badge className="bg-green-100 text-green-700 border-0 text-xs">✅ 契約済</Badge>
+                      ) : (
+                        <Badge className={`${levelBadgeClass[u.level]} text-xs`}>{u.level}見込み</Badge>
+                      )}
+                      <span className="text-xs font-bold text-slate-600">{u.score}点</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ))}
+
+          {historyData.length === 0 && (
+            <Card className="border-0 shadow-sm p-8 text-center text-slate-500">体験データがありません</Card>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'current' && <>
       {/* サマリーカード */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Card className="p-4 border-0 shadow-sm">
